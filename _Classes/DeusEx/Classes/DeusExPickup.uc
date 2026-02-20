@@ -51,6 +51,20 @@ var string HDTPMesh;
 var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
 var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
 
+var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this item on mission completion.
+
+//SARGE: Icon Info.
+//TODO: Use SSkinInfo above instead, and handle all the skins the same way you handle icons.
+struct IconInfo
+{
+    var Texture icon;
+    var Texture largeIcon;
+    var localized string description;
+};
+
+//Objects can support up to 10 skins
+var private transient IconInfo Icons[10];
+
 //SARGE: MissionScript calls this on all objects on map start.
 function RandomiseSkin(DeusExPlayer player)
 {
@@ -63,6 +77,7 @@ function RandomiseSkin(DeusExPlayer player)
 
     textureSet = player.Randomizer.GetRandomInt(totalSkins - 1);
     SetSkin();
+    SetIcon();
 }
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
@@ -122,6 +137,7 @@ exec function UpdateHDTPsettings()                                              
     
     SetWeaponHandTex();
 	SetSkin();
+    SetIcon();
 }
 
 //Shorthand for accessing hands tex
@@ -363,6 +379,7 @@ function HandleMultipleSkins(inventory item, int startcopies)
 			PickUplist[i] = DeusexPickup(item).textureSet;
 			textureset = DeusexPickup(item).textureSet;
 			SetSkin();
+            SetIcon();
 			startcopies++;
 		}
 
@@ -387,6 +404,9 @@ function SupportActor( actor StandingActor )
 function PostPostBeginPlay()
 {
     Super.PostPostBeginPlay();
+    
+    //Generate a list of skins for this class.
+    GenerateIcons();
 
     if (totalSkins > 1)
         bHasMultipleSkins = true;
@@ -456,7 +476,10 @@ function bool HandlePickupQuery( inventory Item )
 				if (item.IsA('ChargedPickup') && anItem.Charge < anItem.default.Charge)
                 {
                     //SARGE: Let us know we're charging the thing...
-                    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    if (player.bItemRechargeSound) //SARGE: Rosodude asked for this to be an option.
+                        player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    else
+                        player.PlaySound(Item.PickupSound, SLOT_None,,, 256);
                     
                     bSound = false;
                     
@@ -495,7 +518,10 @@ function bool HandlePickupQuery( inventory Item )
  			    else
                 {
                     //SARGE: Let us know we're charging the thing...
-                    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    if (player.bItemRechargeSound) //SARGE: Rosodude asked for this to be an option.
+                        player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    else
+                        player.PlaySound(Item.PickupSound, SLOT_None,,, 256);
                     
                     bSound = false;
                     
@@ -854,6 +880,12 @@ auto state Pickup
         if (numCopies > RetMaxCopies())
             numCopies = RetMaxCopies();
 
+        bDontRemoveOnMissionComplete = false;
+        
+        //SARGE: Last minute skin check.
+        SetSkin();
+        SetIcon();
+
         super.Frob(other, frobwith);
 	}
 }
@@ -1040,6 +1072,7 @@ function PlayLandingSound()
 //	textureset = pickupList[i];
 //	//dumptexturelist();
 //	SetSkin();
+//  SetIcon();
 //}
 
 function UpdateCurrentSkin()
@@ -1047,6 +1080,7 @@ function UpdateCurrentSkin()
 	textureset = pickuplist[numcopies-1];
 	pickuplist[numcopies] = -1;
 	SetSkin();
+    SetIcon();
 }
 
 function int findNextPosition()
@@ -1081,6 +1115,60 @@ function PostBeginPlay()
     UpdateHDTPSettings();                                                       //SARGE: Update HDTP
 }
 
+//If skinned icons are turned off, always use the default.
+function private SetIcon()
+{
+    //Ugh. Hardcoded to get the default skin if we pass in index 0.
+    //This isn't great but I can't think of a better way to do this...
+    if (textureSet >= 0 && class'DeusExPlayer'.default.bSkinnedBeltIcons && textureSet < totalSkins)
+    {
+        Icon = GetIcon(textureSet).Icon;
+        LargeIcon = GetIcon(textureSet).LargeIcon;
+    }
+    else
+    {
+        Icon = default.Icon;
+        LargeIcon = default.LargeIcon;
+    }
+}
+
+//Automatically generates icons for this object based on
+//some predefined textures.
+function GenerateIcons()
+{
+    local int i;
+    local Texture T,T2;
+
+    //Use the default for the first skin
+    Icons[0].icon = default.Icon;
+    Icons[0].largeIcon = default.LargeIcon;
+
+    for (i = 1;i < totalSkins;i++)
+    {
+        //Log("RSDCrap.Icons.BeltIcon"$string(self.Class.Name)$"Tex"$(i+1));
+        T = Texture(DynamicLoadObject("RSDCrap.Icons.BeltIcon"$string(self.Class.Name)$"Tex"$(i+1),class'Texture',false));
+        T2 = Texture(DynamicLoadObject("RSDCrap.Icons.LargeIcon"$string(self.Class.Name)$"Tex"$(i+1),class'Texture',false));
+
+        if (T == None)
+            T = default.Icon;
+
+        if (T2 == None)
+            T2 = default.LargeIcon;
+
+        Icons[i].icon = T;
+        Icons[i].largeIcon = T2;
+    }
+}
+
+function IconInfo GetIcon(int skinIndex)
+{
+    if (skinIndex > totalSkins || skinIndex >= 10)
+        return Icons[0];
+
+    return Icons[skinIndex];
+}
+
+//New function to set the belt and inventory icon for a given pickup.
 function SetSkin()
 {
 //	if(bHasMultipleSkins)
@@ -1096,7 +1184,7 @@ function DestroyMe()
 	player = DeusExPlayer(GetPlayerPawn());
 
     if (owner != None && owner.IsA('DeusExPlayer') && DeusExPlayer(owner).iShifterWeaponSwitch > 2 && bInObjectBelt)
-        DeusExPlayer(owner).ShifterSwitchAll(self,true);
+        DeusExPlayer(owner).ShifterSwitchAll(self,DeusExPlayer(owner).iShifterWeaponSwitch >= 4);
 
     player.RemoveObjectFromBelt(self);
 

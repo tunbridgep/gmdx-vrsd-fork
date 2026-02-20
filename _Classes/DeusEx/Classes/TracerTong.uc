@@ -14,7 +14,7 @@ defaultproperties
      WaterSpeed=64.000000
      AirSpeed=144.000000
      Texture=Texture'DeusExItems.Skins.PinkMaskTex'
-     Mesh=LodMesh'DeusExCharacters.GM_Jumpsuit'
+     Mesh=LodMesh'RSDCrap.Fixed_Jumpsuit'
      MultiSkins(0)=Texture'DeusExCharacters.Skins.TracerTongTex0'
      MultiSkins(1)=Texture'DeusExCharacters.Skins.TracerTongTex2'
      MultiSkins(2)=Texture'DeusExCharacters.Skins.TracerTongTex1'
@@ -29,4 +29,5 @@ defaultproperties
      BindName="TracerTong"
      FamiliarName="Tracer Tong"
      UnfamiliarName="Tracer Tong"
+     bRandomHeightAdjust=false
 }

@@ -74,6 +74,19 @@ simulated function DrawScopeAnimation()
     }
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[3] = Texture'PinkMaskTex';
+    else
+        multiskins[6] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
     if (IsHDTP())
@@ -390,7 +403,7 @@ defaultproperties
      PickupViewMesh=LodMesh'DeusExItems.GlockPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Glock3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconPistol'
-     //HDTPIcon="HDTPItems.Icons.HDTPBeltIconPistol" //HDTP-styled icon //DISABLED as it breaks belt memory
+     HDTPIcon="HDTPItems.Icons.HDTPBeltIconPistol" //HDTP-styled icon
      HDTPlargeIcon="RSDCrap.Icons.LargeIconPistol" //HDTP-styled icon
      largeIcon=Texture'DeusExUI.Icons.LargeIconPistol'
      largeIconWidth=46

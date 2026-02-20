@@ -30,6 +30,7 @@ var Color colIconDimmed;
 //SARGE: Cache the players secondary
 var transient Inventory assigned;
 var transient class<Inventory> assignedClass;
+var transient Texture assignedIcon;
 var bool bUpdateAssigned;
 
 // ----------------------------------------------------------------------
@@ -73,6 +74,7 @@ event Tick(float deltaSeconds)
     {
         assigned = player.GetSecondary();
         assignedClass = player.GetSecondaryClass();
+        assignedIcon = player.GetSecondaryIcon();
         bUpdateAssigned = false;
     }
 
@@ -108,7 +110,7 @@ event DrawWindow(GC gc)
     {
         gc.SetTileColor(colIconDimmed);
 		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, assignedClass.default.icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, assignedIcon);
         return;
     }
 
@@ -149,7 +151,7 @@ event DrawWindow(GC gc)
             // Draw the ammo count
             gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
             gc.EnableWordWrap(false);
-            gc.SetFont(Font'FontTiny');
+            gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
             gc.SetTextColor(colText);
 
             if (amount > 0)

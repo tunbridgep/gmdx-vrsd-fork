@@ -47,8 +47,9 @@ var localized String heartStr;
 var localized String timeStr;
 var localized String pedStr;
 var bool bBodyPartPressed;
-var int extraBPM;
-var int randBPM;
+var transient int targetBPM;
+var transient int actualBPM;
+var transient float lastBPM; //SARGE: Lets make the BPM meter update less than once per frame...
 var localized string StatsButtonLabel;
 var localized string AddictionButtonLabel;
 var localized string PedometerButtonLabel;
@@ -688,47 +689,77 @@ function UpdateStatusText()                                                     
 {
     local string conc;
     local int heartRate, conv;
+    local int extraBPM;
+    local int randBPM;
+    local int printBPM;
 
-     DisplayCommonInfo();
+    DisplayCommonInfo();
 
-     //PEDOMETER
-     winInfo.SetText(winInfo.CR());
-     winInfo.SetText(winInfo.CR());
-     winInfo.bStylization2 = False;
-     winInfo.bStylization = True;
-     randBPM = 0;
-     extraBPM = 0;
-     heartRate = 70 - (player.SkillSystem.GetSkillLevel(class'SkillSwimming') * 5);
-     if (player.Health > 20)
-     {
-         conv = 600 / (player.Health);
-         conv = conv * 2;
-     }
-     if (extraBPM < 3 && extraBPM > -3)
-     {
-     if (FRand() < 0.0007)
-         extraBPM += FRand()*1.5;
-     else if (FRand() < 0.0007)
-         extraBPM -= FRand()*1.5;
-     else if (player.default.musicMode == MUS_Combat)
-         extraBPM += 4;
-     }
-     if (FRand() < 0.6)
-        randBPM = FRand() * 1.5;
-     else
-        randBPM = -1;
-     if (player.bStunted)
-         randBPM += (50 + FRand()*10);
-     else if (player.swimTimer < 16)
-         randBPM += 10 + FRand()*5;
-     else if (player.swimTimer < 28)
-         randBPM += 5 + FRand()*3;
-     if (player.Region.Zone.bWaterZone)
-         randBPM -= 10;
-     heartRate = heartRate + conv + extraBPM + randBPM; //CyberP: combat mode, athletics skill, current health and more affect heart rate
+    //PEDOMETER
+    winInfo.SetText(winInfo.CR());
+    winInfo.bStylization2 = False;
+    winInfo.bStylization = True;
+
+    //SARGE: Let's completely overhaul the BPM display.
+    //Previously it updated to random values once PER FUCKING FRAME, so the numbers
+    //were completely unreadable. It's also not how our hearts work - they don't
+    //simply jump from 60 BPM to 80 BPM. Even if they did, BPM is a rolling average, so
+    //it takes time to move up to the new value.
+    //SO, lets change this. Now, we roll for a new target BPM every 3 seconds or so,
+    //and slowly move towards it.
+
+
+    //SARGE: First, we will check if we've updated recently. If so, abort
+    //The code below is *mostly* copied as is, so it's TT's shitty v9 code.
+    //We just make it find a target BPM instead of setting the actual heart rate every frame to some random value. Now it slowly moves up and down to targets.
+    if (player.saveTime > lastBPM + 0.7)
+    {
+        lastBPM = player.saveTime;
+        randBPM = 0;
+        extraBPM = 0;
+        heartRate = 70 - (player.SkillSystem.GetSkillLevel(class'SkillSwimming') * 5);
+
+        //Factor in health
+        if (player.Health > 20)
+        {
+            conv = 600 / (player.Health);
+            conv = conv * 2;
+        }
+        
+        //Much higher in combat
+        if (player.GetCombatants() > 0)
+            extraBPM += 50;
+
+        if (player.bStunted)
+            extraBPM += 30;
+        else
+            extraBPM = (1000-player.swimTimer) / 100; //An extra 10 bpm when tired.
+
+        //And a bit of randomness...
+        randBPM = FRand()*3;
+
+        targetBPM = heartRate + conv + extraBPM + randBPM; //CyberP: combat mode, athletics skill, current health and more affect heart rate
+
+        player.DebugMessage(heartRate @ conv @ extraBPM @ randBPM);
+        
+        //Set some reasonable limits
+        targetBPM = MIN(MAX(70,targetBPM),140);
+        actualBPM = MIN(MAX(70,actualBPM),140);
+
+        //Now that we have a new target established, move our actual BPM towards it.
+        if (actualBPM < targetBPM - 30) //Go up QUICK
+            actualBPM += Rand(15) + 15;
+        else if (actualBPM < targetBPM) //Then take a bit longer to get right to where we want
+            actualBPM += Rand(3) + 2;
+        else if (actualBPM > targetBPM)
+            actualBPM -= Rand(1) + 1; //Go back down very slowly
+    }
+
      conc = winInfo.CR() $ winInfo.CR() $ "     "  $ pedStr $ winInfo.CR() $ winInfo.CR() $ "     " $ distStr $ string(int(player.stepCount*0.0005)) $ " mi";
      conc = conc $ winInfo.CR() $ "     " $ stepsStr $ string(player.stepCount);
-     conc = conc $ winInfo.CR() $ "     " $ heartStr $ string(heartRate) $ " bpm";
+     conc = conc $ winInfo.CR() $ "     " $ heartStr $ string(actualBPM) $ " bpm";
+     if (player.bGMDXDebug)
+        conc = conc $ winInfo.CR() $ "     " $ heartStr $ string(targetBPM) $ " bpm";
      conc = conc $ winInfo.CR() $ "     " $ timeStr $ BuildElapsedPlayTimeString(Int(player.saveTime));
      conc = conc $ winInfo.CR() $ winInfo.CR() $ winInfo.CR() $ winInfo.CR() $ winInfo.CR();
      winInfo.SetText(conc);

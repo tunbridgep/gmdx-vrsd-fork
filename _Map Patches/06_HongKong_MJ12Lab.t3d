@@ -171934,27 +171934,69 @@ Begin Actor Class=MusicEvent Name=MusicEvent1
     Song=Music'MJ12_Music.MJ12_Music'
     SongSection=2
     Transition=MTRAN_FastFade
-    bDynamicLight=True
     LastRenderTime=44.523903
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=MusicEvent1
+    Tag=LabMusic
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2003,ZoneNumber=10)
     Location=(X=-1148.522705,Y=406.220215,Z=-622.900024)
     OldLocation=(X=2.477356,Y=-1903.779785,Z=-87.900063)
     Name=MusicEvent1
 End Actor
 Begin Actor Class=Trigger Name=Trigger4
-    bTriggerOnceOnly=True
-    bDynamicLight=True
     LastRenderTime=44.523903
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Trigger
-    Event=MusicEvent1
+    Event=LabMusic
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2003,ZoneNumber=10)
     Location=(X=-1151.421143,Y=564.459595,Z=-622.900146)
     OldLocation=(X=32.578896,Y=-1897.540405,Z=-87.900124)
     CollisionRadius=200.000000
     CollisionHeight=200.000000
     Name=Trigger4
+End Actor
+Begin Actor Class=MusicEvent Name=MusicEvent0
+    Transition=MTRAN_FastFade
+    bDynamicLight=True
+    LastRenderTime=421.242157
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ResetMusic
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1167,ZoneNumber=9)
+    Location=(X=-1.568520,Y=597.743958,Z=-599.901794)
+    OldLocation=(X=-1.568520,Y=597.743958,Z=-599.901794)
+    Name=MusicEvent0
+End Actor
+Begin Actor Class=Trigger Name=Trigger5
+    bDynamicLight=True
+    LastRenderTime=421.242157
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Trigger
+    Event=ResetMusic
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1167,ZoneNumber=9)
+    Location=(X=-3.821213,Y=596.723572,Z=-599.900452)
+    OldLocation=(X=-3.821213,Y=596.723572,Z=-599.900452)
+    Name=Trigger5
+End Actor
+Begin Actor Class=Trigger Name=Trigger6
+    bDynamicLight=True
+    LastRenderTime=904.741455
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Trigger
+    Event=ResetMusic
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=1931,ZoneNumber=3)
+    Location=(X=7.954329,Y=-87.084167,Z=87.099823)
+    OldLocation=(X=7.954329,Y=-87.084167,Z=104.099823)
+    Name=Trigger6
+End Actor
+Begin Actor Class=Trigger Name=Trigger7
+    bDynamicLight=True
+    LastRenderTime=549.234558
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Trigger
+    Event=LabMusic
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=2571,ZoneNumber=16)
+    Location=(X=-513.350342,Y=994.157715,Z=-759.897461)
+    OldLocation=(X=-553.350342,Y=974.157715,Z=-759.897461)
+    CollisionRadius=600.000000
+    Name=Trigger7
 End Actor
 End Map

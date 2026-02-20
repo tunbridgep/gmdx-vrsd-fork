@@ -222,7 +222,7 @@ function CreateMedBotDisplay()
     }
 	winHealthBarText.SetTextMargins(0, 0);
 	winHealthBarText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-	winHealthBarText.SetFont(Font'FontMenuSmall_DS');
+	winHealthBarText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winHealthBarText.SetTextColorRGB(255, 255, 255);
 
 	winHealthInfoText = PersonaNormalTextWindow(winClient.NewChild(Class'PersonaNormalTextWindow'));

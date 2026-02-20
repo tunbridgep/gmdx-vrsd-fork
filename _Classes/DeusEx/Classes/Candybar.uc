@@ -21,6 +21,18 @@ function SetSkin()
     }
 }
 
+//SARGE: We need to do some swoocy bullshit because of how the vanilla game works.
+//In the vanilla game, the Monty Bites icon is the default, despite using the Chunkohoney skin as the default.
+//So we need to swap the icons around, but ONLY in non-default icon mode.
+//This is the worst hack ever devised.
+function IconInfo GetIcon(int skinIndex)
+{
+    if (skinIndex == 1)
+        return super.GetIcon(0);
+    else
+        return super.GetIcon(1);
+}
+
 defaultproperties
 {
      healAmount=2
@@ -49,4 +61,5 @@ defaultproperties
      Buoyancy=4.000000
      fullness=6
      totalSkins=2
+     bHasMultipleSkins=true
 }

@@ -38,14 +38,14 @@ event InitWindow()
 function CreateControls()
 {
         winIcon = NewChild(Class'Window');
-        winIcon.SetBackgroundStyle(DSTY_Masked);
+        //winIcon.SetBackgroundStyle(DSTY_Masked);
         winIcon.SetPos(1, 1);
         winIcon.SetSize(24, 24);
 
         winName = PersonaSkillTextWindow(NewChild(Class'PersonaSkillTextWindow'));
         winName.SetPos(28, 0);
         winName.SetSize(138, 27);
-        winName.SetFont(Font'FontConversation');
+        winName.SetFont(player.FontManager.GetFont(TT_FontConversation));
 
         winLevel = PersonaSkillTextWindow(NewChild(Class'PersonaSkillTextWindow'));
         winLevel.SetPos(165, 0);
@@ -166,7 +166,6 @@ defaultproperties
      Right_Textures(1)=(Tex=Texture'DeusExUI.UserInterface.PersonaSkillsButtonFocus_Right',Width=8)
      Center_Textures(0)=(Tex=Texture'DeusExUI.UserInterface.PersonaSkillsButtonNormal_Center',Width=4)
      Center_Textures(1)=(Tex=Texture'DeusExUI.UserInterface.PersonaSkillsButtonFocus_Center',Width=4)
-     fontButtonText=Font'DeusExUI.FontConversation'
      buttonHeight=27
      minimumButtonWidth=50
 }

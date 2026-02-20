@@ -13,8 +13,6 @@ var Color colConTextPlayer;
 var Color colConTextName;
 var Color colLine;
 
-var Font  fontName;
-
 var float conStartTime;
 var int   txtVertMargin;
 
@@ -62,7 +60,7 @@ function CreateNameWindow()
 	nameWindow = TextWindow(lowerConWindow.NewChild(Class'TextWindow'));
 	nameWindow.SetTextAlignments( HALIGN_Left, VALIGN_Center);
 	nameWindow.SetTextMargins(0, 2);
-	nameWindow.SetFont(fontName);
+	nameWindow.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders_DS));
 	nameWindow.SetTextColor(colConTextName);
 
 	// Create line between name and scrolling text
@@ -147,7 +145,7 @@ function DisplayText(string text, Actor speakingActor)
 	newText = TextWindow(lowerConWindow.NewChild(Class'TextWindow'));
 	newText.SetTextAlignments( HALIGN_Left, VALIGN_Center);
 	newText.SetTextMargins(10, 5);
-	newText.SetFont(Font'FontMenuSmall_DS');
+	newText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	newText.SetText(text);
 
 	// Use a different color for the player's text
@@ -251,6 +249,6 @@ event StyleChanged()
 
 defaultproperties
 {
-     FontName=Font'DeusExUI.FontMenuHeaders_DS'
+     //FontName=Font'DeusExUI.FontMenuHeaders_DS'
      txtVertMargin=10
 }

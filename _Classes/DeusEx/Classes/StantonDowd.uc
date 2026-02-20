@@ -25,4 +25,5 @@ defaultproperties
      BindName="StantonDowd"
      FamiliarName="Stanton Dowd"
      UnfamiliarName="Stanton Dowd"
+     bRandomHeightAdjust=false
 }

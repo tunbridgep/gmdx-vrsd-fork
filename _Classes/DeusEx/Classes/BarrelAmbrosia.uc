@@ -5,6 +5,7 @@ class BarrelAmbrosia extends Containers;
 
 defaultproperties
 {
+     bSelectMeleeWeapon=False
      HitPoints=30
      bInvincible=True
      bFlammable=False

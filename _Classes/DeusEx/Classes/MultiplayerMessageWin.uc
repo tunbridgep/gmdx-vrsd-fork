@@ -108,7 +108,7 @@ function ShowKillerProfile( GC gc )
 	if ( kp.bValid )
 	{
       gc.SetTextColor( whiteColor );
-		gc.SetFont(Font'FontMenuSmall_DS');
+		gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 		y = kpStartY * height;
 		str = FinalBlowString $ kp.damage $ ToTheString $ kp.bodyLoc $ ".";
 		gc.GetTextExtent(0,w,h,str);
@@ -199,7 +199,7 @@ function ShowKillerProfile( GC gc )
 		else
 			y = ((by - oldy)*0.4) + oldy;
 		str = VSString;
-		gc.SetFont(Font'FontMenuTitle');
+		gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 		gc.SetTextColor( whiteColor );
 		gc.GetTextExtent( 0, w, h, str );
 		gc.DrawText( 0.5*width-w*0.5, y, w, h, str );
@@ -226,7 +226,7 @@ event DrawWindow(GC gc)
       {
          // Killed self
          gc.SetTextColor( RedColor );
-         gc.SetFont(Font'FontMenuExtraLarge');
+         gc.SetFont(player.FontManager.GetFont(TT_FontMenuExtraLarge));
          str = KilledYourselfString;
          gc.GetTextExtent( 0, w, h, str );
          gc.DrawText( (width*0.5) - (w*0.5), msgY * height, w, h, str );
@@ -235,7 +235,7 @@ event DrawWindow(GC gc)
       {
          // Unknown death
          gc.SetTextColor( RedColor );
-         gc.SetFont(Font'FontMenuExtraLarge');
+         gc.SetFont(player.FontManager.GetFont(TT_FontMenuExtraLarge));
          str = WereKilledString;
          gc.GetTextExtent( 0, w, h, str );
          gc.DrawText( (width*0.5) - (w*0.5), msgY * height, w, h, str );
@@ -244,7 +244,7 @@ event DrawWindow(GC gc)
       {
          // Killed by another
          gc.SetTextColor( RedColor );
-         gc.SetFont(Font'FontMenuExtraLarge');
+         gc.SetFont(player.FontManager.GetFont(TT_FontMenuExtraLarge));
          str = KilledByString $ 	killerName;
          gc.GetTextExtent( 0, w, h, str );
          cury = msgY * height;
@@ -257,7 +257,7 @@ event DrawWindow(GC gc)
 		if ( Player.Level.Timeseconds > lockoutTime )
 		{
 			gc.SetTextColor( whiteColor );
-			gc.SetFont(Font'FontMenuTitle');
+			gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 			gc.GetTextExtent( 0, w, h, FireToContinueMsg );
 			x = (width * 0.5) - (w * 0.5);
 			y = height * 0.88;
@@ -275,7 +275,7 @@ event DrawWindow(GC gc)
    else if ((bDisplayProgress))
    {
       gc.SetTextColor( BlueColor );
-      gc.SetFont(Font'FontMenuExtraLarge');
+      gc.SetFont(player.FontManager.GetFont(TT_FontMenuExtraLarge));
 
       str = Player.ProgressMessage[0];
       gc.GetTextExtent( 0, w, h, str );

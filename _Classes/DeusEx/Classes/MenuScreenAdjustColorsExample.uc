@@ -72,23 +72,23 @@ event DrawWindow(GC gc)
 
 	// Draw Text
 	gc.SetTextColor(colTitleText);
-	gc.SetFont(Font'FontMenuHeaders');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	gc.DrawText(23, 19, 90, 11, TitleBarLabel);
 
 	gc.SetTextColor(colHeaderText);
-	gc.SetFont(Font'FontMenuHeaders');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	gc.DrawText(27, 37, 90, 11, TextHeaderLabel);
 
 	gc.SetTextColor(colNormalText);
-	gc.SetFont(Font'FontMenuSmall');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	gc.DrawText(27, 56, 90, 11, TextNormalLabel);
 
 	gc.SetTextColor(colButtonTextNormal);
-	gc.SetFont(Font'FontMenuHeaders');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	gc.DrawText(28, 110, 54, 10, ButtonPressedLabel);
 
 	gc.SetTextColor(colButtonTextFocus);
-	gc.SetFont(Font'FontMenuHeaders');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	gc.DrawText(94, 110, 54, 10, ButtonNormalLabel);
 }
 

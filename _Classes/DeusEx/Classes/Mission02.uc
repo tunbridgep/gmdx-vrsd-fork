@@ -19,6 +19,7 @@ function FirstFrame()
     local CrateExplosiveSmall tnt;
     local BeamTrigger trig;
     local UnatcoTroop troop;
+    local Phone P;
 
 	Super.FirstFrame();
 
@@ -32,9 +33,22 @@ function FirstFrame()
             C.bNoDefaultPools=true;
         }
     }
+
+	if (localURL == "02_NYC_HOTEL")
+    {
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone');
+                P.Destroy();
+    }
 	else if (localURL == "02_NYC_STREET")
 	{
 		flags.SetBool('M02StreetLoaded', True,, 3);
+        
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone')
+                P.Destroy();
 
 		// if you went to the warehouse without finishing the streets,
 		// set some flags
@@ -130,17 +144,17 @@ function FirstFrame()
             //remove all the TNT Crates
             foreach AllActors(class'CrateExplosiveSmall', tnt)
             {
-                //Stop crash and let the player take 1 if they really, really want to (ugh...)
-                if (tnt == player.CarriedDecoration)
-                    continue;
                 tnt.DrawScale = 0.00001;
                 tnt.SetCollision(false,false,false);
                 tnt.SetCollisionSize(0,0);
             }
             
             //disable the tripwires
-            foreach AllActors(class'BeamTrigger', trig)
-                trig.Untrigger(player, player);
+            //foreach AllActors(class'BeamTrigger', trig)
+            //    trig.Untrigger(player, player);
+
+            //SARGE: Trigger the full takeover
+            TriggerUNATCOTakeover();
             
             flags.SetBool('GMDXRemoveTNT', True,, 3);
         }

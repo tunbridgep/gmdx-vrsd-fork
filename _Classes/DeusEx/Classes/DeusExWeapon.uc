@@ -221,7 +221,7 @@ var travel bool bIsCloaked;
 var travel bool bContactDeton; //CyberP: toggle contact detonation
 var vector RecoilShaker; //cosmetic shaking per shot, amount +/- added to dxplayers current as frand
 var int maxiAmmo;  //CyberP: for frobbing weapon pickups when we have max ammo
-var bool bInvisibleWhore; //CyberP: emulating the weapon movement if player near wall
+var bool bCachedNearWall; //CyberP: emulating the weapon movement if player near wall //SARGE: Lets rename this because it's name is meaningless otherwise
 var travel bool bSuperheated;  //unused
 var bool bCanHaveModShotTime;
 var bool bCanHaveModDamage;
@@ -368,6 +368,8 @@ var travel bool bHadLaser;
 var travel bool bHadScope;
 var travel bool bHadSilencer;
 
+var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
+
 //Used during the new "SwitchAttachment" state so we can change attachments during the animation
 var bool bSwitchingToLaser;
 var bool bSwitchingToSilencer;
@@ -382,6 +384,23 @@ enum EAddonPenaltyType
 };
 
 var const float addonPenalties[3];
+
+//SARGE: Blood on weapons
+var private travel bool bCoveredInBlood;
+
+struct BloodTex
+{
+    var string tex1;
+    var string tex2;
+};
+
+var travel BloodTex BloodTextures[7];
+
+//SARGE: No more checking for specific grenade types, now we just set this instead.
+var const bool bIsPlaceableOnWall;
+
+//SARGE: An annoying hack to fix GMDX's hacky GEP bullshit.
+var transient bool bDontActuallyRenderViewModel;
 
 //END GMDX:
 
@@ -407,6 +426,13 @@ replication
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
 }
+	
+
+function Frob(Actor Other, Inventory frobWith)
+{
+    bDontRemoveOnMissionComplete = false;
+    super.Frob(other, frobwith);
+}
 
 // ----------------------------------------------------------------------
 // GetMaxRange()
@@ -429,18 +455,38 @@ function float GetAccurateRange()
 }
 
 // ----------------------------------------------------------------------
-// GetDefaultFireSound()
+// GetFireSound()
 //
 // SARGE: Returns the default fire sound (standard or classic), based on the players options
+// SARGE: Now also handles all fire sound handling, since the previous implementation was buggy and broken.
 // ----------------------------------------------------------------------
-function Sound GetDefaultFireSound()
+function Sound GetFireSound(optional bool bSilenced)
 {
+    //No firing sound if we are firing projectiles, since they play the sound.
+    //SARGE: I wish this wasn't the case, what a hacky mess...
+    if (ProjectileClass != None && !IsA('WeaponFlamethrower'))
+        return None;
+
+    //First, do the special cases
     if (Ammo20mm(AmmoType) != None) //Hack for 20mm grenade launcher
         return Sound'AssaultGunFire20mm';
     else if ( AmmoRocketWP(AmmoType) != None )
         return Sound'GEPGunFireWP';
     else if ( AmmoRocket(AmmoType) != None )
         return Sound'GEPGunFire';
+
+
+    //Then do silenced
+    else if (bSilenced)
+    {
+        //SARGE: Very silly rat squeak silencers!
+        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
+            return Sound'RatSqueak2';
+        else
+            return default.FireSilentSound;
+    }
+
+    //Lastly, discern between regular and classic
     else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
         return default.FireSound;
     else
@@ -570,7 +616,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(owner,defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
+    intj = P.LootAmmo(owner,defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture,self.Class);
 
     if (intj > 0)
     {
@@ -864,7 +910,6 @@ function TravelPostAccept()
 		// since we can't "var travel class" (AmmoName and ProjectileClass)
 		if (AmmoType != None)
 		{
-			FireSound = None;
 			for (i=0; i<ArrayCount(AmmoNames); i++)
 			{
 				if (AmmoNames[i] == AmmoName)
@@ -1082,12 +1127,11 @@ function Texture GetGridTexture(Texture tex)
 
 simulated event RenderOverlays( canvas Canvas )
 {
-	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 	local bool bPlayerOwner;
 	local int Hand;
 	local DeusExPlayer PlayerOwner;
-    local int newPitch;
-    local vector dx, dy, dz;                                                    //RSD: Added
+    local Vector cachedDrawOffset;
+    local Rotator cachedRotation;
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
@@ -1146,36 +1190,74 @@ simulated event RenderOverlays( canvas Canvas )
 	}
 	else
 		bSetFlashTime = false;
+        
+    cachedDrawOffset = CalcDrawOffset();
+	if (PlayerOwner != none)
+    {
+        cachedRotation = PlayerOwner.GetCurrentViewRotation();
+        //RSD: Overhauled cloak/radar routines
+        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
+    }
+        
+    
+    PositionViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
 
-	SetLocation( Owner.Location + CalcDrawOffset() );
+    if (!bDontActuallyRenderViewModel)
+    {
+        Canvas.DrawActor(self, false);
+
+        if (activateAn && bHasScope)
+            DrawScopeAnimation();
+        else
+            activateAn = false;
+
+        DrawBloodyViewModel(canvas);
+
+        //Reset weapon to standard display
+        DisplayWeapon(false);
+    }
+}
+
+function DrawBloodyViewModel(Canvas canvas)
+{
+    //Draw blood effects
+    if (DeusExPlayer(Owner) != None && !Level.Game.bLowGore && !Level.Game.bVeryLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
+    {
+        Style = STY_Modulated;
+        ScaleGlow = 0.25;
+        bNoSmooth = false;
+        DisplayWeaponBlood(true);
+        canvas.DrawActor(self, false);
+        bNoSmooth = default.bNoSmooth;
+        Style = STY_Normal;
+        ScaleGlow = default.ScaleGlow;
+    }
+}
+
+//SARGE: Positions the viewmodel properly, ready for drawing.
+function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
+{
+    local int newPitch;
+    local vector dx, dy, dz;                                                    //RSD: Added
+	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
+
+	SetLocation( Owner.Location + drawOffset );
     NewRot = Pawn(Owner).ViewRotation;
 
-	if (PlayerOwner != none)
+    if (PlayerOwner != None)
     {
         //RSD: New adjustment to rotation without being pitch-dependent
         rfs.Yaw=addYaw;
         rfs.Pitch=addPitch;
         GetAxes(rfs,dx,dy,dz);
-        dx=dx>>PlayerOwner.GetCurrentViewRotation();
-        dy=dy>>PlayerOwner.GetCurrentViewRotation();
-        dz=dz>>PlayerOwner.GetCurrentViewRotation();
+        dx=dx>>rot;
+        dy=dy>>rot;
+        dz=dz>>rot;
         rfs=OrthoRotation(dx,dy,dz);
         NewRot = rfs;
-
-        //RSD: Overhauled cloak/radar routines
-        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
     }
-    
+
     setRotation(NewRot);
-    Canvas.DrawActor(self, false);
-
-    if (activateAn && bHasScope)
-        DrawScopeAnimation();
-    else
-        activateAn = false;
-
-    //Reset weapon to standard display
-    DisplayWeapon(false);
 }
 
 //
@@ -1696,8 +1778,8 @@ function PlaySelect()
      {
        if (IsA('WeaponNanoSword') && !bAlreadyQuickMelee)
        {
-             Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
-             AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
+            Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
        }
        if (ReloadCount > 0)
 			AmmoType.UseAmmo(1);
@@ -1743,8 +1825,6 @@ function PlaySelect()
      {
      if (player != none && player.AugmentationSystem != none)
      {
-        if (!NearWallCheck())
-           bInvisibleWhore=False;
         p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
         if (p < 1.0)
         {
@@ -2133,7 +2213,6 @@ function bool LoadAmmo(int ammoNum)
 				else
 					ReloadTime = Default.ReloadTime;
 				}
-				FireSound = None;		// handled by the projectile
 				ProjectileClass = ProjectileNames[ammoNum];
 				ProjectileSpeed = ProjectileClass.Default.Speed;
 			}
@@ -2150,26 +2229,10 @@ function bool LoadAmmo(int ammoNum)
 			{
 				SwitchModes();
 			}
-
+                
             //P.BroadcastMessage(ClipCount);
-
-			// AlexB had a new sound for 20mm but there's no mechanism for playing alternate sounds per ammo type
-			// Same for WP rocket
-			if ( Ammo20mm(newAmmo) != None )
-				{
-                    if (bHasSilencer)
-                        FireSilentSound=Sound'AssaultGunFire20mm';     //CyberP: if silenced also
-                }
-            /*else if ( Ammo20mmEMP(newAmmo) != None )
-				{
-                FireSound=Sound'MediumExplosion1';
-                if (bHasSilencer)
-                   FireSilentSound=Sound'MediumExplosion1';     //CyberP: if silenced also
-                }*/
             else if ( Ammo762mm(newAmmo) != None)
             {
-                if (bHasSilencer)    //CyberP: revert back to norm
-                   FireSilentSound=default.FireSilentSound;
             }
             /*else if ( AmmoPlasmaSuperheated(newAmmo) != None )
                 {
@@ -2676,6 +2739,8 @@ simulated function Tick(float deltaTime)
 		return;
 	}
 
+    bCachedNearWall = NearWallCheck();
+
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
     	if (ammoSelectClass == none)                                            //RSD: If no ammo type specified (as in WeaponChangeAmmo), simply cycle
@@ -2694,25 +2759,14 @@ simulated function Tick(float deltaTime)
 	//GMDX: ADD PROJECTILE TEST INFLIGHT
 	if ((player!=none)&&player.bGEPprojectileInflight)//(player.aGEPProjectile!=none)) //RSD: Changed so it still updates laser position
 		return;
-    //CyberP: moves held item back if facing & standing next to a wall
-   if (player != none && IsInState('Idle'))
-   {
-      if (NearWallCheck() && player.Physics != PHYS_Falling)
-      {
-         bInvisibleWhore=True;
-      }
-      else if (!NearWallCheck() && player.Physics != PHYS_Falling)
-      {
-         bInvisibleWhore=False;
-      }
-   }
-	// all this should only happen IF you have ammo loaded
+	
+    // all this should only happen IF you have ammo loaded
 	if (ClipCount > 0)
 	{
 		// check for LAM or other placed mine placement
-		if (bHandToHand && ProjectileClass != None && !Self.IsA('WeaponShuriken') && !Self.IsA('WeaponLAW') && !Self.IsA('WeaponHideAGun'))
+		if (bHandToHand && bIsPlaceableOnWall)
 		{
-			if (NearWallCheck())
+			if (bCachedNearWall)
 			{
 				if (( Level.NetMode != NM_Standalone ) && IsAnimating() && (AnimSequence == 'Select'))
 				{
@@ -3431,6 +3485,59 @@ function DisplayWeapon(bool overlay)
         else
             multiskins[i] = default.multiskins[i];
     }
+}
+
+//SARGE: NOTE: We're deliberately using the vanilla blood tex here,
+//not the new ones, because they look better.
+function private BloodTex GetRandomBloodTex()
+{
+    local float roll;
+    local BloodTex tex;
+
+    roll = fRand();
+
+    if (roll < 0.66)
+    {
+        tex.tex1 = "HDTPItems.Skins.HDTPFlatFXtex1";
+        tex.tex2 = "DeusExItems.Skins.FlatFXTex1";
+    }
+    else if (roll < 0.33)
+    {
+        tex.tex1 = "HDTPItems.Skins.HDTPFlatFXtex6";
+        tex.tex2 = "DeusExItems.Skins.FlatFXTex6";
+    }
+    else
+    {
+        tex.tex1 = "HDTPItems.Skins.HDTPFlatFXtex5";
+        tex.tex2 = "DeusExItems.Skins.FlatFXTex5";
+    }
+
+    return tex;
+}
+
+function SetCoveredInBlood(bool value)
+{
+    local int i;
+    if (bCoveredInBlood == value)
+        return;
+
+    //Repopulate the blood texture
+    bCoveredInBlood = value;
+    if (value)
+    {
+        for (i = 0;i < 7;i++)
+            BloodTextures[i] = GetRandomBloodTex();
+    }
+}
+
+//SARGE: Show blood on weapons
+function DisplayWeaponBlood(bool overlay)
+{
+    local int i;
+
+    for (i = 0;i < 8;i++)
+        if (multiskins[i] != Texture'PinkMaskTex' && (i != muzzleslot || bHasSilencer || !bHasMuzzleFlash))
+            multiskins[i] = class'HDTPLoader'.static.GetTexture2(BloodTextures[i].tex1,BloodTextures[i].tex2,IsHDTP());
 }
 
 simulated function EraseMuzzleFlashTexture()
@@ -4162,25 +4269,19 @@ simulated function PlayFiringSound()
 {
 	if (bHasSilencer)
     {
-        //SARGE: Very silly rat squeak silencers!
-        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
-            PlaySimSound(Sound'RatSqueak2', SLOT_None, TransientSoundVolume, 2048 );
-        else
-            PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+        PlaySimSound(GetFireSound(true), SLOT_None, TransientSoundVolume, 2048 );
     }
 	else
 	{
-        if (FireSound != None)
-            FireSound = GetDefaultFireSound();
 		// The sniper rifle sound is heard to it's range in multiplayer
 		if ( ( Level.NetMode != NM_Standalone ) &&  Self.IsA('WeaponRifle') )
 			PlaySimSound( FireSound, SLOT_Interface, TransientSoundVolume, class'WeaponRifle'.Default.mpMaxRange );
 		else if (IsA('WeaponRifle'))
-            PlaySimSound( FireSound, SLOT_None, TransientSoundVolume, class'WeaponRifle'.Default.MaxRange );
+            PlaySimSound(GetFireSound(), SLOT_None, TransientSoundVolume, class'WeaponRifle'.Default.MaxRange );
         else if ((bHandToHand || IsA('WeaponPlasmaRifle')) && Level.NetMode == NM_Standalone)
-            PlaySound( FireSound, SLOT_None, TransientSoundVolume, ,1024,0.95+(FRand()*0.1));
+            PlaySound(GetFireSound(), SLOT_None, TransientSoundVolume, ,1024,0.95+(FRand()*0.1));
         else
-			PlaySimSound( FireSound, SLOT_None, TransientSoundVolume, 3074 ); //CyberP: All weapons can now be heard by the player at further distances. Sniper especially so.
+			PlaySimSound(GetFireSound(), SLOT_None, TransientSoundVolume, 3074 ); //CyberP: All weapons can now be heard by the player at further distances. Sniper especially so.
 	}
 }
 
@@ -4727,9 +4828,9 @@ simulated function vector CalcDrawOffset()
 	}
 	else
 	{
-	    if (activateAn == False && !IsA('WeaponGEPGun'))
+	    if (activateAn == False && !IsA('WeaponGEPGun') && !bIsPlaceableOnWall)
 	    {
-		if (!bAimingDown && (bInvisibleWhore || bMantlingEffect))
+		if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && DeusExPlayer(Owner).bWeaponWallDetection && (bCachedNearWall || bMantlingEffect))
 	    {
 	       lerpAid -= 8.4;
 	       if (lerpAid < -100)
@@ -7081,6 +7182,11 @@ ignores Fire, AltFire;
 	}
 
 Begin:
+    
+    //On hardcore, drain ammo from the clip immediately, rather than letting players cancel reloading to keep their partial old clip.
+    if (!bDisposableWeapon && DeusExPlayer(Owner) != None && (DeusExPlayer(Owner).bHardCoreMode||DeusExPlayer(Owner).bNoPartialReloads) && !bPerShellReload)
+        ClipCount = 0;
+
 	FinishAnim();
 	/*if (!bLasing && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bHardcoreMode) //RSD: Reset accuracy when starting a reloading cycle on Hardcore mode
 	{
@@ -7147,6 +7253,9 @@ else
 
                     if (IsA('WeaponMiniCrossbow') && Owner.IsA('DeusExPlayer'))
                         Owner.PlaySound(sound'GMDXSFX.Weapons.PDxbowreload', SLOT_None,,, 1024); //RSD: New Xbow reload sound, play after waiting
+
+                    if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer'))
+                        Owner.PlaySound(Sound'GMDXSFX.Weapons.UMP45_BoltOpened1', SLOT_None,,, 1024); //SARGE: New GEP reload sound per rocket
                     ClipCount++;
                     //Owner.BroadcastMessage(ClipCount);                           //RSD: For testing
                     /*else if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer')) //RSD: need a new sound for rocket reloads
@@ -7668,7 +7777,7 @@ function DestroyMe()
 	player = DeusExPlayer(GetPlayerPawn());
         
     if (owner != None && owner.IsA('DeusExPlayer') && DeusExPlayer(owner).iShifterWeaponSwitch > 2 && bInObjectBelt)
-        DeusExPlayer(owner).ShifterSwitchAll(self,true);
+        DeusExPlayer(owner).ShifterSwitchAll(self,DeusExPlayer(owner).iShifterWeaponSwitch >= 4);
 
     player.RemoveObjectFromBelt(self);
     Destroy();

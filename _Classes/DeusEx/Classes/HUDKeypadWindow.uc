@@ -175,9 +175,9 @@ function DrawBorder(GC gc)
 
 function int TransposeNumber(int number)
 {
-    if (number < 3 && bNumberPadStyle)
+    if (number < 3 && bNumberPadStyle && !keypadOwner.bForcePhoneStyleKeypad)
         return 6 + number;
-    else if (number > 8 || number < 6 || !bNumberPadStyle)
+    else if (number > 8 || number < 6 || !bNumberPadStyle || keypadOwner.bForcePhoneStyleKeypad)
         return number;
     else
         return number - 6;
@@ -234,7 +234,7 @@ function CreateInputTextWindow()
 	winText.SetSize(75, 11);
 	winText.SetTextMargins(0, 0);
 	winText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-	winText.SetFont(Font'FontMenuSmall');
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winText.SetTextColor(colHeaderText);
 	winText.SetText(msgEnterCode);
 }

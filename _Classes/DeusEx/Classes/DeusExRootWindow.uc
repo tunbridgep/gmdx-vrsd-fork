@@ -67,10 +67,16 @@ var MarkerDisplayWindow markerDisplay;
 
 event InitWindow()
 {
+    local DeusExPlayer player;
+
 	Super.InitWindow();
 
 	// Initialize variables
 	winCount = 0;
+
+    //SARGE: Fix fonts
+    player = DeusExPlayer(GetPlayerPawn());
+    SetFont(player.FontManager.GetFont(TT_TechMedium));
 
 	actorDisplay = ActorDisplayWindow(NewChild(Class'ActorDisplayWindow'));
 	actorDisplay.SetWindowAlignments(HALIGN_Full, VALIGN_Full);
@@ -389,13 +395,24 @@ function ShowHud(bool bShow)
 
 function UpdateHud()
 {
+    local Canvas c;
+    local DeusExPlayer player;
+    player = DeusExPlayer(parentPawn);
+
 	if (hud != None)
     {
         hud.RecreateBelt();
 		hud.UpdateAssigned();
-		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
+		hud.UpdateSettings(player, WindowStackCount() != 0);
         hud.RefreshActiveAugs();
         hud.frobDisplay.bForceRefreshOutlineColour = true;
+    } 
+
+    //SARGE: Also update the canvas font
+    if (player != None && player.FontManager != None)
+    {
+        foreach player.AllObjects(class'Canvas',c)
+            c.MedFont = player.FontManager.GetFont(TT_MedFont);
     }
 }
 
@@ -412,6 +429,12 @@ function UpdateCrosshair()
 		hud.UpdateCrosshair(DeusExPlayer(parentPawn));
         hud.frobDisplay.bForceRefreshOutlineColour = true;
     }
+}
+
+function UpdateGoalsWindow()
+{
+	if (hud != None)
+		hud.UpdateGoalsWindow(DeusExPlayer(parentPawn));
 }
 
 // ----------------------------------------------------------------------
@@ -539,12 +562,13 @@ function MenuUIMessageBoxWindow MessageBox
 	String msgText,
 	int msgBoxMode,
 	bool hideCurrentScreen,
-	Window winParent
+	Window winParent,
+    optional bool bNoPause
 	)
 {
 	local MenuUIMessageBoxWindow msgBox;
 
-	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen ));
+	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen, bNoPause ));
 	msgBox.SetTitle(msgTitle);
 	msgBox.SetMessageText(msgText);
 	msgBox.SetMode(msgBoxMode);
@@ -655,6 +679,8 @@ function DeusExBaseWindow InvokeUIScreen(
                  hud.startDisplay.SetVisibility(false);                         //RSD: Also hide the mission start display
              if (hud.receivedItems != none)
                  hud.receivedItems.SetVisibility(false);                        //RSD: Also hide the loot window
+             if (hud.goalsWindow != none)
+                 hud.goalsWindow.SetVisibility(false);                             //SARGE: Also hide the goals window
         }
 
 

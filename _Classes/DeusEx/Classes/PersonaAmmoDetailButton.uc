@@ -84,7 +84,7 @@ event DrawWindow(GC gc)
 	// Draw the item name
 	descStr = ammo.Default.beltDescription;
 
-	gc.SetFont(Font'FontTiny');
+	gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 	gc.GetTextExtent(0, strWidth, strHeight, descStr);
 

@@ -261,7 +261,7 @@ function TileWindow CreateTileWindow(Window parent)
 
 	// Create Tile Window inside the scroll window
 	tileWindow = TileWindow(parent.NewChild(Class'TileWindow'));
-	tileWindow.SetFont(Font'FontMenuSmall');
+	tileWindow.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	tileWindow.SetOrder(ORDER_Down);
 	tileWindow.SetChildAlignments(HALIGN_Full, VALIGN_Top);
 	tileWindow.MakeWidthsEqual(False);

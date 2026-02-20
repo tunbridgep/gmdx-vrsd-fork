@@ -24,19 +24,19 @@ event InitWindow()
 	// Defaults for tile window
 	SetChildVAlignment(VALIGN_Top);
 
+	// Get a pointer to the player
+	player = DeusExPlayer(GetPlayerPawn());
+
 	winName = TextWindow(NewChild(Class'TextWindow'));
-	winName.SetFont(Font'FontMenuHeaders_DS');
+	winName.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders_DS));
 	winName.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winName.SetTextMargins(0, 0);
 
 	winBark = TextWindow(NewChild(Class'TextWindow'));
 	winBark.SetTextAlignments(HALIGN_Left, VALIGN_Top);
-	winBark.SetFont(Font'FontMenuSmall_DS');
+	winBark.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winBark.SetTextMargins(0, 1);
 	winBark.SetWordWrap(True);
-
-	// Get a pointer to the player
-	player = DeusExPlayer(GetPlayerPawn());
 
 	StyleChanged();
 }

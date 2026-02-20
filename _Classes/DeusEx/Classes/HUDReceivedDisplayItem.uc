@@ -10,7 +10,6 @@ var TextWindow winLabel;
 
 var Color colText;
 var Color colDecline;
-var Font fontLabel;
 
 var Texture itemIcon;
 var int itemQuantity;           //SARGE: Number added in brackets after the label.
@@ -56,7 +55,7 @@ function SetItemIcon(Texture icon, coerce string label, optional int quantity, o
 	winIcon.SetBackground(itemIcon);
 
 	winLabel = TextWindow(NewChild(Class'TextWindow'));
-	winLabel.SetFont(fontLabel);
+	winLabel.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winLabel.SetTextColor(colText);
 	winLabel.SetTextAlignments(HALIGN_Center, VALIGN_Top);
     
@@ -106,6 +105,5 @@ function Update()
 
 defaultproperties
 {
-     fontLabel=Font'DeusExUI.FontMenuSmall_DS'
      msgDeclined="-"
 }

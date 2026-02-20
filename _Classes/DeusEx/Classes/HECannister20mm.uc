@@ -13,7 +13,7 @@ function PostBeginPlay()
 	if (Level.NetMode == NM_DedicatedServer)
 		return;
 
-	//SpawnSmokeEffects();
+	SpawnSmokeEffects();
 }
 
 simulated function PostNetBeginPlay()
@@ -90,6 +90,6 @@ defaultproperties
      SpawnSound=Sound'DeusExSounds.Generic.SmallExplosion1'
      ImpactSound=Sound'DeusExSounds.Generic.MediumExplosion2'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Mesh=LodMesh'DeusExItems.ShellCasing'
+     Mesh=LodMesh'DeusExItems.HECannister20mm'
      DrawScale=2.400000
 }

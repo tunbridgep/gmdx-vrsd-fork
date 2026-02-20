@@ -84,11 +84,11 @@ event InitWindow()
 
 	SetSelectability(false);
 
-	SetSize(51, 54);
-	SetFont(Font'DeusExUI.FontTiny');
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+	SetSize(51, 54);
+	SetFont(player.FontManager.GetFont(TT_FontTiny));
 
 	// Position where we'll be drawing the item-dependent text
 	itemTextPosY = slotFillHeight - 8 + slotIconY;
@@ -272,7 +272,7 @@ event DrawWindow(GC gc)
 	}
 
 	// Don't draw any of this if we're dragging
-	if ( ( item != None || ( player != None && player.GetPlaceholder(objectNum) ) ) && !bDragging)
+	if ( ( item != None || ( player != None && player.IsPlaceholder(objectNum) ) ) && !bDragging)
 	{
 		// Draw the icon
 		DrawHUDIcon(gc);
@@ -363,7 +363,7 @@ function DrawHUDIcon(GC gc)
 
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
-		if (bDimIcon || player.GetPlaceholder(objectNum))	                                        //RSD: Can now dim icons
+		if (bDimIcon || player.IsPlaceholder(objectNum))	                                        //RSD: Can now dim icons
 		{
 			gc.SetTileColorRGB(64,64,64);
 		}

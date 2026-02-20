@@ -38852,6 +38852,7 @@ Begin Actor Class=RetinalScanner Name=RetinalScanner0
     Name=RetinalScanner0
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop4
+    bInWorld=false
     Orders=Standing
     bReactLoudNoise=False
     bReactShot=False
@@ -80611,6 +80612,7 @@ Begin Actor Class=SavePoint Name=SavePoint2
     Name=SavePoint2
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop10
+    bInWorld=false
     Orders=Sitting
     HomeExtent=100.000000
     bReactLoudNoise=False

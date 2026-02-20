@@ -29,8 +29,6 @@ var Float        speedAdjustment;
 var Int          blankLineHeight;
 var Int          maxTileWidth;
 var Int          maxTextWidth;
-var Font         fontHeader;
-var Font         fontText;
 var Color        colHeader;
 var Color        colText;
 
@@ -214,7 +212,7 @@ function PrintHeader(String headerText)
 	winText.SetWidth(maxTextWidth);
 	winText.SetText(headerText);
 	winText.SetTextColor(colHeader);
-	winText.SetFont(fontHeader);
+	winText.SetFont(player.FontManager.GetFont(TT_FontConversationLargeBold));
 	winText.SetTextMargins(0, 0);
 	winText.SetTextAlignments(HALIGN_Center, VALIGN_Top);
 }
@@ -231,7 +229,7 @@ function PrintText(String itemText, optional bool bLeftJustify)
 	winText.SetWidth(maxTextWidth);
 	winText.SetText(itemText);
 	winText.SetTextColor(colText);
-	winText.SetFont(fontText);
+	winText.SetFont(player.FontManager.GetFont(TT_FontConversationLarge));
 	winText.SetTextMargins(0, 0);
 
 	if (bLeftJustify)
@@ -255,7 +253,7 @@ function PrintAlignText(String itemLabel, String itemText)
 	winAlign.SetWidth(maxTextWidth);
 
 	winText = TextWindow(winAlign.NewChild(Class'TextWindow'));
-	winText.SetFont(fontText);
+	winText.SetFont(player.FontManager.GetFont(TT_FontConversationLarge));
 	winText.SetTextColor(colText);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winText.SetTextMargins(0, 0);
@@ -263,7 +261,7 @@ function PrintAlignText(String itemLabel, String itemText)
 
 	winText = TextWindow(winAlign.NewChild(Class'TextWindow'));
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
-	winText.SetFont(fontText);
+	winText.SetFont(player.FontManager.GetFont(TT_FontConversationLarge));
 	winText.SetTextColor(colText);
 	winText.SetTextMargins(0, 0);
 	winText.SetWordWrap(True);
@@ -520,8 +518,6 @@ defaultproperties
      blankLineHeight=15
      maxTileWidth=600
      maxTextWidth=550
-     fontHeader=Font'DeusExUI.FontConversationLargeBold'
-     fontText=Font'DeusExUI.FontConversationLarge'
      colHeader=(R=255,G=255,B=255)
      colText=(R=200,G=200,B=200)
      ScreenType=ST_Credits

@@ -128,6 +128,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex3.pcx"			NAME="LeafTex3"			GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Skins\trashtex1.pcx"		    NAME="TrashTex1"	    GROUP="Skins"
 
+//Better alternate skin for HK Soy Food
+#exec TEXTURE IMPORT FILE="Textures\Skins\SoyFoodTex2.pcx"	        NAME="SoyFoodTex2"              GROUP="Skins"
+
 // Random textures imported from HDTP, so that certain maps will actually work
 //#exec TEXTURE IMPORT FILE="Textures\Environment\DrainTex.pcx"			    NAME="DrainTex"			    GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Environment\DirtyToiletWaterTex.pcx"	NAME="DirtyToiletWaterTex"	GROUP="Environment"
@@ -147,6 +150,34 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\LargeIconAmmoDartsTaser.pcx"	NAME="LargeIconAmmoDartsTaser"  GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\BeltIconAmmoDartsTaser.pcx"	    NAME="BeltIconAmmoDartsTaser"   GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\ChargedIconArmorAdaptive.pcx"	NAME="ChargedIconArmorAdaptive" GROUP="Icons"
+
+//New belt icons for multiskinned food and drink items
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconBeerBottleTex2.pcx"	    NAME="BeltIconLiquor40ozTex2"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconBeerBottleTex3.pcx"	    NAME="BeltIconLiquor40ozTex3"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconBeerBottleTex4.pcx"	    NAME="BeltIconLiquor40ozTex4"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconCandyBarTex2.pcx"	        NAME="BeltIconCandyBarTex2" 	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconCigarettesTex2.pcx"	    NAME="BeltIconCigarettesTex2"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconCigarettesTex3.pcx"	    NAME="BeltIconCigarettesTex3"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconCigarettesTex4.pcx"	    NAME="BeltIconCigarettesTex4"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconSodaCanCloseTex1.pcx"	NAME="BeltIconSodaCanTex1"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconSodaCanCloseTex2.pcx"	NAME="BeltIconSodaCanTex2"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconSodaCanCloseTex3.pcx"	NAME="BeltIconSodaCanTex3"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconSodaCanCloseTex4.pcx"	NAME="BeltIconSodaCanTex4"	GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\BeltIconSoyFoodTex2.pcx"	    NAME="BeltIconSoyFoodTex2"  GROUP="Icons"
+
+//New inventory icons for multiskinned food and drink items
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconBeerBottleTex2.pcx"    NAME="LargeIconLiquor40ozTex2"	 GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconBeerBottleTex3.pcx"    NAME="LargeIconLiquor40ozTex3"	 GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconBeerBottleTex4.pcx"    NAME="LargeIconLiquor40ozTex4"	 GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconCandyBarTex2.pcx"	    NAME="LargeIconCandyBarTex2" 	 GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconCigarettesTex2.pcx"	NAME="LargeIconCigarettesTex2"	 GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconCigarettesTex3.pcx"	NAME="LargeIconCigarettesTex3"	 GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconCigarettesTex4.pcx"	NAME="LargeIconCigarettesTex4"	 GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconSodaCanCloseTex1.pcx"	NAME="LargeIconSodaCanTex1" GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconSodaCanCloseTex2.pcx"	NAME="LargeIconSodaCanTex2" GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconSodaCanCloseTex3.pcx"	NAME="LargeIconSodaCanTex3" GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconSodaCanCloseTex4.pcx"	NAME="LargeIconSodaCanTex4" GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\Skins\LargeIconSoyFoodTex2.pcx"	    NAME="LargeIconSoyFoodTex2"	     GROUP="Icons"
 
 //Bloody Shuriken
 #exec TEXTURE IMPORT FILE="Textures\BeltIconShurikenBloody.pcx"	    NAME="BeltIconShurikenBloody"   GROUP="Icons"   FLAGS=2
@@ -277,6 +308,13 @@ class All expands Object
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke010.pcx" NAME="ef_PoisonSmoke010" GROUP="Skins"
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke011.pcx" NAME="ef_PoisonSmoke011" GROUP="Skins"
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke012.pcx" NAME="ef_PoisonSmoke012" GROUP="Skins"
+
+//New blood textures
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex1.pcx" NAME="FlatFXTex1" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex2.pcx" NAME="FlatFXTex2" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex3.pcx" NAME="FlatFXTex3" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex5.pcx" NAME="FlatFXTex5" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex6.pcx" NAME="FlatFXTex6" GROUP="Blood"
 
 defaultproperties
 {

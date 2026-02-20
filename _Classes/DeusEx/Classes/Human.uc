@@ -968,7 +968,6 @@ State Mantling
       RecoilEffectTick(deltaTime);
       Bleed(deltaTime);
   	  //HighlightCenterObject();
-      UpdateDynamicMusic(deltaTime);
   	  UpdateWarrenEMPField(deltaTime);
   	  UpdatePoison(DeltaTime);
 	  //MultiplayerTick(deltaTime);

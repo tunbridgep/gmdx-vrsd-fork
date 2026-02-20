@@ -528,11 +528,26 @@ var float fSubAwarenessModTime;                //SARGE: How long until sub-aware
 //SARGE: Add new awareness for guns being pointed at them
 var(GMDX) bool bReactGunPointed;
 
+//SARGE: Variable height NPCs
+//NPCs will be slightly taller or shorter (+-5%) for variance and to make headshots a bit harder
+var(GMDX) const bool bRandomHeightAdjust;
+var travel float fHeightMod;
+var travel bool bSetupVariableHeightActor;
+
+//SARGE: Enum used for the swoocy bullshit that we have to do for our IsValidEnemy override.
+enum EAllianceCheckType
+{
+    AL_Undefined,
+    AL_False,
+    AL_True,
+};
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
     var Texture textures[9];
     var bool bRandomized;
+    var bool bUnique;
 };
 
 var travel AugmentiqueOutfitData augmentiqueData;
@@ -541,12 +556,21 @@ var travel AugmentiqueOutfitData augmentiqueData;
 function ApplyCurrentOutfit()
 {
     local int i;
-
-    if (!augmentiqueData.bRandomized)
-        return;
     
     //GMDX Exclusive code
     if (IsHDTP())
+        return;
+
+    //Reset Skin
+	for (i=0; i<8; i++)
+    {
+        if (augmentiqueData.textures[i] != None)
+            MultiSkins[i] = Default.MultiSkins[i];
+    }
+    if (augmentiqueData.textures[8] != None)
+        Texture = default.Texture;
+
+    if (!augmentiqueData.bRandomized)
         return;
 
     for (i = 0;i < 8;i++)
@@ -564,6 +588,54 @@ native(2107) final function EAllianceType GetPawnAllianceType(Pawn QueryPawn);
 
 native(2108) final function bool HaveSeenCarcass(Name CarcassName);
 native(2109) final function AddCarcass(Name CarcassName);
+
+// ----------------------------------------------------------------------
+// IsActuallyValidEnemy()
+// SARGE: A better version of IsValidEnemy that returns false for Disabled robots/cameras etc.
+// SARGE: Native code is fucking *weird* and doesn't work properly with optionals.
+// My guess is that it assumes uninitialised optional bools are TRUE
+// So we need to do some swoocy fucked up shit to make it work. In this case, we will use an enum instead of a bool,
+// which will specify using the undefined value by default, but also having true and false values.
+// This is fucking stupid and Tim Sweeney is a hack.
+// ----------------------------------------------------------------------
+
+function bool IsActuallyValidEnemy(Pawn TestEnemy, optional EAllianceCheckType checkAlliance)
+{
+    local Robot R;
+
+    R = Robot(TestEnemy);
+
+    if (R != None && R.EMPHitPoints == 0)
+        return false;
+
+    if (checkAlliance == AL_Undefined)
+        return IsValidEnemy(TestEnemy);
+
+    return IsValidEnemy(TestEnemy,checkAlliance == AL_True);
+}
+
+// ----------------------------------------------------------------------
+// SetupRandomHeight()
+// Gives the pawn a random height (within 10% of it's default height)
+// ----------------------------------------------------------------------
+
+function SetupRandomHeight(float fNewHeightMod)
+{
+    //Log("SetupRandomHeight" $ fNewHeightMod @ class.Name);
+
+    if (!bRandomHeightAdjust || bSetupVariableHeightActor || fNewHeightMod < - 0.9 || fNewHeightMod > 1.1)
+        return;
+
+    //Don't allow special characters to be height adjusted
+    if (BindName != string(class.Name) || bImportant)
+        return;
+
+    fHeightMod = fNewHeightMod;
+    bSetupVariableHeightActor = true;
+	if (!bSitting && !bCrouching)
+        ResetBasedPawnSize();
+}
+
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -980,7 +1052,7 @@ function bool AddInitialInventory(class<Inventory> newInventory,
 function bool SetEnemy(Pawn newEnemy, optional float newSeenTime,
 					   optional bool bForce)
 {
-	if (bForce || IsValidEnemy(newEnemy))
+	if (bForce || IsActuallyValidEnemy(newEnemy))
 	{
 		if (newEnemy != Enemy)
 			EnemyTimer = 0;
@@ -1565,6 +1637,10 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 		PrePivot        -= centerDelta;
 		DesiredPrePivot -= centerDelta;
 		BaseEyeHeight   = newHeight - deltaEyeHeight;
+        //SARGE: We need to scale the drawscale based on the new height, since it can be
+        //otherwise wrong when making character taller/shorter
+        if (bSetupVariableHeightActor && DrawScale == default.DrawScale)
+            DrawScale = default.DrawScale * fHeightMod;
 	}
 
 	return (bSuccess);
@@ -1587,7 +1663,10 @@ function ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
-	return (Default.CollisionHeight-4.5);
+    if (bSetupVariableHeightActor)
+        return (Default.CollisionHeight-4.5) * fHeightMod;
+    else
+        return (Default.CollisionHeight-4.5);
 }
 
 
@@ -1787,7 +1866,7 @@ function HandleSighting(Pawn pawnSighted)
     //rather than standing around waiting to be headshotted.
     player = DeusExPlayer(pawnSighted);
     
-    if (IsValidEnemy(pawnSighted) && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
+    if (IsActuallyValidEnemy(pawnSighted) && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
     {
         //player.DebugMessage("High Alert!");
         SetEnemy(player);
@@ -2206,11 +2285,11 @@ function Pawn CheckCycle()
 		if (EnemyReadiness >= 1.0)
 		{
 			EnemyReadiness = 1.0;
-			if (IsValidEnemy(CycleCandidate))
+			if (IsActuallyValidEnemy(CycleCandidate))
 				cycleEnemy = CycleCandidate;
 		}
 		else if (EnemyReadiness >= SightPercentage)
-			if (IsValidEnemy(CycleCandidate))
+			if (IsActuallyValidEnemy(CycleCandidate))
 				HandleSighting(CycleCandidate);
 	}
 	CycleCumulative = 0;
@@ -2274,7 +2353,7 @@ function bool CheckEnemyPresence(float deltaSeconds,
 			lastCycle    = CycleIndex;
 			foreach CycleActors(Class'Pawn', candidate, CycleIndex)
 			{
-				bValidEnemy = IsValidEnemy(candidate);
+				bValidEnemy = IsActuallyValidEnemy(candidate);
 				if (!bValidEnemy && (PotentialEnemyTimer > 0))
 					if (PotentialEnemyAlliance == candidate.Alliance)
 						bPotentialEnemy = true;
@@ -2319,7 +2398,7 @@ function bool CheckEnemyPresence(float deltaSeconds,
 								IncreaseAgitation(candidate, 1.0);
 								PotentialEnemyAlliance = '';
 								PotentialEnemyTimer    = 0;
-								bValidEnemy = IsValidEnemy(candidate);
+								bValidEnemy = IsActuallyValidEnemy(candidate);
 							}
 							if (bValidEnemy)
 							{
@@ -2394,7 +2473,7 @@ function bool CheckBeamPresence(float deltaSeconds)
 		{
 			bReactToBeamGlobal = false;
 			bReactFlareBeam = false;
-			if (IsValidEnemy(player))
+			if (IsActuallyValidEnemy(player))
 			{
 				foreach RadiusActors(Class'Beam', beamActor, 1200)
 				{
@@ -2531,7 +2610,7 @@ function bool CheckCarcassPresence(float deltaSeconds)
 					if (bFearCarcass)
 						IncreaseFear(killer, 2.0);
 
-					if (bFearCarcass && IsFearful() && !IsValidEnemy(killer))
+					if (bFearCarcass && IsFearful() && !IsActuallyValidEnemy(killer))
 					{
 						SetDistressTimer();
 						SetEnemy(killer, , true);
@@ -4012,7 +4091,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	local EHitLocation hitPos;
 	local float        shieldMult;
 	local DeusExPlayer player;   //CyberP: for screenflash if near gibs
-    local float dist;            //CyberP: for screenflash if near gibs
     local GMDXImpactSpark AST;
     local FleshFragmentSmall ffs;
     local int i;
@@ -4040,6 +4118,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	// Block certain damage types; perform special ops on others
 	if (!FilterDamageType(instigatedBy, hitLocation, offset, damageType))
 		return;
+        
+    player = DeusExPlayer(GetPlayerPawn());
 
 	// Impart momentum
 	ImpartMomentum(momentum, instigatedBy);
@@ -4136,6 +4216,10 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
              AST.SoundPitch=64;
 		  }
     }
+    
+    //Cover the players weapon in blood
+    if (bCanBleed && player != None)
+        player.DoBloodEffect(actualDamage,damageType,Location,false);
 
 	if (Health <= 0)
 	{
@@ -4152,8 +4236,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     }
     if (!bSitting && bFlyer && !IsA('Robot') && !IsA('Animal'))
     {
-    player = DeusExPlayer(GetPlayerPawn());
-    if (DamageType == 'Shot' && (Damage >= 25 || (player.inHand != None && player.inHand.IsA('WeaponAssaultShotgun')) ||
+    if (player != None && DamageType == 'Shot' && (Damage >= 25 || (player.inHand != None && player.inHand.IsA('WeaponAssaultShotgun')) ||
      (player.inHand != None && player.inHand.IsA('WeaponSawedOffShotgun')))) //CyberP: meh
     {
     PlaySound(Sound'GMDXSFX.Generic.BloodSpray',SLOT_None,1.5,,1024);
@@ -4185,12 +4268,9 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             PopHead();
             if (player!=none)
             {
-                dist = Abs(VSize(player.Location - Location));
-                if (dist < 160)
-                {
-                    player.ClientFlash(14, vect(160,0,0));
-                    player.bloodTime = 4.000000;
-                }
+                //Cover the players weapon in blood
+                if (bCanBleed && player != None)
+                    player.DoBloodEffect(actualDamage,damageType,Location,true);
             }
             for(i=0;i<18;i++)
             {
@@ -4224,12 +4304,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             player = DeusExPlayer(GetPlayerPawn()); //CyberP: for screenflash if near gibs
             if (player != none && CollisionHeight > 10)
             {
-   		    dist = Abs(VSize(player.Location - Location));
-   		    if (dist < 192)
-   		     {
-                player.ClientFlash(14, vect(180,0,0));
-                player.bloodTime = 5.000000;
-             }
+                //Cover the players weapon in blood
+                player.DoBloodEffect(Damage,damageType,Location,true);
             }
             }
 		else
@@ -6404,7 +6480,7 @@ function bool CanConverseWithPlayer(DeusExPlayer dxPlayer)
 
 	if (GetPawnAllianceType(dxPlayer) == ALLIANCE_Hostile)
 		return false;
-	else if ((GetStateName() == 'Fleeing') && (Enemy != dxPlayer) && (IsValidEnemy(Enemy, false)))  // hack
+	else if ((GetStateName() == 'Fleeing') && (Enemy != dxPlayer) && (IsActuallyValidEnemy(Enemy, AL_False)))  // hack
 		return false;
 	else if (GetCarcassData(dxPlayer, alliance1, alliance2, carcname))
 		return false;
@@ -6452,7 +6528,7 @@ function float LoudNoiseScore(actor receiver, actor sender, float score)
 		pawnSender = sender.Instigator;
 	if (pawnSender == None)
 		score = 0;
-	else if (!IsValidEnemy(pawnSender))
+	else if (!IsActuallyValidEnemy(pawnSender))
 		score = 0;
 
 	return score;
@@ -6475,7 +6551,7 @@ function float WeaponDrawnScore(actor receiver, actor sender, float score)
 		pawnSender = sender.Instigator;
 	if (pawnSender == None)
 		score = 0;
-	else if (IsValidEnemy(pawnSender))
+	else if (IsActuallyValidEnemy(pawnSender))
 		score = 0;
 
 	return score;
@@ -6720,7 +6796,7 @@ function HandleWeapon(Name event, EAIEventState state, XAIParams params)
 
 			// Let presence checking handle enemy sighting
 
-			if (!IsValidEnemy(pawnActor))
+			if (!IsActuallyValidEnemy(pawnActor))
 			{
 				if (bFearWeapon && IsFearful())
 				{
@@ -6745,10 +6821,23 @@ function HandleShot(Name event, EAIEventState state, XAIParams params)
 	// React, Fear, Hate
 
 	local Pawn pawnActor;
+    local DeusExZoneInfo info;
 
 	if (state == EAISTATE_Begin || state == EAISTATE_Pulse)
 	{
 		pawnActor = InstigatorToPawn(params.bestActor);
+
+        //SARGE: Only react to shots in the same zone, if the zone doesn't allow propogation.
+        if (DeusExPlayer(pawnActor) != None && pawnActor.Region.Zone != Region.Zone)
+        {
+            info = DeusExPlayer(pawnActor).GetZoneInfo();
+            if (info != None && info.bSilentWeaponZone)
+            {
+                DeusExPlayer(pawnActor).DebugMessage(Self @ "HandleShot: Zone Difference, not reacting");
+                return;
+            }
+        }
+
 		if (pawnActor != None)
 		{
 			if (bHateShot)
@@ -6817,7 +6906,7 @@ function NoiseHandler(Actor source)
         if (instigator != None)
         {
             //DeusExPlayer(source).DebugMessage("NoiseHandler: " $ instigator);
-            if (IsValidEnemy(instigator))
+            if (IsActuallyValidEnemy(instigator))
             {
                 //DeusExPlayer(GetPlayerPawn()).DebugMessage("Aw2");
                 SetSeekLocation(instigator, source.Location, SEEKTYPE_Sound);
@@ -6875,7 +6964,7 @@ function HandleGenericNoise(Name event, EAIEventState state, XAIParams params)
 				instigator = bestActor.Instigator;
 			if (instigator != None)
 			{
-//				if (IsValidEnemy(instigator))
+//				if (IsActuallyValidEnemy(instigator))
 //				{
 					SetSeekLocation(instigator, bestActor.Location, SEEKTYPE_Sound);
 					if (Enemy == None)
@@ -6968,7 +7057,7 @@ function HandleAlarm(Name event, EAIEventState state, XAIParams params)
 		//{
 			//if (alarmInstigator.Health > 0)
 			//{
-				//if (IsValidEnemy(alarmInstigator))
+				//if (IsActuallyValidEnemy(alarmInstigator))
 				//{
 				    //BroadcastMessage("Heard Alarm");
 				    if (enemy == None && (IsA('HumanMilitary') || IsA('HumanThug') || IsA('Robot')))
@@ -8123,7 +8212,7 @@ function CheckEnemyParams(Pawn checkPawn,
 	local int          threatLevel;
 	local bool         bValid;
 
-	bValid = IsValidEnemy(checkPawn);
+	bValid = IsActuallyValidEnemy(checkPawn);
 	if (bValid && (Enemy != checkPawn))
 	{
 		// Honor cloaking, radar transparency, and other augs if this guy isn't our current enemy
@@ -12194,7 +12283,7 @@ State Seeking
 					instigator = bestActor.Instigator;
 				if (instigator != None)
 				{
-					if (IsValidEnemy(instigator))
+					if (IsActuallyValidEnemy(instigator))
 					{
 						SetSeekLocation(instigator, bestActor.Location, SEEKTYPE_Sound);
 						destLoc = LastSeenPos;
@@ -12238,7 +12327,7 @@ State Seeking
 
 	function HandleSighting(Pawn pawnSighted)
 	{
-		if ((EnemyLastSeen > 2.0) && IsValidEnemy(pawnSighted))
+		if ((EnemyLastSeen > 2.0) && IsActuallyValidEnemy(pawnSighted))
 		{
 		    if (bReactFlareBeam)
                 SetSeekLocation(pawnSighted, pawnSighted.Location + VRand() * 3200, SEEKTYPE_Sight);
@@ -12965,7 +13054,7 @@ State Fleeing
 	function Tick(float deltaSeconds)
 	{
 		UpdateActorVisibility(Enemy, deltaSeconds, 0.0, false);
-		if (IsValidEnemy(Enemy))
+		if (IsActuallyValidEnemy(Enemy))
 		{
 			if (EnemyLastSeen > FearSustainTime)
 				FinishFleeing();
@@ -12985,7 +13074,7 @@ State Fleeing
                }
             }
 		}
-		else if (!IsValidEnemy(Enemy, false))
+		else if (!IsActuallyValidEnemy(Enemy, AL_False))
 			FinishFleeing();
 		else if (!IsFearful())
 			FinishFleeing();
@@ -13717,9 +13806,9 @@ State Attacking
 		oldEnemy = enemy;
 
 		bAllianceSwitch = false;
-		if (!IsValidEnemy(enemy))
+		if (!IsActuallyValidEnemy(enemy))
 		{
-			if (IsValidEnemy(enemy, false))
+			if (IsActuallyValidEnemy(enemy, AL_False))
 				bAllianceSwitch = true;
 			SetEnemy(None, 0, true);
 		}
@@ -16170,7 +16259,7 @@ Run:
 	Goto('Run');
 
 Done:
-	if (IsValidEnemy(Enemy))
+	if (IsActuallyValidEnemy(Enemy))
 		HandleEnemy();
 	else
 		FollowOrders();

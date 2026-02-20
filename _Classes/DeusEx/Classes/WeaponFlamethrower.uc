@@ -36,11 +36,32 @@ function PostBeginPlay()
     FireOffset=vect(30,9,4);
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[2] = Texture'PinkMaskTex';
+    else
+        multiskins[1] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
 	if (overlay)
 		multiskins[0] = handsTex;
+
+    if (clipcount == 0 || Owner == None)
+    {
+        if (IsHDTP())
+            multiskins[2] = texture'PinkMaskTex';
+        else
+            multiskins[1] = texture'PinkMaskTex';
+    }
 }
 
 exec function UpdateHDTPsettings()
@@ -121,8 +142,18 @@ state Idle
 	function BeginState()
 	{
 		Super.BeginState();
-        LightType = LT_Steady;
+        if (clipCount > 0 && Owner != None)
+            LightType = LT_Steady;
+        else
+            LightType = LT_None;
 	}
+}
+
+function DropFrom(vector StartLocation)
+{
+    super.DropFrom(StartLocation);
+    if (Owner == None)
+        LightType = LT_None;
 }
 
 defaultproperties

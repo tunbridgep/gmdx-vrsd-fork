@@ -11,7 +11,6 @@ var Color colHighlight;
 var Color colCursor;
 var Color colBlack;
 
-var Font  fontText;
 var Int   maxHeight;
 
 // Optional filter string
@@ -26,14 +25,14 @@ var String filterString;
 event InitWindow()
 {
 	Super.InitWindow();
-	
-	SetFont(fontText);
-	SetHeight(maxHeight);
-	SetInsertionPointType(INSTYPE_Insert);
-	EnableSingleLineEditing(True);
 
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+	
+	SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+	SetHeight(maxHeight);
+	SetInsertionPointType(INSTYPE_Insert);
+	EnableSingleLineEditing(True);
 
 	StyleChanged();
 }
@@ -107,6 +106,5 @@ event StyleChanged()
 
 defaultproperties
 {
-     fontText=Font'DeusExUI.FontMenuSmall'
      maxHeight=11
 }

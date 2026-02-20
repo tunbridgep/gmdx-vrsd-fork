@@ -14,7 +14,6 @@ var int titleLeftMargin;
 var int titleRightMargin;
 var int maxTextWidth;
 var Texture textureAppIcon;
-var Font fontTitle;
 var String titleText;
 
 var Color colTitle;
@@ -106,7 +105,7 @@ event DrawWindow(GC gc)
 	gc.DrawTexture(width - rightWidth, 0, rightWidth, titleHeight, 0, 0, titleBubble_Right);
 
 	// Draw the text!
-	gc.SetFont(fontTitle);
+    gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	gc.SetTextColor(colTitleText);
 	gc.SetHorizontalAlignment(HALIGN_Left);
 	gc.SetVerticalAlignment(VALIGN_Center);
@@ -128,7 +127,7 @@ event ParentRequestedPreferredSize(bool bWidthSpecified, out float preferredWidt
 
 	gc = GetGC();
 
-	gc.SetFont(fontTitle);
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	gc.GetTextExtent(maxTextWidth, textWidth, textHeight, titleText);
 
 	preferredWidth  = Max(minTitleWidth, titleLeftMargin + textWidth + titleRightMargin);
@@ -197,7 +196,7 @@ defaultproperties
      titleRightMargin=45
      maxTextWidth=400
      textureAppIcon=Texture'DeusExUI.UserInterface.MenuIcon_DeusEx'
-     fontTitle=Font'DeusExUI.FontMenuTitle'
+     //fontTitle=Font'DeusExUI.FontMenuTitle'
      colTitle=(R=255,G=255,B=255)
      colTitleText=(R=255,G=255,B=255)
      colBubble=(R=255,G=255,B=255)

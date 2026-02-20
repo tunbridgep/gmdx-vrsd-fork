@@ -9,6 +9,8 @@ var PersonaHeaderTextWindow winIcon;
 
 var localized String NewLegendLabel;
 
+var DeusExPlayer player;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -18,6 +20,9 @@ var localized String NewLegendLabel;
 event InitWindow()
 {
 	Super.InitWindow();
+
+	// Get a pointer to the player
+	player = DeusExPlayer(GetRootWindow().parentPawn);
 
 	SetOrder(ORDER_Right);
 	SetChildAlignments(HALIGN_Full, VALIGN_Top);
@@ -36,11 +41,18 @@ event InitWindow()
 function CreateControls()
 {
 	winIcon = PersonaHeaderTextWindow(NewChild(Class'PersonaHeaderTextWindow'));
-	winIcon.SetFont(Font'FontHUDWingDings');
+	winIcon.SetFont(player.FontManager.GetFont(TT_FontHUDWingDings));
 	winIcon.SetText("C");
 
 	winLegend = PersonaHeaderTextWindow(NewChild(Class'PersonaHeaderTextWindow'));
 	winLegend.SetText(NewLegendLabel);
+}
+
+//SARGE: Crash Fix due to Player being required for new font support
+function DestroyWindow()
+{
+    player = None;
+	Super.DestroyWindow();
 }
 
 // ----------------------------------------------------------------------

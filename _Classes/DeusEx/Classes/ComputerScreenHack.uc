@@ -49,6 +49,8 @@ var float wormTime;
 var localized String hackRequirement1;
 var localized String hackRequirement2;
 var localized String NukesAvailableLabel;
+var localized String btnUseNukeLabel;
+var localized String btnUseWormLabel;
 
 var SoftwareNuke nuke;
 // ----------------------------------------------------------------------
@@ -131,7 +133,7 @@ function CreateTextDigits()
 	winDigits = PersonaNormalTextWindow(NewChild(Class'PersonaNormalTextWindow'));
 	winDigits.SetPos(22, 19);
 	winDigits.SetSize(168, 47);
-	winDigits.SetFont(Font'FontFixedWidthSmall');
+	winDigits.SetFont(player.FontManager.GetFont(TT_FontFixedWidthSmall));
 	winDigits.SetTextColor(colDigits);
 	winDigits.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winDigits.SetTextMargins(0, 0);
@@ -181,7 +183,7 @@ function CreateWormButton()
         winActionButtons2.SetWidth(76);
         winActionButtons2.FillAllSpace(True);
         btnWorm = PersonaActionButtonWindowMenu(winActionButtons2.NewChild(Class'PersonaActionButtonWindowMenu'));
-        btnWorm.SetButtonText("Use Worm");
+        btnWorm.SetButtonText(btnUseWormLabel);
     }
 }
 
@@ -196,7 +198,7 @@ function CreateNukeButton()
         winActionButtons3.SetWidth(72);
         winActionButtons3.FillAllSpace(True);
         btnNuke = PersonaActionButtonWindowMenu(winActionButtons3.NewChild(Class'PersonaActionButtonWindowMenu'));
-        btnNuke.SetButtonText("Use Virus");
+        btnNuke.SetButtonText(btnUseNukeLabel);
     }
 }
 // ----------------------------------------------------------------------
@@ -743,4 +745,6 @@ defaultproperties
      backgroundHeight=94
      backgroundPosX=14
      backgroundPosY=13
+     btnUseNukeLabel="Use |&Virus"
+     btnUseWormLabel="Use |&Worm"
 }

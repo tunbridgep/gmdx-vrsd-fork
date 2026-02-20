@@ -394,11 +394,83 @@ function GetInventoryButtonFromMouse()
     }
 }
 
+//SARGE: New Generic function to handle keypresses and mouse clicks in a generic fashion
+function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
+{
+    local string KeyName, Alias;
+	local bool bKeyHandled;
+    local Inventory anItem;
+
+    if (selectedItem != None)
+        anItem = Inventory(selectedItem.GetClientObject());
+
+    KeyName = player.ConsoleCommand("KEYNAME " $ key);
+    Alias = player.ConsoleCommand("KEYBINDING " $ KeyName);
+	
+    bKeyHandled = True;
+       
+    // If a number key was pressed and we have a selected inventory item,
+	// then assign the hotkey
+	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (invBelt != None) && anItem != None)
+	{
+		invBelt.AssignObjectBeltByKey(anItem, key);
+	}
+	else if (Alias ~= "UseSecondary")
+    {
+        AssignSecondary();
+    }
+	else if (Alias ~= "DropItem" || key == IK_MiddleMouse)
+    {
+        DropSelectedItem();
+    }
+    else if (key == IK_RightMouse && anItem != None)
+    {
+        //TODO: Sarge: Create a generic Inventory Use/Equip function per item
+        if (anItem.IsA('DeusExWeapon') || anItem.IsA('Lockpick') || anItem.IsA('Multitool') || anItem.IsA('FireExtinguisher'))
+            EquipSelectedItem();
+        else
+            UseSelectedItem(); //winInv.ButtonActivated(??????, btnUse);
+        return true;
+    }
+	else
+	{
+		switch( key )
+		{
+			// Allow a selected object to be dropped
+			// TODO: Use the actual key(s) assigned to drop
+
+			case IK_Backspace:
+				DropSelectedItem();
+				break;
+
+			case IK_Delete:
+				ClearSelectedSlot();
+				break;
+
+			case IK_Enter:
+				UseSelectedItem();
+				break;
+
+            case IK_Space:                                                      //RSD: Space to rotate inventory item
+				RotateItemButton();
+				break;
+			
+            case IK_F:                                                          //SARGE: Assign secondary with F
+				AssignSecondary();
+				break;
+
+			default:
+				bKeyHandled = False;
+		}
+	}
+
+    return bKeyHandled;
+}
+
 //Sarge: change item with right mouse and middle mouse
 event bool MouseButtonPressed(float pointX, float pointY, EInputKey button, int numClicks)
 {
    	local Inventory anItem; 
-    local Bool bResult;
     local PersonaInventoryItemButton itemBtn;
     
     //SARGE: Hacky fix to select the right button
@@ -413,30 +485,13 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button, int 
     if (itemBtn == None)
         return false;
 
+
 	anItem = Inventory(selectedItem.GetClientObject());
     //CyberP: new mouse shortcuts in the inventory:
     if (!itemBtn.bDragging && !itemBtn.bDragStart)
-    {
-        if (button == IK_RightMouse && anItem.IsA('DeusExPickup'))
-        {
-            //TODO: Sarge: Create a generic Inventory Use/Equip function per item
-            if (anItem.IsA('Lockpick') || anItem.IsA('Multitool') || anItem.IsA('FireExtinguisher'))
-                EquipSelectedItem();
-            else
-                UseSelectedItem(); //winInv.ButtonActivated(??????, btnUse);
-            return true;
-        }
-        if (button == IK_RightMouse && anItem.IsA('DeusExWeapon'))
-        {
-            EquipSelectedItem();
-            return true;
-        }
-        if (button == IK_MiddleMouse && (anItem.IsA('DeusExWeapon') || anItem.IsA('DeusExPickup')))
-        {
-            DropSelectedItem();
-            return true;
-        }
-    }
+        return HandleGenericKeyPress(button,true);
+
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -591,65 +646,17 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 	local bool bKeyHandled;
     local string KeyName, Alias;
 
-	bKeyHandled = True;
-
 	if ( IsKeyDown( IK_Alt ) || IsKeyDown( IK_Shift ) || IsKeyDown( IK_Ctrl ))
 		return False;
 
     //SARGE: Added
     if (!bDragging)
         GetInventoryButtonFromMouse();
+    
+    KeyName = player.ConsoleCommand("KEYNAME " $ key);
+    Alias = player.ConsoleCommand("KEYBINDING " $ KeyName);
 
-	// If a number key was pressed and we have a selected inventory item,
-	// then assign the hotkey
-	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
-	{
-		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
-	}
-	else
-	{
-		switch( key )
-		{
-			// Allow a selected object to be dropped
-			// TODO: Use the actual key(s) assigned to drop
-
-			case IK_Backspace:
-				DropSelectedItem();
-				break;
-
-			case IK_Delete:
-				ClearSelectedSlot();
-				break;
-
-			case IK_Enter:
-				UseSelectedItem();
-				break;
-
-            case IK_Space:                                                      //RSD: Space to rotate inventory item
-				RotateItemButton();
-				break;
-			
-            case IK_F:                                                          //SARGE: Assign secondary with F
-				AssignSecondary();
-				break;
-
-			default:
-				bKeyHandled = False;
-		}
-	}
-
-    /*
-    //Check for Secondary key pressed
-    //SARGE: TODO: Implement this when the Secondary Weapon system isn't completely fucked
-    if (!bKeyHandled)
-    {
-        KeyName =   player.ConsoleCommand("KEYNAME "$key );
-        Alias = 	player.ConsoleCommand( "KEYBINDING "$KeyName );
-
-        if ( Alias ~= "ShowScores" && selectedItem != None)
-            player.AssignSecondary(Inventory(selectedItem.GetClientObject()));
-    }
-    */
+    bKeyHandled = HandleGenericKeyPress(key,false);
 
 	if (!bKeyHandled)
 		return Super.VirtualKeyPressed(key, bRepeat);
@@ -918,7 +925,9 @@ function AssignSecondary()
     else if (inv.IsA('DeusExWeapon'))
         bCanAssign = DeusExWeapon(inv).CanAssignSecondary(player);
 
-    if (bCanAssign)
+    if (player.GetSecondaryClass() == inv.Class)
+        player.AssignSecondary(None,true);
+    else if (bCanAssign)
         player.AssignSecondary(inv,true);
 
     //player.DebugLog("Assigning Secondary to " $ inv.Class.Name);
@@ -975,6 +984,21 @@ function UseSelectedItem()
 		else
 			numCopies = 0;
 		
+        //SARGE: Update the icon if it's still in the inventory
+        if (inv != None && selectedItem != None)
+        {
+            if (inv.largeIcon != None)
+            {
+                selectedItem.SetIcon(inv.largeIcon);
+                selectedItem.SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
+            }
+            else
+            {
+                selectedItem.SetIcon(inv.icon);
+                selectedItem.SetIconSize(smallInvWidth, smallInvHeight);
+            }
+        }
+
         //SARGE: Reset players accuracy bonus.
         player.ResetAim();
 
@@ -994,6 +1018,7 @@ function DropSelectedItem()
 {
 	local Inventory anItem;
 	local int numCopies;
+    local bool bRemoved;
 
 	if (selectedItem == None)
 		return;
@@ -1021,6 +1046,7 @@ function DropSelectedItem()
        			if ( ((!anItem.IsA('DeusExPickup')) && !(anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bDisposableWeapon)) ||
 					 (anItem.IsA('DeusExPickup') && (numCopies <= 1)))
 				{
+                    bRemoved = true;
 					RemoveSelectedItem();
 				}
 
@@ -1045,7 +1071,24 @@ function DropSelectedItem()
                 if (player.Level.NetMode == NM_Standalone)
                     winStatus.AddText(Sprintf(CannotBeDroppedLabel, anItem.itemName));
 			}
+
+            //SARGE: Update the icon if it's still in the inventory
+            if (!bRemoved && anItem != None)
+            {
+                if (anItem.largeIcon != None)
+                {
+                    selectedItem.SetIcon(anItem.largeIcon);
+                    selectedItem.SetIconSize(anItem.largeIconWidth, anItem.largeIconHeight);
+                }
+                else
+                {
+                    selectedItem.SetIcon(anItem.icon);
+                    selectedItem.SetIconSize(smallInvWidth, smallInvHeight);
+                }
+            }
+
 		}
+
 	}
 }
 

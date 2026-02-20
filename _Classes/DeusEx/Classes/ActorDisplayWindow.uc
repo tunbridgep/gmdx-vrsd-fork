@@ -499,7 +499,7 @@ function DrawWindow(GC gc)
 	local int i, j, k;
 	local vector tVect;
 	local vector cVect;
-	local PlayerPawnExt player;
+	local DeusExPlayer player;
 	local Actor trackActor;
 	local ScriptedPawn trackPawn;
 	local bool bValid;
@@ -524,7 +524,7 @@ function DrawWindow(GC gc)
 	if (viewClass == None)
 		return;
 
-	player  = GetPlayerPawn();
+	player  = DeusExPlayer(GetPlayerPawn());
 
 	if (bShowMesh)
 		gc.ClearZ();
@@ -877,7 +877,7 @@ function DrawWindow(GC gc)
 			if (str != "")
 			{
 				gc.SetAlignments(HALIGN_Center, VALIGN_Top);
-				gc.SetFont(Font'TechSmall');
+				gc.SetFont(player.FontManager.GetFont(TT_TechSmall));
 				//gc.SetTextColorRGB(visibility*255, visibility*255, visibility*255);
 				gc.SetTextColorRGB(0, 255, 0);
 				gc.DrawText(leftX-40, bottomY+barOffset+5, 80+rightX-leftX, 280, str);
@@ -885,7 +885,7 @@ function DrawWindow(GC gc)
 
 			gc.SetTextColor(mainColor);
 			gc.SetAlignments(HALIGN_Center, VALIGN_Bottom);
-			gc.SetFont(Font'TechSmall');
+			gc.SetFont(player.FontManager.GetFont(TT_TechSmall));
 			gc.DrawText(leftX-40, topY-140, 80+rightX-leftX, 135, GetPlayerPawn().GetItemName(String(trackActor)));
 		}
 	}

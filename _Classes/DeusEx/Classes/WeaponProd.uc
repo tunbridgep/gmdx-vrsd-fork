@@ -25,6 +25,21 @@ simulated function PreBeginPlay()
 	}
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    if (IsHDTP())
+    {
+        multiskins[2] = texture'PinkMaskTex';
+        multiskins[3] = texture'PinkMaskTex';
+    }
+    else
+    {
+        multiskins[1] = texture'PinkMaskTex';
+        multiskins[2] = texture'PinkMaskTex';
+    }
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);
@@ -33,6 +48,13 @@ function DisplayWeapon(bool overlay)
         if (IsHDTP())
         {
             multiskins[0] = handstex;
+            
+            //Don't show electricity when empty
+            if (!bIsCloaked && !bIsRadar && clipcount == 0)
+            {
+                multiskins[2] = texture'PinkMaskTex';
+                multiskins[3] = texture'PinkMaskTex';
+            }
         }
         else
         {
@@ -46,6 +68,13 @@ function DisplayWeapon(bool overlay)
             {
                 multiskins[0] = handstex;
                 multiskins[3] = handstex;
+
+                //Don't show electricity when empty
+                if (clipcount == 0)
+                {
+                    multiskins[1] = texture'PinkMaskTex';
+                    multiskins[2] = texture'PinkMaskTex';
+                }
             }
         }
     }

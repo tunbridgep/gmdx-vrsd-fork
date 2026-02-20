@@ -58,7 +58,7 @@ event DrawWindow(GC gc)
 
 		str = Sprintf(CountLabel, count);
 
-		gc.SetFont(Font'FontMenuSmall_DS');
+		gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 		gc.SetTextColor(colHeaderText);
 		gc.DrawText(1, height - 10, width, 10, str);

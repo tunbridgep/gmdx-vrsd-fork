@@ -12,7 +12,6 @@ var Color	colHighlight;
 var Color	colFocus;
 var Texture texHighlight;
 var Texture texFocus;
-var Font    fontText;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -24,10 +23,10 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	SetFont(fontText);
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+    SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 
 	StyleChanged();
 
@@ -106,5 +105,5 @@ defaultproperties
      colFocus=(R=64,G=64,B=64)
      texHighlight=Texture'Extension.Solid'
      texFocus=Texture'Extension.Solid'
-     fontText=Font'DeusExUI.FontMenuSmall'
+     //fontText=Font'RSDCrap.DXRFontMenuSmall'
 }
