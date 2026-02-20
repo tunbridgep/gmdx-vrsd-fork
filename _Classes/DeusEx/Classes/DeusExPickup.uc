@@ -225,11 +225,14 @@ function PreDisplay(bool overlay)
 
     //SARGE: Don't even bother checking for ScriptedPawns here, they never use this stuff.
     OP = DeusExPlayer(Owner);
-    if (OP != None && OP.CloakManager.IsInAnyState())
+    if (OP != None && OP.CloakManager != None && OP.CloakManager.IsInAnyState())
     {
+        bNoSmooth=false;
         OP.CloakManager.UpdateSkin(self);
         ScaleGlow = OP.CloakManager.GetScaleGlow();
     }
+    else
+        bNoSmooth=default.bNoSmooth;
 }
 
 //Overwrite this for custom display functionality.

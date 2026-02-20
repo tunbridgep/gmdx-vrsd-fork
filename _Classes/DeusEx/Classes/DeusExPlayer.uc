@@ -7437,16 +7437,21 @@ state PlayerWalking
             lastWalkTimer = 0.4;
 
         //SARGE: Tick Cloaking
-        CloakManager.TickCloaking(deltaTime);
-        if (CloakManager.IsInAnyState())
+        if (CloakManager != None)
         {
-            CloakManager.UpdateSkin(self);
-            ScaleGlow = CloakManager.GetScaleGlow();
-        }
-        else
-        {
-            ScaleGlow = default.ScaleGlow;
-            Style = default.Style;
+            CloakManager.TickCloaking(deltaTime);
+            if (CloakManager.IsInAnyState())
+            {
+                bNoSmooth=false;
+                CloakManager.UpdateSkin(self);
+                ScaleGlow = CloakManager.GetScaleGlow();
+            }
+            else
+            {
+                ScaleGlow = default.ScaleGlow;
+                Style = default.Style;
+                bNoSmooth=default.bNoSmooth;
+            }
         }
 
 		Super.PlayerTick(deltaTime);

@@ -1076,7 +1076,7 @@ simulated event RenderOverlays( canvas Canvas )
         else
             activateAn = false;
 
-        if (PlayerOwner != none && !PlayerOwner.CloakManager.IsInAnyState())
+        if (PlayerOwner != none && PlayerOwner.CloakManager != None && !PlayerOwner.CloakManager.IsInAnyState())
             DrawBloodyViewModel(canvas);
 
         //Reset weapon to standard display
@@ -3359,20 +3359,25 @@ function private PreDisplayWeapon(bool overlay)
 
     OP = DeusExPlayer(Owner);
     OSP = ScriptedPawn(Owner);
-    if (OP != None && OP.CloakManager.IsInAnyState())
+    if (OP != None && OP.CloakManager != None && OP.CloakManager.IsInAnyState())
     {
+        bNoSmooth=false;
+        DisplayWeapon(overlay);
         OP.CloakManager.UpdateSkin(self);
         ScaleGlow = OP.CloakManager.GetScaleGlow();
         EraseMuzzleFlashTexture();
         DisplayCloaking(overlay,ScaleGlow,OP.CloakManager.IsCloaked(),OP.CloakManager.IsRadar());
     }
-    else if (OSP != None && OSP.CloakManager.IsInAnyState())
+    else if (OSP != None && OSP.CloakManager != None && OSP.CloakManager.IsInAnyState())
     {
+        bNoSmooth=false;
         OSP.CloakManager.UpdateSkin(self);
         ScaleGlow = OSP.CloakManager.GetScaleGlow();
         EraseMuzzleFlashTexture();
         DisplayCloaking(overlay,ScaleGlow,OSP.CloakManager.IsCloaked(),OSP.CloakManager.IsRadar());
     }
+    else
+        bNoSmooth=default.bNoSmooth;
 }
 
 //SARGE: Override this

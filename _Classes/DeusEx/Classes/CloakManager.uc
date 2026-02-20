@@ -5,7 +5,7 @@ class CloakManager extends Object;
 // Manages cloaking and uncloaking
 //=============================================================================
 
-var private Pawn sourceObject;
+var private transient Pawn sourceObject;
 var private travel bool bStartedCloaking;
 var private travel bool bStartedUncloaking;
 var private travel bool bIsCloaked;

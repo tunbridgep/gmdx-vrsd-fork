@@ -61,7 +61,7 @@ static function SetSkinStyle(Actor src, ERenderStyle newStyle, optional texture 
         if (curSkin != None && curSkin.Name != 'PinkMaskTex')
         {
             src.MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
-            Log("SetSkinStyle: " $ curSkin @ src.MultiSkins[i]);
+            //Log("SetSkinStyle: " $ curSkin @ src.MultiSkins[i]);
         }
 	}
 	src.Skin      = GetStyleTexture(newStyle, src.Skin, newTex);

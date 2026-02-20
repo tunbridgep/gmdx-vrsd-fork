@@ -630,6 +630,9 @@ function bool IsActuallyValidEnemy(Pawn TestEnemy, optional EAllianceCheckType c
 
 function SetupCloakManager()
 {
+    if (!bHasCloak)
+        return;
+
 	// install the Perk Manager if not found
 	if (CloakManager == None)
 	    CloakManager = new(Self) class'CloakManager';
@@ -833,6 +836,7 @@ function PostBeginPlay()
 		KillShadow();
 		bHasShadow = False;
 		bCanBleed = False;
+        bHasCloak = False;
 	}
         
     SetupSkin();
@@ -875,6 +879,7 @@ simulated function Destroyed()
 		player.conPlay.ActorDestroyed(Self);
 
     CriticalDelete(CloakManager);
+    CloakManager = None;
 
 	Super.Destroyed();
 }
@@ -1521,7 +1526,7 @@ function EnableShadow(bool bEnable)
 
 function CreateShadow()
 {
-	if (bHasShadow && bInWorld)
+	if (bHasShadow && bInWorld && !bCloakOn)
 		if (Shadow == None)
 			Shadow = Spawn(class'Shadow', Self,, Location-vect(0,0,1)*CollisionHeight, rot(16384,0,0));
 }
@@ -9121,6 +9126,7 @@ function Tick(float deltaTime)
         bCloakOn = CloakManager.IsInAnyState();
         if (bCloakOn)
         {
+            bNoSmooth=false;
             CloakManager.UpdateSkin(self);
             ScaleGlow = CloakManager.GetScaleGlow();
         }
@@ -9128,6 +9134,7 @@ function Tick(float deltaTime)
         {
             ScaleGlow = default.ScaleGlow;
             Style = default.Style;
+            bNoSmooth=default.bNoSmooth;
         }
     }
 
