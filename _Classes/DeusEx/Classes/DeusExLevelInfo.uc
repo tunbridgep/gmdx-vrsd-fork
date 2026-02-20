@@ -19,6 +19,12 @@ var() byte                  SongCombatSection;                                  
 var() byte                  SongAmbientSection;                                 //SARGE: Allow us to define a custom section for ambience, since SongSection is read-only.
 var() byte                  SongConversationSection;                            //SARGE: Allow us to define a custom section for ambience, since SongSection is read-only.
 var() int                   ChairRandomizationToken;                            //SARGE: For Junk Randomization, use a custom token instead of getting a new one. Used for randomising certain maps together             
+//SARGE: Weapon distribution settings
+var(ItemDistribution) bool bDistributePS20;
+var(ItemDistribution) bool bDistributeFlamethrower;
+var(ItemDistribution) bool bDistributePlasma;
+var(ItemDistribution) bool bDistributeGEP;
+var(ItemDistribution) bool bDistributeLAW;
 
 //SARGE: Chair Randomisation Tokens:
 //99: UNATCO and Liberty Island
@@ -87,4 +93,9 @@ defaultproperties
      SongConversationSection=4
      SongAmbientSection=-1
      ChairRandomizationToken=-1
+     bDistributeGEP=true
+     bDistributePS20=true
+     bDistributeFlamethrower=true
+     bDistributePlasma=true
+     bDistributeLAW=true
 }
