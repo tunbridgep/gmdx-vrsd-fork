@@ -60,6 +60,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkShortFuse');
 	AddPerk(Class'DeusEx.PerkSensorBurnout');
 	AddPerk(Class'DeusEx.PerkKnockoutGas');
+	AddPerk(Class'DeusEx.PerkBreakdown');
 
 	// Lockpicking Perks
 	AddPerk(Class'DeusEx.PerkSleightOfHand');
