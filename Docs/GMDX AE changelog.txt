@@ -7,6 +7,7 @@ New Features:
     - Requires Demolitions: MASTER
 - GEP Gun now uses WP Rockets by default
     - WP Rockets will be a lot more plentiful, but regular rockets are still available
+    - Paul will now additionally give you a rocket at the start of the game, if picking the GEP Gun as a starting item.
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
     - The vanilla ones can still be used by disabling these in the QoL menu.
 - Added blood to weapons when exploding or attacking enemies at extreme close range.
@@ -119,6 +120,8 @@ Map Changes:
     - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
+- 08_NYC_Smug
+    - The Assault Shotgun sold by Smuggler will now properly contain Sabot rounds.
 - 10_Paris_Catacombs:
     - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
 - 10_Paris_Metro:
