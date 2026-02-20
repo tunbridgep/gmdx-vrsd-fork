@@ -40,6 +40,10 @@ var private int numRings;           //SARGE: Now, we ring in groups of 3-5 rings
 var() private name TriggerFlag;   //SARGE: Flag that must be set to trigger linked objects.
 var() private bool bCheckFalse;
 
+var() bool bRingWhenPlayerClose;            //SARGE: Will ring automatically when the player is nearby, prompting them to pick up the receiver.
+
+var private bool bPickedUp;             //SARGE: Set to true after the first time we answer the phone. To stop auto-ringing.
+
 var private float startedSound;     //SARGE: Add a maximum time each sound can play for, like 10 seconds, since some can go forever.
 
 //SARGE: Some of the phones in the game have weird bools set, instead of using the enum (stupid original devs!)
@@ -65,9 +69,17 @@ function bool CanRing()
     return AnswerSound != AS_Investigation && AnswerSound != AS_ShutDownByUNATCO;
 }
 
+function bool PlayerClose(Actor player)
+{
+    return !bPickedUp && bRingWhenPlayerClose && VSize(player.Location - Location) <= 1200;
+}
+
 function Tick(float deltaTime)
 {
 	Super.Tick(deltaTime);
+
+    if (numRings > 0)
+        Ring();
 
     //Add a maximum timer for each sound
     if (startedSound > 0)
@@ -88,8 +100,11 @@ function Tick(float deltaTime)
         {
             ringTimer -= 2.5;
 
-            if (!bUsing && numRings == 0 && FRand() < ringFreq && CanRing())
-                numRings = Rand(2)+5; //5 to 7 random rings
+            //If we're nearby, ring us! Spooky icarus ring!
+            if (!bUsing && numRings == 0 && PlayerClose(GetPlayerPawn()))
+                numRings = 5;
+            else if (!bUsing && numRings == 0 && FRand() < ringFreq && CanRing())
+                numRings = 5;//Rand(2)+5; //5 to 7 random rings
         }
     }
 }
@@ -216,8 +231,6 @@ function Frob(actor Frobber, Inventory frobWith)
     }
     else
         Super.Frob(Frobber, frobWith);
-        
-    PlayAnswerSound(snd);
 
     if (bTrigger)
         SetTimer(1.0, False);
@@ -225,6 +238,7 @@ function Frob(actor Frobber, Inventory frobWith)
         SetTimer(3.0, False);
     numRings = 0;
 	bUsing = True;
+    bPickedUp = True;
 }
 
 defaultproperties
