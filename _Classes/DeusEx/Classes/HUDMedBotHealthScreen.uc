@@ -24,6 +24,10 @@ var Localized String MedBotOutOfJuice;
 var Localized String TotalHealthStr;
 var Localized String TotalRestoreAmount;
 
+
+//SARGE: Trauma System, called the Wound System internally
+var PersonaActionButtonWindow   btnCureAll; //Bot button
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -33,8 +37,6 @@ var Localized String TotalRestoreAmount;
 event InitWindow()
 {
 	Super.InitWindow();
-
-	HUDMedBotNavBarWindow(winNavBar).btnHealth.SetSensitivity(False);
 
 	bTickEnabled = True;
 
@@ -137,11 +139,21 @@ function CreateButtons()
 
 	winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(346, 346);
-	winActionButtons.SetWidth(97);
+    if (player.bWoundSystem)
+        winActionButtons.SetWidth(147);
+    else
+        winActionButtons.SetWidth(97);
 	winActionButtons.FillAllSpace(False);
 
 	btnHealAll = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	btnHealAll.SetButtonText(HealAllButtonLabel);
+    btnHealAll.SetButtonText(HealAllButtonLabel);
+
+    //SARGE: Accommodate the Cure button
+    if (player.bWoundSystem)
+    {
+        btnCureAll = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+        btnCureAll.SetButtonText(CureAllButtonLabel);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -178,8 +190,17 @@ function CreateMedBotDisplay()
 {
 	winHealthBar = ProgressBarWindow(winClient.NewChild(Class'ProgressBarWindow'));
 
-	winHealthBar.SetPos(446, 348);
-	winHealthBar.SetSize(140, 12);
+    //SARGE: Accommodate the Cure button
+    if (player.bWoundSystem)
+    {
+        winHealthBar.SetPos(496, 348);
+        winHealthBar.SetSize(90, 12);
+    }
+    else
+    {
+        winHealthBar.SetPos(446, 348);
+        winHealthBar.SetSize(140, 12);
+    }
 	winHealthBar.SetValues(0, 100);
 	winHealthBar.UseScaledColor(True);
 	winHealthBar.SetVertical(False);
@@ -187,16 +208,28 @@ function CreateMedBotDisplay()
 	winHealthBar.SetDrawBackground(False);
 
 	winHealthBarText = TextWindow(winClient.NewChild(Class'TextWindow'));
-	winHealthBarText.SetPos(446, 349);
-	winHealthBarText.SetSize(140, 12);
+    
+    //SARGE: Accommodate the Cure button
+    if (player.bWoundSystem)
+    {
+        winHealthBarText.SetPos(496, 349);
+        winHealthBarText.SetSize(90, 12);
+    }
+    else
+    {
+        winHealthBarText.SetPos(446, 349);
+        winHealthBarText.SetSize(140, 12);
+    }
 	winHealthBarText.SetTextMargins(0, 0);
 	winHealthBarText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
 	winHealthBarText.SetFont(Font'FontMenuSmall_DS');
 	winHealthBarText.SetTextColorRGB(255, 255, 255);
 
 	winHealthInfoText = PersonaNormalTextWindow(winClient.NewChild(Class'PersonaNormalTextWindow'));
-	winHealthInfoText.SetPos(348, 293);
-	winHealthInfoText.SetSize(238, 50);
+
+    winHealthInfoText.SetPos(348, 293);
+    winHealthInfoText.SetSize(238, 50);
+
 	winHealthInfoText.SetTextMargins(2, 0);
 }
 
@@ -272,6 +305,10 @@ function bool ButtonActivated(Window buttonPressed)
 
 	switch(buttonPressed)
 	{
+		case btnCureAll:
+			MedBotCurePlayer();
+			break;
+
 		case btnHealAll:
 			MedBotHealPlayer();
 			break;
@@ -285,6 +322,19 @@ function bool ButtonActivated(Window buttonPressed)
 		return True;
 	else
 		return Super.ButtonActivated(buttonPressed);
+}
+
+// ----------------------------------------------------------------------
+// MedBotCurePlayer()
+// ----------------------------------------------------------------------
+
+function MedBotCurePlayer()
+{
+	medBot.CurePlayer(player);
+	UpdateMedBotDisplay();
+	UpdateRegionWindows();
+	
+	player.HealScreenEffect(8.0, false);
 }
 
 // ----------------------------------------------------------------------
@@ -307,9 +357,23 @@ function MedBotHealPlayer()
 function EnableButtons()
 {
 	if (medBot != None)
+    {
 		btnHealAll.EnableWindow(medBot.CanHeal() && IsPlayerDamaged());
+        if (btnCureAll != None)
+            btnCureAll.EnableWindow(medBot.CanHeal() && IsPlayerWounded());
+    }
 	else
+    {
 		btnHealAll.EnableWindow(False);
+        if (btnCureAll != None)
+            btnCureAll.EnableWindow(False);
+    }
+	
+    if (bTraumasSelected && HUDMedBotNavBarWindow(winNavBar).btnWounds != None)
+        HUDMedBotNavBarWindow(winNavBar).btnWounds.SetSensitivity(False);
+    else
+        HUDMedBotNavBarWindow(winNavBar).btnHealth.SetSensitivity(False);
+
 }
 
 // ----------------------------------------------------------------------

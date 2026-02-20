@@ -5,9 +5,11 @@ class HUDMedBotNavBarWindow expands PersonaNavBarBaseWindow;
 
 var PersonaNavButtonWindow btnHealth;
 var PersonaNavButtonWindow btnAugs;
+var PersonaNavButtonWindow btnWounds;
 
 var localized String HealthButtonLabel;
 var localized String AugsButtonLabel;
+var localized String WoundsButtonLabel;
 
 // ----------------------------------------------------------------------
 // CreateButtons()
@@ -16,6 +18,8 @@ var localized String AugsButtonLabel;
 function CreateButtons()
 {
 	btnAugs      = CreateNavButton(winNavButtons, AugsButtonLabel);
+    if (player.bWoundSystem)
+        btnWounds    = CreateNavButton(winNavButtons, WoundsButtonLabel);
 	btnHealth    = CreateNavButton(winNavButtons, HealthButtonLabel);
 
 	Super.CreateButtons();
@@ -35,9 +39,10 @@ function CreateButtonWindows()
 // ----------------------------------------------------------------------
 // InvokeHealthScreen()
 // SARGE: Now a function, so we can call it from our children
+// SARGE: Also now takes an argument to show Traumas
 // ----------------------------------------------------------------------
 
-function InvokeHealthScreen()
+function InvokeHealthScreen(optional bool bShowTraumas)
 {
 	local HUDMedBotHealthScreen healthScreen;
 	local HUDMedBotAddAugsScreen augScreen;
@@ -59,6 +64,9 @@ function InvokeHealthScreen()
     // Now set the medBot if it's not none
     if (medBot != None)
         healthScreen.SetMedicalBot(medBot);
+
+    //Set to Trauma mode
+    healthScreen.bTraumasSelected = bShowTraumas;
 }
 
 // ----------------------------------------------------------------------
@@ -76,6 +84,9 @@ function bool ButtonActivated(Window buttonPressed)
 
 	switch(buttonPressed)
 	{
+        case btnWounds:
+            InvokeHealthScreen(true);
+			break;
 		case btnHealth:
             InvokeHealthScreen();
 			break;
@@ -117,4 +128,5 @@ defaultproperties
 {
      HealthButtonLabel=" |&Health   "
      AugsButtonLabel="   |&Augmentations   "
+     WoundsButtonLabel="   |&Traumas   "
 }
