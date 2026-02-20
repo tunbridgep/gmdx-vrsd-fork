@@ -625,8 +625,6 @@ var travel bool bPermaCloak;                                                   /
 
 var travel bool bNoStartingWeaponChoices;                                      //SARGE: No more weapons from Paul!
 
-var travel bool bWoundSystem;                                //SARGE: Enable Traumas when taking damage.
-
 //END GAMEPLAY MODIFIERS
 
 //hardcore+
@@ -931,6 +929,7 @@ var globalconfig bool bRandomizeCrap;                          //Sarge: Randomiz
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
 var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
+var travel bool bWoundSystem;                                //SARGE: Enable Traumas when taking damage.
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
