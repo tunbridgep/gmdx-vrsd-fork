@@ -534,6 +534,10 @@ var(GMDX) const bool bRandomHeightAdjust;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
+//SARGE: Only allow receiving one extra weapon in certain circumstances
+//See DistributeItem() in MissionScript for more info
+var bool bAlreadyDistributedWeapon;
+
 //SARGE: Enum used for the swoocy bullshit that we have to do for our IsValidEnemy override.
 enum EAllianceCheckType
 {
@@ -9550,10 +9554,20 @@ function bool SwitchToBestWeapon()
 				if (bBlockSpecial && (curWeapon.AITimeLimit > 0) && (SpecialTimer <= 0))
 					curFallbackLevel = 0;
 
+                //SARGE: Hackity hackity hack!
+                //Give the GEP, Flamethrower and Plasma a better score.
+                //Also the PS20, so it gets used a little more.
+                if (curWeapon.IsA('WeaponFlamethrower')
+                    || curWeapon.IsA('WeaponPlasmaRifle')
+                    || curWeapon.IsA('WeaponGEPGun')
+                    || curWeapon.IsA('WeaponHideAGun')
+                    || curWeapon.IsA('WeaponLAW'))
+                    score -= 15;
+
+
 				// Adjust score based on opponent and damage type.
 				// All damage types are listed here, even the ones that aren't used by weapons... :)
 				// (hacky...)
-
 				switch (curWeapon.WeaponDamageType())
 				{
 					case 'Exploded':
@@ -9694,6 +9708,8 @@ function bool SwitchToBestWeapon()
 						fallbackLevel = curFallbackLevel;
 					}
 				}
+
+                //DeusExPlayer(GetPlayerPawn()).DebugMessage("SwitchToBestWeapon: " $ inv.itemName $ " has a score of " $ score @ "bwinner?" $ bWinner);
 			}
 		}
 		inv = inv.Inventory;
