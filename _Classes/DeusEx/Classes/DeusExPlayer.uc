@@ -956,6 +956,10 @@ var private transient float combatCheckTime;                 //SARGE: When check
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 
 
+//SARGE: If we exceed 1000 saves, wrap around.
+//This whole thing is fucked
+var globalconfig int iHackySaveIndex;
+
 //SARGE: Added a new check for playing Loot Sounds, so we only play it once per frame.
 var private transient bool bPlaySoundCheck;
 //////////END GMDX
@@ -2700,12 +2704,14 @@ function GameDirectory GetSaveGameDirectory()
 	return saveDir;
 }
 
-//We can't modify the native function, so do this here, and then call it
+//SARGE: We can't modify the native function, so do this here, and then call it
 function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
 	local GameDirectory saveDir;
     local TechGoggles tech;
 	local DeusExRootWindow root;
+	local DeusExSaveInfo saveInfo;
+    local int i;
 	
 	root = DeusExRootWindow(rootWindow);
 
@@ -2727,9 +2733,39 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
 
-    //Loop back around
+    /*
+    //SARGE: This doesn't actually work.
+    //Loop back around and find something unused
     if (saveIndex >= 1000)
-        saveIndex = 1;
+    {
+        for (i = 0; i < 1000;i++)
+        {
+            saveInfo = saveDir.GetSaveInfoFromDirectoryIndex(i);
+            if (saveInfo == None)
+            {
+                saveIndex = i;
+                DebugLog("Found empty save index: " $ saveIndex);
+                break;
+            }
+            else
+                saveDir.DeleteSaveInfo(saveInfo);
+        }
+    }
+    */
+    
+    //If we're STILL unable to find a slot, just start overwriting stuff
+    //SARGE: This is a horrible hack!
+    //We don't ever want to get here, but it's still better than not saving!
+    if (saveIndex >= 1000)
+    {
+        DebugMessage("WARNING: Using hacky save index");
+        saveIndex = iHackySaveIndex++;
+        
+        if (iHackySaveIndex >= 1000)
+            iHackySaveIndex = 1;
+
+        SaveConfig();
+    }
     
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
@@ -2737,6 +2773,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 
     //root.hide();
     root.GenerateSnapshot(True);
+    DebugLog("Save Game: " $ saveIndex @ saveDesc);
     SaveGame(saveIndex, saveDesc);
     root.HideSnapshot();
     //root.show();
@@ -20294,4 +20331,5 @@ defaultproperties
      bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
+     iHackySaveIndex=1
 }
