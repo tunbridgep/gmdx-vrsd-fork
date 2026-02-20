@@ -38,6 +38,7 @@ New Features:
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed transparent background for the Stealth Skill in the Skills menu.
 - Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
     - It now also shows all addons correctly when zooming.
 - Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
