@@ -955,6 +955,9 @@ var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 
+
+//SARGE: Added a new check for playing Loot Sounds, so we only play it once per frame.
+var private transient bool bPlaySoundCheck;
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -7453,6 +7456,9 @@ state PlayerWalking
         else
             lastWalkTimer = 0.4;
 
+        //SARGE: Reset the played transfer sound
+        bPlaySoundCheck = false;
+
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -9248,6 +9254,16 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
         return;
 
     source.PlaySound(dxAmmoClass.default.PartialAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+}
+
+//SARGE: Play item transfer sound only once per frame
+function PlayItemTransferSound()
+{
+    if (bPlaySoundCheck)
+        return;
+
+    bPlaySoundCheck = true;
+    PlaySound(sound'objpickup3',SLOT_None,0.7);
 }
 
 // ----------------------------------------------------------------------
