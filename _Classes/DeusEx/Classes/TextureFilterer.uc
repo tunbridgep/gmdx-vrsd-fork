@@ -177,10 +177,12 @@ function RefreshTextureFiltering()
     class'WeaponAssaultShotgun'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponBaton'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponCrowbar'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'WeaponCombatKnife'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponEMPGrenade'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponFlamethrower'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponGasGrenade'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponGEPGun'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'WeaponHideAGun'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponLAM'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponLAW'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WeaponMiniCrossbow'.default.bNoSmooth = !bSmartTextureFiltering;
