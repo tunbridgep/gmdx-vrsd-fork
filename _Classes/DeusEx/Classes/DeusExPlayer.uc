@@ -950,6 +950,8 @@ var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at 
 
 var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
+
+var globalconfig bool bAutofillPasswords;                   //SARGE: Allow auto-filling passwords
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -20276,4 +20278,5 @@ defaultproperties
      bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
+     bAutofillPasswords=true
 }

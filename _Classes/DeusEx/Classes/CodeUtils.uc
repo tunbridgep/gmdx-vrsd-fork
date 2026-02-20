@@ -17,6 +17,28 @@ var const CodeNote codeNotes[150];
 var const string ignoredCodes[10];
 var const string guessableCodes[10];
 
+//Given a passed in note, gets the relevant code from it.
+static function GetCodeFromNote(DeusExNote note, out string code, out string code2)
+{
+    local int i;
+
+    if (note == None || note.bUserNote || note.bMarkerNote)
+        return;
+
+    if (note.textTag != '')
+    {
+        for (i = 0;i < ArrayCount(default.codeNotes);i++)
+        {
+            if (caps(default.codeNotes[i].noteName) == caps(string(note.textTag)))
+            {
+                code = default.codeNotes[i].code1;
+                code2 = default.codeNotes[i].code2;
+                return;
+            }
+        }
+    }
+}
+
 static function bool IsGuessable(string code, string code2)
 {
     local int i;
@@ -97,6 +119,8 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
             //P.DebugLog("Note is " $ note);
         }
     }
+
+    /*
         
     //Otherwise check con notes:
     if (note == None)
@@ -143,6 +167,8 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
         //P.DebugLog("Note is " $ note);
     }
          
+    */
+
     P.DebugLog("NOTE CODE " $code$ " NOT FOUND IN NOTES");
 	return None;
 }
@@ -291,6 +317,9 @@ defaultproperties
     codeNotes(124)=(code1="area51",code2="bravo13",noteName="15_Datacube17")
     codeNotes(125)=(code1="2001",noteName="15_Datacube19")
     codeNotes(126)=(code1="page",code2="uberalles",noteName="15_Datacube21")
+
+    ///CONVERSATION NOTES now have proper note names
+    codeNotes(127)=(code1="0451",noteName="MeetKaplan")
 
     guessableCodes(0)="8675309"
     guessableCodes(1)="7243"

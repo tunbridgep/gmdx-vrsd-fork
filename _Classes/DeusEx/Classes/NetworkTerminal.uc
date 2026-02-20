@@ -36,6 +36,20 @@ var HUDKeypadNotesWindow winNotes;
 
 var const bool bShowNotes;         //SARGE: Added. Show the notes on the first screen(usually login).
 
+function AutofillNote(DeusExNote note)
+{
+    local string code1, code2;
+
+    if (winComputer != None && ComputerScreenLogin(winComputer) != None)
+    {
+        class'CodeUtils'.static.GetCodeFromNote(note,code1,code2);
+        ComputerScreenLogin(winComputer).editUserName.SetText(code1);
+        ComputerScreenLogin(winComputer).editPassword.SetText(code2);
+        PlaySound(Sound'Menu_Activate', 0.25);
+        //Log("Autofilling Note: " $ note @ note.textTag @ note.text);
+    }
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -499,8 +513,10 @@ function AddNotesWindow()
     winNotes.bUseMenuColors = true;
     for (i = 0; i < numCodes;i++)
         winNotes.AddNote(codeNotes[i]);
+    winNotes.SetEditable(!player.bAutofillPasswords);
     winNotes.CreateNotesList();
     winNotes.StyleChanged();
+    winNotes.SetParentWindow(self);
     winNotes.Hide();
 }
 

@@ -7,6 +7,18 @@ class HUDKeypadContainerWindow extends DeusExBaseWindow;
 var HUDKeypadWindow keypadwindow;
 var HUDKeypadNotesWindow winNotes;
 
+function AutofillNote(DeusExNote note)
+{
+    local string code1, code2; //SARGE: We only use code1...
+    
+    class'CodeUtils'.static.GetCodeFromNote(note,code1,code2);
+    if (keypadwindow != None)
+    {
+        keypadWindow.inputCode = code1;
+        keypadWindow.ValidateCode(false);
+    }
+}
+
 event InitWindow()
 {
 	Super.InitWindow();
@@ -51,6 +63,7 @@ function AddNotesWindow(DeusExPlayer player, DeusExNote codeNote, bool fakeDispl
     winNotes.AddNote(codeNote);
     winNotes.CreateNotesList();
     winNotes.StyleChanged();
+    winNotes.SetParentWindow(self);
 }
 
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)

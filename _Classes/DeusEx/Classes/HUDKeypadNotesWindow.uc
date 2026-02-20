@@ -14,8 +14,6 @@ class HUDKeypadNotesWindow extends HUDBaseWindow;
 var HUDInformationDisplay winBackground;
 var PersonaScrollAreaWindow winScroll;
 
-var localized string msgRelevantNote;
-
 //Use the Menu theme instead of the HUD Theme
 var bool bUseMenuColors;
 
@@ -25,6 +23,13 @@ var int NotesCount;
 var bool bEditableNotes;                //If the notes should be read only but selectable, or non-interactive entirely.
 
 var PersonaNotesEditWindow firstNoteWindow;
+var DeusExNote currentNote;
+var private transient Window parentWindow;                //SARGE: The HUDKeypadContainerWindow or NetworkTerminal associated with this window.
+
+function SetParentWindow(Window p)
+{
+    parentWindow = p;
+}
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -282,8 +287,58 @@ function ApplyStyleToChildren()
     }
 }
 
+function AutofillCurrentNote()
+{
+    if (!player.bAutofillPasswords)
+        return;
+
+    if (currentNote != None)
+    {
+        if (HUDKeypadContainerWindow(parentWindow) != None)
+            HUDKeypadContainerWindow(parentWindow).AutofillNote(currentNote);
+        else if (NetworkTerminal(parentWindow) != None)
+            NetworkTerminal(parentWindow).AutofillNote(currentNote);
+    }
+}
+
+//SARGE: Allow note autofilling with spacebar (controller A button)
+event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
+{
+    switch (key)
+    {
+        case IK_Space:
+            AutofillCurrentNote();
+            break;
+    }
+
+    return super.VirtualKeyPressed(key,bRepeat);
+}
+
+event bool MouseButtonPressed(float pointX, float pointY, EInputKey button, int numClicks)
+{
+    switch (button)
+    {
+        case IK_LeftMouse:
+            AutofillCurrentNote();
+            break;
+    }
+    
+    return super.MouseButtonPressed(pointx,pointy,button,numClicks);
+}
+
+// ----------------------------------------------------------------------
+// FocusEnteredDescendant()
+// ----------------------------------------------------------------------
+
+event FocusEnteredDescendant(Window enterWindow)
+{
+    local PersonaNotesEditWindow currentNoteWindow;
+    currentNoteWindow = PersonaNotesEditWindow(enterWindow);
+	if (currentNoteWindow != None)
+        currentNote = currentNoteWindow.GetNote();
+}
+
 defaultproperties
 {
-    msgRelevantNote="Relevant Note:"
     bEditableNotes=true
 }
