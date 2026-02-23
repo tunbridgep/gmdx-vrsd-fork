@@ -13,9 +13,16 @@ struct CodeNote
     var bool bHidden;
 };
 
-var const CodeNote codeNotes[150];
+var const CodeNote codeNotes[200];
 var const string ignoredCodes[10];
 var const string guessableCodes[10];
+
+static function private bool CodeMatch(int index, DeusExNote note)
+{
+    return caps(default.codeNotes[index].noteName) == caps(string(note.textTag))
+        || caps("FemJC"$default.codeNotes[index].noteName) == caps(string(note.textTag)) //FemJC
+        || caps(string(note.textTag)) == caps(default.codeNotes[index].noteName $ "_DV"); //Also check downloaded emails.
+}
 
 //Given a passed in note, gets the relevant code from it.
 static function GetCodeFromNote(DeusExNote note, out string code, out string code2)
@@ -29,7 +36,7 @@ static function GetCodeFromNote(DeusExNote note, out string code, out string cod
     {
         for (i = 0;i < ArrayCount(default.codeNotes);i++)
         {
-            if (caps(default.codeNotes[i].noteName) == caps(string(note.textTag)))
+            if (CodeMatch(i,note))
             {
                 code = default.codeNotes[i].code1;
                 code2 = default.codeNotes[i].code2;
@@ -104,8 +111,7 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
 
                 //Datacube/email/etc notes need to be linked manually
                 //P.DebugLog("Compare: " $ caps(string(note.textTag)) @ caps(default.codeNotes[i].noteName));
-                if (caps(string(note.textTag)) == caps(default.codeNotes[i].noteName) ||
-                   (caps(string(note.textTag)) == caps(default.codeNotes[i].noteName $ "_DV"))) //Also check downloaded emails.
+                if (CodeMatch(i,note))
                 {
                     if (!bNoHidden || !default.codeNotes[i].bHidden)
                     {
@@ -319,17 +325,69 @@ defaultproperties
     codeNotes(126)=(code1="page",code2="uberalles",noteName="15_Datacube21")
 
     ///CONVERSATION NOTES now have proper note names
+    ///NOTE: FemJC versions are handled automatically
     codeNotes(127)=(code1="0451",noteName="MeetKaplan")
+    codeNotes(128)=(code1="JCD",code2="bionicman",noteName="MeetJanice")
+    codeNotes(129)=(code1="JCD",code2="bionicman",noteName="Prebriefing")
+    codeNotes(130)=(code1="9183",noteName="MeetJosh")
+    codeNotes(131)=(code1="2153",noteName="Doctor1Barter")
+    codeNotes(132)=(code1="2153",noteName="Doctor2Barter")
+    codeNotes(133)=(code1="3316",noteName="JaneyThankful")
+    codeNotes(134)=(code1="3316",noteName="WorkerGivesInfo")
+    codeNotes(135)=(code1="",code2="righteous",noteName="MaleHostageRescued") //Add a "fake" version we can click on for autofilling
+    codeNotes(136)=(code1="NSF",code2="righteous",noteName="MaleHostageRescued",bHidden=true) //SARGE: This one needs testing!
+    codeNotes(137)=(code1="5482",noteName="FannSatisfied")
+    codeNotes(138)=(code1="6653",noteName="MeetCurly")
+    codeNotes(139)=(code1="6282",noteName="TalkedToPaulAfterMessage")
+    codeNotes(140)=(code1="0199",noteName="MeetDoctorMoreau")
+    codeNotes(141)=(code1="demiurge",code2="archon",noteName="PaulInMedLab")
+    codeNotes(142)=(code1="MJ12",code2="Invader",noteName="SvenConvos")
+    codeNotes(143)=(code1="MANAGEMENT",code2="CODE324",noteName="M06MeetBarThug")
+    codeNotes(144)=(code1="1997",noteName="Gate_Guard2")
+    codeNotes(145)=(code1="6512",noteName="Disgruntled_Guy_Convos")
+    codeNotes(146)=(code1="6512",noteName="M06SupervisorConvos")
+    codeNotes(147)=(code1="55655",noteName="M07Briefing")
+    codeNotes(148)=(code1="JCDenton",code2="sanctuary",noteName="MeetTracerTong2")
+    codeNotes(149)=(code1="06288",noteName="MeetTracerTong2") //SARGE: Needs testing!
+    codeNotes(150)=(code1="87342",noteName="MeetMaggie")
+    codeNotes(151)=(code1="6655",noteName="CafWorker1Help")
+    codeNotes(152)=(code1="0001",noteName="MeetAimee")
+    codeNotes(153)=(code1="1966",noteName="MeetCassandra")
+    codeNotes(154)=(code1="streetstation17",code2="werewolf",noteName="JoshuaInterrupted")
+    codeNotes(155)=(code1="nicolette",code2="chad",noteName="NicoletteInStudy")
+    codeNotes(156)=(code1="5868",noteName="MeetCarlaBrown")
+    codeNotes(157)=(code1="GSavage",code2="Tiffany",noteName="GaryComputerBriefing")
+    codeNotes(158)=(code1="command",code2="zebra42",noteName="MeetStacyWebber")
+    codeNotes(159)=(code1="command",code2="zebra42",noteName="StephanieRescued")
+    codeNotes(160)=(code1="Tunnel01",code2="Omega2a",noteName="MeetTimBaker")
+    codeNotes(161)=(code1="tech",code2="sharkman",noteName="MeetDrBrittanyPrinzler")
+    codeNotes(162)=(code1="1223",noteName="MeetDrCorwell")
+    codeNotes(163)=(code1="APinkerton",code2="Antennapedia",noteName="MeetDrPinkerton")
+    codeNotes(164)=(code1="8946",noteName="M15MeetEverett")
+    codeNotes(165)=(code1="1038",noteName="MeetPowerGuy")
+    codeNotes(166)=(code1="a51",code2="xx15yz",noteName="MeetScaredSoldier")
+
+    //Infolinks
+    codeNotes(167)=(code1="JCD",code2="bionicman",noteName="DL_Office")
+    codeNotes(168)=(code1="1125",noteName="DL_Paul")
+    codeNotes(169)=(code1="1125",noteName="DL_PaulDead")
+    codeNotes(170)=(code1="525",noteName="DL_Daedalus_04")
+    codeNotes(171)=(code1="5868",noteName="DL_no_carla")
+    codeNotes(172)=(code1="8456",noteName="DL_FrontGate")
+    codeNotes(173)=(code1="Page",code2="UberAlles",noteName="DL_Final_Helios03_5")
+    codeNotes(174)=(code1="Icarus",code2="panopticon",noteName="DL_Final_Helios06")
+    //codeNotes(175)=(code1="7243",code2="",noteName="DL_Final_Morgan") //SARGE: This one needs testing too!
+    codeNotes(176)=(code1="8946",noteName="DL_Morgan_Missed_Convo")
 
     guessableCodes(0)="8675309"
     guessableCodes(1)="7243"
     guessableCodes(2)="calvo"
-    guessableCodes(3)="bionicman" //Allow accessing our computer before Alex's datacube finishes.
+    guessableCodes(3)="bionicman" //Allow accessing our computer before Alex's infolink finishes.
     guessableCodes(4)="4321" //This code is so iconic and so memorable, and the code is right next to it, so just allow it anyway...
     guessableCodes(5)="22" //Only 2 digits, guessable
     guessableCodes(6)="12" //Only 2 digits, obvious
 
     ignoredCodes(0)="SECURITY"
     ignoredCodes(1)="RESEARCH"
-    ignoredCodes(2)="199"
+    ignoredCodes(2)="199" //Fix the code for a random UC keypad (that we shouldn't know anyway) returning the 1997 code for the Luminous Path entrance.
 }

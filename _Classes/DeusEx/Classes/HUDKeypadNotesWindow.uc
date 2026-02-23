@@ -309,6 +309,8 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
         case IK_Space:
             AutofillCurrentNote();
             break;
+        case IK_Escape: //Stop escape crash
+            return true;
     }
 
     return super.VirtualKeyPressed(key,bRepeat);

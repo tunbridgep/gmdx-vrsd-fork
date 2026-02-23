@@ -12,7 +12,7 @@ function AutofillNote(DeusExNote note)
     local string code1, code2; //SARGE: We only use code1...
     
     class'CodeUtils'.static.GetCodeFromNote(note,code1,code2);
-    if (keypadwindow != None)
+    if (keypadwindow != None && code1 != "" && code2 == "")
     {
         keypadWindow.inputCode = code1;
         keypadWindow.ValidateCode(false);
