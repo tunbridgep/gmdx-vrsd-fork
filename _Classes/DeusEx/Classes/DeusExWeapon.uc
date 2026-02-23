@@ -971,27 +971,9 @@ function bool IsClyzmModel()
 function SetWeaponHandTex()
 {
 	local deusexplayer p;
-	
-    p = deusexplayer(owner);
-	
-    //FOMOD weapons use the FOMOD hands
-    if (p != None && IsClyzmModel())
-    {
-        switch (p.PlayerSkin)
-        {
-			//default, black, latino, ginger, albino, respectively
-			case 0: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
-			case 1: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
-			case 2: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
-			case 3: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
-			case 4: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
-        }
-    }
-    else if(p != None)
-        handsTex = p.GetWeaponHandTex();
-    else
-        handsTex = None;
-    //p.ClientMessage("Skin Tex: " $ handsTex);
+	p = deusexplayer(owner);
+	if(p != none)
+        handsTex = p.GetWeaponHandTex(IsClyzmModel());
 }
 
 //=============================================================================

@@ -506,6 +506,22 @@ exec function UpdateHDTPsettings()
         Mesh = PlayerViewMesh;
 }
 
+//Force the Clyzm hands if we're using HDTP
+function SetWeaponHandTex()
+{
+	local deusexplayer p;
+	p = deusexplayer(owner);
+	if(p != none)
+        handsTex = p.GetWeaponHandTex(IsHDTP());
+}
+
+function Display(bool overlay)
+{
+    super.Display(overlay);
+    if (overlay && IsHDTP())
+        multiskins[1] = handstex;
+}
+
 defaultproperties
 {
      flaretime=80.000000

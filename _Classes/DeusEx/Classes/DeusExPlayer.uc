@@ -12251,12 +12251,24 @@ exec function ShowAcceleration(bool bShow)
 }
 
 //Sarge: Moved this from DeusExWeapon because it's also used by SkilledTools
-function texture GetWeaponHandTex()
+function texture GetWeaponHandTex(bool bClyzm)
 {
 	local texture tex;
     local bool femHands;
     
-	if (FemaleEnabled() && (bFemaleHandsAlways || (FlagBase != None && FlagBase.GetBool('LDDPJCIsFemale'))))
+    if (bClyzm)
+    {
+        switch (PlayerSkin)
+        {
+			//default, black, latino, ginger, albino, respectively
+			case 0: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
+        }
+    }
+	else if (FemaleEnabled() && (bFemaleHandsAlways || (FlagBase != None && FlagBase.GetBool('LDDPJCIsFemale'))))
     {
         switch(PlayerSkin)
         {
