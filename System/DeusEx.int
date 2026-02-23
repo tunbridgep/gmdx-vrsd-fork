@@ -1590,10 +1590,10 @@ ItemArticle="a"
 ItemName="Ship's Wheel"
 
 [AmmoRocket]
-ItemName="Rockets"
+ItemName="HE Rockets"
 ItemArticle="some"
 Description="A gyroscopically stabilized rocket with limited onboard guidance systems for in-flight course corrections. Engineered for use with the GEP gun."
-beltDescription="ROCKET"
+beltDescription="HE ROCKET"
 
 [CageLight]
 ItemName="Light Fixture"
