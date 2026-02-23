@@ -5,6 +5,8 @@ class DeusExPlayer extends PlayerPawnExt native;
 
 #exec OBJ LOAD FILE=Effects
 #exec OBJ LOAD FILE=GMDXText
+#exec OBJ LOAD FILE=Precipitation
+
 // Name and skin assigned to PC by player on the Character Generation screen
 var travel String	TruePlayerName;
 var travel int      PlayerSkin;
@@ -1041,6 +1043,24 @@ exec function RedoOutfits()
     }
 }
 
+//SARGE: Inform the Precipitation system that we've entered a new zone.
+function UpdatePrecipitation(ZoneInfo NewZone)
+{
+    local PrecipitationInfoBase PI;
+
+    DebugMessage("Zone is: " $ HeadRegion.Zone @ NewZone);
+
+    //Inform that we've left the old zone
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(HeadRegion.Zone);
+    if (PI != None)
+        PI.ActorLeaving(Self);
+   
+    //Inform that we've entered the new zone
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(NewZone);
+    if (PI != None)
+        PI.ActorEntered(Self);
+}
+
 //SARGE: Do a blood effect on the screen and on our weapon
 function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool flash)
 {
@@ -1958,6 +1978,8 @@ function PostPostBeginPlay()
     
     //Display or hide any Exits as necessary based on settings.
     ShowExits();
+        
+    UpdatePrecipitation(Region.Zone);
 }
 
 // ----------------------------------------------------------------------
@@ -5037,6 +5059,10 @@ simulated function PlayFootStep()
     local float stealthLevel;
 	local Pawn P;
     local bool bPawnCheck;
+    
+    //SARGE: Precipitation Stuff
+    local float RainstepVolMod;
+    local PrecipitationInfoBase PI;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5341,8 +5367,17 @@ simulated function PlayFootStep()
 
     //BroadcastMessage(volume);
 
+    // PRECIPITATION
+	// check for running in the rain, then multiply the sound volume by the return value below
+	// (only for the sound effect, not the AI sound event)
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
+    if (PI != None)
+        RainstepVolMod = PI.RainStep( self, FloorMaterial, volume, range, pitch );
+    else
+        RainStepVolMod = 1.0;
+
     stepCount++;
-    PlaySound(stepSound, SLOT_Interact, volume, , range, pitch);
+    PlaySound(stepSound, SLOT_Interact, volume*RainstepVolMod, , range, pitch);
     if (!bHardCoreMode) //CyberP: Nerf footsteps a touch on lower diffs.
         range*=0.9;
 
@@ -7524,6 +7559,8 @@ state PlayerFlying
 event HeadZoneChange(ZoneInfo newHeadZone)
 {
 	local float mult, augLevel;
+        
+    UpdatePrecipitation(NewHeadZone);
 
 	// hack to get the zone's ambientsound working until Tim fixes it
 	if (newHeadZone.AmbientSound != None)

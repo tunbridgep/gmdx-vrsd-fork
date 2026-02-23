@@ -5234,6 +5234,10 @@ function PlayFootStep()
 	local DeusExPlayer dxPlayer;
 	local float shakeRadius, shakeMagnitude;
 	local float playerDist;
+    
+    //SARGE: Precipitation Stuff
+    local float RainstepVolMod;
+    local PrecipitationInfoBase PI;
 
 	rnd = FRand();
 	mat = GetFloorMaterial();
@@ -5464,8 +5468,18 @@ function PlayFootStep()
 	pitch       = FClamp(pitch, 1.0, 1.5);
     if (IsA('GuntherHermann'))
         pitch*=1.2;
+    
+    // PRECIPITATION
+	// check for running in the rain, then multiply the sound volume by the return value below
+	// (only for the sound effect, not the AI sound event)
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
+    if (PI != None)
+        RainstepVolMod = PI.RainStep( self, mat, volume, range, pitch );
+    else
+        RainStepVolMod = 1.0;
+
 	// play the sound and send an AI event
-	PlaySound(stepSound, SLOT_Interact, volume, , range, pitch);
+	PlaySound(stepSound, SLOT_Interact, volume*RainStepVolMod, , range, pitch);
 	AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier, range*volumeMultiplier);
 
 	// Shake the camera when heavy things tread
