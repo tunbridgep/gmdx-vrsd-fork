@@ -1042,6 +1042,11 @@ simulated event RenderOverlays( canvas Canvas )
 	else
 		bSetFlashTime = false;
         
+    if (activateAn && bHasScope)
+        DrawScopeAnimation();
+    else
+        activateAn = false;
+        
     cachedDrawOffset = CalcDrawOffset();
 	if (PlayerOwner != none)
         cachedRotation = PlayerOwner.GetCurrentViewRotation();
@@ -1052,11 +1057,6 @@ simulated event RenderOverlays( canvas Canvas )
     if (!bDontActuallyRenderViewModel)
     {
         Canvas.DrawActor(self, false);
-
-        if (activateAn && bHasScope)
-            DrawScopeAnimation();
-        else
-            activateAn = false;
 
         if (PlayerOwner != none && PlayerOwner.CloakManager != None && !PlayerOwner.CloakManager.IsInAnyState())
             DrawBloodyViewModel(canvas);
