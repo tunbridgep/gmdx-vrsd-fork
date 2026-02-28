@@ -218,6 +218,7 @@ function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExN
     }
     else
         newNoteWindow.EnableEditing(false);
+
 	newNoteWindow.Lower();
     newNoteWindow.bUseMenuColors = bUseMenuColors;
     newNoteWindow.StyleChanged();
@@ -289,7 +290,7 @@ function ApplyStyleToChildren()
 
 function AutofillCurrentNote()
 {
-    if (!player.bAutofillPasswords)
+    if (!player.bAutofillPasswords || !class'CodeUtils'.static.CanAutofill(currentNote))
         return;
 
     if (currentNote != None)
@@ -310,7 +311,9 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
             AutofillCurrentNote();
             break;
         case IK_Escape: //Stop escape crash
-            return true;
+            if (NetworkTerminal(parentWindow) != None)
+                return true;
+            break;
     }
 
     return super.VirtualKeyPressed(key,bRepeat);

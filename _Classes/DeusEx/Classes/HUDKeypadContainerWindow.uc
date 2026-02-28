@@ -7,15 +7,44 @@ class HUDKeypadContainerWindow extends DeusExBaseWindow;
 var HUDKeypadWindow keypadwindow;
 var HUDKeypadNotesWindow winNotes;
 
+//Iterate through all the code notes, and return the first one matching our actual code
+function GetAutofillCode(DeusExNote note, out string code1)
+{
+    local string valid, c1, c2;
+    local int i;
+    
+    class'CodeUtils'.static.GetCodeFromNote(note,0,code1,c2);
+
+    if (keypadWindow != None && keypadWindow.keypadOwner != None)
+        valid = keypadWindow.keypadOwner.validCode;
+
+    if (valid != "")
+    {
+        for (i = 0;i < 8;i++)
+        {
+            class'CodeUtils'.static.GetCodeFromNote(note,i,c1,c2);
+            
+            if (caps(c1) == caps(valid) && c2 == "")
+            {
+                code1 = c1;
+                return;
+            }
+        }
+    }
+}
+
 function AutofillNote(DeusExNote note)
 {
-    local string code1, code2; //SARGE: We only use code1...
+    local string code;
     
-    class'CodeUtils'.static.GetCodeFromNote(note,code1,code2);
-    if (keypadwindow != None && code1 != "" && code2 == "")
+    if (keypadwindow != None && !keypadWindow.bWait)
     {
-        keypadWindow.inputCode = code1;
-        keypadWindow.ValidateCode(false);
+        GetAutofillCode(note,code);
+        if (code != "")
+        {
+            keypadWindow.inputCode = code;
+            keypadWindow.ValidateCode(false);
+        }
     }
 }
 
@@ -23,7 +52,6 @@ event InitWindow()
 {
 	Super.InitWindow();
 	SetMouseFocusMode(MFocus_click);
-
 }
 
 function InitKeypadWindow(Keypad owner, DeusExPlayer user, bool instantSuccess)
