@@ -48,6 +48,7 @@ SetOutPath $INSTDIR\Mods\GMDX_AE\System
 File "${SARGE_U_FILES}\DeusEx.u"
 File "${SARGE_U_FILES}\RSDCrap.u"
 File "${SARGE_U_FILES}\GMDXText.u"
+File "${SARGE_U_FILES}\Precipitation.u"
 
 ;Copy int file
 File "..\System\DeusEx.int"
