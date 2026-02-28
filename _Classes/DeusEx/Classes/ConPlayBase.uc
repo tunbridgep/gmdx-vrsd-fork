@@ -1152,7 +1152,7 @@ log("  event.toActor    = " $ event.toActor );
         DeusExPlayer(event.toActor).UpdateSecondaryDisplay();
     
     if (bPlaySound)
-        player.PlaySound(sound'objpickup3',SLOT_None,0.7);
+        player.PlayItemTransferSound();
 
 	nextAction = EA_NextEvent;
 	nextLabel = "";
@@ -1455,7 +1455,7 @@ function EEventAction SetupEventAddCredits( ConEventAddCredits event, out String
     }
 
     if (bPlaySound)
-        player.PlaySound(sound'objpickup3',SLOT_None,0.7);
+        player.PlayItemTransferSound();
 
 	// Make sure we haven't gone into the negative
 	player.credits = Max(player.credits, 0);
