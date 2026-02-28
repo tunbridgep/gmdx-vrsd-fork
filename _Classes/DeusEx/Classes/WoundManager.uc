@@ -37,6 +37,16 @@ function Wound GetWoundByIndex(int id)
         return None;
 }
 
+function Wound GetWoundByType(class<Wound> woundType)
+{
+    local int i;
+
+    for (i = 0;i < numWounds;i++)
+        if (woundsList[i].Class == woundType)
+            return woundsList[i];
+    return None;
+}
+
 function bool HasWounds()
 {
     local int i;

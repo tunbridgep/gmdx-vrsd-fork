@@ -14,9 +14,11 @@ var transient DeusExPlayer player;
 
 var private travel bool bHasIt;
 var private travel int woundDamage; //How much "damage" we've taken for this wound time
-var const int MaxWoundDamage; //At what point we have a chance to get a wound when damage is taken.
+var const int DamageThreshold; //At what point we have a chance to get a wound when damage is taken.
 
 var private const int requiredMedkits;  //SARGE: Number of medkits required to cure this wound
+
+var const float woundData[4];           //SARGE: Allow assigning data to wounds
 
 function int GetRequiredMedkits()
 {
@@ -28,6 +30,21 @@ function bool HasWound()
     return bHasIt;
 }
 
+function int GetDamage()
+{
+    return woundDamage;
+}
+
+//FOR NOW this is the same as HasWound.
+//Will be tiered soon.
+function string GetSeverity()
+{
+    if (bHasIt)
+        return "Afflicted";
+    else
+        return "Unaffected";
+}
+
 function AddWoundDamage(int amount)
 {
     woundDamage += amount;
@@ -35,14 +52,18 @@ function AddWoundDamage(int amount)
     player.DebugMessage(string(Self.Class) $ ": total wound damage is: " $ woundDamage);
 
     //For now, simply give us the wound when we reach the max damage
-    if (woundDamage >= maxWoundDamage)
+    if (woundDamage >= DamageThreshold)
+    {
         bHasIt = true;
+        player.GenerateTotalHealth();
+    }
 }
 
 function RemoveWound()
 {
     bHasIt = false;
     woundDamage = 0;
+    player.GenerateTotalHealth();
 }
 
 function UpdateInfo(PersonaInfoWindow winInfo)
@@ -64,7 +85,7 @@ defaultproperties
      WoundName="Default Trauma."
      WoundDescription="Report this as a bug!"
      requiredMedkits=1
-     MaxWoundDamage=450
+     DamageThreshold=450
      bHidden=True
      bTravel=True
 }

@@ -15800,6 +15800,8 @@ function GenerateTotalHealth()
 	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
 	local Skill sk;
 	local float MedSkillAdd, headMult, torsoMult;
+    local float BloodLossTorso;                                 //SARGE: Wound system.
+    local Wound wound;
 
     MedSkillAdd = 0.0;
 	if (SkillSystem!=None)
@@ -15810,13 +15812,21 @@ function GenerateTotalHealth()
     headMult = default.HealthHead/(default.HealthHead+MedSkillAdd);
     //SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
     torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+AddictionManager.GetTorsoHealthBonus());
+    
+    //SARGE: Blood loss lowers total torso health
+    if (WoundManager != None)
+    {
+        wound = WoundManager.GetWoundByType(class'WoundBloodLoss');
+        if (wound != None && wound.HasWound())
+            BloodLossTorso = wound.woundData[0];
+    }
 
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
 	if ((HealthHead <= 0) || (HealthTorso <= 0))
 		avecrit = 0;
 	else
-		avecrit = (headMult*HealthHead + torsoMult*HealthTorso) / 2.0;          //RSD: Added mults
+		avecrit = (headMult*HealthHead + torsoMult*(HealthTorso-BloodLossTorso)) / 2.0;          //RSD: Added mults
 
 	if (avecrit == 0)
 		Health = 0;
@@ -15875,6 +15885,7 @@ function int GetTotalHealth()
 function int GetTotalMaxHealth()
 {
     local int maxHealth;
+    local Wound wound;
     maxHealth   = default.HealthHead
                   + default.HealthTorso
                   + default.HealthArmLeft
@@ -15888,6 +15899,14 @@ function int GetTotalMaxHealth()
 
     if (AddictionManager != None)
         maxHealth += AddictionManager.GetTorsoHealthBonus();
+    
+    if (WoundManager != None)
+    {
+        wound = WoundManager.GetWoundByType(class'WoundBloodLoss');
+        if (wound != None && wound.HasWound())
+            maxHealth -= wound.woundData[0];
+    }
+        
     
     return maxHealth;
 }

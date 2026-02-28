@@ -384,8 +384,7 @@ function bool ButtonActivated(Window buttonPressed)
 		{
 			case btnHealAll:
                 if (bTraumasSelected)
-                {
-                }
+                    CureTrauma();
                 else
                     HealAllParts();
 				break;
@@ -1100,7 +1099,7 @@ function EnableButtons()
     //need different amounts of medkits per trauma.
     
     if (bTraumasSelected)
-        btnHealAll.EnableWindow(medKit != None && selectedTrauma != None && medkit.numCopies >= selectedTrauma.GetRequiredMedkits());
+        btnHealAll.EnableWindow(medKit != None && selectedTrauma != None && medkit.numCopies >= selectedTrauma.GetRequiredMedkits() && selectedTrauma.HasWound());
     else
         btnHealAll.EnableWindow((medKit != None) && (IsPlayerDamaged()));
 
@@ -1170,6 +1169,34 @@ function UpdateRegionsMaxHealth()                                               
    }
 	regionWindows[0].SetMaxHealth(player.default.HealthHead+MedSkillAdd);
 	regionWindows[1].SetMaxHealth(player.default.HealthTorso+MedSkillAdd+AddictionAdd); //RSD: Added drunk, zyme
+}
+
+function RemoveTraumaMedkits(Wound selectedTrauma)
+{
+    local int num;
+	local medKit medKit;
+
+    num = selectedTrauma.GetRequiredMedkits();
+
+	medKit = MedKit(player.FindInventoryType(Class'MedKit'));
+
+    if (medKit != None)
+    {
+        if (medKit.numCopies > num)
+            medKit.numCopies -= num;
+        else
+            player.DeleteInventory(medKit);
+    }
+    player.UpdateBeltText(medKit);
+}
+
+function CureTrauma()
+{
+    selectedTrauma.RemoveWound();
+	RemoveTraumaMedkits(selectedTrauma);
+    CreateTraumasList();
+    UpdateMedKits();
+	EnableButtons();
 }
 
 // ----------------------------------------------------------------------
@@ -1263,6 +1290,10 @@ function CreateTraumasList()
 	local int   buttonIndex;
 	local PersonaWoundButtonWindow woundButton;
 	local PersonaWoundButtonWindow firstButton;
+
+    winTrauma.DestroyAllChildren();
+    selectedTrauma = None;
+    selectedTraumaButton = None;
 
 	// Iterate through the skills, adding them to our list
     for (i = 0; i < player.WoundManager.GetWoundNumber();i++)

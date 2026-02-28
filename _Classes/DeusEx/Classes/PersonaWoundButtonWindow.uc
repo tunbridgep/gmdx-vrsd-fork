@@ -128,9 +128,9 @@ function RefreshWoundInfo()
     {
         winIcon.SetBackground(wound.WoundIcon);
         winName.SetText(wound.WoundName);
-        winLevel.SetText("BLAH BLAH");
+        winLevel.SetText(wound.GetSeverity());
         //winPointsNeeded.SetText(NotAvailableLabel);
-        winPointsNeeded.SetText("GRIS GRIS");
+        winPointsNeeded.SetText(wound.GetRequiredMedkits());
     }
 }
 
