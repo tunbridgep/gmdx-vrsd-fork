@@ -73383,15 +73383,6 @@ Begin Actor Class=Brush Name=Brush494
     Brush=Model'MyLevel.Model497'
     Name=Brush494
 End Actor
-Begin Actor Class=ZoneInfo Name=ZoneInfo0
-    LastRenderTime=369.336670
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=ZoneInfo
-    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=1363,ZoneNumber=6)
-    Location=(X=-65.162987,Y=-2444.642822,Z=86.098953)
-    OldLocation=(X=-65.162987,Y=-2444.642822,Z=86.098953)
-    Name=ZoneInfo0
-End Actor
 Begin Actor Class=Brush Name=Brush495
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)

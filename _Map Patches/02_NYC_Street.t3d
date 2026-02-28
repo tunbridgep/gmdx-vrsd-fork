@@ -225002,4 +225002,89 @@ Begin Actor Class=Brush Name=Brush1971
     Brush=Model'MyLevel.Model1988'
     Name=Brush1971
 End Actor
+Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter12
+    FirstNodeTag=OsgoodPrecip1
+    SoundTag=OsgoodPrecipSounds
+    bDynamicLight=True
+    LastRenderTime=363.381927
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationShelter
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=4348,ZoneNumber=13)
+    Location=(X=479.413818,Y=4170.680176,Z=-937.905396)
+    OldLocation=(X=479.413818,Y=4170.680176,Z=-937.905396)
+    Name=PrecipitationShelter12
+End Actor
+Begin Actor Class=ShelterSoundOutside Name=ShelterSoundOutside0
+    bDynamicLight=True
+    LastRenderTime=370.491943
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OsgoodPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5044,ZoneNumber=13)
+    Location=(X=693.028931,Y=2184.100098,Z=-387.070496)
+    OldLocation=(X=693.028931,Y=2202.100098,Z=-387.070496)
+    Name=ShelterSoundOutside0
+End Actor
+Begin Actor Class=ShelterSoundOutside Name=ShelterSoundOutside1
+    bDynamicLight=True
+    LastRenderTime=370.491943
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OsgoodPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5093,ZoneNumber=13)
+    Location=(X=511.028931,Y=2186.100098,Z=-387.070496)
+    OldLocation=(X=725.028931,Y=2216.100098,Z=-387.070496)
+    Name=ShelterSoundOutside1
+End Actor
+Begin Actor Class=ShelterSoundOutside Name=ShelterSoundOutside2
+    bDynamicLight=True
+    LastRenderTime=368.395172
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OsgoodPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5071,ZoneNumber=13)
+    Location=(X=-142.971069,Y=2500.100098,Z=-506.070496)
+    OldLocation=(X=543.028931,Y=2218.100098,Z=-387.070496)
+    Name=ShelterSoundOutside2
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound1
+    bDynamicLight=True
+    LastRenderTime=363.381927
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OsgoodPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=4868,ZoneNumber=13)
+    Location=(X=601.442993,Y=2315.214600,Z=-256.899017)
+    OldLocation=(X=601.442993,Y=2315.214600,Z=-421.899017)
+    Name=ShelterSound1
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode1
+    bDynamicLight=True
+    LastRenderTime=370.491943
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OsgoodPrecip1
+    Event=OsgoodPrecip2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4995,ZoneNumber=2)
+    Location=(X=966.639526,Y=1967.708984,Z=-103.900787)
+    OldLocation=(X=913.639526,Y=2101.708984,Z=-415.900787)
+    Name=PrecipitationNode1
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode10
+    bDynamicLight=True
+    LastRenderTime=370.491943
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OsgoodPrecip2
+    Event=OsgoodPrecip3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=5005,ZoneNumber=2)
+    Location=(X=-297.360474,Y=1969.708984,Z=-77.900787)
+    OldLocation=(X=998.639526,Y=1999.708984,Z=-103.900787)
+    Name=PrecipitationNode10
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode24
+    bDynamicLight=True
+    LastRenderTime=370.491943
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OsgoodPrecip3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7119,ZoneNumber=2)
+    Location=(X=-294.360474,Y=2471.708984,Z=-77.900787)
+    OldLocation=(X=-265.360474,Y=2001.708984,Z=-77.900787)
+    bSelected=True
+    Name=PrecipitationNode24
+End Actor
 End Map

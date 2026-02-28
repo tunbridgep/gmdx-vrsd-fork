@@ -202827,7 +202827,7 @@ Begin Actor Class=PrecipitationNode Name=PrecipitationNode0
     Tag=SubwayPrecip1
     Event=SubwayPrecip2
     Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5195,ZoneNumber=9)
-    Location=(X=-3939.276367,Y=1670.217529,Z=688.106445)
+    Location=(X=-3843.276367,Y=1234.217529,Z=667.106445)
     OldLocation=(X=-3939.276367,Y=1670.217529,Z=400.106445)
     Name=PrecipitationNode0
 End Actor
@@ -202836,7 +202836,7 @@ Begin Actor Class=PrecipitationNode Name=PrecipitationNode1
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=SubwayPrecip2
     Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5191,ZoneNumber=9)
-    Location=(X=-4089.276367,Y=2054.217529,Z=688.106445)
+    Location=(X=-4295.276367,Y=2501.217529,Z=684.106445)
     OldLocation=(X=-3907.276367,Y=1702.217529,Z=688.106445)
     Name=PrecipitationNode1
 End Actor
