@@ -5370,11 +5370,11 @@ simulated function PlayFootStep()
     // PRECIPITATION
 	// check for running in the rain, then multiply the sound volume by the return value below
 	// (only for the sound effect, not the AI sound event)
-    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
-    if (PI != None)
-        RainstepVolMod = PI.RainStep( self, FloorMaterial, volume, range, pitch );
-    else
-        RainStepVolMod = 1.0;
+    //PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
+    //if (PI != None)
+        RainstepVolMod = class'PrecipitationInfoBase'.static.RainStep( self, FloorMaterial, volume, range, pitch );
+    //else
+    //    RainStepVolMod = 1.0;
 
     stepCount++;
     PlaySound(stepSound, SLOT_Interact, volume*RainstepVolMod, , range, pitch);
