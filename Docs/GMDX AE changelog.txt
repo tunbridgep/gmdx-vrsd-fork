@@ -76,6 +76,8 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- The GMDX v9 feature to move weapons back when you're up next to a wall is now optional and can be toggled in the QoL settings as I know some people don't like it.
+- Significantly improved weapon rendering efficiency including removing up to 4 additional `Trace()`'s per frame (!!!) caused by a previous developer's bad coding habits.
 - Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
