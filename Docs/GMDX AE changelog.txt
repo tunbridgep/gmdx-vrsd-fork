@@ -6,6 +6,7 @@ New Features:
 - Added a new "Breakdown" perk that allows destroying pickable but previously un-breakable containers
     - Requires Demolitions: MASTER
 - GEP Gun now uses WP Rockets by default
+    - Regular rockets have been renamed to HE Rockets
     - WP Rockets will be a lot more plentiful, but regular rockets are still available
     - Paul will now additionally give you a rocket at the start of the game, if picking the GEP Gun as a starting item.
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.

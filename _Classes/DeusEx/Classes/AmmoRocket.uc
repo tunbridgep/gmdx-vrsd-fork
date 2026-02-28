@@ -24,7 +24,7 @@ defaultproperties
      ammoSkill=Class'DeusEx.SkillWeaponHeavy'
      AmmoAmount=4
      MaxAmmo=4
-     ItemName="Rockets"
+     ItemName="HE Rockets"
      ItemArticle="some"
      LandSound=Sound'DeusExSounds.Generic.WoodHit2'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoRockets'
@@ -32,7 +32,7 @@ defaultproperties
      largeIconWidth=46
      largeIconHeight=36
      Description="A gyroscopically stabilized rocket with limited onboard guidance systems for in-flight course corrections. Engineered for use with the GEP gun."
-     beltDescription="ROCKET"
+     beltDescription="HE ROCKET"
      HDTPMesh="HDTPItems.HDTPgepammo"
      PickupViewMesh=LodMesh'DeusExItems.GEPAmmo'
      PlayerViewMesh=LodMesh'DeusExItems.GEPAmmo'
