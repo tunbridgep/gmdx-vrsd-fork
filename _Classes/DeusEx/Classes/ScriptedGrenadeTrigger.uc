@@ -65,7 +65,11 @@ function TriggerCheck()
         
     player.DebugMessage("ScriptedGrenadeTrigger Check");
 		
-    //First, check if any movers are in the way
+    //First check Cooldown
+    if (cooldown < Level.TimeSeconds)
+        return;
+
+    //Then, check if any movers are in the way
     if (!bNoMoverCheck)
     {
         //SARGE: Bail if any nearby mover is closed.
@@ -83,8 +87,10 @@ function TriggerCheck()
         }
     }
 
+    //Then check for actors
     foreach RadiusActors(class'HumanMilitary', HM, CheckHumanRadius)
     {
+        player.DebugMessage("State:" @ HM.GetStateName());
         if ((HM.IsInState('Attacking') || HM.IsInState('Seeking')) && !HM.IsA('MJ12Commando')) //SARGE: Added Seeking
         {
             bGasOnly = HM.IsA('Terrorist');
@@ -125,7 +131,7 @@ function Touch(Actor Other)    //Scripted hackage!!!
         player = DeusExPlayer(Other);
         player.DebugMessage("ScriptedGrenadeTrigger Start");
 		
-        if(player != None && cooldown < Level.TimeSeconds && FRand() < 0.1)
+        if(player != None && FRand() < 0.15)
             TriggerCheck();
 
         //This part was also copied from Trigger.uc
