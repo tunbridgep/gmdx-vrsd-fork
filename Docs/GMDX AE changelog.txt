@@ -124,6 +124,8 @@ Map Changes:
     - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
+- 05_NYC_UNATCOMJ12Lab:
+    - The 9905 keypad code has been changed so as to not interfere with the 9905 code from the Airfield mission.
 - 10_Paris_Catacombs:
     - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
 - 10_Paris_Metro:

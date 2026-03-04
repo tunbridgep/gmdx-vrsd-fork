@@ -24,6 +24,8 @@ function FirstFrame()
     local DeusExWeapon MiguelWeapon;
     local DeusExAmmo MiguelAmmo;
     local bool bFollowing;
+    local Computers C;
+    local Keypad K;
 
 	Super.FirstFrame();
     
@@ -92,6 +94,8 @@ function FirstFrame()
 
 	if (localURL == "05_NYC_UNATCOMJ12LAB")
 	{
+        Fix9905Code();
+
 		// make sure this goal is completed
 		Player.GoalCompleted('EscapeToBatteryPark');
 		// delete Paul's carcass if he's still alive
@@ -280,6 +284,29 @@ function FirstFrame()
 	}
 
 CanQuickSave=true;
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Fix9905Code()
+//
+// Fix the 9905 code from Mission 03 being usable on this map.
+// ----------------------------------------------------------------------
+function Fix9905Code()
+{
+    local Computers C;
+    local Keypad K;
+    
+    //Fix 9905 code by setting it to 1991
+    //TODO: This should probably be done properly, rather than being a hack.
+    foreach AllActors(class'Computers', C)
+    {
+        C.textReplacements[0].original = "9905";
+        C.textReplacements[0].replacement = "1991";
+    }
+
+    foreach AllActors(class'Keypad', K)
+        if (K.validCode == "9905")
+            K.validCode = "1991";
 }
 
 // ----------------------------------------------------------------------
