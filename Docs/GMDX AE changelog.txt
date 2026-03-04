@@ -1,6 +1,10 @@
 1.2:
 
 New Features:
+- The "Shipping and Receiving" addon for GMDX v9 has been integrated.
+    - The original addon can be found here: https://www.moddb.com/mods/gmdx/addons/shipping-receiving-add-on
+    - It adds a new section to the Dockyards map. The map isn't to the same standard as the regular maps so it's disabled by default.
+    - It can be activated using the Playthrough Modifiers menu.
 - Massive overhaul to the QoL menu and other menus
     - Added search boxes to the QoL, Playthrough Modifiers, and Gameplay menus.
     - Added a new "simplified" QoL menu, supporting images and longer descriptions.
