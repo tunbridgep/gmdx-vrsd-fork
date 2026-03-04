@@ -48,6 +48,14 @@ function SetNewSong(Music song, optional byte section)
         if (string(currentSong) != "Title_Music.Title_Music")
             bFade = (section == 255 || song == None);
 
+        //Reset the music if we change songs while in combat or whatever
+        if (fMusicHackTimer > 0)
+        {
+            player.ClientSetMusic(song,section,255,MTRAN_Instant);
+            if (DeusExPlayer(player) != None)
+                DeusExPlayer(player).SoundVolumeHackFix();
+        }
+
         currentSong = song;
         musicMode = MUS_Ambient;
         savedSection = section;
