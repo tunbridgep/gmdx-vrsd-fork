@@ -19799,9 +19799,12 @@ function RegenStaminaTick(float deltaTime)                                      
 	local float mult;
     local float base;
 	local Perk perkEndurance;
+    local bool bHazmat;
     
     //SARGE: Stop regen if we're poisoned
-    if (poisonCounter > 0)
+    //SARGE: Now Filter Upgrade prevents the regen penalty
+    bHazmat = UsingChargedPickup(class'HazMatSuit') && PerkManager.GetPerkWithClass(class'DeusEx.PerkFilterUpgrade').bPerkObtained;
+    if (poisonCounter > 0 && !bHazmat)
         return;
 
 	perkEndurance = PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance');
