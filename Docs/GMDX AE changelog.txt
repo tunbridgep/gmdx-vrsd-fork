@@ -79,6 +79,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- The Short Fuse perk effect can now be toggled using the Reload key.
 - Minor performance optimisations for flesh fragments and other gore
 - Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
