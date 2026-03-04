@@ -5187,33 +5187,6 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
     }
 }
 
-
-// ----------------------------------------------------------------------
-// GetFloorMaterial()
-//
-// Gets the name of the texture group that we are standing on
-// ----------------------------------------------------------------------
-
-function name GetFloorMaterial()
-{
-	local vector EndTrace, HitLocation, HitNormal;
-	local actor target;
-	local int texFlags;
-	local name texName, texGroup;
-
-	// trace down to our feet
-	EndTrace = Location - CollisionHeight * 2 * vect(0,0,1);
-
-	foreach TraceTexture(class'Actor', target, texName, texGroup, texFlags, HitLocation, HitNormal, EndTrace)
-	{
-		if ((target == Level) || target.IsA('Mover'))
-			break;
-	}
-    SpecTexNPC = texName;
-	return texGroup;
-}
-
-
 // ----------------------------------------------------------------------
 // PlayFootStep()
 //
@@ -5224,8 +5197,6 @@ function name GetFloorMaterial()
 function PlayFootStep()
 {
 	local Sound stepSound;
-	local float rnd;
-	local name mat;
 	local float speedFactor, massFactor;
 	local float volume, pitch, range;
 	local float radius, maxRadius;
@@ -5238,219 +5209,15 @@ function PlayFootStep()
     //SARGE: Precipitation Stuff
     local float RainstepVolMod;
     local PrecipitationInfoBase PI;
+    local int bRainStep;
 
-	rnd = FRand();
-	mat = GetFloorMaterial();
-
-	volumeMultiplier = 1.0;
-	if (WalkSound == None)
-	{
-		if (FootRegion.Zone.bWaterZone)
-		{
-			if (rnd < 0.33)
-				stepSound = Sound'WaterStep1';
-			else if (rnd < 0.66)
-				stepSound = Sound'WaterStep2';
-			else
-				stepSound = Sound'WaterStep3';
-		}
-		else
-		{
-			switch(mat)
-			{
-				case 'Textile':
-				case 'Paper':
-					volumeMultiplier = 0.6;
-					if (rnd < 0.25)
-						stepSound = Sound'CarpetStep1';
-					else if (rnd < 0.5)
-						stepSound = Sound'CarpetStep2';
-					else if (rnd < 0.75)
-						stepSound = Sound'CarpetStep3';
-					else
-						stepSound = Sound'CarpetStep4';
-					break;
-
-                case 'Earth':
-                volumeMultiplier = 0.8;
-				if (rnd < 0.25)
-					stepSound = Sound'DIRT1';
-				else if (rnd < 0.5)
-					stepSound = Sound'DIRT2';
-				else if (rnd < 0.75)
-					stepSound = Sound'DIRT3';
-				else
-					stepSound = Sound'DIRT4';
-				break;
-
-				case 'Foliage':
-					volumeMultiplier = 0.7;
-					if (rnd < 0.25)
-						stepSound = Sound'GrassStep1';
-					else if (rnd < 0.5)
-						stepSound = Sound'GrassStep2';
-					else if (rnd < 0.75)
-						stepSound = Sound'GrassStep3';
-					else
-						stepSound = Sound'GrassStep4';
-					break;
-
-				case 'Metal':
-					volumeMultiplier = 0.9;
-                if (SpecTexNPC == 'A51_Floor_01')
-			    {
-			    if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-			    }
-			    else if (SpecTexNPC == 'metalgrate_a')
-			    {
-                if (rnd < 0.2)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_01';
-                else if (rnd < 0.4)
-			   		stepSound = Sound'GMDXSFX.Player.metal_grate_02';
-			    else if (rnd < 0.6)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_03';
-		  	    else if (rnd < 0.8)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_04';
-		  	    else
-				   	stepSound = Sound'GMDXSFX.Player.metal_grate_05';
-			    }
-			    else
-			    {
-            	if (rnd < 0.25)
-					stepSound = Sound'MetalStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'MetalStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'MetalStep3';
-				else
-					stepSound = Sound'MetalStep4';
-			    }
-					break;
-
-				case 'Ladder':
-				volumeMultiplier = 1.0;
-                if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-                 break;
-
-                case 'Glass':
-                volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'GLASS1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GLASS2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GLASS3';
-				else
-					stepSound = Sound'GLASS4';
-				break;
-
-				case 'Ceramic':
-				case 'Tiles':
-					volumeMultiplier = 0.75;
-					if (rnd < 0.25)
-						stepSound = Sound'TileStep1';
-					else if (rnd < 0.5)
-						stepSound = Sound'TileStep2';
-					else if (rnd < 0.75)
-						stepSound = Sound'TileStep3';
-					else
-						stepSound = Sound'TileStep4';
-					break;
-
-				case 'Wood':
-					 volumeMultiplier = 0.825;
-			    	if (SpecTexNPC == 'OldeOakPlank_A')
-				    {
-				    if (rnd < 0.2)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_01';
-				    else if (rnd < 0.4)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_02';
-				    else if (rnd < 0.6)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_03';
-			     	else if (rnd < 0.8)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_04';
-			    	else
-				    	stepSound = Sound'GMDXSFX.Player.Wood_05';
-			    	}
-			    	else
-				    {
-					     if (rnd < 0.25)
-						stepSound = Sound'WoodStep1';
-					    else if (rnd < 0.5)
-						stepSound = Sound'WoodStep2';
-					    else if (rnd < 0.75)
-						stepSound = Sound'WoodStep3';
-					    else
-						stepSound = Sound'WoodStep4';
-				    }
-					break;
-
-                case 'Stucco':
-                     volumeMultiplier = 0.7;
-				     if (rnd < 0.25)
-					 stepSound = Sound'CARDB1';
-				     else if (rnd < 0.5)
-					 stepSound = Sound'CARDB2';
-				     else if (rnd < 0.75)
-					 stepSound = Sound'CARDB3';
-				     else
-					 stepSound = Sound'CARDB4';
-				     break;
-
-				case 'Brick':
-				case 'Concrete':
-				volumeMultiplier = 0.9;
-					if (rnd < 0.25)
-						stepSound = Sound'STEP1';
-					else if (rnd < 0.5)
-						stepSound = Sound'STEP2';
-					else if (rnd < 0.75)
-						stepSound = Sound'STEP3';
-					else
-						stepSound = Sound'STEP4';
-					break;
-
-                /*case 'Stone':
-					volumeMultiplier = 0.8;
-					if (rnd < 0.25)
-			    		stepSound = Sound'GMDXSFX.Player.concrete_ct_01';
-				    else if (rnd < 0.5)
-			     		stepSound = Sound'GMDXSFX.Player.concrete_ct_02';
-			    	else if (rnd < 0.75)
-			     		stepSound = Sound'GMDXSFX.Player.concrete_ct_03';
-			    	else
-			     		stepSound = Sound'GMDXSFX.Player.concrete_ct_04';
-					break;
-                */
-				default:
-                    volumeMultiplier = 0.8;
-					if (rnd < 0.25)
-			    		stepSound = Sound'StoneStep1';
-				    else if (rnd < 0.5)
-			     		stepSound = Sound'StoneStep2';
-			    	else if (rnd < 0.75)
-			     		stepSound = Sound'StoneStep3';
-			    	else
-			     		stepSound = Sound'StoneStep4';
-					break;
-			}
-		}
-	}
-	else
+    local name FloorMaterial, FloorTexture;
+    class'PawnUtils'.static.GetFloorMaterial(self,FloorMaterial,FloorTexture);
+	
+    volumeMultiplier = 1.0;
+    if (walkSound == None)
+        stepSound = class'PawnUtils'.static.GetFootstepSound(self,FloorMaterial,FloorTexture,volumeMultiplier,bRainStep);
+    else
 		stepSound = WalkSound;
 
 	// compute sound volume, range and pitch, based on mass and speed
@@ -5472,9 +5239,8 @@ function PlayFootStep()
     // PRECIPITATION
 	// check for running in the rain, then multiply the sound volume by the return value below
 	// (only for the sound effect, not the AI sound event)
-    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
-    if (PI != None)
-        RainstepVolMod = PI.RainStep( self, mat, volume, range, pitch );
+    if (bRainStep == 1)
+        RainstepVolMod = class'PrecipitationInfoBase'.static.RainStep( self, FloorMaterial, volume, range, pitch );
     else
         RainStepVolMod = 1.0;
 

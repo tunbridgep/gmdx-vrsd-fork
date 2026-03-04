@@ -72,6 +72,9 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Implemented DXGNative TraceTexture fix. This means footsteps are now always accurate to the surface you're standing on
+    - Additionally enabled some previously unused footstep sounds.
+    - Generalised a lot of footstep code between the Player and NPCs, so everyone should now always have the same footstep sounds.
 - Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
