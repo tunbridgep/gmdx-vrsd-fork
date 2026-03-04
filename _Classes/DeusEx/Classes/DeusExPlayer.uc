@@ -467,7 +467,7 @@ var globalconfig bool bMantleOption;
 var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
-var globalconfig bool bModdedHeadBob;
+var globalconfig int iModdedHeadBob;                                            //SARGE: Now an int
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
@@ -10609,12 +10609,50 @@ function Inventory GetWeaponOrAmmo(Inventory queryItem)
 function CheckBob(float DeltaTime, float Speed2D, vector Y)
 {
 	local float OldBobTime;
-
-    if (!bModdedHeadBob)
+    
+    bob = 0.016; //SARGE: default.bob doesn't work. Thanks Bob!
+    if (iModdedHeadBob == 0) //Disabled
     {
-       Super.CheckBob(DeltaTime, Speed2D, Y);
-       return;
+        bob = 0;
+        return;
     }
+    else if (iModdedHeadBob == 1) //Classic/Vanilla
+    {
+        Super.CheckBob(DeltaTime, Speed2D, Y);
+        return;
+    }
+    else if (iModdedHeadBob == 2) //GMDX v9
+    {
+        CheckBobGMDX9(DeltaTime, Speed2D, Y);
+        return;
+    }
+
+	OldBobTime = BobTime;
+	if ( Speed2D < 10 )
+		BobTime += 0.2 * DeltaTime;
+	else
+		BobTime += DeltaTime * (0.5 + 0.8 * Speed2D/GroundSpeed);
+	WalkBob = Y * 1.15 * Bob * Speed2D * sin(6 * BobTime);
+	AppliedBob = AppliedBob * (1 - FMin(1, 2 * deltatime));
+	if ( LandBob > 0.01 )
+	{
+		AppliedBob += FMin(1, 4 * deltatime) * LandBob;
+		LandBob *= (1 - 8*Deltatime);
+	}
+	if ( Speed2D < 10 )
+		WalkBob.Z = 0; // AppliedBob + Bob * 30 * sin(12 * BobTime);   // take out the "breathe" effect - DEUS_EX CNN
+	else
+		WalkBob.Z = AppliedBob + Bob * Speed2D * sin(12 * BobTime);
+
+    WalkBob = WalkBob * 0.55;
+	ViewRotation.Roll = WalkBob.Y*25;
+}
+
+//SARGE: This is a jerky mess. Let's replace it...
+function CheckBobGMDX9(float DeltaTime, float Speed2D, vector Y)
+{
+	local float OldBobTime;
+
 	OldBobTime = BobTime;
 	if ( Speed2D < 10 )
 		BobTime += 0.2 * DeltaTime;
@@ -20111,7 +20149,7 @@ defaultproperties
      bHitmarkerOn=True
      bMantleOption=True
      bSkillMessage=True
-     bModdedHeadBob=True
+     iModdedHeadBob=3
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
      msgDeclinedPickup="%s is declined. Press again to pick up."
