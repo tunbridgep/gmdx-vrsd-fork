@@ -79,6 +79,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Added a scope animation for the Plasma Rifle to match the other weapons.
 - Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
