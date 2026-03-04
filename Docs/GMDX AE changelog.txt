@@ -80,6 +80,7 @@ Bugfixes:
 
 Misc Changes:
 - The Short Fuse perk effect can now be toggled using the Reload key.
+- The Field Repair and Hardened perks have been swapped in the Environmental Training tree.
 - The Filter Upgrade perk now additionally prevents the "disabled regen" effect from poison, in addition to the stamina drain from the poison itself.
 - Added sounds when levelling up skills, originally used for the Multiplayer skill menu.
 - Minor performance optimisations for flesh fragments and other gore
