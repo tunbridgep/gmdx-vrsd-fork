@@ -960,6 +960,12 @@ var travel float lastCombatTime;                             //SARGE: The last t
 
 //SARGE: Added a new check for playing Loot Sounds, so we only play it once per frame.
 var private transient bool bPlaySoundCheck;
+//Short Fuse
+var const localized string ShortFuseEnabled;
+var const localized string ShortFuseDisabled;
+
+var travel bool bShortFuseEnabled;          //SARGE: Allow manually activating/deactivating short fuse with the reload key.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -10782,6 +10788,16 @@ exec function ToggleWalk()
 // reloads the currently selected weapon
 // ----------------------------------------------------------------------
 
+function ToggleShortFuse()
+{
+    bShortFuseEnabled = !bShortFuseEnabled;
+    if (bShortFuseEnabled)
+        ClientMessage(ShortFuseEnabled);
+    else
+        ClientMessage(ShortFuseDisabled);
+    PlaySound(sound'Beep4',SLOT_None,0.8);
+}
+
 exec function ReloadWeapon()
 {
 	local DeusExWeapon W;
@@ -10797,6 +10813,16 @@ exec function ReloadWeapon()
 
     if (W != None)
     {
+        //SARGE: Now we can toggle the Short Fuse perk with the Reload key, if the selected weapon is a grenade.
+        if (W.GoverningSkill == class'DeusEx.SkillDemolition')
+        {
+            if (PerkManager != None && PerkManager.GetPerkWithClass(class'DeusEx.PerkShortFuse').bPerkObtained)
+            {
+                ToggleShortFuse();
+                return;
+            }
+        }
+
         full = W.AmmoLeftInClip() >= W.ReloadCount;
         hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
         if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
@@ -20334,4 +20360,7 @@ defaultproperties
      bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
+     bShortFuseEnabled=true
+     ShortFuseEnabled="Short Fuse Enabled"
+     ShortFuseDisabled="Short Fuse Disabled"
 }
