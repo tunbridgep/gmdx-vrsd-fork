@@ -272,7 +272,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         }
         
         //Declined
-        if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
+        if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1 && player.FindInventoryType(Inv.Class) == None)
             return colBadAug;
 
         //Not enough space
