@@ -64,7 +64,7 @@ function GetNextAutofillUsername(DeusExNote note, out string code1, out string c
     for (i = 0;i < 8;i++)
     {
         class'CodeUtils'.static.GetCodeFromNote(note,i,u1,p1);
-        if (u1 != "")
+        if (p1 != "")
         {
             validUsernames[valid] = u1;
             validPasswords[valid] = p1;

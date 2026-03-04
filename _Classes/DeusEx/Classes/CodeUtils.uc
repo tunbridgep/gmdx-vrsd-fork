@@ -5,13 +5,20 @@
 //=============================================================================
 class CodeUtils extends Object abstract;
 
+enum EAutofillMode
+{
+    AUTOFILL_NORMAL,
+    AUTOFILL_NONE,
+    AUTOFILL_PASSWORD_ONLY
+};
+
 struct CodeNote
 {
     var string code1;
     var string code2;
     var string noteName;
     var bool bHidden; //Won't show in Keypad/Computer notes window
-    var bool bNoAutofill; //Won't autofill when clicking
+    var EAutofillMode AutofillMode; //Won't autofill when clicking
 
     //Enforce checking that the note actually contains the text for our code.
     //The way we detect con notes is flawed, we only get the conversation. For conversations that add multiple notes, we need to check for the real note only.
@@ -28,7 +35,7 @@ static function bool CanAutofill(DeusExNote note)
     local int i;
     for (i = 0;i < ArrayCount(default.codeNotes);i++)
     {
-        if (CodeMatch(i,note) && !default.codeNotes[i].bNoAutofill)
+        if (CodeMatch(i,note) && default.codeNotes[i].AutofillMode != AUTOFILL_NONE)
             return true;
     }
     return false;
@@ -57,6 +64,7 @@ static function GetCodeFromNote(DeusExNote note, int codeNumber, out string code
 
     local string firstCode, firstCode2;
     local int codesDone;
+    local bool bPasswordOnly, bFirstPasswordOnly, bDone;
 
     if (note == None || note.bUserNote || note.bMarkerNote)
         return;
@@ -74,20 +82,30 @@ static function GetCodeFromNote(DeusExNote note, int codeNumber, out string code
                 {
                     code = default.codeNotes[i].code1;
                     code2 = default.codeNotes[i].code2;
-                    return;
+                    bPasswordOnly = default.codeNotes[i].AutofillMode == AUTOFILL_PASSWORD_ONLY;
+                    bDone = true;
+                    break;
                 }
                 else if (firstCode == "" && firstCode2 == "")
                 {
                     firstCode = default.codeNotes[i].code1;
                     firstCode2 = default.codeNotes[i].code2;
+                    bFirstPasswordOnly = default.codeNotes[i].AutofillMode == AUTOFILL_PASSWORD_ONLY;
                 }
                 codesDone++;
             }
         }
 
-        //We didn't have an exact match, so instead we will simply return the first code we found.
-        code = firstCode;
-        code2 = firstCode2;
+        if (!bDone)
+        {
+            //We didn't have an exact match, so instead we will simply return the first code we found.
+            code = firstCode;
+            code2 = firstCode2;
+            bPasswordOnly = bFirstPasswordOnly;
+        }
+
+        if (bPasswordOnly)
+            code = "";
     }
 }
 
@@ -252,7 +270,7 @@ defaultproperties
     codeNotes(16)=(code1="2167",noteName="02_Datacube03") //Not a bug. There's 2 copies of this
     codeNotes(17)=(code1="pdenton",code2="chameleon",noteName="02_Datacube05")
     codeNotes(18)=(code1="2167",noteName="02_Datacube06") //Not a bug. There's 2 copies of this
-    codeNotes(19)=(code1="4321",noteName="02_Datacube07",bNoAutofill=true)
+    codeNotes(19)=(code1="4321",noteName="02_Datacube07",AutofillMode=AUTOFILL_NONE)
     codeNotes(20)=(code1="543654",code2="5544",noteName="02_Datacube08")
     codeNotes(21)=(code1="2577",noteName="02_Datacube09")
     codeNotes(22)=(code1="9923",noteName="02_Datacube10")
@@ -293,7 +311,7 @@ defaultproperties
     codeNotes(54)=(code1="ajacobson",code2="calvo",noteName="05_Datacube08")
     codeNotes(55)=(code1="klloyd","target",noteName="05_Datacube08")
     codeNotes(56)=(code1="2971",noteName="05_Email01")
-    codeNotes(57)=(code1="9905",noteName="05_Email10")
+    codeNotes(57)=(code1="1991",noteName="05_Email10")
     codeNotes(58)=(code1="5239",noteName="05_Email11") //Unused???
     ////M07
     codeNotes(59)=(code1="3444",noteName="06_Bulletin07")
@@ -301,12 +319,12 @@ defaultproperties
     codeNotes(61)=(code1="718",noteName="06_Datacube05",bHidden=true)
     codeNotes(62)=(code1="MChow",noteName="06_Datacube10")
     codeNotes(63)=(code1="MJ12",code2="SECURITY",noteName="06_Datacube11")
-    codeNotes(64)=(code1="MCHOW",code2="DAMOCLES",noteName="06_Datacube12")
-    codeNotes(65)=(code1="ADONOVAN",code2="DAMOCLES",noteName="06_Datacube12")
-    codeNotes(66)=(code1="MLUNDQUIST",code2="DAMOCLES",noteName="06_Datacube12")
-    codeNotes(67)=(code1="MBATES",code2="DAMOCLES",noteName="06_Datacube12")
+    codeNotes(64)=(code1="MCHOW",code2="DAMOCLES",noteName="06_Datacube12",AutofillMode=AUTOFILL_PASSWORD_ONLY)
+    codeNotes(65)=(code1="ADONOVAN",code2="DAMOCLES",noteName="06_Datacube12",AutofillMode=AUTOFILL_PASSWORD_ONLY)
+    codeNotes(66)=(code1="MLUNDQUIST",code2="DAMOCLES",noteName="06_Datacube12",AutofillMode=AUTOFILL_PASSWORD_ONLY)
+    codeNotes(67)=(code1="MBATES",code2="DAMOCLES",noteName="06_Datacube12",AutofillMode=AUTOFILL_PASSWORD_ONLY)
     codeNotes(68)=(code1="911",noteName="06_Datacube13")
-    codeNotes(69)=(code1="mchow",code2="INSURGENT",noteName="06_Datacube15")
+    codeNotes(69)=(code1="mchow",code2="INSURGENT",noteName="06_Datacube15",bHidden=true)
     codeNotes(70)=(code1="99871",noteName="06_Datacube16")
     codeNotes(71)=(code1="TALON",code2="SKYEYE",noteName="06_Datacube18")
     codeNotes(72)=(code1="TAM",code2="Dragon",noteName="06_Datacube19")
@@ -384,8 +402,8 @@ defaultproperties
     codeNotes(134)=(code1="2153",noteName="Doctor2Barter")
     codeNotes(135)=(code1="3316",noteName="JaneyThankful")
     codeNotes(136)=(code1="3316",noteName="WorkerGivesInfo")
-    codeNotes(137)=(code1="",code2="righteous",noteName="MaleHostageRescued") //Add a "fake" version we can click on for autofilling
-    codeNotes(138)=(code1="NSF",code2="righteous",noteName="MaleHostageRescued",bHidden=true) //SARGE: This one needs testing!
+    //codeNotes(137)=(code1="",code2="righteous",noteName="MaleHostageRescued") //Add a "fake" version we can click on for autofilling
+    codeNotes(138)=(code1="NSF",code2="righteous",noteName="MaleHostageRescued",AutofillMode=AUTOFILL_PASSWORD_ONLY) //SARGE: This one needs testing!
     codeNotes(139)=(code1="5482",noteName="FannSatisfied")
     codeNotes(140)=(code1="6653",noteName="MeetCurly",bTextCheck=true)
     codeNotes(141)=(code1="6282",noteName="TalkedToPaulAfterMessage")
@@ -393,13 +411,13 @@ defaultproperties
     codeNotes(143)=(code1="demiurge",code2="archon",noteName="PaulInMedLab")
     codeNotes(144)=(code1="MJ12",code2="Invader",noteName="SvenConvos")
     codeNotes(145)=(code1="MANAGEMENT",code2="CODE324",noteName="M06MeetBarThug")
-    codeNotes(146)=(code1="1997",noteName="Gate_Guard2")
+    codeNotes(146)=(code1="1997",noteName="Gate_Guard2",bTextCheck=true)
     codeNotes(147)=(code1="6512",noteName="Disgruntled_Guy_Convos")
     codeNotes(148)=(code1="6512",noteName="M06SupervisorConvos")
-    codeNotes(149)=(code1="55655",noteName="M07Briefing")
-    codeNotes(150)=(code1="JCDenton",code2="sanctuary",noteName="MeetTracerTong2")
-    codeNotes(151)=(code1="06288",noteName="MeetTracerTong2") //SARGE: Needs testing!
-    codeNotes(152)=(code1="87342",noteName="MeetMaggie")
+    codeNotes(149)=(code1="55655",noteName="M07Briefing",bTextCheck=true)
+    codeNotes(150)=(code1="JCDenton",code2="sanctuary",noteName="MeetTracerTong2",bTextCheck=true)
+    codeNotes(151)=(code1="06288",noteName="MeetTracerTong2",bTextCheck=true)
+    codeNotes(152)=(code1="87342",noteName="MeetMaggie",bTextCheck=true)
     codeNotes(153)=(code1="6655",noteName="CafWorker1Help")
     codeNotes(154)=(code1="0001",noteName="MeetAimee")
     codeNotes(155)=(code1="1966",noteName="MeetCassandra")
@@ -434,6 +452,8 @@ defaultproperties
     codeNotes(180)=(code1="2167",noteName="02_NYC_Underground_ComputerSecurity3_Special1")
     codeNotes(181)=(code1="6512",noteName="06_HongKong_Versalife_ComputerPersonal72_Special0")
 
+    //Shipping and Receiving notes
+    codeNotes(182)=(code1="2835",noteName="Datacube20",autofillmode=AUTOFILL_NONE)
 
     guessableCodes(0)="8675309"
     guessableCodes(1)="7243"
