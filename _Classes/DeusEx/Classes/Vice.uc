@@ -43,7 +43,7 @@ function int GetHealAmount(DeusExPlayer player)
     if (player.bAddictionSystem)
         return 0;
     else
-        return healAmount;
+        return super.GetHealAmount(player);
 }
 
 function string GetDescription(DeusExPlayer player)

@@ -160,7 +160,7 @@ function CreateButtons()
 
 	winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(13, 407);
-	winActionButtons.SetWidth(220); //Was 160
+	winActionButtons.SetWidth(295); //Was 160
 	winActionButtons.FillAllSpace(False);
 
     buttonStats = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
@@ -238,19 +238,13 @@ function CreateRegionWindows()
 {
     local int spill;
     local Skill sk;
-    local float MedSkillAdd;
-    local int AddictionAdd;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
+    local int TorsoAdd, HeadAdd;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
         
-    AddictionAdd = player.AddictionManager.GetTorsoHealthBonus();                  //RSD: Get 5 bonus health for every 2 min on timer
-    MedSkillAdd=0.0;
-   if (player.SkillSystem!=None)
-   {
-      sk = player.SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
-      //sk=SkillSystem.skillClasses[8]; //get pointer to MedicalSkill
-      if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
-   }
-	regionWindows[0] = CreateRegionWindow(0, 218,  29, player.HealthHead,     player.default.HealthHead+MedSkillAdd,     HealthLocationHead);
-	regionWindows[1] = CreateRegionWindow(1,  27,  43, player.HealthTorso,    player.default.HealthTorso+MedSkillAdd+AddictionAdd,    HealthLocationTorso); //RSD: Added drunk, zyme
+    TorsoAdd = player.GetTorsoHealthAdjustment();                  //RSD: Get 5 bonus health for every 2 min on timer //SARGE: Changed to generic function.
+    HeadAdd = player.GetHeadHealthAdjustment();
+	
+    regionWindows[0] = CreateRegionWindow(0, 218,  29, player.HealthHead,     player.default.HealthHead+HeadAdd,     HealthLocationHead);
+	regionWindows[1] = CreateRegionWindow(1,  27,  43, player.HealthTorso,    player.default.HealthTorso+TorsoAdd,    HealthLocationTorso); //RSD: Added drunk, zyme
 	regionWindows[2] = CreateRegionWindow(2,  19, 237, player.HealthArmRight, player.default.HealthArmRight, HealthLocationRightArm);
 	regionWindows[3] = CreateRegionWindow(3, 230, 237, player.HealthArmLeft,  player.default.HealthArmLeft,  HealthLocationLeftArm);
 	regionWindows[4] = CreateRegionWindow(4,  24, 347, player.HealthLegRight, player.default.HealthLegRight, HealthLocationRightLeg);
@@ -739,7 +733,7 @@ function UpdateStatusText()                                                     
 
         targetBPM = heartRate + conv + extraBPM + randBPM; //CyberP: combat mode, athletics skill, current health and more affect heart rate
 
-        player.DebugMessage(heartRate @ conv @ extraBPM @ randBPM);
+        //player.DebugMessage(heartRate @ conv @ extraBPM @ randBPM);
         
         //Set some reasonable limits
         targetBPM = MIN(MAX(70,targetBPM),140);
@@ -924,8 +918,7 @@ function int HealPart(PersonaHealthRegionWindow region, optional float pointsToH
 	local medKit medKit;
 
 	local Skill sk;
-    local float MedSkillAdd;
-    local int AddictionAdd;
+    local int TorsoAdd, HeadAdd;
 
 	// First make sure the player has a medkit
 	medKit = MedKit(player.FindInventoryType(Class'MedKit'));
@@ -988,24 +981,18 @@ function int HealPart(PersonaHealthRegionWindow region, optional float pointsToH
 	}
 	else
 	{
-      AddictionAdd = player.AddictionManager.GetTorsoHealthBonus();
-      MedSkillAdd=0.0;  //GMDX
-      if (player.SkillSystem!=None) //GMDX
-      {
-         sk = player.SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
-         //sk=SkillSystem.skillClasses[8]; //get pointer to MedicalSkill
-         if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
-      }
+        TorsoAdd = player.GetTorsoHealthAdjustment();
+        HeadAdd = player.GetHeadHealthAdjustment();
 		switch(region.GetPartIndex())
 		{
 			case 0:		// head
-				newHealth = FMin(playerHealth[0] + pointsToHeal, player.default.HealthHead+MedSkillAdd); //GMDX
+				newHealth = FMin(playerHealth[0] + pointsToHeal, player.default.HealthHead+HeadAdd); //GMDX
 				healthAdded = newHealth - playerHealth[0];
 				playerHealth[0] = newHealth;
 				break;
 
 			case 1:		// torso
-				newHealth = FMin(playerHealth[1] + pointsToHeal, player.default.HealthTorso+MedSkillAdd+AddictionAdd);   //GMDX //RSD: Added drunk, zyme
+				newHealth = FMin(playerHealth[1] + pointsToHeal, player.default.HealthTorso+TorsoAdd);   //GMDX //RSD: Added drunk, zyme
 				healthAdded = newHealth - playerHealth[1];
 				playerHealth[1] = newHealth;
 				break;
@@ -1154,21 +1141,14 @@ function UpdateRegionsMaxHealth()                                               
 {
    local int spill;
    local Skill sk;
-   local float MedSkillAdd;
-   local int AddictionAdd;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
+   local int TorsoAdd, HeadAdd;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	
 
-    AddictionAdd = player.AddictionManager.GetTorsoHealthBonus();                  //RSD: Get 5 bonus health for every 2 min on timer
+    TorsoAdd = player.GetTorsoHealthAdjustment();                  //RSD: Get 5 bonus health for every 2 min on timer
+    HeadAdd = player.GetHeadHealthAdjustment();
 
-	MedSkillAdd=0.0;
-   if (player.SkillSystem!=None)
-   {
-      sk = player.SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
-      //sk=SkillSystem.skillClasses[8]; //get pointer to MedicalSkill
-      if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
-   }
-	regionWindows[0].SetMaxHealth(player.default.HealthHead+MedSkillAdd);
-	regionWindows[1].SetMaxHealth(player.default.HealthTorso+MedSkillAdd+AddictionAdd); //RSD: Added drunk, zyme
+	regionWindows[0].SetMaxHealth(player.default.HealthHead+HeadAdd);
+	regionWindows[1].SetMaxHealth(player.default.HealthTorso+TorsoAdd); //RSD: Added drunk, zyme
 }
 
 function RemoveTraumaMedkits(Wound selectedTrauma)
@@ -1217,7 +1197,7 @@ function ToggleTraumaWindow()
         winBody.Hide();
         winOverlays.Hide();
         btnHealAll.SetButtonText(CureTraumaButtonLabel);
-        buttonStats.Hide();
+        buttonStats.SetSensitivity(False);
 
         for (i = 0;i < 6;i++)
             partButtons[i].Hide();
@@ -1227,6 +1207,13 @@ function ToggleTraumaWindow()
 		
         //Reselect the first trauma button
 		SelectTraumaButton(traumaButtons[0]);
+        
+        //Update background
+        clientTextures[0] = Texture'RSDCrap.UserInterface.TraumaBackground_1';
+        clientTextures[1] = Texture'RSDCrap.UserInterface.TraumaBackground_2';
+        clientTextures[3] = Texture'RSDCrap.UserInterface.TraumaBackground_4';
+        clientTextures[4] = Texture'RSDCrap.UserInterface.TraumaBackground_5';
+        UpdateClientTextures();
     }
     else
     {
@@ -1237,13 +1224,20 @@ function ToggleTraumaWindow()
         winBody.Show();
         winOverlays.Show();
         btnHealAll.SetButtonText(HealAllButtonLabel);
-        buttonStats.Show();
+        buttonStats.SetSensitivity(True);
 
         for (i = 0;i < 6;i++)
             partButtons[i].Show();
 
         for (i = 0;i < 6;i++)
             regionWindows[i].Show();
+        
+        //Update background
+        clientTextures[0] = default.clientTextures[0];
+        clientTextures[1] = default.clientTextures[1];
+        clientTextures[3] = default.clientTextures[3];
+        clientTextures[4] = default.clientTextures[4];
+        UpdateClientTextures();
     }
 
     EnableButtons();
@@ -1257,8 +1251,8 @@ function CreateTraumaTileWindow()
 {
 	winTrauma = TileWindow(winClient.NewChild(Class'TileWindow'));
 
-	winTrauma.SetPos(12, 39);
-	winTrauma.SetSize(302, 324);    //297 GMDX:- set the skill list hight (font size is 27) , also have to mod the update button position
+	winTrauma.SetPos(14, 32);
+	winTrauma.SetSize(293, 342);    //297 GMDX:- set the skill list hight (font size is 27) , also have to mod the update button position
 	winTrauma.SetMinorSpacing(0);
 	winTrauma.SetMargins(0, 0);
 	winTrauma.SetOrder(ORDER_Down);
@@ -1272,12 +1266,14 @@ function CreateTraumaTileWindow()
 function CreateTraumasHeaders()
 {
 	winTraumaLevel = PersonaNormalTextWindow(winClient.NewChild(Class'PersonaNormalTextWindow'));
-	winTraumaLevel.SetPos(177, 24);
+	winTraumaLevel.SetPos(177, 21);
 	winTraumaLevel.SetText(TraumaLevelText);
+    winTraumaLevel.Hide();
 
 	winMedkitsNeeded = PersonaNormalTextWindow(winClient.NewChild(Class'PersonaNormalTextWindow'));
-	winMedkitsNeeded.SetPos(247, 24);
+	winMedkitsNeeded.SetPos(227, 21);
 	winMedkitsNeeded.SetText(KitsNeededHeaderText);
+    winMedkitsNeeded.Hide();
 }
 
 // ----------------------------------------------------------------------
@@ -1290,6 +1286,7 @@ function CreateTraumasList()
 	local int   buttonIndex;
 	local PersonaWoundButtonWindow woundButton;
 	local PersonaWoundButtonWindow firstButton;
+    local Wound wound;
 
     winTrauma.DestroyAllChildren();
     selectedTrauma = None;
@@ -1298,8 +1295,12 @@ function CreateTraumasList()
 	// Iterate through the skills, adding them to our list
     for (i = 0; i < player.WoundManager.GetWoundNumber();i++)
 	{
+        wound = player.WoundManager.GetWoundByIndex(i);
+        if (wound.bNoDisplay)
+            continue;
+
         woundButton = PersonaWoundButtonWindow(winTrauma.NewChild(Class'PersonaWoundButtonWindow'));
-        woundButton.SetWound(player.WoundManager.GetWoundByIndex(i));
+        woundButton.SetWound(wound);
 
         traumaButtons[buttonIndex++] = woundButton;
 
@@ -1403,8 +1404,8 @@ defaultproperties
      clientTextures(0)=Texture'DeusExUI.UserInterface.HealthBackground_1'
      clientTextures(1)=Texture'DeusExUI.UserInterface.HealthBackground_2'
      clientTextures(2)=Texture'DeusExUI.UserInterface.HealthBackground_3'
-     clientTextures(3)=Texture'GMDXSFX.UI.HealthInterface4'
-     clientTextures(4)=Texture'DeusExUI.UserInterface.HealthBackground_5'
+     clientTextures(3)=Texture'RSDCrap.UserInterface.HealthBackground_4'
+     clientTextures(4)=Texture'RSDCrap.UserInterface.HealthBackground_5'
      clientTextures(5)=Texture'DeusExUI.UserInterface.HealthBackground_6'
      clientBorderTextures(0)=Texture'DeusExUI.UserInterface.HealthBorder_1'
      clientBorderTextures(1)=Texture'DeusExUI.UserInterface.HealthBorder_2'

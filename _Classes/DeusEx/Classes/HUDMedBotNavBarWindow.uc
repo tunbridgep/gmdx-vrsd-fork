@@ -57,16 +57,24 @@ function InvokeHealthScreen(optional bool bShowTraumas)
         augScreen.SkipAnimation(True);
         medBot = augScreen.medBot;
     }
+    
+    //Allow switching from wounds screen to health screen and vice versa
+    healthScreen = HUDMedBotHealthScreen(GetParent());
+    if (healthScreen != None)
+    {
+        healthScreen.SkipAnimation(True);
+        medBot = healthScreen.medBot;
+    }
 
     // Invoke the health screen
-    healthScreen = HUDMedBotHealthScreen(root.InvokeUIScreen(Class'HUDMedBotHealthScreen', True));
+    if (bShowTraumas)
+        healthScreen = HUDMedBotWoundScreen(root.InvokeUIScreen(Class'HUDMedBotWoundScreen', True));
+    else
+        healthScreen = HUDMedBotHealthScreen(root.InvokeUIScreen(Class'HUDMedBotHealthScreen', True));
 
     // Now set the medBot if it's not none
     if (medBot != None)
         healthScreen.SetMedicalBot(medBot);
-
-    //Set to Trauma mode
-    healthScreen.bTraumasSelected = bShowTraumas;
 }
 
 // ----------------------------------------------------------------------

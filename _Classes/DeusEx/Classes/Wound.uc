@@ -20,6 +20,8 @@ var private const int requiredMedkits;  //SARGE: Number of medkits required to c
 
 var const float woundData[4];           //SARGE: Allow assigning data to wounds
 
+var const bool bNoDisplay;              //SARGE: Don't display in the list. It's essentially hidden.
+
 function int GetRequiredMedkits()
 {
     return requiredMedkits;
@@ -52,25 +54,33 @@ function AddWoundDamage(int amount)
     player.DebugMessage(string(Self.Class) $ ": total wound damage is: " $ woundDamage);
 
     //For now, simply give us the wound when we reach the max damage
-    if (woundDamage >= DamageThreshold)
+    if (woundDamage >= DamageThreshold && !bHasIt)
     {
         bHasIt = true;
-        player.GenerateTotalHealth();
+        WoundAdded();
     }
+}
+
+function WoundAdded()
+{
+}
+
+function WoundRemoved()
+{
 }
 
 function RemoveWound()
 {
     bHasIt = false;
     woundDamage = 0;
-    player.GenerateTotalHealth();
+    WoundRemoved();
 }
 
 function UpdateInfo(PersonaInfoWindow winInfo)
 {
 	winInfo.Clear();
 	winInfo.SetTitle(WoundName);
-    winInfo.SetText(WoundDescription);
+    winInfo.SetText(sprintf(WoundDescription,int(woundData[0])));
     /*
 	winInfo.Clear();
 	winInfo.SetTitle(SkillName);

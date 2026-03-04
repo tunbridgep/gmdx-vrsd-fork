@@ -50,7 +50,7 @@ function CreateControls()
         winLevel.SetSize(54, 27);
 
         winPointsNeeded = PersonaSkillTextWindow(NewChild(Class'PersonaSkillTextWindow'));
-        winPointsNeeded.SetPos(264, 0);
+        winPointsNeeded.SetPos(244, 0);
         winPointsNeeded.SetSize(30, 27);
         winPointsNeeded.SetTextAlignments(HALIGN_Right, VALIGN_Center);
 }

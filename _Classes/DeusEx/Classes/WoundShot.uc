@@ -7,5 +7,6 @@ defaultproperties
 {
     WoundName="Bullet Wounds"
     WoundDescription="If you're reading this, you've been shot"
+    bNoDisplay=true
 }
 

@@ -5,7 +5,8 @@ class WoundBurning extends Wound;
 
 defaultproperties
 {
-    WoundName="Test Burns"
-    WoundDescription="Fire indeed hot!"
+    WoundName="Burns"
+    WoundDescription="Third-Degree burns can cause severe risk of infection and extreme pain, reducing the effectiveness of medkits by %d points."
+    woundData(0)=10
 }
 

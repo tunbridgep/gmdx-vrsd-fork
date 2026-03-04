@@ -23,10 +23,7 @@ var Localized String MedBotOutOfJuice;
 
 var Localized String TotalHealthStr;
 var Localized String TotalRestoreAmount;
-
-
-//SARGE: Trauma System, called the Wound System internally
-var PersonaActionButtonWindow   btnCureAll; //Bot button
+var Localized String healsRemaining;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -139,21 +136,11 @@ function CreateButtons()
 
 	winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(346, 346);
-    if (player.bWoundSystem)
-        winActionButtons.SetWidth(147);
-    else
-        winActionButtons.SetWidth(97);
+    winActionButtons.SetWidth(97);
 	winActionButtons.FillAllSpace(False);
 
 	btnHealAll = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
     btnHealAll.SetButtonText(HealAllButtonLabel);
-
-    //SARGE: Accommodate the Cure button
-    if (player.bWoundSystem)
-    {
-        btnCureAll = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-        btnCureAll.SetButtonText(CureAllButtonLabel);
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -190,17 +177,8 @@ function CreateMedBotDisplay()
 {
 	winHealthBar = ProgressBarWindow(winClient.NewChild(Class'ProgressBarWindow'));
 
-    //SARGE: Accommodate the Cure button
-    if (player.bWoundSystem)
-    {
-        winHealthBar.SetPos(496, 348);
-        winHealthBar.SetSize(90, 12);
-    }
-    else
-    {
-        winHealthBar.SetPos(446, 348);
-        winHealthBar.SetSize(140, 12);
-    }
+    winHealthBar.SetPos(446, 348);
+    winHealthBar.SetSize(140, 12);
 	winHealthBar.SetValues(0, 100);
 	winHealthBar.UseScaledColor(True);
 	winHealthBar.SetVertical(False);
@@ -209,17 +187,8 @@ function CreateMedBotDisplay()
 
 	winHealthBarText = TextWindow(winClient.NewChild(Class'TextWindow'));
     
-    //SARGE: Accommodate the Cure button
-    if (player.bWoundSystem)
-    {
-        winHealthBarText.SetPos(496, 349);
-        winHealthBarText.SetSize(90, 12);
-    }
-    else
-    {
-        winHealthBarText.SetPos(446, 349);
-        winHealthBarText.SetSize(140, 12);
-    }
+    winHealthBarText.SetPos(446, 349);
+    winHealthBarText.SetSize(140, 12);
 	winHealthBarText.SetTextMargins(0, 0);
 	winHealthBarText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
 	winHealthBarText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
@@ -253,7 +222,7 @@ function UpdateMedBotDisplay()
 			winHealthBar.SetCurrentValue(100);
 			readyText = ReadyLabel;                                             //RSD
 			if (player.CombatDifficulty > 1.0)                                  //RSD: Print number of uses remaining
-            	readyText = readyText @ "(" $ medBot.healMaxTimes - medBot.lowerThreshold @ "heals)";
+            	readyText = readyText @ sprintf(healsRemaining,medBot.healMaxTimes - medBot.lowerThreshold);
 			winHealthBarText.SetText(readyText);                                //RSD: Was ReadyLabel
 			if (IsPlayerDamaged())
 				infoText = infoText $ MedBotReadyLabel;
@@ -305,12 +274,8 @@ function bool ButtonActivated(Window buttonPressed)
 
 	switch(buttonPressed)
 	{
-		case btnCureAll:
-			MedBotCurePlayer();
-			break;
-
 		case btnHealAll:
-			MedBotHealPlayer();
+            MedBotHealPlayer();
 			break;
 
 		default:
@@ -322,19 +287,6 @@ function bool ButtonActivated(Window buttonPressed)
 		return True;
 	else
 		return Super.ButtonActivated(buttonPressed);
-}
-
-// ----------------------------------------------------------------------
-// MedBotCurePlayer()
-// ----------------------------------------------------------------------
-
-function MedBotCurePlayer()
-{
-	medBot.CurePlayer(player);
-	UpdateMedBotDisplay();
-	UpdateRegionWindows();
-	
-	player.HealScreenEffect(8.0, false);
 }
 
 // ----------------------------------------------------------------------
@@ -357,22 +309,11 @@ function MedBotHealPlayer()
 function EnableButtons()
 {
 	if (medBot != None)
-    {
-		btnHealAll.EnableWindow(medBot.CanHeal() && IsPlayerDamaged());
-        if (btnCureAll != None)
-            btnCureAll.EnableWindow(medBot.CanHeal() && IsPlayerWounded());
-    }
+        btnHealAll.EnableWindow(medBot.CanHeal() && IsPlayerDamaged());
 	else
-    {
 		btnHealAll.EnableWindow(False);
-        if (btnCureAll != None)
-            btnCureAll.EnableWindow(False);
-    }
 	
-    if (bTraumasSelected && HUDMedBotNavBarWindow(winNavBar).btnWounds != None)
-        HUDMedBotNavBarWindow(winNavBar).btnWounds.SetSensitivity(False);
-    else
-        HUDMedBotNavBarWindow(winNavBar).btnHealth.SetSensitivity(False);
+    HUDMedBotNavBarWindow(winNavBar).btnHealth.SetSensitivity(False);
 
 }
 
@@ -472,6 +413,7 @@ defaultproperties
      ReadyLabel="Ready!"
      NotReadyLabel="Offline!"
      MedBotOutOfJuice="|nThis medical unit has no charge left."
+     healsRemaining="(%d charges)"
      bShowHealButtons=False
      HealAllButtonLabel="  H|&eal All  "
      TotalRestoreAmount="Total Restoration Amount: "

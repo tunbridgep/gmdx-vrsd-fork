@@ -7,5 +7,6 @@ defaultproperties
 {
     WoundName="Test Falling"
     WoundDescription="Legs Broek"
+    bNoDisplay=true
 }
 

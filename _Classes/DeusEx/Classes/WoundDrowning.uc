@@ -7,5 +7,6 @@ defaultproperties
 {
     WoundName="Test Drowning"
     WoundDescription="Glug Glug"
+    bNoDisplay=true
 }
 
