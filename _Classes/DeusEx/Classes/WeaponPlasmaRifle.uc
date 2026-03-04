@@ -15,9 +15,13 @@ function OnProjectileFired(Projectile firedProjectile)
 
     P = DeusExPlayer(Owner);
 
+    //Don't allow breeder ammo to create more breeder ammo.
+    if (AmmoType != None && AmmoType.IsA('AmmoPlasmaBreeder'))
+        return;
+
     if (P != None && P.PerkManager != None)
     {
-        Log("Plasma Check");
+        //Log("Plasma Check");
         PK = PerkPlasmaBreeder(P.PerkManager.GetPerkWithClass(class'PerkPlasmaBreeder'));
         if (PK != None)
         {

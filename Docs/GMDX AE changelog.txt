@@ -9,6 +9,7 @@ New Features:
     - Regular rockets have been renamed to HE Rockets
     - WP Rockets will be a lot more plentiful, but regular rockets are still available
     - Paul will now additionally give you a rocket at the start of the game, if picking the GEP Gun as a starting item.
+    - The H.E. Rocket perk is now called Rocket Rigger and applies to WP Rockets as well as HE Rockets.
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
     - The vanilla ones can still be used by disabling these in the QoL menu.
 - Added blood to weapons when exploding or attacking enemies at extreme close range.

@@ -9,7 +9,7 @@ function OnMapLoadAndPurchase()
 
     foreach PerkOwner.AllActors(class'DeusExMover',mov)
     {
-        if (mov.bPickable && !mov.bBreakable)
+        if (mov.bPickable && !mov.bBreakable && mov.Event == '')
         {
             mov.bBreakable = true;
             mov.doorStrength = 0.8;
