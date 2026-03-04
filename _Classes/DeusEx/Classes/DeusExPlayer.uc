@@ -952,6 +952,8 @@ var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at 
 
 var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
+var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -2901,10 +2903,10 @@ function BuySkillSound( int code )
 			snd = Sound'Menu_OK';
 			break;
 		case 1:
-			snd = Sound'Menu_Cancel';
+			snd = Sound'Menu_Focus';
 			break;
 		case 2:
-			snd = Sound'Menu_Focus';
+			snd = Sound'Menu_Cancel';
 			break;
 		case 3:
 			snd = Sound'Menu_BuySkills';
