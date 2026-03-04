@@ -82,6 +82,11 @@ static function bool IsHDTP()
     return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
+static function bool IsNewBlood()
+{
+    return class'DeusExPlayer'.default.bNewBlood;
+}
+
 //Need a new function so we can override while still doing the Reattach last;
 function DoHDTP()
 {

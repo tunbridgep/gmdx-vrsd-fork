@@ -56454,6 +56454,7 @@ Begin Actor Class=RepairBot Name=RepairBot0
     Name=RepairBot0
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot1
+    bHardcoreRemove=true
     Orders=Standing
     HomeTag=Start
     HomeExtent=200.000000
@@ -147767,8 +147768,9 @@ Begin Actor Class=Brush Name=Brush1200
     Name=Brush1200
 End Actor
 Begin Actor Class=Phone Name=Phone0
-    AnswerSound=AS_Busy
-    ringFreq=0.100000
+    AnswerSound=AS_None
+    bRingWhenPlayerClose=true
+    ringFreq=0.000000
     LastRenderTime=0.736332
     DistanceFromPlayer=6318.091797
     Level=LevelInfo'MyLevel.LevelInfo0'

@@ -4091,7 +4091,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	local EHitLocation hitPos;
 	local float        shieldMult;
 	local DeusExPlayer player;   //CyberP: for screenflash if near gibs
-    local float dist;            //CyberP: for screenflash if near gibs
     local GMDXImpactSpark AST;
     local FleshFragmentSmall ffs;
     local int i;
@@ -4119,6 +4118,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	// Block certain damage types; perform special ops on others
 	if (!FilterDamageType(instigatedBy, hitLocation, offset, damageType))
 		return;
+        
+    player = DeusExPlayer(GetPlayerPawn());
 
 	// Impart momentum
 	ImpartMomentum(momentum, instigatedBy);
@@ -4215,6 +4216,10 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
              AST.SoundPitch=64;
 		  }
     }
+    
+    //Cover the players weapon in blood
+    if (bCanBleed && player != None)
+        player.DoBloodEffect(actualDamage,damageType,Location,false);
 
 	if (Health <= 0)
 	{
@@ -4231,8 +4236,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     }
     if (!bSitting && bFlyer && !IsA('Robot') && !IsA('Animal'))
     {
-    player = DeusExPlayer(GetPlayerPawn());
-    if (DamageType == 'Shot' && (Damage >= 25 || (player.inHand != None && player.inHand.IsA('WeaponAssaultShotgun')) ||
+    if (player != None && DamageType == 'Shot' && (Damage >= 25 || (player.inHand != None && player.inHand.IsA('WeaponAssaultShotgun')) ||
      (player.inHand != None && player.inHand.IsA('WeaponSawedOffShotgun')))) //CyberP: meh
     {
     PlaySound(Sound'GMDXSFX.Generic.BloodSpray',SLOT_None,1.5,,1024);
@@ -4264,12 +4268,9 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             PopHead();
             if (player!=none)
             {
-                dist = Abs(VSize(player.Location - Location));
-                if (dist < 160)
-                {
-                    player.ClientFlash(14, vect(160,0,0));
-                    player.bloodTime = 4.000000;
-                }
+                //Cover the players weapon in blood
+                if (bCanBleed && player != None)
+                    player.DoBloodEffect(actualDamage,damageType,Location,true);
             }
             for(i=0;i<18;i++)
             {
@@ -4303,12 +4304,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             player = DeusExPlayer(GetPlayerPawn()); //CyberP: for screenflash if near gibs
             if (player != none && CollisionHeight > 10)
             {
-   		    dist = Abs(VSize(player.Location - Location));
-   		    if (dist < 192)
-   		     {
-                player.ClientFlash(14, vect(180,0,0));
-                player.bloodTime = 5.000000;
-             }
+                //Cover the players weapon in blood
+                player.DoBloodEffect(Damage,damageType,Location,true);
             }
             }
 		else

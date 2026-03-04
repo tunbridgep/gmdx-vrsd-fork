@@ -14,6 +14,26 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 }
 */
 
+//SARGE: Don't make the green bit bloody
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+    {
+        multiskins[3] = Texture'PinkMaskTex';
+        multiskins[5] = Texture'PinkMaskTex';
+    }
+    else
+    {
+        multiskins[1] = Texture'PinkMaskTex';
+        multiskins[4] = Texture'PinkMaskTex';
+    }
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);

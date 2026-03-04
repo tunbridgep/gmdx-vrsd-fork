@@ -106,7 +106,7 @@ defaultproperties
      items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
      items(65)=(HelpText="Disable the flash effect when healing or change the color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Classic",bAdvancedModeOnly=true);
      items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Audio: Quiet Augmentations",variable="bQuietAugs",defaultValue=1);
-     items(67)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1,bAdvancedModeOnly=true);
+     items(67)=(HelpText="Enable Head bobbing. Three different styles are available. Vanilla is up and down, GMDX9 is realistic and AE is a smoothed version of GMDX9.",actionText="Player: Realistic Head-Bobbing",variable="iModdedHeadBob",defaultValue=3,valueText1="Vanilla",valueText2="GMDX9",valueText3="GMDXAE",bAdvancedModeOnly=true);
      items(68)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0,bAdvancedModeOnly=true);
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompVacbots",defaultValue=0,bAdvancedModeOnly=true);
      items(70)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0)
@@ -168,6 +168,10 @@ defaultproperties
      items(123)=(HelpText="Randomizes the skins of junk food, sofas, etc around the world. If disabled they will use preset skins. Takes effect on loading a new map.",actionText="Game: Randomized Object Skins",variable="bRandomizeCrap",defaultValue=1,bAdvancedModeOnly=true)
      items(124)=(HelpText="Shows icons for map exits.",actionText="Game: Show Map Exits",variable="bShowExits",defaultValue=0,bAdvancedModeOnly=true)
      items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
+     items(126)=(HelpText="Enable or Disable smart texture filtering, which will filter only level and item textures while leaving decals, shadows and other elements filtered.",actionText="Game: Texture Filtering",variable="bSmartTextureFiltering",consoleTarget="DeusEx.TextureFilterer",defaultValue=1,bAdvancedModeOnly=false)
+     items(128)=(HelpText="Show visible blood on weapons when attacking enemies at close range.",helpText1="Blood will be removed when dropping or putting the weapon away or entering water.",helpText2="Blood will be removed when dropping the weapon or entering water.",actionText="Game: Bloody Weapons",variable="iBloodyWeapons",valueText2="Keep blood when switching",defaultValue=1,bAdvancedModeOnly=false)
+     items(129)=(HelpText="The players weapon will be moved backwards when up against a wall.",actionText="Game: Weapon Wall Detection",variable="bWeaponWallDetection",defaultValue=1,bAdvancedModeOnly=false)
+     items(130)=(HelpText="Use vanilla-scaled HDTP-Style blood textures when not using HDTP.",actionText="Game: Enhanced Vanilla Blood Textures",variable="bNewBlood",defaultValue=1,bAdvancedModeOnly=true)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

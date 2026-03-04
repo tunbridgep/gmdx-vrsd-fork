@@ -6,6 +6,15 @@ New Features:
     - Added a new "simplified" QoL menu, supporting images and longer descriptions.
     - "Advanced Mode" has been removed from the QoL menu. Now, the simplified menu will be used instead, and will lead to the "Advanced" menu containing all options.
     - Added a new "Onboarding" menu, containing information about the mod and it's mechanics. This replaces the GMDX "tips" system.
+- A New head-bobbing algorithm has been implemented which should make bobbing smoother when moving in small increments.
+    - The GMDX v9 headbobbing is still available in the menu.
+    - The headbobbing setting in the Menu now switches between all headbobbing options, rather than "Head Bobbing" toggle and "Alternate Head Bobbing" being different settings.
+- Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
+    - The vanilla ones can still be used by disabling these in the QoL menu.
+- Added blood to weapons when exploding or attacking enemies at extreme close range.
+    - This can be disabled in the QoL menu.
+- Added Texture Filtering setting. It can be turned on in the Display menu and the QoL menu.
+    - This is different to the `bNoFiltering` setting in rendering settings, as it doesn't unfilter shadows, decals, and some other things.
 - Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
@@ -35,8 +44,12 @@ New Features:
     - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
+- The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
+- Fixed transparent background for the Stealth Skill in the Skills menu.
+- Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
+    - It now also shows all addons correctly when zooming.
 - Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
 - Fixed GMDX:AE Bug where saving would fail after reaching a save ID of 1000. Now it will loop back around from 0.
 - Fixed GMDX:AE Bugs related to 20mm grenades:
@@ -87,6 +100,7 @@ Misc Changes:
 - Notes in the Computer/Keypad notes display are now sorted in descending order like the regular Notes screen.
 - Using the "Assign Secondary" hotkey in the Inventory screen will now unassign if used on the secondary item.
 - Updated the INI to fix an infinite recursion issue with the enhanced renderer, which would cause low-poly models to render and tank performance.
+- Minor updates to weapon description text.
 
 Map Changes:
 - 02_NYC_BatteryPark
@@ -106,6 +120,10 @@ Map Changes:
     - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
+- 10_Paris_Catacombs:
+    - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
+- 10_Paris_Metro:
+    - Datacube at the Security Station now displays a proper Metro map, rather than the catacombs map. This was an unused asset from Vanilla.
 
 1.11 (Hotfix Release):
 

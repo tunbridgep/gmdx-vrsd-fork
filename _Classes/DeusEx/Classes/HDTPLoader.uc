@@ -75,6 +75,25 @@ static function Texture GetTexture2(string tex, string alternative, bool first, 
 	return TTex;
 }
 
+//Gets a texture, or a backup texture if the first one fails, or a backup texture if the second one fails
+static function Texture GetTexture3(string tex, string alternative, string alternative2, bool first, bool second, optional bool debug)
+{
+    local Texture TTex;
+
+    //Dirty hack
+    if (alternative == "Engine.S_Inventory")
+        alternative = "";
+
+    if (first)
+        TTex = Texture(DynamicLoadObject(tex, class'Texture', !debug));
+    else if (second)
+        TTex = Texture(DynamicLoadObject(alternative, class'Texture', !debug));
+    if (TTex == None)
+        TTex = Texture(DynamicLoadObject(alternative2, class'Texture', !debug));
+    //log("Getting tex: " $ tex $ ", " $ alternative $ ", " $ first);
+	return TTex;
+}
+
 static function bool HDTPInstalled(optional bool debug)
 {
     if (debug)

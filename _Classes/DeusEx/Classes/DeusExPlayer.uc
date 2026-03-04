@@ -467,7 +467,7 @@ var globalconfig bool bMantleOption;
 var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
-var globalconfig bool bModdedHeadBob;
+var globalconfig int iModdedHeadBob;                                            //SARGE: Now an int
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
@@ -944,14 +944,22 @@ var globalconfig bool bNoPartialReloads;                     //SARGE: When cance
 
 var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso, you win, here's your damned option!
 
-
 var globalconfig bool bShowExits;                            //SARGE: Show exit icons
+
+var globalconfig bool bNewBlood;                            //SARGE: Use nicer looking blood textures
+
+var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
+
+var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 
+
+//SARGE: Added a new check for playing Loot Sounds, so we only play it once per frame.
+var private transient bool bPlaySoundCheck;
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1034,6 +1042,27 @@ exec function RedoOutfits()
         ClientMessage("Rerolling NPC Outfits");
     }
 }
+
+//SARGE: Do a blood effect on the screen and on our weapon
+function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool flash)
+{
+    local float dist;
+    if (Damage > 0 && (damageType == 'Shot' || damageType == 'Exploded' || damageType == 'Sabot' || (DamageType == 'Burned' && Damage >= 10)))
+    {
+        dist = Abs(VSize(Location - ObjLocation));
+        if (dist < 160)
+        {
+            if (flash)
+            {
+                ClientFlash(14, vect(160,0,0));
+                bloodTime = 4.000000;
+            }
+            if (iBloodyWeapons > 0 && DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(true);
+        }
+    }
+}
+
 
 //SARGE: Helper function to log to the console from console
 exec function WriteLog(string msg)
@@ -1388,6 +1417,7 @@ local DeusExPickup     PU;                                                      
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
+              DC.LightType=LT_None;
 	       }
         }
         if (SkillSystem != None && CombatDifficulty <= 1)
@@ -1419,6 +1449,7 @@ local DeusExPickup     PU;                                                      
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
               DC.SetPhysics(PHYS_Flying);
+              DC.LightType=LT_None;
 	       }
        }
        if (SkillSystem != None)
@@ -7157,6 +7188,9 @@ state PlayerWalking
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 			{
+                //SARGE: Remove blood from weapon
+                if (DeusExWeapon(inHand) != None)
+                    DeusExWeapon(inHand).SetCoveredInBlood(false);
             DropDecoration();
             //loc = Location + VRand() * 4;
 	        //loc.Z += CollisionHeight * 0.9;
@@ -7426,6 +7460,9 @@ state PlayerWalking
         else
             lastWalkTimer = 0.4;
 
+        //SARGE: Reset the played transfer sound
+        bPlaySoundCheck = false;
+
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -7440,7 +7477,13 @@ state PlayerFlying
 	{
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
+        {
+            //SARGE: Remove blood from weapon
+            if (DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			DropDecoration();
+        }
 
 		Super.ZoneChange(NewZone);
 	}
@@ -7588,6 +7631,10 @@ state PlayerSwimming
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 		{
+            //SARGE: Remove blood from weapon
+            if (DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			DropDecoration();
 			if (bOnFire)
 				ExtinguishFire();
@@ -8090,12 +8137,14 @@ Begin:
 		PutInHand(None);
 	}
 
+    /*
 	// can't carry decorations across levels
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	PlayAnim('Still');
 }
@@ -8156,11 +8205,13 @@ Begin:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
@@ -8181,11 +8232,13 @@ Letterbox:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
@@ -8521,7 +8574,8 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
     bLeftClicked = false;
 
-    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+    //SARGE TODO: Make this conditional not horrible
+    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory') && !frobTarget.isA('NanoKey') && (!frobTarget.IsA('Flare') || Flare(frobTarget).gen == None))
         bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
     else if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
@@ -9204,6 +9258,16 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
         return;
 
     source.PlaySound(dxAmmoClass.default.PartialAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+}
+
+//SARGE: Play item transfer sound only once per frame
+function PlayItemTransferSound()
+{
+    if (bPlaySoundCheck)
+        return;
+
+    bPlaySoundCheck = true;
+    PlaySound(sound'objpickup3',SLOT_None,0.7);
 }
 
 // ----------------------------------------------------------------------
@@ -9942,6 +10006,10 @@ function UpdateInHand()
 		// OK to actually switch?
 		if (bSwitch)
 		{
+            //SARGE: Remove blood from weapon
+            if (iBloodyWeapons == 1 && DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
         
@@ -10543,12 +10611,50 @@ function Inventory GetWeaponOrAmmo(Inventory queryItem)
 function CheckBob(float DeltaTime, float Speed2D, vector Y)
 {
 	local float OldBobTime;
-
-    if (!bModdedHeadBob)
+    
+    bob = 0.016; //SARGE: default.bob doesn't work. Thanks Bob!
+    if (iModdedHeadBob == 0) //Disabled
     {
-       Super.CheckBob(DeltaTime, Speed2D, Y);
-       return;
+        bob = 0;
+        return;
     }
+    else if (iModdedHeadBob == 1) //Classic/Vanilla
+    {
+        Super.CheckBob(DeltaTime, Speed2D, Y);
+        return;
+    }
+    else if (iModdedHeadBob == 2) //GMDX v9
+    {
+        CheckBobGMDX9(DeltaTime, Speed2D, Y);
+        return;
+    }
+
+	OldBobTime = BobTime;
+	if ( Speed2D < 10 )
+		BobTime += 0.2 * DeltaTime;
+	else
+		BobTime += DeltaTime * (0.5 + 0.8 * Speed2D/GroundSpeed);
+	WalkBob = Y * 1.15 * Bob * Speed2D * sin(6 * BobTime);
+	AppliedBob = AppliedBob * (1 - FMin(1, 2 * deltatime));
+	if ( LandBob > 0.01 )
+	{
+		AppliedBob += FMin(1, 4 * deltatime) * LandBob;
+		LandBob *= (1 - 8*Deltatime);
+	}
+	if ( Speed2D < 10 )
+		WalkBob.Z = 0; // AppliedBob + Bob * 30 * sin(12 * BobTime);   // take out the "breathe" effect - DEUS_EX CNN
+	else
+		WalkBob.Z = AppliedBob + Bob * Speed2D * sin(12 * BobTime);
+
+    WalkBob = WalkBob * 0.55;
+	ViewRotation.Roll = WalkBob.Y*25;
+}
+
+//SARGE: This is a jerky mess. Let's replace it...
+function CheckBobGMDX9(float DeltaTime, float Speed2D, vector Y)
+{
+	local float OldBobTime;
+
 	OldBobTime = BobTime;
 	if ( Speed2D < 10 )
 		BobTime += 0.2 * DeltaTime;
@@ -11668,6 +11774,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
             DeusExWeapon(item).PickupAmmoCount = 1;
         }
     }
+    
+    //SARGE: Remove blood from weapon
+    if (bDropped && DeusExWeapon(item) != None)
+        DeusExWeapon(item).SetCoveredInBlood(false);
 
 	return bDropped;
 }
@@ -20041,7 +20151,7 @@ defaultproperties
      bHitmarkerOn=True
      bMantleOption=True
      bSkillMessage=True
-     bModdedHeadBob=True
+     iModdedHeadBob=3
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
      msgDeclinedPickup="%s is declined. Press again to pick up."
@@ -20221,4 +20331,7 @@ defaultproperties
      bAllowItemPickup=true
      bRandomizeCrap=true
      bItemRechargeSound=true
+     bNewBlood=true
+     iBloodyWeapons=1
+     bWeaponWallDetection=true
 }
