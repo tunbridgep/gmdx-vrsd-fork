@@ -929,6 +929,8 @@ var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bun
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
 var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
 
+var globalconfig bool bDoneGMDXOnboarding;                   //SARGE: If we've done GMDX Onboarding. If not, we will show a messagebox asking if we want to do it.
+
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
 var globalconfig bool bSkinnedBeltIcons;                     //SARGE: Show different belt icons for different food and drink skins.

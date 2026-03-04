@@ -58,8 +58,15 @@ var localized String QuickLoadMessage;
 var float HorizontalDivisor; 						// Horizontal divisor for autoscaling code. See: ResizeRoot().
 var float VerticalDivisor, VerticalRelaxedDivisor;	// Vertical divisor for autoscaling code. See: ResizeRoot().
 
+var MenuUIMessageBoxWindow quickloadBox;
+var MenuUIMessageBoxWindow onboardingBox;
+
 //SARGE: Added Marker Display
 var MarkerDisplayWindow markerDisplay;
+
+//SARGE: Ability to display Onboarding
+var localized String OnboardingTitle;
+var localized String OnboardingMessage;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -68,6 +75,7 @@ var MarkerDisplayWindow markerDisplay;
 event InitWindow()
 {
     local DeusExPlayer player;
+    local DeusExLevelInfo info;
 
 	Super.InitWindow();
 
@@ -583,22 +591,36 @@ function MenuUIMessageBoxWindow MessageBox
 
 function ConfirmQuickLoad()
 {
-	local MenuUIMessageBoxWindow msgBox;
+	quickloadBox = MessageBox(QuickLoadTitle, QuickLoadMessage, 0, False, Self);
+	quickloadBox.SetDeferredKeyPress(True);
+}
 
-	msgBox = MessageBox(QuickLoadTitle, QuickLoadMessage, 0, False, Self);
-	msgBox.SetDeferredKeyPress(True);
+// ----------------------------------------------------------------------
+// ConfirmOnboarding()
+// ----------------------------------------------------------------------
+
+function ConfirmOnboarding()
+{
+	onboardingBox = MessageBox(OnboardingTitle, OnboardingMessage, 0, False, Self);
+	onboardingBox.SetDeferredKeyPress(True);
 }
 
 // ----------------------------------------------------------------------
 // BoxOptionSelected()
 // ----------------------------------------------------------------------
 
-event bool BoxOptionSelected(Window button, int buttonNumber)
+event bool BoxOptionSelected(Window msgWindow, int buttonNumber)
 {
-	// Destroy the msgbox!
+    // Destroy the msgbox!
 	PopWindow();
 
-	if (buttonNumber == 0)
+    if (msgWindow == onboardingBox)
+    {
+        DeusExPlayer(parentPawn).bDoneGMDXOnboarding = true;
+	    if (buttonNumber == 0)
+            InvokeMenuScreen(class'MenuScreenGMDXOnboarding');
+    }
+	else if (buttonNumber == 0 && msgWindow == quickloadBox)
 		DeusExPlayer(parentPawn).QuickLoadConfirmed();
 
 	return true;
@@ -1330,4 +1352,6 @@ defaultproperties
      DataVaultFunctions(7)=(Function="ShowLogsWindow",winClass=Class'DeusEx.PersonaScreenLogs')
      QuickLoadTitle="Quick Load?"
      QuickLoadMessage="You will lose your current game in progress, are you sure you wish to Quick Load?"
+     OnboardingTitle="Show Help Menu?"
+     OnboardingMessage="GMDX: Augmented Edition contains an in-depth help menu explaining new mechanics and features. Would you like to view it now? The help menu is always available by clicking 'Show Help' in the GMDX Options menu, accessible through the Main Menu."
 }

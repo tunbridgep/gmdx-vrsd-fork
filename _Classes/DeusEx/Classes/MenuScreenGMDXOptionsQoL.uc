@@ -16,6 +16,10 @@ function SaveSettings()
     
     //Show/Hide exits based on settings
     player.ShowExits();
+    
+    //Reset HDTP
+    //Now needed for blood textures
+    player.HDTP();
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
@@ -169,16 +173,16 @@ defaultproperties
      items(129)=(HelpText="The players weapon will be moved backwards when up against a wall.",actionText="Game: Weapon Wall Detection",variable="bWeaponWallDetection",defaultValue=1,bAdvancedModeOnly=false)
      items(130)=(HelpText="Use vanilla-scaled HDTP-Style blood textures when not using HDTP.",actionText="Game: Enhanced Vanilla Blood Textures",variable="bNewBlood",defaultValue=1,bAdvancedModeOnly=true)
 
-     Title="GMDX Quality of Life Options"
+     Title="GMDX Advanced Options"
      colWidths(0)=214
      colWidths(1)=155
-     helpPosY=307
      bShowDefaults=true
      bShortHeaderButtons=false
-     defaultHelpHeight=37
      clientTextures(0)=Texture'RSDCrap.UserInterface.MenuQoLBackground_1'
      clientTextures(1)=Texture'RSDCrap.UserInterface.MenuQoLBackground_2'
      clientTextures(2)=Texture'RSDCrap.UserInterface.MenuQoLBackground_3'
      clientTextures(3)=Texture'RSDCrap.UserInterface.MenuQoLBackground_4'
-     bHasAdvancedMode=true
+     DescriptionPos=(X=8,Y=305)
+     SearchPos=(X=224,Y=0)
+     SearchSize=(X=140,Y=16)
 }

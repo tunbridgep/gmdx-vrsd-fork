@@ -1,6 +1,11 @@
 1.2:
 
 New Features:
+- Massive overhaul to the QoL menu and other menus
+    - Added search boxes to the QoL, Playthrough Modifiers, and Gameplay menus.
+    - Added a new "simplified" QoL menu, supporting images and longer descriptions.
+    - "Advanced Mode" has been removed from the QoL menu. Now, the simplified menu will be used instead, and will lead to the "Advanced" menu containing all options.
+    - Added a new "Onboarding" menu, containing information about the mod and it's mechanics. This replaces the GMDX "tips" system.
 - A New head-bobbing algorithm has been implemented which should make bobbing smoother when moving in small increments.
     - The GMDX v9 headbobbing is still available in the menu.
     - The headbobbing setting in the Menu now switches between all headbobbing options, rather than "Head Bobbing" toggle and "Alternate Head Bobbing" being different settings.
