@@ -180703,4 +180703,254 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner9
     OldLocation=(X=3155.347656,Y=3431.023926,Z=365.278900)
     Name=OutfitSpawner9
 End Actor
+Begin Actor Class=DeusExMover Name=DeusExMover24
+    bLocked=True
+    lockStrength=0.600000
+    KeyIDNeeded=snr
+    MoverEncroachType=ME_IgnoreWhenEncroach
+    MoveTime=0.200000
+    StayOpenTime=0.500000
+    MoveAmbientSound=Sound'MoverSFX.door.WoodDoorClose'
+    KeyRot(1)=(Yaw=1024)
+    BasePos=(X=1144.000000,Y=6400.000000,Z=8.000000)
+    SavedPos=(X=-12345.000000,Y=-12345.000000,Z=-12345.000000)
+    BaseRot=(Yaw=-16384)
+    SavedRot=(Pitch=123,Yaw=456,Roll=789)
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    DistanceFromPlayer=8735.508789
+    InitialState=TriggerOpenTimed
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=warehouseEntry
+    Event=2Warehouse
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1144.000000,Y=6400.000000,Z=8.000000)
+    Rotation=(Yaw=-16384)
+    OldLocation=(X=1104.000000,Y=6354.000000,Z=76.000000)
+    Begin Brush Name=Model1151
+       Begin PolyList
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=0
+             Origin   -00002.000000,-00032.000000,+00064.000000
+             Normal   +00000.000000,+00000.000000,+00001.000000
+             TextureU +00000.000000,-00002.000000,+00000.000000
+             TextureV -00002.000000,+00000.000000,+00000.000000
+             Vertex   -00002.000000,-00032.000000,+00064.000000
+             Vertex   +00002.000000,-00032.000000,+00064.000000
+             Vertex   +00002.000000,+00032.000000,+00064.000000
+             Vertex   -00002.000000,+00032.000000,+00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=1
+             Origin   +00002.000000,-00032.000000,-00064.000000
+             Normal   +00000.000000,-00001.000000,+00000.000000
+             TextureU +00002.000000,-00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   +00002.000000,-00032.000000,+00064.000000
+             Vertex   -00002.000000,-00032.000000,+00064.000000
+             Vertex   -00002.000000,-00032.000000,-00064.000000
+             Vertex   +00002.000000,-00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=2
+             Origin   +00002.000000,+00032.000000,-00064.000000
+             Normal   +00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00002.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   +00002.000000,+00032.000000,+00064.000000
+             Vertex   +00002.000000,-00032.000000,+00064.000000
+             Vertex   +00002.000000,-00032.000000,-00064.000000
+             Vertex   +00002.000000,+00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=3
+             Origin   -00002.000000,-00032.000000,-00064.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,-00002.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   -00002.000000,-00032.000000,+00064.000000
+             Vertex   -00002.000000,+00032.000000,+00064.000000
+             Vertex   -00002.000000,+00032.000000,-00064.000000
+             Vertex   -00002.000000,-00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=4
+             Origin   -00002.000000,+00032.000000,-00064.000000
+             Normal   +00000.000000,+00001.000000,+00000.000000
+             TextureU -00002.000000,+00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   -00002.000000,+00032.000000,+00064.000000
+             Vertex   +00002.000000,+00032.000000,+00064.000000
+             Vertex   +00002.000000,+00032.000000,-00064.000000
+             Vertex   -00002.000000,+00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=5
+             Origin   -00002.000000,+00032.000000,-00064.000000
+             Normal   +00000.000000,+00000.000000,-00001.000000
+             TextureU +00000.000000,+00002.000000,+00000.000000
+             TextureV -00002.000000,+00000.000000,+00000.000000
+             Vertex   -00002.000000,+00032.000000,-00064.000000
+             Vertex   +00002.000000,+00032.000000,-00064.000000
+             Vertex   +00002.000000,-00032.000000,-00064.000000
+             Vertex   -00002.000000,-00032.000000,-00064.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model1151'
+    PrePivot=(Y=-32.000000,Z=-64.000000)
+    Name=DeusExMover24
+End Actor
+Begin Actor Class=DeusExMover Name=DeusExMover26
+    bLocked=True
+    lockStrength=0.600000
+    KeyIDNeeded=snr
+    MoverEncroachType=ME_IgnoreWhenEncroach
+    MoveTime=0.200000
+    StayOpenTime=0.500000
+    MoveAmbientSound=Sound'MoverSFX.door.WoodDoorClose'
+    KeyRot(1)=(Yaw=-1024)
+    BasePos=(X=1272.000000,Y=6400.000000,Z=8.000000)
+    SavedPos=(X=-12345.000000,Y=-12345.000000,Z=-12345.000000)
+    BaseRot=(Yaw=-16384)
+    SavedRot=(Pitch=123,Yaw=456,Roll=789)
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    DistanceFromPlayer=8609.883789
+    InitialState=TriggerOpenTimed
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=warehouseEntry
+    Event=2Warehouse
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1272.000000,Y=6400.000000,Z=8.000000)
+    Rotation=(Yaw=-16384)
+    OldLocation=(X=1176.000000,Y=6354.000000,Z=76.000000)
+    bSelected=True
+    Begin Brush Name=Model1163
+       Begin PolyList
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=0
+             Origin   -00002.000000,-00032.000000,+00064.000000
+             Normal   +00000.000000,+00000.000000,+00001.000000
+             TextureU +00000.000000,+00002.000000,+00000.000000
+             TextureV -00002.000000,+00000.000000,+00000.000000
+             Vertex   -00002.000000,-00032.000000,+00064.000000
+             Vertex   +00002.000000,-00032.000000,+00064.000000
+             Vertex   +00002.000000,+00032.000000,+00064.000000
+             Vertex   -00002.000000,+00032.000000,+00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=1
+             Origin   -00002.000000,+00032.000000,-00064.000000
+             Normal   +00000.000000,+00001.000000,+00000.000000
+             TextureU +00002.000000,-00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   -00002.000000,+00032.000000,+00064.000000
+             Vertex   +00002.000000,+00032.000000,+00064.000000
+             Vertex   +00002.000000,+00032.000000,-00064.000000
+             Vertex   -00002.000000,+00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=2
+             Origin   +00002.000000,-00032.000000,-00064.000000
+             Normal   +00000.000000,-00001.000000,+00000.000000
+             TextureU -00002.000000,+00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   +00002.000000,-00032.000000,+00064.000000
+             Vertex   -00002.000000,-00032.000000,+00064.000000
+             Vertex   -00002.000000,-00032.000000,-00064.000000
+             Vertex   +00002.000000,-00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=3
+             Origin   +00002.000000,+00032.000000,-00064.000000
+             Normal   +00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,-00002.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   +00002.000000,+00032.000000,+00064.000000
+             Vertex   +00002.000000,-00032.000000,+00064.000000
+             Vertex   +00002.000000,-00032.000000,-00064.000000
+             Vertex   +00002.000000,+00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=4
+             Origin   -00002.000000,-00032.000000,-00064.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00002.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00002.000000
+             Vertex   -00002.000000,-00032.000000,+00064.000000
+             Vertex   -00002.000000,+00032.000000,+00064.000000
+             Vertex   -00002.000000,+00032.000000,-00064.000000
+             Vertex   -00002.000000,-00032.000000,-00064.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ComnOffcDoor_B Link=5
+             Origin   -00002.000000,+00032.000000,-00064.000000
+             Normal   +00000.000000,+00000.000000,-00001.000000
+             TextureU +00000.000000,-00002.000000,+00000.000000
+             TextureV -00002.000000,+00000.000000,+00000.000000
+             Vertex   -00002.000000,+00032.000000,-00064.000000
+             Vertex   +00002.000000,+00032.000000,-00064.000000
+             Vertex   +00002.000000,-00032.000000,-00064.000000
+             Vertex   -00002.000000,-00032.000000,-00064.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model1163'
+    PrePivot=(Y=32.000000,Z=-64.000000)
+    Name=DeusExMover26
+End Actor
+Begin Actor Class=Teleporter Name=Teleporter1
+    Paths(0)=3796
+    Paths(1)=3792
+    PrunedPaths(0)=3794
+    PrunedPaths(1)=3795
+    PrunedPaths(2)=3789
+    PrunedPaths(3)=3785
+    PrunedPaths(4)=3787
+    PrunedPaths(5)=3786
+    PrunedPaths(6)=3788
+    PrunedPaths(7)=3793
+    PrunedPaths(8)=3790
+    PrunedPaths(9)=3791
+    visitedWeight=10000000
+    previousPath=PathNode'MyLevel.PathNode216'
+    LastRenderTime=3155.885986
+    DistanceFromPlayer=8662.105469
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ExitWare
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1209.023926,Y=6354.389648,Z=42.107300)
+    Rotation=(Yaw=-16272)
+    OldLocation=(X=4098.613770,Y=7310.998047,Z=1412.500000)
+    Name=Teleporter1
+End Actor
+Begin Actor Class=Keypad3 Name=Keypad4
+    validCode="6122"
+    hackStrength=0.600000
+    UnTriggerEvent(0)=SubPenDoorAlarm
+    LastRenderTime=3155.885986
+    DistanceFromPlayer=8584.875977
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=warehouseKeypad
+    Event=warehouseEntry
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=2039,ZoneNumber=1)
+    Location=(X=1295.302856,Y=6398.876953,Z=71.759430)
+    Rotation=(Yaw=-16376)
+    OldLocation=(X=4695.368164,Y=6430.876953,Z=237.759430)
+    Name=Keypad4
+End Actor
+Begin Actor Class=MapExit Name=MapExit1
+    DestMap="09_NYC_ShipFan#2Warehouse"
+    visitedWeight=10000000
+    nextNavigationPoint=PathNode'MyLevel.PathNode292'
+    LastRenderTime=351.825287
+    DistanceFromPlayer=8679.223633
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=2Warehouse
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1212.468506,Y=6508.816406,Z=172.008057)
+    OldLocation=(X=1232.209839,Y=6387.899902,Z=172.008057)
+    Name=MapExit1
+End Actor
+Begin Actor Class=NanoKey Name=NanoKey4
+    KeyID=snr
+    Description="Shipping/Recieving Warehouse"
+    LastRenderTime=430.870239
+    DistanceFromPlayer=7833.101563
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=snrkey
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1932.301025,Y=5429.463867,Z=-284.789398)
+    OldLocation=(X=2006.138184,Y=5425.107422,Z=-284.789398)
+    Name=NanoKey4
+End Actor
 End Map
