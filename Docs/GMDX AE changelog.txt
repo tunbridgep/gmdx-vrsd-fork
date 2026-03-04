@@ -36,6 +36,7 @@ New Features:
     - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
+- The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
 - Fixed transparent background for the Stealth Skill in the Skills menu.
