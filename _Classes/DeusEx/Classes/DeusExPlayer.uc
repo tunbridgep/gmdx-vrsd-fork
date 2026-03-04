@@ -1025,6 +1025,55 @@ replication
 
 }
 
+//SARGE: Gets any adjustments to our head health. For now, just medical skill.
+function int GetHeadHealthAdjustment()
+{
+    local Skill sk;
+    local int re;
+    
+    re = 0;
+
+    if (SkillSystem!=None)
+    {
+        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        if (sk != None)
+            re += sk.CurrentLevel*10;
+    }
+
+    return re;
+}
+
+//SARGE: Gets any adjustments to our torso health, such as from medical skill, drunkenness or blood loss.
+function int GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
+{
+    local int re;
+    local Wound wound;
+    local Skill sk;
+    
+    re = 0;
+
+    if (SkillSystem!=None && !bNoMedicineSkill)
+    {
+        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        if (sk != None)
+            re += sk.CurrentLevel*10;
+    }
+
+    if (AddictionManager != None)
+		re += AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
+
+    //SARGE: Blood loss lowers total torso health
+    if (WoundManager != None)
+    {
+        wound = WoundManager.GetWoundByType(class'WoundBloodLoss');
+        if (wound != None && wound.HasWound())
+            re -= wound.woundData[0];
+    }
+
+    //DebugMessage("Re: " $ re);
+    return re;
+}
+
 //SARGE: Update the visibility of the AMMO Hud whenever we use ammo
 function OnUseAmmo(DeusExAmmo ammoType, int amount)
 {
@@ -6078,6 +6127,7 @@ function int CalculateSkillHealAmount(int baseHealPoints)
 {
 	local float mult;
 	local int adjustedHealAmount;
+    local Wound wound;
 
 	// check skill use
 	if (SkillSystem != None)
@@ -6105,9 +6155,13 @@ function int CalculateSkillHealAmount(int baseHealPoints)
 		// apply the skill
 		adjustedHealAmount = baseHealPoints * mult;
 
-        //SARGE: If we're on hardcore, reduce by 10
-        if (bHardCoreMode)
-            adjustedHealAmount -= 10;
+        //Reduce if we have the burn trauma
+        if (WoundManager != None)
+        {
+            wound = WoundManager.GetWoundByType(class'WoundBurning');
+            if (wound != None && wound.HasWound())
+                adjustedHealAmount -= wound.woundData[0];
+        }
 	}
 
 	return adjustedHealAmount;
@@ -6164,9 +6218,9 @@ function HealPartMedicalSkillDrunk(out int points, out int amt)
 {
 	local int spill;
 	local Skill sk;
-    local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+    local int TorsoAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
     
-    AddictionAdd = AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
+    TorsoAdd = GetTorsoHealthAdjustment(true);                         //RSD: Get 5 bonus health for every 2 min on timer
 	if (SkillSystem!=None)
 	{
 	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
@@ -6174,9 +6228,9 @@ function HealPartMedicalSkillDrunk(out int points, out int amt)
 	  else
 	  {
 		 points += amt;
-		 spill = points - (100+sk.CurrentLevel*10+AddictionAdd);
+		 spill = points - (100+sk.CurrentLevel*10+TorsoAdd);
 		 if (spill > 0)
-			points = (100+sk.CurrentLevel*10+AddictionAdd);
+			points = (100+sk.CurrentLevel*10+TorsoAdd);
 		 else
 			spill = 0;
 		 amt = spill;
@@ -6742,6 +6796,7 @@ state PlayerWalking
         local float heavyMult;                                                  //RSD
         local float heavySkillVal;                                              //RSD
         local float mult4;                                                      //RSD
+        local Wound wound;
 
         //SARGE: Prevent walking if we're using a computer
         if (bUsingComputer)
@@ -6984,6 +7039,14 @@ state PlayerWalking
 			else
 				TurnRateAdjuster = 1.0;
 		} */
+        
+        //Reduce if we have the poison trauma
+        if (WoundManager != None)
+        {
+            wound = WoundManager.GetWoundByType(class'WoundPoison');
+            if (wound != None && wound.HasWound())
+                newSpeed *= (1.0 - (0.01 * wound.woundData[0]));
+        }
 
 		// if we are moving really slow, force us to walking
 		if ((newSpeed <= defSpeed / 3) && !bForceDuck && !IsCrippled())
@@ -15799,34 +15862,18 @@ function GenerateTotalHealth()
 	local float ave, avecrit;
 	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
 	local Skill sk;
-	local float MedSkillAdd, headMult, torsoMult;
-    local float BloodLossTorso;                                 //SARGE: Wound system.
-    local Wound wound;
+	local float headMult, torsoMult;
 
-    MedSkillAdd = 0.0;
-	if (SkillSystem!=None)
-	{
-	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
-	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
-	}
-    headMult = default.HealthHead/(default.HealthHead+MedSkillAdd);
-    //SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
-    torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+AddictionManager.GetTorsoHealthBonus());
-    
-    //SARGE: Blood loss lowers total torso health
-    if (WoundManager != None)
-    {
-        wound = WoundManager.GetWoundByType(class'WoundBloodLoss');
-        if (wound != None && wound.HasWound())
-            BloodLossTorso = wound.woundData[0];
-    }
+	//SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
+    headMult = default.HealthHead/float(default.HealthHead+GetHeadHealthAdjustment());
+    torsoMult = default.HealthTorso/float(default.HealthTorso+GetTorsoHealthAdjustment());
 
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
 	if ((HealthHead <= 0) || (HealthTorso <= 0))
 		avecrit = 0;
 	else
-		avecrit = (headMult*HealthHead + torsoMult*(HealthTorso-BloodLossTorso)) / 2.0;          //RSD: Added mults
+		avecrit = (headMult*HealthHead + torsoMult*(HealthTorso)) / 2.0;          //RSD: Added mults
 
 	if (avecrit == 0)
 		Health = 0;
@@ -15837,24 +15884,17 @@ function GenerateTotalHealth()
 function int GenerateTotalMaxHealth()                                           //RSD: need new function to correct for Med skill and new drug effects
 {
 	local float ave, avecrit;
-	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
-	local Skill sk;
-	local float MedSkillAdd, headMult, torsoMult;
-	local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+	local float headMult, torsoMult;
+	local int TorsoAdd, HeadAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	local int maxHealth;
     
-    AddictionAdd = AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
-
-    MedSkillAdd = 0.0;
-	if (SkillSystem!=None)
-	{
-	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
-	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
-	}
-
+	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
+    TorsoAdd = GetTorsoHealthAdjustment();                         //RSD: Get 5 bonus health for every 2 min on timer
+    HeadAdd = GetHeadHealthAdjustment();
+    
     //SARGE: Was this intentionally commented out????
-    //headMult = default.HealthHead/(default.HealthHead+MedSkillAdd);
-    //torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+AddictionAdd);
+    //headMult = default.HealthHead/(default.HealthHead+HeadAdd);
+    //torsoMult = default.HealthTorso/(default.HealthTorso+TorsoAdd);
 
 	ave = (default.HealthLegLeft + default.HealthLegRight + default.HealthArmLeft + default.HealthArmRight) / 4.0;
 
@@ -15893,20 +15933,8 @@ function int GetTotalMaxHealth()
                   + default.HealthLegLeft
                   + default.HealthLegRight;
     
-    //Medicine affects torso and head health
-	if (SkillSystem != None)
-        maxHealth += SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine').CurrentLevel*20;
-
-    if (AddictionManager != None)
-        maxHealth += AddictionManager.GetTorsoHealthBonus();
-    
-    if (WoundManager != None)
-    {
-        wound = WoundManager.GetWoundByType(class'WoundBloodLoss');
-        if (wound != None && wound.HasWound())
-            maxHealth -= wound.woundData[0];
-    }
-        
+    maxHealth += GetTorsoHealthAdjustment();
+    maxHealth += GetHeadHealthAdjustment();
     
     return maxHealth;
 }
@@ -17958,17 +17986,13 @@ function RestoreAllHealth()
 {
 	local int spill;
 	local Skill sk;
-	local float MedSkillAdd;
-	local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    AddictionAdd = AddictionManager.GetTorsoHealthBonus();
-    MedSkillAdd = 0.0;
-	if (SkillSystem!=None)
-	{
-	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
-	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
-	}
-	HealthHead = default.HealthHead+MedSkillAdd;
-	HealthTorso = default.HealthTorso+MedSkillAdd+AddictionAdd;        //RSD: Added drunk, zyme
+	local int TorsoAdd, HeadAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme //SARGE: Generic implemnentation
+    
+    TorsoAdd = GetTorsoHealthAdjustment();
+    HeadAdd = GetHeadHealthAdjustment();
+
+	HealthHead = default.HealthHead+HeadAdd;
+	HealthTorso = default.HealthTorso+TorsoAdd;        //RSD: Added drunk, zyme
 	HealthLegLeft = default.HealthLegLeft;
 	HealthLegRight = default.HealthLegRight;
 	HealthArmLeft = default.HealthArmLeft;
@@ -19791,6 +19815,7 @@ function RegenStaminaTick(float deltaTime)                                      
 	local float mult;
     local float base;
 	local Perk perkEndurance;
+    local Wound wound;
     
     //SARGE: Stop regen if we're poisoned
     if (poisonCounter > 0)
@@ -19814,6 +19839,17 @@ function RegenStaminaTick(float deltaTime)                                      
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
 		mult += 1.0;
       
+    //SARGE: Radiation poisoning now reduces stamina regen.
+    if (WoundManager != None)
+    {
+        wound = WoundManager.GetWoundByType(class'WoundRadiation');
+        if (wound != None && wound.HasWound())
+            mult -= wound.woundData[0];
+    }
+
+    //SARGE: Never let it get to zero
+    mult = FMAX(0.1,mult);
+
     //SARGE: Increase at the same rate regardless of athletics skill
     //Was hardcoded at 5
     //base swimDuration is 18 seconds, 36 seconds at Master
