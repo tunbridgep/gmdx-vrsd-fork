@@ -70487,7 +70487,6 @@ Begin Actor Class=WeaponPistol Name=WeaponPistol0
 End Actor
 Begin Actor Class=Phone Name=Phone0
     AnswerSound=AS_ShutDownByUNATCO
-    bAnsweringMachine=True
     LastRenderTime=17.093836
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=CutContentPhone

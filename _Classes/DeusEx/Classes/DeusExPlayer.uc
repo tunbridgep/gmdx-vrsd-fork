@@ -469,7 +469,7 @@ var globalconfig bool bMantleOption;
 var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
-var globalconfig bool bModdedHeadBob;
+var globalconfig int iModdedHeadBob;                                            //SARGE: Now an int
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
@@ -930,6 +930,9 @@ var globalconfig bool bRandomizeCrap;                          //Sarge: Randomiz
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
 var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
+var travel bool bShippingAndReceiving;                       //SARGE: Enable Shipping and Receiving addon.
+
+var globalconfig bool bDoneGMDXOnboarding;                   //SARGE: If we've done GMDX Onboarding. If not, we will show a messagebox asking if we want to do it.
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
@@ -952,6 +955,8 @@ var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at 
 
 var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
+var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -960,6 +965,12 @@ var travel float lastCombatTime;                             //SARGE: The last t
 
 //SARGE: Added a new check for playing Loot Sounds, so we only play it once per frame.
 var private transient bool bPlaySoundCheck;
+//Short Fuse
+var const localized string ShortFuseEnabled;
+var const localized string ShortFuseDisabled;
+
+var travel bool bShortFuseEnabled;          //SARGE: Allow manually activating/deactivating short fuse with the reload key.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -2915,10 +2926,10 @@ function BuySkillSound( int code )
 			snd = Sound'Menu_OK';
 			break;
 		case 1:
-			snd = Sound'Menu_Cancel';
+			snd = Sound'Menu_Focus';
 			break;
 		case 2:
-			snd = Sound'Menu_Focus';
+			snd = Sound'Menu_Cancel';
 			break;
 		case 3:
 			snd = Sound'Menu_BuySkills';
@@ -10381,12 +10392,50 @@ function Inventory GetWeaponOrAmmo(Inventory queryItem)
 function CheckBob(float DeltaTime, float Speed2D, vector Y)
 {
 	local float OldBobTime;
-
-    if (!bModdedHeadBob)
+    
+    bob = 0.016; //SARGE: default.bob doesn't work. Thanks Bob!
+    if (iModdedHeadBob == 0) //Disabled
     {
-       Super.CheckBob(DeltaTime, Speed2D, Y);
-       return;
+        bob = 0;
+        return;
     }
+    else if (iModdedHeadBob == 1) //Classic/Vanilla
+    {
+        Super.CheckBob(DeltaTime, Speed2D, Y);
+        return;
+    }
+    else if (iModdedHeadBob == 2) //GMDX v9
+    {
+        CheckBobGMDX9(DeltaTime, Speed2D, Y);
+        return;
+    }
+
+	OldBobTime = BobTime;
+	if ( Speed2D < 10 )
+		BobTime += 0.2 * DeltaTime;
+	else
+		BobTime += DeltaTime * (0.5 + 0.8 * Speed2D/GroundSpeed);
+	WalkBob = Y * 1.15 * Bob * Speed2D * sin(6 * BobTime);
+	AppliedBob = AppliedBob * (1 - FMin(1, 2 * deltatime));
+	if ( LandBob > 0.01 )
+	{
+		AppliedBob += FMin(1, 4 * deltatime) * LandBob;
+		LandBob *= (1 - 8*Deltatime);
+	}
+	if ( Speed2D < 10 )
+		WalkBob.Z = 0; // AppliedBob + Bob * 30 * sin(12 * BobTime);   // take out the "breathe" effect - DEUS_EX CNN
+	else
+		WalkBob.Z = AppliedBob + Bob * Speed2D * sin(12 * BobTime);
+
+    WalkBob = WalkBob * 0.55;
+	ViewRotation.Roll = WalkBob.Y*25;
+}
+
+//SARGE: This is a jerky mess. Let's replace it...
+function CheckBobGMDX9(float DeltaTime, float Speed2D, vector Y)
+{
+	local float OldBobTime;
+
 	OldBobTime = BobTime;
 	if ( Speed2D < 10 )
 		BobTime += 0.2 * DeltaTime;
@@ -10514,6 +10563,16 @@ exec function ToggleWalk()
 // reloads the currently selected weapon
 // ----------------------------------------------------------------------
 
+function ToggleShortFuse()
+{
+    bShortFuseEnabled = !bShortFuseEnabled;
+    if (bShortFuseEnabled)
+        ClientMessage(ShortFuseEnabled);
+    else
+        ClientMessage(ShortFuseDisabled);
+    PlaySound(sound'Beep4',SLOT_None,0.8);
+}
+
 exec function ReloadWeapon()
 {
 	local DeusExWeapon W;
@@ -10529,6 +10588,16 @@ exec function ReloadWeapon()
 
     if (W != None)
     {
+        //SARGE: Now we can toggle the Short Fuse perk with the Reload key, if the selected weapon is a grenade.
+        if (W.GoverningSkill == class'DeusEx.SkillDemolition')
+        {
+            if (PerkManager != None && PerkManager.GetPerkWithClass(class'DeusEx.PerkShortFuse').bPerkObtained)
+            {
+                ToggleShortFuse();
+                return;
+            }
+        }
+
         full = W.AmmoLeftInClip() >= W.ReloadCount;
         hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
         if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
@@ -19503,9 +19572,12 @@ function RegenStaminaTick(float deltaTime)                                      
 	local float mult;
     local float base;
 	local Perk perkEndurance;
+    local bool bHazmat;
     
     //SARGE: Stop regen if we're poisoned
-    if (poisonCounter > 0)
+    //SARGE: Now Filter Upgrade prevents the regen penalty
+    bHazmat = UsingChargedPickup(class'HazMatSuit') && PerkManager.GetPerkWithClass(class'DeusEx.PerkFilterUpgrade').bPerkObtained;
+    if (poisonCounter > 0 && !bHazmat)
         return;
 
 	perkEndurance = PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance');
@@ -19883,7 +19955,7 @@ defaultproperties
      bHitmarkerOn=True
      bMantleOption=True
      bSkillMessage=True
-     bModdedHeadBob=True
+     iModdedHeadBob=3
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
      msgDeclinedPickup="%s is declined. Press again to pick up."
@@ -20066,4 +20138,7 @@ defaultproperties
      bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
+     bShortFuseEnabled=true
+     ShortFuseEnabled="Short Fuse Enabled"
+     ShortFuseDisabled="Short Fuse Disabled"
 }

@@ -2125,24 +2125,31 @@ function FinishButtonDrag()
 			}
 			else if (lastDragOverButton != dragButton)
 			{   
-                
                 ReturnButton(PersonaInventoryItemButton(dragButton));
-
+            
+                //player.DebugMessage("lastDragOverButton" @ lastDragOverButton);
+                
                 //SARGE: Check if we're in the inventory grid. If not, drop the item.
                 //This is crappy and awful, but I couldn't find a better way to do it...
-                if (player.bDragAndDropOffInventory)
+                if (player.bDragAndDropOffInventory && lastDragOverButton == None)
                 {
+                    /*
                     GetCursorPos(cursorX,cursorY);
                     cursorX -= clientOffsetX;
                     cursorY -= clientOffsetY;
 
+                    //player.DebugMessage("cursorX: " $ cursorX @ "cursorY: " $ cursorY);
+
                     //If we're outside of the grid, drop the item.
                     if (cursorX < 0 || cursorY < 0 || cursorX > invButtonWidth  * player.maxInvCols || cursorY > invButtonHeight * player.maxInvRows)
                     {
+                        */
                         SelectInventory(PersonaInventoryItemButton(dragButton),true);
                         bTickEnabled = True;
                         bDeferredDrop = true;
+                        /*
                     }
+                    */
                 }
 			}
         }

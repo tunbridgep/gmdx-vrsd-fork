@@ -3,6 +3,18 @@
 New Features:
 - Added Precipitation Mod support.
     - All the NYC maps will now have rain. This can be turned off in the QoL menu.
+- The "Shipping and Receiving" addon for GMDX v9 has been integrated.
+    - The original addon can be found here: https://www.moddb.com/mods/gmdx/addons/shipping-receiving-add-on
+    - It adds a new section to the Dockyards map. The map isn't to the same standard as the regular maps so it's disabled by default.
+    - It can be activated using the Playthrough Modifiers menu.
+- Massive overhaul to the QoL menu and other menus
+    - Added search boxes to the QoL, Playthrough Modifiers, and Gameplay menus.
+    - Added a new "simplified" QoL menu, supporting images and longer descriptions.
+    - "Advanced Mode" has been removed from the QoL menu. Now, the simplified menu will be used instead, and will lead to the "Advanced" menu containing all options.
+    - Added a new "Onboarding" menu, containing information about the mod and it's mechanics. This replaces the GMDX "tips" system.
+- A New head-bobbing algorithm has been implemented which should make bobbing smoother when moving in small increments.
+    - The GMDX v9 headbobbing is still available in the menu.
+    - The headbobbing setting in the Menu now switches between all headbobbing options, rather than "Head Bobbing" toggle and "Alternate Head Bobbing" being different settings.
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
     - The vanilla ones can still be used by disabling these in the QoL menu.
 - Added blood to weapons when exploding or attacking enemies at extreme close range.
@@ -38,6 +50,7 @@ New Features:
     - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
+- The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
 - Fixed transparent background for the Stealth Skill in the Skills menu.
@@ -75,6 +88,11 @@ Misc Changes:
 - Implemented DXGNative TraceTexture fix. This means footsteps are now always accurate to the surface you're standing on
     - Additionally enabled some previously unused footstep sounds.
     - Generalised a lot of footstep code between the Player and NPCs, so everyone should now always have the same footstep sounds.
+- Synthetic Heart energy penalty reduced from 40%/30%/20%/10% to 35%/25%/15%/5%
+- The Short Fuse perk effect can now be toggled using the Reload key.
+- The Filter Upgrade perk now additionally prevents the "disabled regen" effect from poison, in addition to the stamina drain from the poison itself.
+- Added sounds when levelling up skills, originally used for the Multiplayer skill menu.
+- Minor performance optimisations for flesh fragments and other gore
 - Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
@@ -116,6 +134,8 @@ Map Changes:
     - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
+- 05_NYC_UNATCOMJ12Lab:
+    - The 9905 keypad code has been changed so as to not interfere with the 9905 code from the Airfield mission.
 - 10_Paris_Catacombs:
     - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
 - 10_Paris_Metro:

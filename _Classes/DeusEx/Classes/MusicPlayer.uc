@@ -48,6 +48,14 @@ function SetNewSong(Music song, optional byte section)
         if (string(currentSong) != "Title_Music.Title_Music")
             bFade = (section == 255 || song == None);
 
+        //Reset the music if we change songs while in combat or whatever
+        if (fMusicHackTimer > 0)
+        {
+            player.ClientSetMusic(song,section,255,MTRAN_Instant);
+            if (DeusExPlayer(player) != None)
+                DeusExPlayer(player).SoundVolumeHackFix();
+        }
+
         currentSong = song;
         musicMode = MUS_Ambient;
         savedSection = section;
@@ -114,9 +122,10 @@ function SetDefaultLevelMusic(DeusExLevelInfo info)
         //musicChangeTimer = 5.0;
         //SetNewSection(savedSection, true);
     }
-    //savedSection = info.SongAmbientSection;
     musicCheckTimer = 5.0;
     musicChangeTimer = 5.0;
+    
+    currentLevelSection = info.SongAmbientSection;
 }
 
 function SetNewSection(byte section, optional bool bInstant)
@@ -155,7 +164,6 @@ function PlayerLogin(PlayerPawn P)
 
     SetDefaultLevelMusic(info);
     ReplaceMusicEvents();
-    currentLevelSection = info.SongAmbientSection;
 }
 
 function DeusExLevelInfo GetLevelInfo()
@@ -173,7 +181,7 @@ function DeusExLevelInfo GetLevelInfo()
 
 function bool CanSetAsSavedSection(int section)
 {
-    return fMusicHackTimer == 0 && section != 255 && section != 1 && savedSection != 3 && savedSection != 4 && savedSection != 5;
+    return fMusicHackTimer == 0 && section != 255 && section != 1 && section != 3 && section != 4 && (section != 5 || string(currentSong) == "NYCStreets_Music.NYCStreets_Music");
 }
 
 //Update music state every frame
@@ -208,6 +216,10 @@ function Tick(float deltaTime)
 
     //Log("Ticking MusicPlayer: " $ deltaTime @ info @ fMusicHackTimer @ player.GetStateName());
     //Log("  " @ bAllowConverse @ bAllowCombat @ bAllowOther @ musicMode);
+
+    //SARGE: Failsafe                    
+    if (fMusicHackTimer == 0 && musicMode == MUS_Ambient)
+        savedSection = info.SongAmbientSection;
 
 	if (player.IsInState('Interpolating'))
 	{
@@ -296,8 +308,7 @@ function Tick(float deltaTime)
 						player.ClientSetMusic(currentSong, savedSection, 255, MTRAN_FastFade);
 					else
 						player.ClientSetMusic(currentSong, savedSection, 255, MTRAN_Fade);
-
-                    savedSection = info.SongAmbientSection;
+                    
                     musicMode = MUS_Ambient;
 					musicChangeTimer = 0.0;
                     SetHackTimer();
