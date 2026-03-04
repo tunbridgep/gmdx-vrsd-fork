@@ -80200,6 +80200,7 @@ Begin Actor Class=CrateExplosiveSmall Name=CrateExplosiveSmall13
     Name=CrateExplosiveSmall13
 End Actor
 Begin Actor Class=DataCube Name=DataCube0
+    bHardcoreRemoveIt=true
     textTag=06_Datacube25
     LastRenderTime=275.645264
     DistanceFromPlayer=1813.728516

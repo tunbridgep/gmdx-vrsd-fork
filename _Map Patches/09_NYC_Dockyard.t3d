@@ -136768,6 +136768,7 @@ Begin Actor Class=PathNode Name=PathNode227
     Name=PathNode227
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot0
+    bHardcoreRemove=True
     Orders=Standing
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3757,ZoneNumber=11)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3700,ZoneNumber=11)

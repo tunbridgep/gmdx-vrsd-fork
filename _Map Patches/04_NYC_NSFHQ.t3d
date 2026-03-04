@@ -37026,6 +37026,7 @@ Begin Actor Class=Barrel1 Name=Barrel27
     Name=Barrel27
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot0
+    bHardcoreRemove=True
     FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=934,ZoneNumber=1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=934,ZoneNumber=1)
     Alliance=UNATCO
@@ -37040,6 +37041,7 @@ Begin Actor Class=RepairBot Name=RepairBot0
     Name=RepairBot0
 End Actor
 Begin Actor Class=MedicalBot Name=MedicalBot0
+    bHardcoreRemove=True
     FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=3541,ZoneNumber=1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=3541,ZoneNumber=1)
     Alliance=UNATCO

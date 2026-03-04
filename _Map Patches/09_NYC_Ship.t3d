@@ -174760,6 +174760,7 @@ Begin Actor Class=MedicalBot Name=MedicalBot0
     Name=MedicalBot0
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot1
+    bHardcoreRemove=True
     bAlliancesChanged=False
     Orders=Standing
     FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=355,ZoneNumber=2)

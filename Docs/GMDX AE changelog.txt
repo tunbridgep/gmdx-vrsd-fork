@@ -79,6 +79,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- A number of Repair Drones have been removed on Hardcore difficulty in order to better balance Energy availability.
 - The Short Fuse perk effect can now be toggled using the Reload key.
 - The Field Repair and Hardened perks have been swapped in the Environmental Training tree.
 - The Filter Upgrade perk now additionally prevents the "disabled regen" effect from poison, in addition to the stamina drain from the poison itself.
