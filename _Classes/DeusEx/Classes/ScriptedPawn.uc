@@ -728,6 +728,8 @@ exec function UpdateHDTPsettings()
 {
     local int i;
     local bool hdtp;
+    
+    class'SkinUtils'.static.ResetSkinStyle(self);
 
     hdtp = IsHDTP();
     
