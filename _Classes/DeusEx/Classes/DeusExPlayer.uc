@@ -536,8 +536,6 @@ var bool bIcarusClimb;
 var float CarriedDecoGlow;
 var float StepTimer;
 var float LadTime;
-var bool bSpecialUpgrade;
-var travel bool bBoosterUpgrade;
 var float enviroAutoTime;
 var Name SpecTex;
 var globalconfig bool bFirstTimeGMDX;
@@ -3293,8 +3291,6 @@ function ResetPlayerToDefaults()
 
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
-
-    bBoosterUpgrade = False;
 
 	// Give starting inventory.
 	if (Level.Netmode != NM_Standalone)
@@ -7568,8 +7564,8 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		AmbientSound = Sound'swimmingloop';
 		SoundPitch = 46;
 		Buoyancy=155.000000;
-		//if (bBoosterUpgrade && Energy > 0)
-		if (!bHardCoreMode && !bStaminaSystem)
+		
+        if (!bHardCoreMode && !bStaminaSystem)
 		   SwimTimer = swimDuration;
         //SARGE: Disabled so we can't "dolphin dive" repeatedly for free stamina
         /*
@@ -7604,10 +7600,7 @@ event HeadZoneChange(ZoneInfo newHeadZone)
         */
 
     Buoyancy=150.500000;
-    if (bBoosterUpgrade)
-    {
-        SwimTimer += 0.5;
-    }
+    
     /*UnderWaterTime = AugmentationSystem.GetAugLevelValue(class'AugAqualung');   //RSD: Passive Aqualung
     if (UnderWaterTime == -1.0)
         UnderWaterTime = default.UnderWaterTime;*/

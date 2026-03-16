@@ -117,6 +117,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniDiskTex0.pcx"		    NAME="MiniDiskTex0"	    GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniDiskTex1.pcx"		    NAME="MiniDiskTex1"	    GROUP="Skins"
 
+// Aug Override Cannister
+#exec TEXTURE IMPORT FILE="Textures\Skins\AugmentationUpgradeCannisterOverdriveTex1.pcx"		    NAME="AugmentationUpgradeCannisterOverdriveTex1"	    GROUP="Skins"
+
 // Alternate Security Comp texture that doesn't show blue through it's own model
 #exec TEXTURE IMPORT FILE="Textures\Skins\ComputerSecurityTex1Blank.pcx"		    NAME="ComputerSecurityTex1Blank"	    GROUP="Skins"
 

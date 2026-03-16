@@ -647,12 +647,13 @@ function UpdateBioEnergyBar()
 
 // ----------------------------------------------------------------------
 // UpdateAugCans()
+// SARGE: Now counts overdrive cans too, in a non-stupid way.
 // ----------------------------------------------------------------------
 
 function UpdateAugCans()
 {
 	local Inventory anItem;
-	local int augCanCount;
+	local int augCanCount, augOverCanCount;
 
 	if (winAugCans != None)
 	{
@@ -664,12 +665,18 @@ function UpdateAugCans()
 
 		while(anItem != None)
 		{
-			if (anItem.IsA('AugmentationUpgradeCannister'))
+			if (anItem.IsA('AugmentationUpgradeCannisterOverdrive'))
+				augOverCanCount++;
+			else if (anItem.IsA('AugmentationUpgradeCannister'))
 				augCanCount++;
 			anItem = anItem.Inventory;
 		}
 
-		winAugCans.SetCount(augCanCount);
+		winAugCans.SetCount(augCanCount + augOverCanCount);
+        if (augCanCount == 0 && AugOverCanCount > 0)
+            winAugCans.SetIcon(Class'AugmentationUpgradeCannisterOverdrive'.Default.LargeIcon);
+        else
+            winAugCans.SetIcon(Class'AugmentationUpgradeCannister'.Default.LargeIcon);
 	}
 }
 
@@ -1201,12 +1208,22 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 function UpgradeAugmentation()
 {
 	local AugmentationUpgradeCannister augCan;
+    local bool bPowerfulUpgrade;
+
 	// First make sure we have a selected Augmentation
 	if (selectedAug == None)
 		return;
 
 	// Now check to see if we have an upgrade cannister
 	augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
+    
+    //SARGE: Allow using an Override cannister as a last resort
+    if (augCan == None)
+    {
+        augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannisterOverdrive'));
+        bPowerfulUpgrade = true;
+    }
+
     if (augCan != None)
 	{
 		// Increment the level and remove the aug cannister from
@@ -1214,7 +1231,11 @@ function UpgradeAugmentation()
 
 		selectedAug.IncLevel();
 		selectedAug.UpdateInfo(winInfo);
-		player.PlaySound(sound'medkituse',SLOT_None);
+
+        if (bPowerfulUpgrade)
+            player.PlaySound(sound'medicalhiss',SLOT_None);
+        else
+            player.PlaySound(sound'medkituse',SLOT_None);
         
         //SARGE: Reset players accuracy bonus.
         player.ResetAim();
@@ -1300,21 +1321,6 @@ function EnableButtons()
 		btnUpgrade.EnableWindow(selectedAug.CanBeUpgraded());
 	else
 		btnUpgrade.EnableWindow(False);
-
-	if (player.bSpecialUpgrade)
-    {
-       if (winAugCans != None)
-       {
-          winAugCans.SetIcon(Texture'GMDXSFX.UI.AugOverrideBelt');
-       }
-    }
-    else
-    {
-       if (winAugCans != None)
-       {
-          winAugCans.SetIcon(Texture'DeusExUI.Icons.LargeIconAugmentationUpgrade');
-       }
-    }
 
 	// Only allow btnActivate to be active if
 	//
