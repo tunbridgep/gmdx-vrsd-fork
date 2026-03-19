@@ -13,8 +13,6 @@ function GetAutofillCode(DeusExNote note, out string code1)
     local string valid, c1, c2;
     local int i;
     
-    class'CodeUtils'.static.GetCodeFromNote(note,0,code1,c2);
-
     if (keypadWindow != None && keypadWindow.keypadOwner != None)
         valid = keypadWindow.keypadOwner.validCode;
 
@@ -24,13 +22,18 @@ function GetAutofillCode(DeusExNote note, out string code1)
         {
             class'CodeUtils'.static.GetCodeFromNote(note,i,c1,c2);
             
-            if (caps(c1) == caps(valid) && c2 == "")
+            if (caps(c1) == caps(valid) && c1 != "" && c2 == "")
             {
                 code1 = c1;
                 return;
             }
         }
     }
+            
+    //No valid codes found, so just use the first one
+    class'CodeUtils'.static.GetCodeFromNote(note,0,c1,c2);
+    if (c2 == "")
+        code1 = c1;
 }
 
 function AutofillNote(DeusExNote note)

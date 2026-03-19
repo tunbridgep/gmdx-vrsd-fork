@@ -9,7 +9,7 @@ enum EAutofillMode
 {
     AUTOFILL_NORMAL,
     AUTOFILL_NONE,
-    AUTOFILL_PASSWORD_ONLY
+    AUTOFILL_PASSWORD_ONLY,
 };
 
 struct CodeNote
@@ -19,6 +19,7 @@ struct CodeNote
     var string noteName;
     var bool bHidden; //Won't show in Keypad/Computer notes window
     var EAutofillMode AutofillMode; //Won't autofill when clicking
+    var string customPassword;      //When autofilling, use this instead of the password.
 
     //Enforce checking that the note actually contains the text for our code.
     //The way we detect con notes is flawed, we only get the conversation. For conversations that add multiple notes, we need to check for the real note only.
@@ -81,7 +82,11 @@ static function GetCodeFromNote(DeusExNote note, int codeNumber, out string code
                 if (codesDone >= codeNumber)
                 {
                     code = default.codeNotes[i].code1;
-                    code2 = default.codeNotes[i].code2;
+
+                    if (default.codeNotes[i].customPassword != "")
+                        code2 = default.codeNotes[i].customPassword;
+                    else
+                        code2 = default.codeNotes[i].code2;
                     bPasswordOnly = default.codeNotes[i].AutofillMode == AUTOFILL_PASSWORD_ONLY;
                     bDone = true;
                     break;
@@ -89,7 +94,12 @@ static function GetCodeFromNote(DeusExNote note, int codeNumber, out string code
                 else if (firstCode == "" && firstCode2 == "")
                 {
                     firstCode = default.codeNotes[i].code1;
-                    firstCode2 = default.codeNotes[i].code2;
+                    
+                    if (default.codeNotes[i].customPassword != "")
+                        firstCode2 = default.codeNotes[i].customPassword;
+                    else
+                        firstCode2 = default.codeNotes[i].code2;
+
                     bFirstPasswordOnly = default.codeNotes[i].AutofillMode == AUTOFILL_PASSWORD_ONLY;
                 }
                 codesDone++;
@@ -290,12 +300,12 @@ defaultproperties
     codeNotes(35)=(code1="9905",noteName="03_Email01")
     codeNotes(36)=(code1="",code2="knight_killer",noteName="03_Email08") //Email from Paul
     codeNotes(37)=(code1="jmanderley",code2="knight_killer",noteName="03_Email08",bHidden=true) //Email from Paul
-    ////M05
+    ////M04
     codeNotes(38)=(code1="MCOLLINS",code2="REVOLUTION",noteName="04_Datacube01")
     codeNotes(39)=(code1="NAPOLEON",code2="REVOLUTION",noteName="04_Datacube01")
     codeNotes(40)=(code1="TJEFFERSON",code2="NEWREVOLUTION",noteName="04_Datacube02")
     codeNotes(41)=(code1="487659",code2="259087",noteName="04_Datacube03")
-    ////M06
+    ////M05
     codeNotes(42)=(code1="4089",noteName="05_Datacube01")
     codeNotes(43)=(code1="4679",noteName="05_Datacube01")
     codeNotes(44)=(code1="MJ12",code2="INVADER",noteName="05_Datacube02")
@@ -313,7 +323,7 @@ defaultproperties
     codeNotes(56)=(code1="2971",noteName="05_Email01")
     codeNotes(57)=(code1="1991",noteName="05_Email10")
     codeNotes(58)=(code1="5239",noteName="05_Email11") //Unused???
-    ////M07
+    ////M06
     codeNotes(59)=(code1="3444",noteName="06_Bulletin07")
     codeNotes(60)=(code1="989",noteName="06_Datacube02")
     codeNotes(61)=(code1="718",noteName="06_Datacube05",bHidden=true)
@@ -335,10 +345,10 @@ defaultproperties
     codeNotes(77)=(code1="768",noteName="06_Datacube30")
     codeNotes(78)=(code1="ALL_SHIFTS",code2="DATA_ENTRY",noteName="06_Datacube31")
     codeNotes(79)=(code1="1709",noteName="06_Datacube20")
-    ////M10
+    ////M08
     codeNotes(80)=(code1="jallred",code2="Apple",noteName="08_Datacube01")
     codeNotes(81)=(code1="Alice_Priest",code2="Secretary",noteName="08_Datacube01")
-    ////M11
+    ////M09
     codeNotes(82)=(code1="71324",noteName="09_Datacube02")
     codeNotes(83)=(code1="65678",noteName="09_Datacube03")
     codeNotes(84)=(code1="83353",noteName="09_Datacube04")
@@ -351,7 +361,7 @@ defaultproperties
     codeNotes(91)=(code1="USFema",code2="Security",noteName="09_Datacube12")
     codeNotes(92)=(code1="KZhao",code2="Captain",noteName="09_Datacube13")
     codeNotes(93)=(code1="6655",noteName="09_Datacube14")
-    ////M12
+    ////M10
     codeNotes(94)=(code1="4003",noteName="10_Book09")
     codeNotes(95)=(code1="bduclare",code2="nico_angel",noteName="10_Datacube02")
     codeNotes(96)=(code1="005133",code2="salem008",noteName="10_Datacube03")
@@ -363,7 +373,7 @@ defaultproperties
     codeNotes(102)=(code1="Hela",code2="Ragnarok",noteName="10_Datacube11")
     codeNotes(103)=(code1="rzelazny",code2="shadowjack",noteName="10_Datacube12")
     codeNotes(104)=(code1="1784",noteName="10_Datacube13")
-    ////M13
+    ////M11
     codeNotes(105)=(code1="meverett",code2="pynchon",noteName="11_Datacube01")
     codeNotes(106)=(code1="8001",noteName="11_Datacube02")
     codeNotes(107)=(code1="1942",noteName="11_Datacube03")
@@ -371,16 +381,16 @@ defaultproperties
     codeNotes(109)=(code1="34501",code2="08711",noteName="11_Datacube03")
     codeNotes(110)=(code1="2384",noteName="11_Email01")
     codeNotes(111)=(code1="6426",noteName="11_Email01")
-    codeNotes(112)=(code1="57601",code2="wyrdred03",noteName="11_Book03")
-    ////M14
+    codeNotes(112)=(code1="576001",code2="wyrdred03",noteName="11_Book03",customPassword="wyrdred0")
+    ////M12
     codeNotes(113)=(code1="Tunnel01",code2="Omega2a",noteName="12_Datacube01")
-    ////M16
+    ////M14
     codeNotes(114)=(code1="Tech",code2="Sharkman",noteName="14_Datacube01")
     codeNotes(115)=(code1="5690",noteName="14_Datacube02")
     codeNotes(116)=(code1="MJ12",code2="Skywalker",noteName="14_Datacube03")
     codeNotes(117)=(code1="Elder",code2="Armageddon",noteName="14_Datacube05")
     codeNotes(118)=(code1="Oceanguard",code2="Kraken",noteName="14_Datacube06")
-    ////M17
+    ////M15
     codeNotes(119)=(code1="0169",noteName="15_Datacube01")
     codeNotes(120)=(code1="a51",code2="xx15yz",noteName="15_Datacube07")
     codeNotes(121)=(code1="1038",noteName="15_Datacube08")
@@ -444,7 +454,7 @@ defaultproperties
     codeNotes(174)=(code1="8456",noteName="DL_FrontGate")
     codeNotes(175)=(code1="Page",code2="UberAlles",noteName="DL_Final_Helios03_5")
     codeNotes(176)=(code1="Icarus",code2="panopticon",noteName="DL_Final_Helios06")
-    //codeNotes(177)=(code1="7243",code2="",noteName="DL_Final_Morgan") //SARGE: This one needs testing too!
+    codeNotes(177)=(code1="7243",noteName="DL_Final_Morgan",AutofillMode=AUTOFILL_NONE)
     codeNotes(178)=(code1="8946",noteName="DL_Morgan_Missed_Convo")
 
     //Other misc notes
@@ -456,12 +466,11 @@ defaultproperties
     codeNotes(182)=(code1="2835",noteName="Datacube20",autofillmode=AUTOFILL_NONE)
 
     guessableCodes(0)="8675309"
-    guessableCodes(1)="7243"
-    guessableCodes(2)="calvo"
-    guessableCodes(3)="bionicman" //Allow accessing our computer before Alex's infolink finishes.
-    guessableCodes(4)="4321" //This code is so iconic and so memorable, and the code is right next to it, so just allow it anyway...
-    guessableCodes(5)="22" //Only 2 digits, guessable
-    guessableCodes(6)="12" //Only 2 digits, obvious
+    guessableCodes(1)="calvo"
+    guessableCodes(2)="bionicman" //Allow accessing our computer before Alex's infolink finishes.
+    guessableCodes(3)="4321" //This code is so iconic and so memorable, and the code is right next to it, so just allow it anyway...
+    guessableCodes(4)="22" //Only 2 digits, guessable
+    guessableCodes(5)="12" //Only 2 digits, obvious
 
     ignoredCodes(0)="SECURITY"
     ignoredCodes(1)="RESEARCH"
