@@ -31,7 +31,7 @@ function SetupSkin()
         }
     }
     
-    GlassesFix();
+    class'SkinUtils'.static.GlassesFix(Self);
 }
 
 function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, name damageType)
