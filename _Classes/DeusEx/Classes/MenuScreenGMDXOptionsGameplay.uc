@@ -76,6 +76,8 @@ defaultproperties
      items(17)=(HelpText="Using actions while hacking computers will increase detection time.",actionText="Hacking Energy Management",variable="bComputerActionsDrainHackTime",defaultValue=1);
      items(18)=(HelpText="Enemies have a small chance of snap-firing when detecting the player.",actionText="Quick Reflexes",variable="bQuickReflexes",defaultValue=0);
      items(19)=(HelpText="If reloading is cancelled, your weapon will be empty instead of keeping the previous ammo amount. This does not affect your total ammo count.",actionText="Empty Weapon When Reloading",variable="bNoPartialReloads",defaultValue=1)
+     //items(20)=(HelpText="When taking damage, the player will be temporarily slowed for a short duration.",actionText="Hit Flinching",variable="bHitFlinch",defaultValue=0)
+     items(20)=(HelpText="Lockpicking and Electronics skills will use Hardcore Mode values",actionText="Harder Lockpicking and Electronics",variable="bHarderLockpicking",defaultValue=0)
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"

@@ -955,6 +955,8 @@ var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapo
 
 var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
 
+
+var globalconfig bool bHarderLockpicking;                   //SARGE: Enforce hardcore mode lockpicking/tool usage on non-hardcore
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
