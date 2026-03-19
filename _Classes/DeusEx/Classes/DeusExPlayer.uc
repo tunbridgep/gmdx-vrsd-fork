@@ -493,9 +493,9 @@ var travel int beltScrolled;                                                //Sa
 var travel bool bBeltSkipNextPrimary;                                       //SARGE: Don't assign the next weapon we select as our primary.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
-var int clickCountCyber; //CyberP: for double clicking to unequip
-var bool bStunted; //CyberP: for slowing player under various conditions
-var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
+var transient int clickCountCyber; //CyberP: for double clicking to unequip
+var travel bool bStunted; //CyberP: for slowing player under various conditions
+var travel float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
@@ -3645,7 +3645,7 @@ function PlayMusic(String musicToPlay, optional int sectionToPlay)
 
 function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition)
 {
-    Log("ClientSetMusic: " $ NewSong @ NewSection @ NewCdTrack @ NewTransition);
+    DebugLog("ClientSetMusic: " $ NewSong @ NewSection @ NewCdTrack @ NewTransition);
     super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
 }
 
