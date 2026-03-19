@@ -14,7 +14,7 @@ function bool CanAssignSecondary(DeusExPlayer player)
 }
 
 //SARGE: Cannot use if at max health
-function bool RestrictedUse(DeusExPlayer player)
+function bool RestrictedUse(DeusExPlayer player, optional out string RestrictedMsg)
 {
     return (player.Health >= player.GenerateTotalMaxHealth());
 }

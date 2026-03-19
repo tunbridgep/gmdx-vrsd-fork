@@ -9,6 +9,8 @@ var Texture WoundIcon;
 
 var const localized string WoundName;
 var const localized string WoundDescription;
+var const localized string WoundPoints;
+var const localized string WoundAfflicted;
 
 var transient DeusExPlayer player;
 
@@ -54,7 +56,7 @@ function AddWoundDamage(int amount)
     player.DebugMessage(string(Self.Class) $ ": total wound damage is: " $ woundDamage);
 
     //For now, simply give us the wound when we reach the max damage
-    if (woundDamage >= DamageThreshold && !bHasIt)
+    if (woundDamage >= DamageThreshold && !bHasIt && player.bWoundSystem)
     {
         bHasIt = true;
         WoundAdded();
@@ -63,6 +65,7 @@ function AddWoundDamage(int amount)
 
 function WoundAdded()
 {
+    player.ClientMessage(sprintf(WoundAfflicted,WoundName));
 }
 
 function WoundRemoved()
@@ -81,6 +84,8 @@ function UpdateInfo(PersonaInfoWindow winInfo)
 	winInfo.Clear();
 	winInfo.SetTitle(WoundName);
     winInfo.SetText(sprintf(WoundDescription,int(woundData[0])));
+    winInfo.SetText(winInfo.CR());
+    winInfo.SetText(sprintf(WoundPoints,woundDamage,damageThreshold));
     /*
 	winInfo.Clear();
 	winInfo.SetTitle(SkillName);
@@ -94,6 +99,8 @@ defaultproperties
      WoundIcon=Texture'DeusExUI.UserInterface.SkillIconMedicine'
      WoundName="Default Trauma."
      WoundDescription="Report this as a bug!"
+     WoundPoints="Current Wound Progress: %d/%d"
+     WoundAfflicted="You are suffering from %s"
      requiredMedkits=1
      DamageThreshold=450
      bHidden=True

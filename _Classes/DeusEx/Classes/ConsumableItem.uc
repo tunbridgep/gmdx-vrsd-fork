@@ -16,7 +16,7 @@ var int bioenergyAmount;                                            //SARGE: Put
 var bool bBiogenic;                                                 //SARGE: Add +5 energy if we have the Biogenic perk
 
 //Check whether we are allowed to use this consumable
-function bool RestrictedUse(DeusExPlayer player)
+function bool RestrictedUse(DeusExPlayer player, optional out string RestrictedMsg)
 {
     return false;
 }
@@ -24,8 +24,11 @@ function bool RestrictedUse(DeusExPlayer player)
 //Auto-use when left-clicking
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    if (frobber != None && RestrictedUse(frobber))
-        frobber.ClientMessage(CannotUse);
+    local string msg;
+    msg = CannotUse;
+
+    if (frobber != None && RestrictedUse(frobber,msg))
+        frobber.ClientMessage(msg);
     else
         OnActivate(frobber);
 }
@@ -112,11 +115,14 @@ state Activated
     function BeginState()
     {
         local DeusExPlayer player;
+        local string msg;
+        msg = CannotUse;
+
         player = DeusExPlayer(Owner);
 
-        if (player != None && RestrictedUse(player))
+        if (player != None && RestrictedUse(player,msg))
         {
-            player.ClientMessage(CannotUse);
+            player.ClientMessage(msg);
             GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
             return;
         }
