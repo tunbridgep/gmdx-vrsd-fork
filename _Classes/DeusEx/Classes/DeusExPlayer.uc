@@ -2872,6 +2872,17 @@ exec function QuickLoad()
 	if (Level.Netmode != NM_Standalone || bFakeDeath)
 	  return;
 
+    //When dead, use the LoadHack state instead so we wait.
+    if (IsInState('dying'))
+    {
+        if (!bDeadLoad) //Don't re-load when already reloading
+        {
+            bDeadLoad = true;
+            GoToState('Dying','LoadHack');
+        }
+        return;
+    }
+
     saveDir = GetSaveGameDirectory();
 
     //Confirm the save exists before trying to do anything
@@ -2879,10 +2890,8 @@ exec function QuickLoad()
     if (info == None)
         return;
 
-	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
+	if (DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
-	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad)
-	{ bDeadLoad=True; GoToState('Dying','LoadHack');   }
 }
 
 // ----------------------------------------------------------------------
@@ -8118,17 +8127,17 @@ Begin:
    if (Level.NetMode != NM_Standalone)
       HidePlayer();
 
-   LoadHack:
+LoadHack:
     if (bDeadLoad)
-	{
+    {
         //SARGE: Now we sleep until we've been dead for at least 1.5 seconds
         //This prevents a nasty crash when loading too quickly
         //DebugLog("DEADLOAD: " $ Level.TimeSeconds @ FrobTime @ Level.TimeSeconds - FrobTime);
         if (Level.TimeSeconds - FrobTime < 1.0)
             Sleep(1.0 - (Level.TimeSeconds - FrobTime));
-	    bDeadLoad = False;
-	    QuickLoadConfirmed();
-	}
+        bDeadLoad = False;
+        QuickLoadConfirmed();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -9017,9 +9026,10 @@ exec function ParseRightClick()
     local InterpolationPoint interp;
 
     //SARGE: Add quickloading if pressing right click while dead.
-    if (IsInState('dying') && !bDeadLoad)
+    if (IsInState('dying'))
     {
         QuickLoad();
+        return;
     }
 
     if (RestrictInput())
