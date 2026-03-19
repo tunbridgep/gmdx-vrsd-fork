@@ -960,6 +960,8 @@ var globalconfig bool bHarderLockpicking;                   //SARGE: Enforce har
 
 var globalconfig bool bEnableCutsceneSpeedup;               //SARGE: Allow speeding up cutscenes with right click.
 
+
+var globalconfig bool bAutofillPlaceholders;               //SARGE: Allow automatically overriding placeholders for similar items.
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
