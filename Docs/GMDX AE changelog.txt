@@ -116,6 +116,8 @@ Map Changes:
 - 02_NYC_BatteryPark
     - The Police Boat will now spout dialog when interacted with, and can be used to exit the map.
     - The Police Boat has been moved slightly closer to the dock, in order to allow interacting with it without needing to jump off.
+- 02_NYC_FreeClinic
+    - Doctors and Nurses will no longer disappear when panicked.
 - 02_NYC_Underground
     - Removed a datacube containing the MJ12/Coupdetat password on Hardcore mode, so that you are incentivised to use the much harder entrance (the one with all the lasers and turrets).
 - 05_NYC_UNATCOHQ
@@ -134,6 +136,8 @@ Map Changes:
     - The 9905 keypad code has been changed so as to not interfere with the 9905 code from the Airfield mission.
 - 10_Paris_Catacombs:
     - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
+- 11_Paris_Cathedral:
+    - The rear-entry door (to the wine cellar) can now be picked as well as broken.
 - 10_Paris_Metro:
     - Datacube at the Security Station now displays a proper Metro map, rather than the catacombs map. This was an unused asset from Vanilla.
 
