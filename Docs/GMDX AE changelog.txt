@@ -1,6 +1,10 @@
 1.2:
 
 New Features:
+- "Belt Memory" now has a new third setting, which will allow items to use placeholders from similar items.
+    - For intance, if you have a placeholder for a Ballistic Vest on your belt, and you pickup a HazMat Suit, the HazMat will replace the dimmed Ballistic Vest placeholder icon.
+    - Uses the same rules as the "Shifter-Style Weapon Switch" option.
+    - This can be disabled in the QoL menu if desired, if you just want regular belt memory.
 - The "Shipping and Receiving" addon for GMDX v9 has been integrated.
     - The original addon can be found here: https://www.moddb.com/mods/gmdx/addons/shipping-receiving-add-on
     - It adds a new section to the Dockyards map. The map isn't to the same standard as the regular maps so it's disabled by default.

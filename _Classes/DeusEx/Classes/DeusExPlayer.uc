@@ -471,7 +471,7 @@ var globalconfig int iModdedHeadBob;                                            
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
-var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
+var globalconfig int iBeltMemory;  								     			//Sarge: Added new feature to allow belt to rember items. 0 = Disabled, 1 = Enabled, 2 = Autofill Placeholders.
 var globalconfig int iSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
 var travel BeltInfo beltInfos[12];                                              //Sarge: Holds information about belt slots
@@ -4434,8 +4434,8 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
 
     //Select the new weapon
     if (bSelect && inHand == from)
-        SetInHandPending(to);
-    
+        PutInHand(to);
+
     DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
 
     //Finally, update the HUD
@@ -4444,11 +4444,13 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     return true;
 }
 
-function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
+function bool DoShifterWeaponSwitch(bool bSelectWeapon, bool bPlaceholderMode, class<Inventory> toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
 {
 	local Inventory items[6], itemToCheck;
 	local Class<Inventory> itemClasses[6];
     local int i, start, times;
+    local bool bCheck;
+    local int placeholder;
 
     //If it's not enabled, bail
     if (iShifterWeaponSwitch == 0)
@@ -4485,11 +4487,42 @@ function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck
         if (i >= 6)
             i = 0;
 
-        //DebugMessage("item" @ i @ items[i]);
-        if (items[i] != None && items[i] != GetSecondary() && (!items[i].bInObjectBelt || (itemToCheck != None && !itemToCheck.bInObjectBelt) || iShifterWeaponSwitch == 1 ))
+        if (items[i] != None && !bPlaceholderMode)
         {
-            _ShifterSwitch(itemToCheck,toCheck,items[i],bSelectWeapon);
-            return true;
+            //SARGE: Only check the belt in belt mode.
+            bCheck = true;
+            if (iShifterWeaponSwitch > 1)
+                bCheck = !items[i].bInObjectBelt && items[i] != GetSecondary();
+
+            //SARGE: Don't select empty chargedpickups
+            if (items[i].IsA('ChargedPickup') && ChargedPickup(items[i]).Charge == 0)
+                bCheck = false;
+
+            if (bCheck)
+            {
+                _ShifterSwitch(itemToCheck,toCheck,items[i],bSelectWeapon);
+                return true;
+            }
+        }
+        else if (bPlaceholderMode) //Allow overriding belt memory
+        {
+            switch (i) //SARGE: Yuck...
+            {
+                case 0: placeholder = HasPlaceholderSlot(switch1); break;
+                case 1: placeholder = HasPlaceholderSlot(switch2); break;
+                case 2: placeholder = HasPlaceholderSlot(switch3); break;
+                case 3: placeholder = HasPlaceholderSlot(switch4); break;
+                case 4: placeholder = HasPlaceholderSlot(switch5); break;
+                case 5: placeholder = HasPlaceholderSlot(switch6); break;
+            }
+
+            if (placeholder != -1)
+            {
+                itemToCheck.beltPos = placeholder;
+                itemToCheck.bInObjectBelt = true;
+                UpdateHUD();
+                return true;
+            }
         }
         times++;
     }
@@ -4497,7 +4530,7 @@ function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck
     return false;
 }
 
-function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect)
+function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect, optional bool bPlaceholderMode)
 {
     local bool bSwitch;
     local Class<Inventory> invToCheck;
@@ -4507,14 +4540,18 @@ function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect)
 
     invToCheck = invItemToCheck.Class;
 
-    bSwitch = DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Lockpick',class'Multitool');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Medkit',class'BioelectricCell');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles',class'Rebreather');
+    //In placeholder mode, do nothing if we already have it in a slot.
+    if (bPlaceholderMode && invItemToCheck.bInObjectBelt)
+        return false;
+
+    bSwitch = DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'Lockpick',class'Multitool');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'Medkit',class'BioelectricCell');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles',class'Rebreather');
 
     return bSwitch;
 }
@@ -9570,6 +9607,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //I really shouldn't have rewritten the ammo system...
     if ((!bCanPickup || bDeclined) && frobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
         DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
+    
+    //SARGE: Swap to a new belt item
+    if (bCanPickup && iBeltMemory >= 2)
+        ShifterSwitchAll(Inventory(frobTarget),false,true);
 
 	return bCanPickup && !bDeclined;
 }
@@ -10542,10 +10583,10 @@ function RemoveObjectFromBelt(Inventory item, optional bool bNoPlaceholder)
 
 	if (DeusExRootWindow(rootWindow) != None)
     {
-        DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,!bNoPlaceholder && bBeltMemory);
+        DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,!bNoPlaceholder && iBeltMemory > 0);
 
         //SARGE: Smart Keyring needs to be updated if we just removed from it's slot.
-        if ((bNoPlaceholder || !bBeltMemory) && beltPos == DeusExRootWindow(rootWindow).hud.belt.KeyringSlot)
+        if ((bNoPlaceholder || iBeltMemory == 0) && beltPos == DeusExRootWindow(rootWindow).hud.belt.KeyringSlot)
             DeusExRootWindow(rootWindow).hud.belt.CreateNanoKeySlot();
     }
 }
@@ -12877,7 +12918,7 @@ function private _UpdateHUD()
 	root = DeusExRootWindow(rootWindow);
 
     // Reset Belt Memory
-    if (!bBeltMemory)
+    if (iBeltMemory == 0)
     {
         for(i = 0;i < 12;i++)
             ClearPlaceholder(i);
@@ -20288,7 +20329,7 @@ defaultproperties
      bToolWindowShowQuantityColours=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
-     bBeltMemory=True
+     iBeltMemory=2
      bEnhancedCorpseInteractions=True
      bBeltShowModified=true
      iSearchedCorpseText=3
