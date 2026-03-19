@@ -957,6 +957,9 @@ var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds
 
 
 var globalconfig bool bHarderLockpicking;                   //SARGE: Enforce hardcore mode lockpicking/tool usage on non-hardcore
+
+var globalconfig bool bEnableCutsceneSpeedup;               //SARGE: Allow speeding up cutscenes with right click.
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -8972,6 +8975,7 @@ exec function ParseRightClick()
     local DeusExRootWindow root;
     local bool bFarAway;
     local Inventory assigned;
+    local InterpolationPoint interp;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying') && !bDeadLoad)
@@ -8980,7 +8984,19 @@ exec function ParseRightClick()
     }
 
     if (RestrictInput())
+    {
+        //SARGE: Allow speeding up cutscenes
+        if (IsInState('Interpolating') && bEnableCutsceneSpeedup)
+        {
+            interp = InterpolationPoint(Target);
+            while (interp != None && interp.Next.position != 0)
+            {
+                interp.GameSpeedModifier = 100;
+                interp = interp.Next;
+            }
+        }
 		return;
+    }
 
     if (bRadialAugMenuVisible)
     {
