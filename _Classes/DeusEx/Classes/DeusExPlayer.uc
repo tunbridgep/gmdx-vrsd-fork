@@ -20446,5 +20446,6 @@ defaultproperties
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
+     bMultiplayerSkillSounds=true
      iDropStacks=1
 }
