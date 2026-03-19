@@ -22,13 +22,13 @@ enum EMusicMode
 };
 
 //Copied from DeusExPlayer
-var Music currentSong;
-var int currentLevelSection;
-var EMusicMode musicMode;
-var byte savedSection;
-var float musicCheckTimer;
-var float musicChangeTimer;
-var float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
+var transient travel Music currentSong;
+var transient travel int currentLevelSection;
+var transient travel EMusicMode musicMode;
+var transient travel byte savedSection;
+var transient travel float musicCheckTimer;
+var transient travel float musicChangeTimer;
+var transient travel float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
@@ -41,20 +41,16 @@ function SetNewSong(Music song, optional byte section)
     local int i;
 
     player = GetGameInfo().GetPlayerPawn();
+        
+    //Reset the music volume for when we change songs while in combat or whatever
+    if (DeusExPlayer(player) != None)
+        DeusExPlayer(player).SoundVolumeHackFix();
 
     if (currentSong != song || iEnhancedMusicSystem == 0 || currentLevelSection != section)
     {
         //Fade out when we're changing to an empty track
         if (string(currentSong) != "Title_Music.Title_Music")
             bFade = (section == 255 || song == None);
-
-        //Reset the music if we change songs while in combat or whatever
-        if (fMusicHackTimer > 0)
-        {
-            player.ClientSetMusic(song,section,255,MTRAN_Instant);
-            if (DeusExPlayer(player) != None)
-                DeusExPlayer(player).SoundVolumeHackFix();
-        }
 
         currentSong = song;
         musicMode = MUS_Ambient;
@@ -70,6 +66,11 @@ function SetNewSong(Music song, optional byte section)
         else
             player.ClientSetMusic(currentSong,section,255,MTRAN_Instant);
     }
+    //Just in case, reset our part
+    else if (fMusicHackTimer > 0)
+        player.ClientSetMusic(song,savedSection,255,MTRAN_Instant);
+
+
 }
 
 //Replace all MusicEvent's with GMDXMusicTriggers
@@ -218,8 +219,8 @@ function Tick(float deltaTime)
     //Log("  " @ bAllowConverse @ bAllowCombat @ bAllowOther @ musicMode);
 
     //SARGE: Failsafe                    
-    if (fMusicHackTimer == 0 && musicMode == MUS_Ambient)
-        savedSection = info.SongAmbientSection;
+    //if (fMusicHackTimer == 0 && musicMode == MUS_Ambient)
+    //    savedSection = info.SongAmbientSection;
 
 	if (player.IsInState('Interpolating'))
 	{
