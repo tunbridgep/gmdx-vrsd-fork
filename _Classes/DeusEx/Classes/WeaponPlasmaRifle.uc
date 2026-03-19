@@ -21,14 +21,10 @@ var travel int breedCount;
 function OnProjectileFired(Projectile firedProjectile)
 {
     local DeusExPlayer P;
-    local PerkPlasmaBreeder PK;
     local Ammo AmmoType;
+    local PerkPlasmaBreeder PK;
 
     P = DeusExPlayer(Owner);
-
-    //Don't allow breeder ammo to create more breeder ammo.
-    if (AmmoType != None && AmmoType.IsA('AmmoPlasmaBreeder'))
-        return;
 
     if (P != None && P.PerkManager != None)
     {
@@ -43,13 +39,13 @@ function OnProjectileFired(Projectile firedProjectile)
 
             if (breedCount >= PK.PerkValue)
             {
-                AmmoType = Ammo(P.FindInventoryType(class'AmmoPlasmaBreeder'));
+                AmmoType = Ammo(P.FindInventoryType(class'AmmoPlasma'));
                 //Log("AmmoType: " $ AmmoType);
 
                 if (AmmoType == None)
                 {
                     //Log("AmmoType 1: " $ AmmoType);
-                    AmmoType = spawn(class'AmmoPlasmaBreeder');
+                    AmmoType = spawn(class'AmmoPlasma');
                     AmmoType.AmmoAmount = 1;
                     AmmoType.Frob(P,None);
                 } 
@@ -203,13 +199,6 @@ function DisplayWeapon(bool overlay)
         else
             multiskins[1] = Texture'BlackMaskTex';
     }
-    else if (overlay && AmmoType.IsA('AmmoPlasmaBreeder'))
-    {
-        if (IsHDTP())
-            multiskins[3] = Texture'Nano_SFX';
-        else
-            multiskins[1] = Texture'Nano_SFX';
-    }
 }
 
 state Reload
@@ -274,9 +263,7 @@ defaultproperties
      ScopeFOV=30
      bCanHaveLaser=True
      AmmoNames(0)=Class'DeusEx.AmmoPlasma'
-     AmmoNames(1)=Class'DeusEx.AmmoPlasmaBreeder'
      ProjectileNames(0)=Class'DeusEx.PlasmaBolt'
-     ProjectileNames(1)=Class'DeusEx.PlasmaBoltBreeder'
      AreaOfEffect=AOE_Cone
      bHasMuzzleFlash=False
      recoilStrength=0.800000
