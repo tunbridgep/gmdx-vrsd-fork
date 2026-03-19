@@ -228,7 +228,8 @@ function SetHitColor(out BodyPart part, float deltaSeconds, bool bHide, int hitV
     if (hitValue > maxHitValue)
         hitValue = maxHitValue;
 
-	col = winEnergy.GetColorScaled(hitValue/maxHitValue);
+    if (winEnergy != None)
+        col = winEnergy.GetColorScaled(hitValue/maxHitValue);
 
 	if (part.damageCounter > 0)
 	{
