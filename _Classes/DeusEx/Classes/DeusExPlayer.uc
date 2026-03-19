@@ -1042,6 +1042,13 @@ replication
 
 }
 
+//SARGE: Check the aug hum
+simulated function CheckAugHum()
+{
+    if (AugmentationSystem != None)
+        AugmentationSystem.HandleAugHum();
+}
+
 //SARGE: Update the visibility of the AMMO Hud whenever we use ammo
 function OnUseAmmo(DeusExAmmo ammoType, int amount)
 {
@@ -14067,6 +14074,7 @@ ignores SeePlayer, HearNoise, Bump;
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
 		MaintainEnergy(deltaTime);
+        CheckAugHum();
 
 		// must update viewflash manually incase a flash happens during a convo
 		ViewFlash(deltaTime);
@@ -19366,6 +19374,7 @@ function MultiplayerTick(float DeltaTime)
 	}
 
 	MaintainEnergy(lastRefreshTime);
+    CheckAugHum();
 	UpdateTranslucency(lastRefreshTime);
 	if ( bNintendoImmunity )
 	{

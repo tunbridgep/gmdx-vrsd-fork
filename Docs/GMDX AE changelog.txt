@@ -91,6 +91,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Automatic Augmentations will now "hum" even when Quiet Augs is enabled, to signal when they are in-use.
 - With "Right-Click tool selection" enabled, you can now use Walk/Run to select tools while looking at keypads.
 - Synthetic Heart energy penalty reduced from 40%/30%/20%/10% to 35%/25%/15%/5%
 - The Short Fuse perk effect can now be toggled using the Reload key.
