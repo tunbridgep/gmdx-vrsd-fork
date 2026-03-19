@@ -72,7 +72,7 @@ function int GetBioenergyAmount(DeusExPlayer player)
 }
 
 //Check hunger before letting us use them
-function bool RestrictedUse(DeusExPlayer player)
+function bool RestrictedUse(DeusExPlayer player, optional out string RestrictedMsg)
 {
     local int maxFullness;
     local Wound wound, wound2;
@@ -84,8 +84,8 @@ function bool RestrictedUse(DeusExPlayer player)
         wound2 = player.WoundManager.GetWoundByType(class'WoundPoison');
         if ((wound != None && wound.HasWound()) || (wound2 != None && wound2.HasWound()))
         {
-            player.ClientMessage(TooSick);
-            return false;
+            RestrictedMsg = TooSick;
+            return true;
         }
     }
     
