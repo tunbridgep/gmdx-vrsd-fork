@@ -19,7 +19,7 @@ var localized String IncrementLabel;
 
 //SARGE: We need to have this in here, because some vice's (alcohol) can also be food items
 //if the addiction system is disabled.
-function bool RestrictedUse(DeusExPlayer player)
+function bool RestrictedUse(DeusExPlayer player, optional out string RestrictedMsg)
 {
     return !player.bAddictionSystem && (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism));
 }
