@@ -1019,9 +1019,16 @@ function DropSelectedItem()
 	local Inventory anItem;
 	local int numCopies;
     local bool bRemoved;
+    local bool bDropStack;
 
 	if (selectedItem == None)
 		return;
+
+    //Determine whether or not we should drop a stack, or a single item
+    if (player.iDropStacks == 1 && IsKeyDown(IK_Shift))
+        bDropStack = true;
+    else if (player.iDropStacks == 2 && !IsKeyDown(IK_Shift))
+        bDropStack = true;
 
 	if (Inventory(selectedItem.GetClientObject()) != None)
 	{
@@ -1035,7 +1042,7 @@ function DropSelectedItem()
 				numCopies = DeusExPickup(anItem).NumCopies;
 
 			// First make sure the player can drop it!
-			if (player.DropItem(anItem, True))
+			if (player.DropItem(anItem, True, bDropStack))
 			{
 				// Make damn sure there's nothing pending
                 if ((player.inHandPending == anItem) || (player.inHand == anItem))
