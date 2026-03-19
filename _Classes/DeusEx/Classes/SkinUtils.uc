@@ -12,7 +12,7 @@ class SkinUtils extends Actor abstract;
 // SARGE: Copied from ScriptedPawn
 // ----------------------------------------------------------------------
 
-static function Texture GetStyleTexture(ERenderStyle newStyle, texture oldTex, optional texture newTex)
+static function Texture GetStyleTexture(ERenderStyle newStyle, optional texture oldTex, optional texture newTex)
 {
 	local texture defaultTex;
 
@@ -84,4 +84,28 @@ static function ResetSkinStyle(Actor src)
 	src.ScaleGlow = src.Default.ScaleGlow;
 	src.Style     = src.Default.Style;
 	src.bUnlit     = src.Default.bUnlit;
+}
+
+//SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
+//SARGE: For now only works with GM_Trench (checked in SetupSkin),
+//but it makes things MUCH simpler. TODO: Make this generic, so that if
+//Augmentique ever decides to implement random meshes for NPCs, this still works.
+static function GlassesFix(Pawn P)
+{
+    //Log("Character: " $ P $ " doing glasses fix");
+
+    if (P.Style == STY_Normal)
+        return;
+
+    if (P.Mesh == LodMesh'DeusExCharacters.GM_Trench' || string(P.Mesh) == "Augmentique.AMTGM_Trench")
+    {
+        Log(P $ " Mesh: " $ string(P.Mesh));
+        P.multiSkins[6] = GetStyleTexture(P.Style);
+        P.multiSkins[7] = GetStyleTexture(P.Style);
+        Log(P $ " Multiskins[6]: " $ P.multiskins[6]);
+    }
+    else if (P.Mesh == LodMesh'RSDCrap.Fixed_Jumpsuit' || P.Mesh == LodMesh'DeusExCharacters.GM_Jumpsuit')
+    {
+        P.multiSkins[5] = GetStyleTexture(P.Style);
+    }
 }

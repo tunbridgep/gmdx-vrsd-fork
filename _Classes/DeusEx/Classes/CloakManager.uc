@@ -144,6 +144,9 @@ function UpdateSkin(optional Actor a)
     }
     else if (bStartedCloaking || bStartedUncloaking)
         class'SkinUtils'.static.SetSkinStyle(a, STY_Translucent, glowTex);
+
+    if (Pawn(A) != None)
+        class'SkinUtils'.static.GlassesFix(Pawn(a));
 }
 
 /*

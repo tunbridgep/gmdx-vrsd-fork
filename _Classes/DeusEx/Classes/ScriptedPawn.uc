@@ -486,7 +486,6 @@ var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
-var travel bool bSetupHDTP;
 
 //SARGE: Force cloak on always. Used by Tiffany.
 var bool bForcedCloak;
@@ -730,25 +729,21 @@ exec function UpdateHDTPsettings()
     local bool hdtp;
     
     class'SkinUtils'.static.ResetSkinStyle(self);
-
+    
     hdtp = IsHDTP();
     
     //Bail out if we have no need to continue
-    if ((hdtp && !bSetupHDTP) || (!hdtp && bSetupHDTP))
+    if (HDTPMesh != "")
     {
-        if (HDTPMesh != "")
-        {
-            Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
-            //We have to be careful here, or we will break holo-projectors
-            for(i = 0; i < 8;i++)
-                MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
-        }
-        if (HDTPSkin != "")
-            Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
-        if (HDTPTexture != "")
-            Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
-        bSetupHDTP = hdtp;
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
+        //We have to be careful here, or we will break holo-projectors
+        for(i = 0; i < 8;i++)
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),hdtp);
     }
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
 
     SetupSkin();
 }
@@ -760,28 +755,6 @@ function bool _GlassesFixTest(coerce string tex)
     return Left(tex,9) == "FramesTex" || Left(tex,9) == "LensesTex";
 }
 */
-
-//SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
-//SARGE: For now only works with GM_Trench (checked in SetupSkin),
-//but it makes things MUCH simpler. TODO: Make this generic, so that if
-//Augmentique ever decides to implement random meshes for NPCs, this still works.
-function GlassesFix()
-{
-    if (Style == STY_Normal)
-        return;
-
-    //Log("Character: " $ self $ "doing glasses fix");
-    
-    if (Mesh == LodMesh'DeusExCharacters.GM_Trench')
-    {
-        multiSkins[6] = class'SkinUtils'.static.GetStyleTexture(Style, multiSkins[6]);
-        multiSkins[7] = class'SkinUtils'.static.GetStyleTexture(Style, multiSkins[7]);
-    }
-    else if (Mesh == LodMesh'RSDCrap.Fixed_Jumpsuit' || Mesh == LodMesh'DeusExCharacters.GM_Jumpsuit')
-    {
-        multiSkins[5] = class'SkinUtils'.static.GetStyleTexture(Style, multiSkins[5]);
-    }
-}
 
 //Based on if we're masked, swap out pink/black/gray mask textures
 //These otherwise look fine with filtering on, but horrible with it off.
@@ -844,6 +817,21 @@ function PostBeginPlay()
     SetupSkin();
 }
 
+// ----------------------------------------------------------------------
+// SetSkinStyle() and ResetSkinStyle()
+// SARGE: These are only here because DXRando uses them.
+// They literally just call off to the static versions
+// ----------------------------------------------------------------------
+    
+function ResetSkinStyle()
+{
+    class'SkinUtils'.static.ResetSkinStyle(self);
+}
+
+function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional float newScaleGlow)
+{
+    class'SkinUtils'.static.SetSkinStyle(Self, newStyle, newTex, newScaleGlow, false);
+}
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
@@ -4760,7 +4748,7 @@ function SetupSkin()
         _ApplyCurrentOutfit();
 
     //Also fix glasses on holograms
-    GlassesFix();
+    class'SkinUtils'.static.GlassesFix(Self);
     //FixAllTextureMasks();
 }
 
