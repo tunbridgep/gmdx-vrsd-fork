@@ -87,8 +87,23 @@ event Tick(float deltaSeconds) {
         highlightSingleItem(None);
 
 	pos = player.radialMenuCursorPos; // save last mouse pos for next tick
+
+    if (!bDoneFirst)
+        ResetCursorToCenter();
+
+    bDoneFirst = true;
 }
 
+
+function ResetCursorToCenter()
+{
+    //Reset cursor to center
+    if (!player.bAugWheelRememberCursor)
+    {
+        player.radialMenuCursorPos = center;
+        positionMarker(mouseToMarkerPos(center+vect(0,1,0)));
+    }
+}
 
 /**
  * Hide/show the Menu
@@ -100,29 +115,27 @@ event VisibilityChanged(bool isVis) {
 
 	if (isVis)
     {
-    
-        //Reset cursor to center
-        if (!player.bAugWheelRememberCursor)
-        {
-            player.radialMenuCursorPos = center;
-            //positionMarker(mouseToMarkerPos(center+vect(0,1,0)));
-        }
-
         positionItems();
         positionPowerIcon();
         if (!player.bQuickAugWheel)
             PlaySound(Sound'Menu_Activate', 0.25);
         skipQuickToggle = false;
         bClicked = false;
+        bDoneFirst = false;
     }
 	else
     {
         //Toggle aug on closing, if we have Quick Aug Menu on
-        if (player.bQuickAugWheel && !skipQuickToggle && !bClicked)
-            ToggleCurrent();
+        if (CheckToggleCurrent(player))
+            ToggleCurrent(true);
         else
     	    PlaySound(Sound'Menu_OK', 0.25);
     }
+}
+
+function bool CheckToggleCurrent(DeusExPlayer player)
+{
+    return player.bQuickAugWheel && !skipQuickToggle && !bClicked;
 }
 
 /**
@@ -160,7 +173,7 @@ function highlightSingleItem(HUDRadialMenuItem item) {
 /**
  * (De-)Activates the currently highlited aug.
  */
-function ToggleCurrent() {
+function ToggleCurrent(optional bool bAllowHidden) {
 
     //Left-click prevents quick-toggle
     bClicked = true;
@@ -174,7 +187,7 @@ function ToggleCurrent() {
     }
 
     //SARGE: Hacky fix.
-    if (!highlightedItem.IsVisible())
+    if (!highlightedItem.IsVisible() && !bAllowHidden)
         return;
 
     if (highlightedItem.isActive)

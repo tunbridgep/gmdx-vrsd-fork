@@ -12402,9 +12402,26 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
             WHEELSAVErotation = ViewRotation;                                   //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
         else                                                                    //RSD: Need to use SAVErotation from when we activated drone though
             WHEELSAVErotation = SAVErotation;
+
+        //SetPause(true);
+        if (!bHardCoreMode && !bRealUI)
+        {
+            SetPause(true);
+            UpdateHUD(true);
+        }
 	}
 	else if (bSpyDroneActive && !bSpyDroneSet)                                  //RSD: Allows the user to toggle between moving and controlling the drone
-	   ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
+    {
+	    ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
+    }
+    else
+    {
+        if (!bHardCoreMode && !bRealUI)
+        {
+            SetPause(false);
+            UpdateHUD(true);
+        }
+    }
 
 
     UpdateCrosshair();
@@ -12648,9 +12665,12 @@ function UpdateCrosshair()
         root.UpdateCrosshair();
 }
 
-function UpdateHUD()
+function UpdateHUD(optional bool bForced)
 {
-    bUpdateHud = true;
+    if (bForced)
+        _UpdateHUD();
+    else
+        bUpdateHud = true;
 }
 
 function private _UpdateHUD()
@@ -12672,9 +12692,12 @@ function private _UpdateHUD()
     //Show/Hide Markers
     UpdateMarkerDisplay(true);
 
-    bUpdateHud = false;
+    //Update aug wheel
+    if (AugmentationSystem != None)
+		AugmentationSystem.RefreshAugWheel();
 
     //DebugMessage("UpdateHUD");
+    bUpdateHud = false;
 }
 
 function UpdateSecondaryDisplay()
