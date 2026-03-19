@@ -960,6 +960,7 @@ var globalconfig bool bHarderLockpicking;                   //SARGE: Enforce har
 
 var globalconfig bool bEnableCutsceneSpeedup;               //SARGE: Allow speeding up cutscenes with right click.
 
+var globalconfig int iDropStacks;                          //SARGE: Allow dropping stacks of items from the inventory with the shift key. 0 = Disabled, 1 = Enabled, 2 = Swap (Drop stacks by default, shift to drop one)
 
 var globalconfig bool bAutofillPlaceholders;               //SARGE: Allow automatically overriding placeholders for similar items.
 //New method for detecting if we're in combat efficiently
@@ -11495,7 +11496,7 @@ function DropDecoration()
 // or places it on your currently highlighted object
 // if None is passed in, it drops what's inHand
 // ----------------------------------------------------------------------
-exec function bool DropItem(optional Inventory inv, optional bool bDrop)
+exec function bool DropItem(optional Inventory inv, optional bool bDrop, optional bool bFullDrop)
 {
 	local Inventory item, previtem;
 	local Inventory previousItemInHand;
@@ -11577,7 +11578,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			PutInHand(None);
 
 		// handle throwing pickups that stack
-		if (item.IsA('DeusExPickup'))
+		if (item.IsA('DeusExPickup') && !bFullDrop)
 		{
 			// turn it off if it is on
 			if (DeusExPickup(item).bActive)
@@ -11640,7 +11641,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			}
 		}
         //If it's a disposable weapon, throw away only one, and deduct ammo
-        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != None)
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != None && !bFullDrop)
         {
             AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
             amm = ammoType.ammoAmount;
@@ -11869,14 +11870,19 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
         AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
         if (ammoType != None && ammoType.AmmoAmount > 0)
         {
-            ammoType.ammoAmount -= 1;
+            if (bFullDrop)
+                amm = ammoType.ammoAmount;
+            else
+                amm = 1;
+
+            ammoType.ammoAmount -= amm;
             UpdateAmmoBeltText(AmmoType);
-            DeusExWeapon(item).PickupAmmoCount = 1;
+            DeusExWeapon(item).PickupAmmoCount = amm;
         }
     }
     
     //SARGE: Remove blood from weapon
-    if (bDropped && DeusExWeapon(item) != None)
+    if (bDropped && DeusExWeapon(item) != None && (!DeusExWeapon(item).bDisposableWeapon || bFullDrop))
         DeusExWeapon(item).SetCoveredInBlood(false);
 
 	return bDropped;
@@ -20440,4 +20446,5 @@ defaultproperties
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
+     iDropStacks=1
 }

@@ -174,6 +174,7 @@ defaultproperties
      items(130)=(HelpText="Use vanilla-scaled HDTP-Style blood textures when not using HDTP.",actionText="Game: Enhanced Vanilla Blood Textures",variable="bNewBlood",defaultValue=1,bAdvancedModeOnly=true)
      items(133)=(HelpText="When levelling up skills using the skill menu, each level will make a different sound",actionText="Audio: Multiplayer Skill Menu Sounds",variable="bMultiplayerSkillSounds",defaultValue=1)
      items(134)=(HelpText="When enabled, Right-Clicking will speed up end of mission cutscenes.",actionText="Game: Allow Cutscene Speedup",variable="bEnableCutsceneSpeedup")
+     items(135)=(HelpText="When enabled, Holding Shift in the inventory screen will drop stacks of items. In Inverted mode, stacks will drop by default, and Shift will drop single items.",actionText="HUD: Allow Dropping Item Stacks",variable="iDropStacks",defaultValue=1,valueText2="Inverted")
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

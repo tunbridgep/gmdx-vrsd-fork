@@ -39,6 +39,8 @@ New Features:
     - Additionally added a larger version of the console font.
 - Added a new keybinding to access the console without the "say" prompt.
 - Added a new option to use large text when reading books and datacubes. On by default.
+- Added the ability to drop entire stacks of items from the inventory screen, by holding Run/Walk.
+    - Additionally added a setting to invert this behaviour, which will drop stacks by default, and only drop 1 item when holding Run/Walk.
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
