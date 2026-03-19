@@ -54,6 +54,9 @@ static function Sound GetFootstepSound(Pawn P, Name FloorMaterial, Name FloorTex
 	
     rnd = FRand();
 
+   //if (P.IsA('DeusExPlayer'))
+   //    DeusExPlayer(P).DebugMessage(FloorMaterial @ FloorTexture);
+
 	if (P.IsA('DeusExPlayer') && (P.IsInState('PlayerSwimming') || (P.Physics == PHYS_Swimming)))
 	{
         bRainStep = 0;
@@ -74,7 +77,7 @@ static function Sound GetFootstepSound(Pawn P, Name FloorMaterial, Name FloorTex
 		else
 			stepSound = Sound'WaterStep3';
 	}
-    if (FloorTexture == 'Marker' || FloorTexture == 'Marker_sky' || FloorTexture == 'FlufBlueCloud_A' || FloorTexture == 'metalgrate_a') //SARGE: Moved this out of the Metal check, to handle new special case for invisible walkways
+    else if (FloorTexture == 'Marker' || FloorTexture == 'Marker_sky' || FloorTexture == 'FlufBlueCloud_A' || FloorTexture == 'metalgrate_a') //SARGE: Moved this out of the Metal check, to handle new special case for invisible walkways
     {
         bRainStep = 0; //SARGE: No splash effects on gratings
 		volumeMultiplier = 0.9;
@@ -106,7 +109,7 @@ static function Sound GetFootstepSound(Pawn P, Name FloorMaterial, Name FloorTex
 					stepSound = Sound'CarpetStep4';
 				break;
 
-                case 'Earth':
+            case 'Earth':
                 volumeMultiplier = 0.8;
 				if (rnd < 0.25)
 					stepSound = Sound'DIRT1';
@@ -258,16 +261,16 @@ static function Sound GetFootstepSound(Pawn P, Name FloorMaterial, Name FloorTex
 					stepSound = Sound'GMDXSFX.Player.concrete_ct_04';
 				break;
 			default:
-                    volumeMultiplier = 0.8;
-					if (rnd < 0.25)
-			    		stepSound = Sound'StoneStep1';
-				    else if (rnd < 0.5)
-			     		stepSound = Sound'StoneStep2';
-			    	else if (rnd < 0.75)
-			     		stepSound = Sound'StoneStep3';
-			    	else
-			     		stepSound = Sound'StoneStep4';
-					break;
+                volumeMultiplier = 0.8;
+                if (rnd < 0.25)
+                    stepSound = Sound'StoneStep1';
+                else if (rnd < 0.5)
+                    stepSound = Sound'StoneStep2';
+                else if (rnd < 0.75)
+                    stepSound = Sound'StoneStep3';
+                else
+                    stepSound = Sound'StoneStep4';
+                break;
 		}
     }
     return stepSound;
