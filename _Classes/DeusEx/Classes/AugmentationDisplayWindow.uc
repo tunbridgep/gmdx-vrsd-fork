@@ -2191,6 +2191,10 @@ function DrawContents(GC gc, Containers C)
     //Don't draw empty crates/boxes
     if (C.Contents == None)
         return;
+    
+    //Don't draw removed crates/boxes
+    if (C.DrawScale <= 0.0001)
+        return;
 
     oldMesh = C.Mesh;
     oldScale = C.DrawScale;

@@ -702,7 +702,7 @@ function checkMantle()                                                          
 						if (swimTimer < 0)                                      //RSD: Can run out of breath
 						{
 							swimTimer = 0;
-							if (bStaminaSystem || bHardCoreMode)
+							if (iStaminaSystem > 0 || bHardCoreMode)
 							{
 								bStunted = true;
 								if (!bOnLadder && FRand() < 0.7)

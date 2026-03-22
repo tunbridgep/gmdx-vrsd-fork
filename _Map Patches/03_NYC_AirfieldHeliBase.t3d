@@ -181873,4 +181873,131 @@ Begin Actor Class=Dispatcher Name=Dispatcher0
     OldLocation=(X=-1253.332397,Y=660.013794,Z=89.100273)
     Name=Dispatcher0
 End Actor
+Begin Actor Class=PrecipitationInfo Name=PrecipitationInfo0
+    LastRenderTime=3447.576172
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=4210,ZoneNumber=20)
+    Location=(X=372.770081,Y=-35.760101,Z=1104.079834)
+    OldLocation=(X=372.770081,Y=-4.760101,Z=166.079865)
+    Name=PrecipitationInfo0
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode0
+    ignoreRadius=875.000000
+    bSwap=True
+    LastRenderTime=3433.054932
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=4090,ZoneNumber=20)
+    Location=(X=9.385143,Y=26.333191,Z=166.093475)
+    OldLocation=(X=9.385143,Y=26.333191,Z=166.093475)
+    Name=SplashyFeetIgnoreNode0
+End Actor
+Begin Actor Class=Brush Name=Brush466
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    PolyFlags=67109129
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(Z=960.000000)
+    Rotation=(Yaw=81920)
+    Begin Brush Name=Model493
+       Begin PolyList
+          Begin Polygon Flags=8 Link=0
+             Origin   -00640.000000,-00640.000000,+00000.000000
+             Normal   +00000.000000,+00000.000000,+00001.000000
+             TextureU +00000.000000,+00001.000000,-00000.000000
+             TextureV -00001.000000,+00000.000000,+00000.000000
+             Vertex   -00640.000000,-00640.000000,+00000.000000
+             Vertex   +00640.000000,-00640.000000,+00000.000000
+             Vertex   +00640.000000,+00640.000000,+00000.000000
+             Vertex   -00640.000000,+00640.000000,+00000.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model493'
+    Name=Brush466
+End Actor
+Begin Actor Class=ZoneInfo Name=ZoneInfo9
+    LastRenderTime=3447.576172
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ZoneInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=4626,ZoneNumber=20)
+    Location=(X=-72.099976,Y=45.207458,Z=1138.835571)
+    OldLocation=(X=617.900024,Y=316.207458,Z=1124.835571)
+    Name=ZoneInfo9
+End Actor
+Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter0
+    FirstNodeTag=HelibasePrecip1
+    SoundTag=HelibasePrecipSounds
+    LastRenderTime=344.197754
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationShelter
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=4412,ZoneNumber=20)
+    Location=(X=423.959442,Y=-145.934998,Z=166.099548)
+    OldLocation=(X=423.959442,Y=-145.934998,Z=166.099548)
+    Name=PrecipitationShelter0
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode0
+    LastRenderTime=344.197754
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=HelibasePrecip2
+    Event=HelibasePrecip3
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo9',iLeaf=4413,ZoneNumber=28)
+    Location=(X=305.490814,Y=351.534302,Z=1040.122925)
+    OldLocation=(X=397.490814,Y=372.534302,Z=1040.122925)
+    Name=PrecipitationNode0
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode1
+    LastRenderTime=344.197754
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=HelibasePrecip3
+    Event=HelibasePrecip4
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo9',iLeaf=4413,ZoneNumber=28)
+    Location=(X=-274.509155,Y=350.534302,Z=1040.122925)
+    OldLocation=(X=429.490814,Y=404.534302,Z=1040.122925)
+    Name=PrecipitationNode1
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode2
+    LastRenderTime=344.197754
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=HelibasePrecip4
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo9',iLeaf=4413,ZoneNumber=28)
+    Location=(X=-297.509155,Y=-381.465698,Z=1040.122925)
+    OldLocation=(X=-443.509155,Y=404.534302,Z=1040.122925)
+    Name=PrecipitationNode2
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode3
+    LastRenderTime=344.197754
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=HelibasePrecip1
+    Event=HelibasePrecip2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo9',iLeaf=4413,ZoneNumber=28)
+    Location=(X=304.490845,Y=-348.465698,Z=1040.122925)
+    OldLocation=(X=-445.509155,Y=-376.465698,Z=1040.122925)
+    Name=PrecipitationNode3
+End Actor
+Begin Actor Class=ShelterSoundOutside Name=ShelterSoundOutside0
+    LastRenderTime=344.197754
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=HelibasePrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=4410,ZoneNumber=20)
+    Location=(X=5.372536,Y=-16.968018,Z=374.096466)
+    OldLocation=(X=63.372536,Y=35.031967,Z=154.096466)
+    SoundRadius=255
+    Name=ShelterSoundOutside0
+End Actor
+Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter1
+    FirstNodeTag=HelibasePrecip1
+    SoundTag=HelibasePrecipSounds
+    LastRenderTime=513.110352
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationShelter
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=4412,ZoneNumber=20)
+    Location=(X=1119.959473,Y=816.065002,Z=232.099548)
+    OldLocation=(X=455.959442,Y=-113.934998,Z=166.099548)
+    Name=PrecipitationShelter1
+End Actor
 End Map

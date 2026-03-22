@@ -202788,4 +202788,320 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop5
     BarkBindName="UNATCOTroop"
     Name=UNATCOTroop5
 End Actor
+Begin Actor Class=PrecipitationInfo Name=PrecipitationInfo0
+    PrecipRad=850.000000
+    LastRenderTime=21523.728516
+    DistanceFromPlayer=3437.469727
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=2979,ZoneNumber=9)
+    Location=(X=-1163.403809,Y=-3672.633545,Z=262.092468)
+    OldLocation=(X=-1163.403809,Y=-3672.633545,Z=262.092468)
+    bSelected=True
+    Name=PrecipitationInfo0
+End Actor
+Begin Actor Class=PrecipitationInfo Name=PrecipitationInfo1
+    LastRenderTime=17478.320313
+    DistanceFromPlayer=3421.387451
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=2979,ZoneNumber=9)
+    Location=(X=-1143.403809,Y=-3656.633545,Z=142.092468)
+    OldLocation=(X=-1131.403809,Y=-3640.633545,Z=262.092468)
+    Name=PrecipitationInfo1
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode40
+    LastRenderTime=21523.728516
+    DistanceFromPlayer=3082.457031
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=2952,ZoneNumber=9)
+    Location=(X=-844.319336,Y=-3362.931396,Z=262.098511)
+    OldLocation=(X=-844.319336,Y=-3362.931396,Z=262.098511)
+    Name=SplashyFeetIgnoreNode40
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode0
+    PrecipRad=425.000000
+    LastRenderTime=17443.082031
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecip1
+    Event=SubwayPrecip2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5195,ZoneNumber=9)
+    Location=(X=-3843.276367,Y=1234.217529,Z=667.106445)
+    OldLocation=(X=-3939.276367,Y=1670.217529,Z=400.106445)
+    Name=PrecipitationNode0
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode1
+    LastRenderTime=17443.082031
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecip2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5191,ZoneNumber=9)
+    Location=(X=-4295.276367,Y=2501.217529,Z=684.106445)
+    OldLocation=(X=-3907.276367,Y=1702.217529,Z=688.106445)
+    Name=PrecipitationNode1
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound0
+    LastRenderTime=17436.220703
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=3703,ZoneNumber=9)
+    Location=(X=-4008.842285,Y=1666.549805,Z=405.100372)
+    OldLocation=(X=-4008.842285,Y=1652.549805,Z=330.100372)
+    AmbientSound=Sound'Precipitation.Ambient.RainCity'
+    Name=ShelterSound0
+End Actor
+Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter0
+    FirstNodeTag=SubwayPrecip1
+    SoundTag=SubwayPrecipSounds
+    LastRenderTime=15291.227539
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationShelter
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=1642,ZoneNumber=10)
+    Location=(X=-4776.204102,Y=3442.668945,Z=-329.899170)
+    OldLocation=(X=-4776.204102,Y=3442.668945,Z=-329.899170)
+    Name=PrecipitationShelter0
+End Actor
+Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter1
+    FirstNodeTag=SubwayPrecip1
+    SoundTag=SubwayPrecipSounds
+    LastRenderTime=15714.393555
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationShelter
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=2318,ZoneNumber=11)
+    Location=(X=-4331.469727,Y=2185.295654,Z=174.099823)
+    OldLocation=(X=-4331.469727,Y=2185.295654,Z=174.099823)
+    Name=PrecipitationShelter1
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound2
+    LastRenderTime=17436.220703
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5143,ZoneNumber=9)
+    Location=(X=-4165.842285,Y=2106.549805,Z=358.100372)
+    OldLocation=(X=-3976.842285,Y=1684.549805,Z=507.100372)
+    AmbientSound=Sound'Precipitation.Ambient.RainCity'
+    Name=ShelterSound2
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound3
+    LastRenderTime=15714.393555
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=2318,ZoneNumber=11)
+    Location=(X=-4313.351074,Y=2285.022461,Z=162.098999)
+    OldLocation=(X=-4313.351074,Y=2285.022461,Z=162.098999)
+    Name=ShelterSound3
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound4
+    LastRenderTime=15714.393555
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=2156,ZoneNumber=11)
+    Location=(X=-4310.949219,Y=2616.495361,Z=18.099989)
+    OldLocation=(X=-4310.949219,Y=2616.495361,Z=18.099989)
+    Name=ShelterSound4
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound5
+    LastRenderTime=15714.393555
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=2156,ZoneNumber=11)
+    Location=(X=-4301.166504,Y=3016.506348,Z=18.099981)
+    OldLocation=(X=-4301.166504,Y=3016.506348,Z=18.099981)
+    Name=ShelterSound5
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound6
+    LastRenderTime=15296.599609
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=-4797.166504,Y=3014.506348,Z=18.099981)
+    OldLocation=(X=-4269.166504,Y=3048.506348,Z=18.099981)
+    Name=ShelterSound6
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound7
+    LastRenderTime=15714.393555
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=-4442.166504,Y=3007.506348,Z=162.099976)
+    OldLocation=(X=-4269.166504,Y=3048.506348,Z=18.099981)
+    Name=ShelterSound7
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound8
+    LastRenderTime=15289.867188
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=2155,ZoneNumber=11)
+    Location=(X=-4460.166504,Y=3383.506348,Z=18.099981)
+    OldLocation=(X=-4410.166504,Y=3039.506348,Z=18.099981)
+    Name=ShelterSound8
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound9
+    LastRenderTime=15289.867188
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=1602,ZoneNumber=11)
+    Location=(X=-4812.166504,Y=3391.506348,Z=18.099981)
+    OldLocation=(X=-4428.166504,Y=3415.506348,Z=18.099981)
+    Name=ShelterSound9
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound10
+    LastRenderTime=15714.393555
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SubwayPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=2156,ZoneNumber=11)
+    Location=(X=-4817.949219,Y=2632.495361,Z=18.099989)
+    OldLocation=(X=-4278.949219,Y=2648.495361,Z=18.099989)
+    Name=ShelterSound10
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound11
+    LastRenderTime=21523.728516
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClintonBackPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=2952,ZoneNumber=9)
+    Location=(X=-817.609985,Y=-3443.207520,Z=291.099152)
+    OldLocation=(X=-817.609985,Y=-3416.207520,Z=250.099152)
+    AmbientSound=Sound'Precipitation.Ambient.RainCity'
+    Name=ShelterSound11
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound12
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClintonBackPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=6385,ZoneNumber=1)
+    Location=(X=-490.896851,Y=-3426.100098,Z=304.101074)
+    OldLocation=(X=-490.896851,Y=-3284.100098,Z=304.101074)
+    Name=ShelterSound12
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound13
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClintonBackPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=6566,ZoneNumber=1)
+    Location=(X=-221.697754,Y=-3344.842529,Z=464.102112)
+    OldLocation=(X=-211.697754,Y=-3512.842529,Z=218.102127)
+    Name=ShelterSound13
+End Actor
+Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter2
+    FirstNodeTag=ClintonBackPrecip1
+    SoundTag=ClintonBackPrecipSounds
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationShelter
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=6323,ZoneNumber=1)
+    Location=(X=-468.263214,Y=-3430.722168,Z=262.101166)
+    OldLocation=(X=-468.263214,Y=-3430.722168,Z=262.101166)
+    Name=PrecipitationShelter2
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode2
+    LastRenderTime=21523.728516
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClintonBackPrecip1
+    Event=ClintonBackPrecip2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=2937,ZoneNumber=9)
+    Location=(X=-1161.503296,Y=-3294.094971,Z=565.102600)
+    OldLocation=(X=-1161.503296,Y=-3294.094971,Z=320.102600)
+    Name=PrecipitationNode2
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode3
+    LastRenderTime=21523.728516
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClintonBackPrecip2
+    Event=ClintonBackPrecip3
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=4185,ZoneNumber=9)
+    Location=(X=-1227.503296,Y=-3621.094971,Z=565.102600)
+    OldLocation=(X=-1129.503296,Y=-3262.094971,Z=565.102600)
+    Name=PrecipitationNode3
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode4
+    LastRenderTime=21521.796875
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClintonBackPrecip3
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=4187,ZoneNumber=9)
+    Location=(X=-666.503296,Y=-3633.094971,Z=565.102600)
+    OldLocation=(X=-1195.503296,Y=-3589.094971,Z=565.102600)
+    Name=PrecipitationNode4
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound15
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClintonBackPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6140,ZoneNumber=9)
+    Location=(X=693.589722,Y=-550.261414,Z=311.099518)
+    OldLocation=(X=693.589722,Y=-550.261414,Z=242.099518)
+    AmbientSound=Sound'Precipitation.Ambient.RainCity'
+    Name=ShelterSound15
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode41
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6190,ZoneNumber=9)
+    Location=(X=859.724609,Y=-381.349731,Z=358.098633)
+    OldLocation=(X=859.724609,Y=-381.349731,Z=358.098633)
+    Name=SplashyFeetIgnoreNode41
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode42
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6190,ZoneNumber=9)
+    Location=(X=830.872803,Y=-488.928772,Z=364.098236)
+    OldLocation=(X=830.872803,Y=-488.928772,Z=364.098236)
+    Name=SplashyFeetIgnoreNode42
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode43
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6189,ZoneNumber=9)
+    Location=(X=670.726868,Y=-494.736847,Z=372.099762)
+    OldLocation=(X=670.726868,Y=-494.736847,Z=372.099762)
+    Name=SplashyFeetIgnoreNode43
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode44
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6007,ZoneNumber=9)
+    Location=(X=1017.070313,Y=-497.328827,Z=364.101807)
+    OldLocation=(X=1017.070313,Y=-497.328827,Z=364.101807)
+    Name=SplashyFeetIgnoreNode44
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode45
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6012,ZoneNumber=9)
+    Location=(X=1137.809326,Y=-421.514435,Z=380.098846)
+    OldLocation=(X=1137.809326,Y=-421.514435,Z=380.098846)
+    Name=SplashyFeetIgnoreNode45
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode46
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=5976,ZoneNumber=9)
+    Location=(X=1051.608643,Y=-239.051163,Z=364.100311)
+    OldLocation=(X=1051.608643,Y=-239.051163,Z=364.100311)
+    Name=SplashyFeetIgnoreNode46
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode47
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6181,ZoneNumber=9)
+    Location=(X=905.563660,Y=-255.716003,Z=364.101196)
+    OldLocation=(X=905.563660,Y=-255.716003,Z=364.101196)
+    Name=SplashyFeetIgnoreNode47
+End Actor
+Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode49
+    LastRenderTime=17478.320313
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SplashyFeetIgnoreNode
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6175,ZoneNumber=9)
+    Location=(X=949.023499,Y=-395.297241,Z=364.101044)
+    OldLocation=(X=949.023499,Y=-395.297241,Z=364.101044)
+    Name=SplashyFeetIgnoreNode49
+End Actor
 End Map

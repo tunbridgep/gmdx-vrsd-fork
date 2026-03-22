@@ -38,7 +38,7 @@ event InitWindow()
 function CreateControls()
 {
         winIcon = NewChild(Class'Window');
-        winIcon.SetBackgroundStyle(DSTY_Masked);
+        //winIcon.SetBackgroundStyle(DSTY_Masked);
         winIcon.SetPos(1, 1);
         winIcon.SetSize(24, 24);
 
