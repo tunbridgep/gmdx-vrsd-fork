@@ -541,7 +541,7 @@ var travel bool bBoosterUpgrade;
 var float enviroAutoTime;
 var Name SpecTex;
 var globalconfig bool bFirstTimeGMDX;
-var globalconfig bool bStaminaSystem;
+var globalconfig int iStaminaSystem;
 var bool bDeadLoad;
 var bool bGMDXNewGame;
 //var travel int topCharge[4];
@@ -7088,7 +7088,7 @@ state PlayerWalking
           newSpeed *= mult3;
       }
 
-      if (Physics == PHYS_Walking && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
+      if (Physics == PHYS_Walking && (iStaminaSystem > 0 || bHardCoreMode))   //CyberP: stamina system
       {
       if (bIsWalking == false && !IsCrouching() && (Velocity.X != 0 || Velocity.Y != 0 ))
 	  {
@@ -7107,7 +7107,7 @@ state PlayerWalking
 		if (swimTimer < 0)
         {
         swimTimer = 0;
-            if (bStaminaSystem || bHardCoreMode)
+            if (iStaminaSystem > 0 || bHardCoreMode)
             {
                bStunted = true;
                if (!bOnLadder && FRand() < 0.7)
@@ -7125,7 +7125,7 @@ state PlayerWalking
 	  {
 		
 		//SARGE: Moved Endurance check to here.
-        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
+        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained || (iStaminaSystem == 2 && !bHardCoreMode);
 	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder && (inHand == None || !inHand.IsA('POVCorpse')) && CarriedDecoration == None) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder //SARGE: Added corpse carrying //SARGE: And decoration carrying
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
@@ -7630,7 +7630,7 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		SoundPitch = 46;
 		Buoyancy=155.000000;
 		//if (bBoosterUpgrade && Energy > 0)
-		if (!bHardCoreMode && !bStaminaSystem)
+		if (!bHardCoreMode && iStaminaSystem == 0)
 		   SwimTimer = swimDuration;
         //SARGE: Disabled so we can't "dolphin dive" repeatedly for free stamina
         /*
@@ -11473,7 +11473,7 @@ function DropDecoration()
                     ThrowDecoration(deco);
 
                 //SARGE: Stamina cost for throwing objects.
-                if (bStaminaSystem)
+                if (iStaminaSystem == 1 || bHardCoreMode)
                 {
                     swimTimer -= MAX(MIN(deco.Mass * 0.005,3),2);
                     if (swimTimer < 0)
@@ -17099,7 +17099,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
         if (damageType == 'TearGas' || damageType == 'PoisonGas' || damageType == 'Poison' || damageType == 'PoisonEffect') //CyberP: gas grenades and poison barrels drain stamina. // Trash: Now with more damange types!
         {
 
-            if (newDamage >= 1 && bStaminaSystem)
+            if (newDamage >= 1 && (iStaminaSystem > 0 || bHardcoreMode))
             {
 				if (UsingChargedPickup(class'HazMatSuit') && PerkManager.GetPerkWithClass(class'DeusEx.PerkFilterUpgrade').bPerkObtained == true)
         		{
@@ -17115,7 +17115,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                         augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
                     }
                 	swimTimer -= ((newDamage*0.4) + 3) * augLevel;
-                    log("Stamina Damage AugLevel: " $ augLevel);
+                    DebugLog("Stamina Damage AugLevel: " $ augLevel);
                 }
 				
                 if (swimTimer < 0)
@@ -20308,7 +20308,7 @@ defaultproperties
      RocketTargetMaxDistance=40000.000000
      bShowStatus=True
      bShowAugStatus=True
-     bStaminaSystem=True
+     iStaminaSystem=1
      RecoilSimLimit=(X=7.000000,Y=16.000000,Z=7.000000)
      RecoilDrain=0.950000
      RecoilTime=0.140000

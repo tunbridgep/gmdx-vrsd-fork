@@ -64,7 +64,7 @@ defaultproperties
      items(5)=(HelpText="If enabled, time is not paused whilst in the inventory & during general UI navigation.",actionText="Real Time UI",variable="bRealUI");
      items(6)=(HelpText="JC can only eat/drink so much before getting full, and withdrawal symptoms occur twice as quickly.",actionText="Restricted Metabolism",variable="bRestrictedMetabolism",defaultValue=1);
      items(7)=(HelpText="Reloading will reset your standing accuracy",actionText="Reloading resets accuracy.",variable="bReloadingResetsAim");
-     items(8)=(HelpText="If enabled, running and jumping will drain stamina over time.",actionText="Stamina System",variable="bStaminaSystem");
+     items(8)=(HelpText="If enabled, running, jumping and throwing objects will drain stamina over time. In Relaxed mode, stamina recovers automatically while crouched.",actionText="Stamina System",variable="iStaminaSystem",valueText2="Relaxed");
      items(9)=(HelpText="If enabled, reloading with a full magazine is possible.",actionText="Trick Reloads",variable="bTrickReloading");
      items(10)=(HelpText="If enabled, rearming grenades depends on your Demolitions skill.",actionText="Skill-based grenade rearming",variable="bRearmSkillRequired",defaultValue=1);
      items(11)=(HelpText="If enabled, Lasers won't be able to be bypassed using pepper spray and other blockers.",actionText="Improved Laser Detection.",variable="bImprovedLasers",defaultValue=1);
