@@ -16876,6 +16876,13 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	    (damageType != 'PoisonGas') && (damageType != 'Radiation') && (damageType != 'EMP') &&
 	    (damageType != 'NanoVirus') && (damageType != 'Drowned') && (damageType != 'KnockedOut'))
 		bleedRate += (origHealth-Health)/30.0;  // 30 points of damage = bleed profusely
+    { 
+        //SARGE: Add hit flinch
+        /*
+        if (bHitFlinch || bHardcoreMode)
+            stuntedTime = 0.3;
+        */
+    }
 
 	if (CarriedDecoration != None)
         if (FRand() < 0.3 && AugmentationSystem.GetAugLevelValue(class'AugMuscle') < 2 && Damage > 0)
