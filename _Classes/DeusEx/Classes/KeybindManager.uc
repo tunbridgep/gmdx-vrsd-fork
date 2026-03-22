@@ -282,6 +282,8 @@ function Setup(DeusExPlayer P)
                 AddBindingToArray(KB_AugMenu_Hold,keyName);
             if (Left(alias,19) == "ToggleRadialAugMenu")
                 AddBindingToArray(KB_AugMenu_Toggle,keyName);
+            if (Left(alias,12) == "UseSecondary")
+                AddBindingToArray(KB_Secondary,keyName);
 
             //HACK: F is autobound to "Center View"
             //Since literally nobody uses that anymore, just clobber it...
@@ -359,6 +361,9 @@ function Setup(DeusExPlayer P)
     
     //Setup aug wheel key
     ReplaceAlias(KB_AugMenu_Hold,"HoldRadialAugMenu | ToggleRadialAugMenu 1 0 | OnRelease ToggleRadialAugMenu 1 1");
+    
+    //Setup secondary key
+    ReplaceAlias(KB_Secondary,"UseSecondary | OnRelease UseSecondary 1");
     
     if (bReplaceShowScores)
         ReplaceAlias(KB_Belt12,"ShowScores | ActivateBelt 11");

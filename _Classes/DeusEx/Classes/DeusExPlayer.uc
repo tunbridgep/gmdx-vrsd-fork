@@ -672,6 +672,7 @@ var globalconfig bool bAugWheelDisableAll;                                      
 var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
 var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
 var globalconfig int iAugWheelAutoAdd;                                          //SARGE: Automatically add items to the augmentation wheel. 0 = Don't add. 1 = Active Augs only. 2 = Everything.
+var globalconfig bool bAugWheelPresetPositions;                                 //Sarge: Always show all augmentations in the same positions on the wheel, regardless of how many you have.
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
@@ -955,8 +956,9 @@ var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at 
 
 var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
-var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
+var globalconfig bool bAutofillPasswords;                   //SARGE: Allow auto-filling passwords
 
+var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
 
 var globalconfig bool bHarderLockpicking;                   //SARGE: Enforce hardcore mode lockpicking/tool usage on non-hardcore
 
@@ -966,6 +968,8 @@ var globalconfig int iDropStacks;                          //SARGE: Allow droppi
 
 var globalconfig bool bAutofillPlaceholders;               //SARGE: Allow automatically overriding placeholders for similar items.
 
+var globalconfig int iSecondaryMode;                       //SARGE: How will the secondary key operate. 0 = Select Only, 1 = Auto-Activate everything (as gmdxv9), 2 = Smart (only activate disposable weapons and items, when shift is held).
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
@@ -973,6 +977,8 @@ var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 
+//For the aug wheel, now we store the mouse position here, so that it gets saved
+var globalconfig Vector radialMenuCursorPos;
 
 //SARGE: If we exceed 1000 saves, wrap around.
 //This whole thing is fucked
@@ -2257,6 +2263,7 @@ event TravelPostAccept()
 		AugmentationSystem.SetPlayer(Self);
 		AugmentationSystem.Setup();
 		AugmentationSystem.RefreshAugDisplay();
+		AugmentationSystem.RefreshAugWheel();
 	}
 
 	// Nuke any existing conversation
@@ -3908,7 +3915,10 @@ simulated function RefreshSystems(float DeltaTime)
 	  return;
 
 	if (AugmentationSystem != None)
+    {
 	  AugmentationSystem.RefreshAugDisplay();
+	  AugmentationSystem.RefreshAugWheel();
+    }
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -4731,9 +4741,9 @@ function RemoveInventoryType(Class<Inventory> removeType)
 // RadialMenuAddAug
 // ----------------------------------------------------------------------
 
-function RadialMenuAddAug(Augmentation aug)
+function RadialMenuAddAug(Augmentation aug, optional bool bAllowNone)
 {
-	if ((rootWindow != None) && (aug != None))
+	if ((rootWindow != None) && (aug != None || bAllowNone))
 		DeusExRootWindow(rootWindow).hud.radialAugMenu.AddItem(aug);
 }
 
@@ -4816,6 +4826,16 @@ function RefreshAugmentationDisplay()
 {
 	if (AugmentationSystem != None)
 		AugmentationSystem.RefreshAugDisplay();
+}
+
+// ----------------------------------------------------------------------
+// SARGE: RefreshAugmentationWheel()
+// ----------------------------------------------------------------------
+
+function RefreshAugmentationWheel()
+{
+	if (AugmentationSystem != None)
+		AugmentationSystem.RefreshAugWheel();
 }
 
 // ----------------------------------------------------------------------
@@ -8355,125 +8375,173 @@ exec function ShowScores()
 // SARGE: Now it's an actual proper exec function. What was CyberP thinking....???
 // ----------------------------------------------------------------------
 
-exec function UseSecondary()
+exec function UseSecondary(optional bool bRelease)
 {
     local Inventory assigned;
+    local DeusExWeapon W;
+    local bool bSelectOnly;
     assigned = GetSecondary();
 
-	if ( bBuySkills && !bShowScores )
-		BuySkills();
-	if (Level.NetMode == NM_Standalone)
-	{
-        if (RestrictInput())
-            return;
+    if (RestrictInput())
+        return;
 
-        if (CarriedDecoration != none)                                          //RSD: just don't screw around with this, it didn't make any sense anyway
-            return;
+    if (CarriedDecoration != none)                                          //RSD: just don't screw around with this, it didn't make any sense anyway
+        return;
 
-        //SARGE: Do nothing if we have nothing assigned
-        if (assigned == None)
-            return;
+    //SARGE: Do nothing if we have nothing assigned
+    if (assigned == None)
+        return;
 
-        //Sarge: Now we check for ChargedPickup charge level
-        if (assigned.IsA('ChargedPickup') && ChargedPickup(assigned).GetCurrentCharge() == 0)
-        {
-            //Do nothing.
-            return;
-        }
-        //SARGE: Check DTS Charge Level
-        else if (assigned.IsA('WeaponNanoSword') && WeaponNanoSword(assigned).ChargeManager.GetCurrentCharge() == 0)
-        {
-            //Do nothing.
-            return;
-        }
-        else if (assigned.IsA('ConsumableItem') || assigned.IsA('ChargedPickup')) //Sarge: Allow using edibles from the secondary button
-		{
-            assigned.Activate();
-            return;
-		}
+    W = DeusExWeapon(assigned);
+    switch (iSecondaryMode)
+    {
+        //Always Select
+        case 0:
+            bSelectOnly = true;
+            break;
 
-		if (!(inHand != none && inHand.IsA('Binoculars')) && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when not holding Binocs)
-        {
-            if(!Binoculars(assigned).bActive)
-            {
-                if (inHand != None)
-                {
-                    if (inHand.IsA('DeusExWeapon'))
-                    {
-                        //DeusExWeapon(inHand).GotoState('DownWeapon');
-                        DeusExWeapon(inHand).ScopeOff();
-                        DeusExWeapon(inHand).LaserOff(true);
-                        PutInHand(None,true);
-                    }
-                    else if (inHand.IsA('SkilledTool'))
-                    {
-                        //SkilledTool(inHand).PutDown();
-                        PutInHand(None,true);
-                    }
-                    else if (inHand.IsA('DeusExPickup'))
-                    {
-                        PutInHand(None,true);
-                    }
-                }
-                Binoculars(assigned).Activate();
-            }
+        //Always Activate
+        case 1:
+            bSelectOnly = false;
+            break;
+
+        //Simple Dynamic - always select, activate on run/walk
+        case 2:
+            bSelectOnly = bRun == 0;
+            break;
+        
+        //Simple Dynamic Inverted - always activate, select on run/walk
+        case 3:
+            bSelectOnly = bRun == 1;
+            break;
+
+        //Smart Dynamic - select non-disposable weapons, activate everything else,
+        //run/walk inverts the behaviour.
+        case 4:
+            if (bRun == 0)
+                bSelectOnly = W != None && !W.bDisposableWeapon;
             else
-            {
-                Binoculars(assigned).Activate();
-                SelectLastWeapon(true);
-            }
-            return;
-        }
-        else if (inHand != none && inHand.IsA('Binoculars') && assigned != none && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when holding Binocs)
+                bSelectOnly = W != None && W.bDisposableWeapon;
+            break;
+
+    }
+
+    //NEVER allow selecting food items and other things that don't make sense
+    if (assigned.IsA('ConsumableItem') || assigned.IsA('Binoculars'))
+        bSelectOnly = false;
+
+    if (bSelectOnly)
+    {
+        if (bRelease)
+            SelectLastWeapon(true);
+        else
+            PutInHand(assigned,true);
+        return;
+    }
+
+    //Don't use a second time
+    if (bRelease)
+        return;
+
+    //Sarge: Now we check for ChargedPickup charge level
+    if (assigned.IsA('ChargedPickup') && ChargedPickup(assigned).GetCurrentCharge() == 0)
+    {
+        //Do nothing.
+        return;
+    }
+    //SARGE: Check DTS Charge Level
+    else if (assigned.IsA('WeaponNanoSword') && WeaponNanoSword(assigned).ChargeManager.GetCurrentCharge() == 0)
+    {
+        //Do nothing.
+        return;
+    }
+    
+    if (assigned.IsA('ConsumableItem') || assigned.IsA('ChargedPickup')) //Sarge: Allow using edibles from the secondary button
+    {
+        assigned.Activate();
+        return;
+    }
+
+    if (!(inHand != none && inHand.IsA('Binoculars')) && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when not holding Binocs)
+    {
+        if(!Binoculars(assigned).bActive)
         {
+            if (inHand != None)
+            {
+                if (inHand.IsA('DeusExWeapon'))
+                {
+                    //DeusExWeapon(inHand).GotoState('DownWeapon');
+                    DeusExWeapon(inHand).ScopeOff();
+                    DeusExWeapon(inHand).LaserOff(true);
+                    PutInHand(None,true);
+                }
+                else if (inHand.IsA('SkilledTool'))
+                {
+                    //SkilledTool(inHand).PutDown();
+                    PutInHand(None,true);
+                }
+                else if (inHand.IsA('DeusExPickup'))
+                {
+                    PutInHand(None,true);
+                }
+            }
             Binoculars(assigned).Activate();
         }
-
-        if (/*inHand != none && */assigned != inHand) //RSD: Always do quickdraw even if nothing in hand
+        else
         {
-         if (Region.Zone.bWaterZone)
-         {
-             if (assigned.IsA('WeaponShuriken'))
-             {
-                 ClientMessage(WeaponShuriken(assigned).msgNotWorking);
-                 return;
-             }
-         }
-         PutInHand(assigned,true);
-         if (inHandPending.IsA('DeusExWeapon'))
-	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
-         if (inHandPending.IsA('Flare'))
-             Flare(inHandPending).bBeginQuickThrow=true;
-	    }
-	    else if (inHand != none && assigned == inHand)
-	    {
-	      if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bBeginQuickMelee)
-	      {
-	              if (DeusExWeapon(inHand).AccurateRange > 200 && DeusExWeapon(inHand).AmmoLeftInClip() == 0 ) //CyberP/|Totalitarian|: hack fix bug
-	                 return;
-	              else
-	              {
-                     DeusExWeapon(inHand).quickMeleeCombo = 0.4;
-                     DeusExWeapon(inHand).bAlreadyQuickMelee = true;
-	              }
-          }
-          else if (inHand.IsA('Flare') && Flare(inHand).bBeginQuickThrow)
-          {
-               Flare(inHand).quickThrowCombo = 0.4;
-          }
-          else// if (primaryWeapon == None || primaryWeapon == assigned)  //RSD: Don't actually need this stuff?
-          {
-               if (inHand.IsA('DeusExWeapon'))
-                  DeusExWeapon(inHand).Fire(0);
-               if (inHand.IsA('Flare'))
-                  Flare(inHand).Activate();
-          }
-	    }
-	    else if (inHand == none && inHandPending == None)
-	    {
-	           PutInHand(assigned,true);
-	    }
+            Binoculars(assigned).Activate();
+            SelectLastWeapon(true);
+        }
+        return;
+    }
+    else if (inHand != none && inHand.IsA('Binoculars') && assigned != none && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when holding Binocs)
+    {
+        Binoculars(assigned).Activate();
+    }
 
+    if (/*inHand != none && */assigned != inHand) //RSD: Always do quickdraw even if nothing in hand
+    {
+        if (Region.Zone.bWaterZone)
+        {
+            if (assigned.IsA('WeaponShuriken'))
+            {
+                ClientMessage(WeaponShuriken(assigned).msgNotWorking);
+                return;
+            }
+        }
+        PutInHand(assigned,true);
+        if (inHandPending.IsA('DeusExWeapon'))
+            DeusExWeapon(inHandPending).bBeginQuickMelee=true;
+        if (inHandPending.IsA('Flare'))
+            Flare(inHandPending).bBeginQuickThrow=true;
+    }
+    else if (inHand != none && assigned == inHand)
+    {
+        if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bBeginQuickMelee)
+        {
+                if (DeusExWeapon(inHand).AccurateRange > 200 && DeusExWeapon(inHand).AmmoLeftInClip() == 0 ) //CyberP/|Totalitarian|: hack fix bug
+                    return;
+                else
+                {
+                    DeusExWeapon(inHand).quickMeleeCombo = 0.4;
+                    DeusExWeapon(inHand).bAlreadyQuickMelee = true;
+                }
+        }
+        else if (inHand.IsA('Flare') && Flare(inHand).bBeginQuickThrow)
+        {
+            Flare(inHand).quickThrowCombo = 0.4;
+        }
+        else// if (primaryWeapon == None || primaryWeapon == assigned)  //RSD: Don't actually need this stuff?
+        {
+            if (inHand.IsA('DeusExWeapon'))
+                DeusExWeapon(inHand).Fire(0);
+            if (inHand.IsA('Flare'))
+                Flare(inHand).Activate();
+        }
+    }
+    else if (inHand == none && inHandPending == None)
+    {
+        PutInHand(assigned,true);
     }
 }
 
@@ -12577,9 +12645,26 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
             WHEELSAVErotation = ViewRotation;                                   //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
         else                                                                    //RSD: Need to use SAVErotation from when we activated drone though
             WHEELSAVErotation = SAVErotation;
+
+        //SetPause(true);
+        if (!bHardCoreMode && !bRealUI)
+        {
+            SetPause(true);
+            UpdateHUD(true);
+        }
 	}
 	else if (bSpyDroneActive && !bSpyDroneSet)                                  //RSD: Allows the user to toggle between moving and controlling the drone
-	   ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
+    {
+	    ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
+    }
+    else
+    {
+        if (!bHardCoreMode && !bRealUI)
+        {
+            SetPause(false);
+            UpdateHUD(true);
+        }
+    }
 
 
     UpdateCrosshair();
@@ -12841,9 +12926,12 @@ function UpdateCrosshair()
         root.UpdateCrosshair();
 }
 
-function UpdateHUD()
+function UpdateHUD(optional bool bForced)
 {
-    bUpdateHud = true;
+    if (bForced)
+        _UpdateHUD();
+    else
+        bUpdateHud = true;
 }
 
 function private _UpdateHUD()
@@ -12865,9 +12953,12 @@ function private _UpdateHUD()
     //Show/Hide Markers
     UpdateMarkerDisplay(true);
 
-    bUpdateHud = false;
+    //Update aug wheel
+    if (AugmentationSystem != None)
+		AugmentationSystem.RefreshAugWheel();
 
     //DebugMessage("UpdateHUD");
+    bUpdateHud = false;
 }
 
 function UpdateGoalsWindow()
@@ -20386,10 +20477,12 @@ defaultproperties
      bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
+     bAutofillPasswords=true
      iHackySaveIndex=1
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
      bMultiplayerSkillSounds=true
      iDropStacks=1
+     iSecondaryMode=1
 }

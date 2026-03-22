@@ -4,6 +4,12 @@ New Features:
 - Added a new Trauma system playthrough modifier.
     - Taking damage will add certain wounds, which give negative effects.
     - Wounds can be cured using medkits and medical bots.
+- Added Code Autofilling. Left-Click on Notes in the Keypad/Computer UI screens to fill relevant codes automatically.
+- Augmentation Wheel improvements:
+    - Now shows a proper mouse cursor when in free mouse mode
+    - Fixed mouse position being reset between game loads
+    - Fixed being able to select hidden and invalid aug slots
+    - Aug Wheel can now use preset positions for every augmentation.
 - Added Precipitation Mod support.
     - All the NYC maps will now have rain. This can be turned off in the QoL menu.
 - "Belt Memory" now has a new third setting, which will allow items to use placeholders from similar items.
@@ -30,6 +36,7 @@ New Features:
 - Added Texture Filtering setting. It can be turned on in the Display menu and the QoL menu.
     - This is different to the `bNoFiltering` setting in rendering settings, as it doesn't unfilter shadows, decals, and some other things.
 - Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
+- Added new settings for controlling how Secondary Weapons are selected.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
