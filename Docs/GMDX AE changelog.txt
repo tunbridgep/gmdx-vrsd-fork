@@ -1,6 +1,8 @@
 1.2:
 
 New Features:
+- Added Precipitation Mod support.
+    - All the NYC maps will now have rain. This can be turned off in the QoL menu.
 - "Belt Memory" now has a new third setting, which will allow items to use placeholders from similar items.
     - For intance, if you have a placeholder for a Ballistic Vest on your belt, and you pickup a HazMat Suit, the HazMat will replace the dimmed Ballistic Vest placeholder icon.
     - Uses the same rules as the "Shifter-Style Weapon Switch" option.
@@ -91,6 +93,9 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Implemented DXGNative TraceTexture fix. This means footsteps are now always accurate to the surface you're standing on
+    - Additionally enabled some previously unused footstep sounds.
+    - Generalised a lot of footstep code between the Player and NPCs, so everyone should now always have the same footstep sounds.
 - Automatic Augmentations will now "hum" even when Quiet Augs is enabled, to signal when they are in-use.
 - With "Right-Click tool selection" enabled, you can now use Walk/Run to select tools while looking at keypads.
 - Synthetic Heart energy penalty reduced from 40%/30%/20%/10% to 35%/25%/15%/5%

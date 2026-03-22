@@ -4,6 +4,8 @@
 class DeusExGameInfo expands GameInfo
 	config;
 
+#exec OBJ LOAD FILE=DXGNative
+
 //SARGE: Allow loading gameinfo modules.
 //Inspired by similar system in DXRando.
 //TODO: Move a lot of gameplay systems to here, so they can work
@@ -99,7 +101,13 @@ function private GetDefaultModules()
 //Setup modules
 function PreBeginPlay()
 {
+    local string className;
+
     GetDefaultModules();
+
+    //Implement DXGNative Fixes
+    //Code is here: https://codeberg.org/dxgalaxy/dxgnative
+    class'DXGNative.Main'.static.AssertHooks();
 }
 
 event TravelPostAccept()

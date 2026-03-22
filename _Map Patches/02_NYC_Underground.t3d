@@ -83700,7 +83700,7 @@ Begin Actor Class=Brush Name=Brush413
     Location=(X=-64.000000,Y=-112.000000,Z=-832.000000)
     Begin Brush Name=Model418
        Begin PolyList
-          Begin Polygon Item=OUTSIDE Texture=metalwall_a Link=0
+          Begin Polygon Item=OUTSIDE Texture=marker Link=0
              Origin   -00621.000000,-00080.000000,+00000.500000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,-00000.000000
@@ -83710,7 +83710,7 @@ Begin Actor Class=Brush Name=Brush413
              Vertex   +00621.000000,+00080.000000,+00000.500000
              Vertex   -00621.000000,+00080.000000,+00000.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=metalwall_a Link=1
+          Begin Polygon Item=OUTSIDE Texture=marker Link=1
              Origin   -00621.000000,+00080.000000,-00000.500000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU -00000.000000,-00001.000000,-00000.000000
@@ -83720,7 +83720,7 @@ Begin Actor Class=Brush Name=Brush413
              Vertex   +00621.000000,-00080.000000,-00000.500000
              Vertex   -00621.000000,-00080.000000,-00000.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=metalwall_a Link=2
+          Begin Polygon Item=OUTSIDE Texture=marker Link=2
              Origin   -00621.000000,+00080.000000,-00000.500000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,-00000.000000,+00000.000000
@@ -83730,7 +83730,7 @@ Begin Actor Class=Brush Name=Brush413
              Vertex   +00621.000000,+00080.000000,+00000.500000
              Vertex   +00621.000000,+00080.000000,-00000.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=metalwall_a Link=3
+          Begin Polygon Item=OUTSIDE Texture=marker Link=3
              Origin   +00621.000000,-00080.000000,-00000.500000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,-00000.000000,-00000.000000
@@ -83740,7 +83740,7 @@ Begin Actor Class=Brush Name=Brush413
              Vertex   -00621.000000,-00080.000000,+00000.500000
              Vertex   -00621.000000,-00080.000000,-00000.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=metalwall_a Link=4
+          Begin Polygon Item=OUTSIDE Texture=marker Link=4
              Origin   +00621.000000,+00080.000000,-00000.500000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -83750,7 +83750,7 @@ Begin Actor Class=Brush Name=Brush413
              Vertex   +00621.000000,-00080.000000,+00000.500000
              Vertex   +00621.000000,-00080.000000,-00000.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=metalwall_a Link=5
+          Begin Polygon Item=OUTSIDE Texture=marker Link=5
              Origin   -00621.000000,-00080.000000,-00000.500000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00001.000000,+00000.000000

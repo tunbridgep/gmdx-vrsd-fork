@@ -5,6 +5,8 @@ class DeusExPlayer extends PlayerPawnExt native;
 
 #exec OBJ LOAD FILE=Effects
 #exec OBJ LOAD FILE=GMDXText
+#exec OBJ LOAD FILE=Precipitation
+
 // Name and skin assigned to PC by player on the Character Generation screen
 var travel String	TruePlayerName;
 var travel int      PlayerSkin;
@@ -539,7 +541,7 @@ var float LadTime;
 var bool bSpecialUpgrade;
 var travel bool bBoosterUpgrade;
 var float enviroAutoTime;
-var Name SpecTex;
+var name FloorTexture;
 var globalconfig bool bFirstTimeGMDX;
 var globalconfig int iStaminaSystem;
 var bool bDeadLoad;
@@ -1068,6 +1070,24 @@ exec function RedoOutfits()
         outfitManager.RedoNPCOutfits();
         ClientMessage("Rerolling NPC Outfits");
     }
+}
+
+//SARGE: Inform the Precipitation system that we've entered a new zone.
+function UpdatePrecipitation(ZoneInfo NewZone)
+{
+    local PrecipitationInfoBase PI;
+
+    DebugMessage("Zone is: " $ HeadRegion.Zone @ NewZone);
+
+    //Inform that we've left the old zone
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(HeadRegion.Zone);
+    if (PI != None)
+        PI.ActorLeaving(Self);
+   
+    //Inform that we've entered the new zone
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(NewZone);
+    if (PI != None)
+        PI.ActorEntered(Self);
 }
 
 //SARGE: Do a blood effect on the screen and on our weapon
@@ -1987,6 +2007,8 @@ function PostPostBeginPlay()
     
     //Display or hide any Exits as necessary based on settings.
     ShowExits();
+        
+    UpdatePrecipitation(Region.Zone);
 }
 
 // ----------------------------------------------------------------------
@@ -5035,57 +5057,12 @@ function name GetWallMaterial(out vector wallNormal)
 // GetFloorMaterial()
 //
 // gets the name of the texture group that we are standing on
+// SARGE: Now we just get it from PawnUtils...
 // ----------------------------------------------------------------------
 
-function name GetFloorMaterial()
+function name UpdateFloorMaterial()
 {
-	local vector EndTrace, HitLocation, HitNormal;
-	local actor target;
-	local int texFlags;
-	local name texName, texGroup;
-
-	// trace down to our feet
-	EndTrace = Location - CollisionHeight * 2 * vect(0,0,1);
-
-	foreach TraceTexture(class'Actor', target, texName, texGroup, texFlags, HitLocation, HitNormal, EndTrace)
-	{
-		if ((target == Level) || target.IsA('Mover'))
-			break;
-	}
-
-    if (target != None && target.IsA('DeusExMover')) //CyberP: special case for movers.
-    {
-     if (target.IsA('BreakableGlass'))
-        texGroup = 'Glass';
-     else if (DeusExMover(target).FragmentClass == Class'DeusEx.WoodFragment')
-        texGroup = 'Wood';
-     else if (DeusExMover(target).FragmentClass == Class'DeusEx.MetalFragment')
-        texGroup = 'Metal';
-     else
-        texGroup = 'Stucco';
-    }
-    SpecTex = texName;
-    //ClientMessage("GetFloorMaterial: " $ texName);
-	return texGroup;
-}
-
-function name GetVentMaterial()
-{
-	local vector EndTrace, HitLocation, HitNormal;
-	local actor target;
-	local int texFlags;
-	local name texName, texGroup;
-
-	// trace down to our feet
-	EndTrace = Location - CollisionHeight * 2 * vect(0,0,1);
-
-	foreach TraceTexture(class'Actor', target, texName, texGroup, texFlags, HitLocation, HitNormal, EndTrace)
-	{
-		if ((target == Level) || target.IsA('Mover'))
-			break;
-	}
-
-	return texName;
+    class'PawnUtils'.static.GetFloorMaterial(self,FloorMaterial,FloorTexture);
 }
 
 // ----------------------------------------------------------------------
@@ -5099,7 +5076,6 @@ function name GetVentMaterial()
 simulated function PlayFootStep()
 {
 	local Sound stepSound;
-	local float rnd;
 	local float speedFactor, massFactor;
 	local float volume, pitch, range;
 	local float radius, mult;
@@ -5110,6 +5086,11 @@ simulated function PlayFootStep()
     local float stealthLevel;
 	local Pawn P;
     local bool bPawnCheck;
+    
+    //SARGE: Precipitation Stuff
+    local float RainstepVolMod;
+    local PrecipitationInfoBase PI;
+    local int bRainStep;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5120,222 +5101,10 @@ simulated function PlayFootStep()
 	else
 		bOtherPlayer = False;
 
-	rnd = FRand();
+    //DebugMessage("FloorMaterial: " $ FloorMaterial @ "FloorTexture: " $ FloorTexture);
 
 	volumeMultiplier = 1.0;
-	if (IsInState('PlayerSwimming') || (Physics == PHYS_Swimming))
-	{
-		volumeMultiplier = 0.5;
-		if (rnd < 0.5)
-			stepSound = Sound'Swimming';
-		else
-			stepSound = Sound'Treading';
-	}
-	else if (FootRegion.Zone.bWaterZone)
-	{
-		volumeMultiplier = 1.0;
-		if (rnd < 0.33)
-			stepSound = Sound'WaterStep1';
-		else if (rnd < 0.66)
-			stepSound = Sound'WaterStep2';
-		else
-			stepSound = Sound'WaterStep3';
-	}
-	else
-	{
-		switch(FloorMaterial)
-		{
-			case 'Textile':
-			case 'Paper':
-				volumeMultiplier = 0.6;
-				if (rnd < 0.25)
-					stepSound = Sound'CarpetStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'CarpetStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'CarpetStep3';
-				else
-					stepSound = Sound'CarpetStep4';
-				break;
-
-                case 'Earth':
-                volumeMultiplier = 0.8;
-				if (rnd < 0.25)
-					stepSound = Sound'DIRT1';
-				else if (rnd < 0.5)
-					stepSound = Sound'DIRT2';
-				else if (rnd < 0.75)
-					stepSound = Sound'DIRT3';
-				else
-					stepSound = Sound'DIRT4';
-				break;
-
-			case 'Foliage':
-				volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'GrassStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GrassStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GrassStep3';
-				else
-					stepSound = Sound'GrassStep4';
-				break;
-
-			case 'Metal':
-				volumeMultiplier = 0.9;
-			if (SpecTex == 'A51_Floor_01')
-			{
-			    if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-			}
-			else if (SpecTex == 'metalgrate_a')
-			{
-                if (rnd < 0.2)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_01';
-                else if (rnd < 0.4)
-			   		stepSound = Sound'GMDXSFX.Player.metal_grate_02';
-			    else if (rnd < 0.6)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_03';
-		  	    else if (rnd < 0.8)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_04';
-		  	    else
-				   	stepSound = Sound'GMDXSFX.Player.metal_grate_05';
-			}
-			else
-			{
-            	if (rnd < 0.25)
-					stepSound = Sound'MetalStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'MetalStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'MetalStep3';
-				else
-					stepSound = Sound'MetalStep4';
-			}
-				break;
-
-			case 'Ladder':
-				volumeMultiplier = 1.0;
-                if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-                 break;
-
-            case 'Glass':
-            volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'GLASS1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GLASS2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GLASS3';
-				else
-					stepSound = Sound'GLASS4';
-				break;
-
-			case 'Ceramic':
-			case 'Tiles':
-				volumeMultiplier = 0.75;
-				if (rnd < 0.25)
-					stepSound = Sound'TileStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'TileStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'TileStep3';
-				else
-					stepSound = Sound'TileStep4';
-				break;
-
-			case 'Wood':
-				volumeMultiplier = 0.825;
-				if (SpecTex == 'OldeOakPlank_A')
-				{
-				    if (rnd < 0.2)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_01';
-				    else if (rnd < 0.4)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_02';
-				    else if (rnd < 0.6)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_03';
-			     	else if (rnd < 0.8)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_04';
-			    	else
-				    	stepSound = Sound'GMDXSFX.Player.Wood_05';
-				}
-				else
-				{
-			    	if (rnd < 0.25)
-			     		stepSound = Sound'WoodStep1';
-			       	else if (rnd < 0.5)
-			        	stepSound = Sound'WoodStep2';
-			       	else if (rnd < 0.75)
-				       	stepSound = Sound'WoodStep3';
-				    else
-				       	stepSound = Sound'WoodStep4';
-				}
-                break;
-
-            case 'Stucco':
-            volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'CARDB1';
-				else if (rnd < 0.5)
-					stepSound = Sound'CARDB2';
-				else if (rnd < 0.75)
-					stepSound = Sound'CARDB3';
-				else
-					stepSound = Sound'CARDB4';
-				break;
-
-			case 'Brick':
-			case 'Concrete':
-			volumeMultiplier = 0.9;
-				if (rnd < 0.25)
-					stepSound = Sound'STEP1';
-				else if (rnd < 0.5)
-					stepSound = Sound'STEP2';
-				else if (rnd < 0.75)
-					stepSound = Sound'STEP3';
-				else
-					stepSound = Sound'STEP4';
-				break;
-
-			/*case 'Stone':
-				volumeMultiplier = 0.8;
-				if (rnd < 0.25)
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_01';
-				else if (rnd < 0.5)
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_02';
-				else if (rnd < 0.75)
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_03';
-				else
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_04';
-				break;
-            */
-			default:
-                    volumeMultiplier = 0.8;
-					if (rnd < 0.25)
-			    		stepSound = Sound'StoneStep1';
-				    else if (rnd < 0.5)
-			     		stepSound = Sound'StoneStep2';
-			    	else if (rnd < 0.75)
-			     		stepSound = Sound'StoneStep3';
-			    	else
-			     		stepSound = Sound'StoneStep4';
-					break;
-		}
-	}
+    stepSound = class'PawnUtils'.static.GetFootstepSound(self,FloorMaterial,FloorTexture,volumeMultiplier,bRainStep);
 
 	// compute sound volume, range and pitch, based on mass and speed
 	if (IsInState('PlayerSwimming') || (Physics == PHYS_Swimming))
@@ -5376,9 +5145,9 @@ simulated function PlayFootStep()
 
        if (Velocity.Z < -500)
        {
-	   if (SpecTex == 'A51_Floor_01' || FloorMaterial=='Ladder')
+	   if (FloorTexture == 'A51_Floor_01' || FloorMaterial=='Ladder')
           PlaySound(sound'bouncemetal',SLOT_None,volume*1.5,,,0.6);
-       else if (SpecTex == 'metalgrate_a')
+       else if (FloorTexture == 'metalgrate_a')
           PlaySound(sound'metal_chainlink_07',SLOT_None,volume*1.5,,,0.9);
        else if (FloorMaterial=='Metal')
           PlaySound(sound'MetalDoorClose',SLOT_None,volume*1.5,,,1.5);
@@ -5405,17 +5174,18 @@ simulated function PlayFootStep()
             volume *= 0.8 - (0.2 * stealthLevel);
     }
 
-	//if (bJustLanded) log("PlayFootStep bJustLanded vol="@volume@": mod="@volumeMod@": Z="@Velocity.Z);
-
-    /*
-    else if (bIsWalking)
-       volume *= 0.5;  //CyberP: can walk up behind enemies.
-    */
-
-    //BroadcastMessage(volume);
+    // PRECIPITATION
+	// check for running in the rain, then multiply the sound volume by the return value below
+	// (only for the sound effect, not the AI sound event)
+    //PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
+    //if (PI != None)
+    if (bRainStep == 1)
+        RainstepVolMod = class'PrecipitationInfoBase'.static.RainStep( self, FloorMaterial, volume, range, pitch );
+    else
+        RainStepVolMod = 1.0;
 
     stepCount++;
-    PlaySound(stepSound, SLOT_Interact, volume, , range, pitch);
+    PlaySound(stepSound, SLOT_Interact, volume*RainstepVolMod, , range, pitch);
     if (!bHardCoreMode) //CyberP: Nerf footsteps a touch on lower diffs.
         range*=0.9;
 
@@ -7451,7 +7221,7 @@ state PlayerWalking
 		   }
         }
 		// save some texture info
-		FloorMaterial = GetFloorMaterial();
+		UpdateFloorMaterial();
 		WallMaterial = GetWallMaterial(WallNormal);
 
 		// Check if player has walked outside a first-person convo.
@@ -7597,6 +7367,8 @@ state PlayerFlying
 event HeadZoneChange(ZoneInfo newHeadZone)
 {
 	local float mult, augLevel;
+        
+    UpdatePrecipitation(NewHeadZone);
 
 	// hack to get the zone's ambientsound working until Tim fixes it
 	if (newHeadZone.AmbientSound != None)
@@ -7739,7 +7511,7 @@ state PlayerSwimming
             RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 
 		// save some texture info
-		FloorMaterial = GetFloorMaterial();
+		UpdateFloorMaterial();
 		WallMaterial = GetWallMaterial(WallNormal);
 
 		// don't let the player run if swimming
