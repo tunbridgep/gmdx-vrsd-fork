@@ -400,7 +400,7 @@ var      bool     bSeatHackUsed;
 var      bool     bBurnedToDeath;
 
 var      bool     bHasCloak;
-var      bool     bCloakOn;
+var      bool     bCloakOn; //SARGE: Now set by the CloakManager.
 var      int      CloakThreshold;
 var      float    CloakEMPTimer;
 
@@ -486,7 +486,6 @@ var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
-var travel bool bSetupHDTP;
 
 //SARGE: Force cloak on always. Used by Tiffany.
 var bool bForcedCloak;
@@ -534,6 +533,9 @@ var(GMDX) const bool bRandomHeightAdjust;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
+//SARGE: Cloak manager
+var travel CloakManager CloakManager;
+
 //SARGE: Enum used for the swoocy bullshit that we have to do for our IsValidEnemy override.
 enum EAllianceCheckType
 {
@@ -553,15 +555,22 @@ struct AugmentiqueOutfitData
 var travel AugmentiqueOutfitData augmentiqueData;
 
 //Augmentique: Update our textures to our Augmentique outfit
-function ApplyCurrentOutfit()
+//SARGE: This is the default Augmentique ApplyCurrentOutfit function, but we're
+//not using it, since we need to instead do the HDTP stuff and things
+function _ApplyCurrentOutfit()
 {
     local int i;
+    
+    if (bCloakOn)
+        return;
     
     //GMDX Exclusive code
     if (IsHDTP())
         return;
 
-    //Reset Skin
+    //Reset Skin. We can't use ResetSkinStyle,
+    //because we're respecting non-augmentique skin changes,
+    //So we wrote our own version here
 	for (i=0; i<8; i++)
     {
         if (augmentiqueData.textures[i] != None)
@@ -612,6 +621,21 @@ function bool IsActuallyValidEnemy(Pawn TestEnemy, optional EAllianceCheckType c
         return IsValidEnemy(TestEnemy);
 
     return IsValidEnemy(TestEnemy,checkAlliance == AL_True);
+}
+// ----------------------------------------------------------------------
+// SetupCloakManager()
+// Gives the pawn a Cloak Manager.
+// ----------------------------------------------------------------------
+
+function SetupCloakManager()
+{
+    if (!bHasCloak)
+        return;
+
+	// install the Perk Manager if not found
+	if (CloakManager == None)
+	    CloakManager = new(Self) class'CloakManager';
+    CloakManager.Init(Self);
 }
 
 // ----------------------------------------------------------------------
@@ -703,53 +727,50 @@ exec function UpdateHDTPsettings()
 {
     local int i;
     local bool hdtp;
-
+    
+    class'SkinUtils'.static.ResetSkinStyle(self);
+    
     hdtp = IsHDTP();
     
-    SetupSkin();
-
     //Bail out if we have no need to continue
-    if ((hdtp && !bSetupHDTP) || (!hdtp && bSetupHDTP))
+    if (HDTPMesh != "")
     {
-        if (HDTPMesh != "")
-        {
-            Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
-            //We have to be careful here, or we will break holo-projectors
-            for(i = 0; i < 8;i++)
-                MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
-        }
-        if (HDTPSkin != "")
-            Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
-        if (HDTPTexture != "")
-            Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
-        bSetupHDTP = hdtp;
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
+        //We have to be careful here, or we will break holo-projectors
+        for(i = 0; i < 8;i++)
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),hdtp);
     }
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
 
-    //Fix things not appearing cloaked
-    if (bCloakOn)
-        SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
-
-    //Also fix glasses on holograms
-    else if (style == STY_Translucent)
-        GlassesFix();
-
+    SetupSkin();
 }
 
+/*
 function bool _GlassesFixTest(coerce string tex)
 {
+    Log("Glasses Fix: " $ tex @ Left(tex,9));
     return Left(tex,9) == "FramesTex" || Left(tex,9) == "LensesTex";
 }
+*/
 
-//SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
-function GlassesFix()
+//Based on if we're masked, swap out pink/black/gray mask textures
+//These otherwise look fine with filtering on, but horrible with it off.
+/*
+function FixAllTextureMasks()
 {
+    local Texture tex;
     local int i;
-    for (i = 0;i < 8;i++)
+
+    for (i = 0; i < 8; i++)
     {
-        if (_GlassesFixTest(default.multiskins[i].name) || _GlassesFixTest(augmentiqueData.textures[i].name))
-            multiSkins[i] = Texture'PinkMaskTex';
+        if (multiskins[i] == Texture'GrayMaskTex' || multiskins[i] == Texture'PinkMaskTex' || multiskins[i] == Texture'BlackMaskTex')
+            multiskins[i] = GetMaskedTexture();
     }
 }
+*/
 
 //SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
 function SmartWeaponDraw(DeusExPlayer player)
@@ -782,7 +803,7 @@ function PostBeginPlay()
 	// Handle holograms
 	if ((Style != STY_Masked) && (Style != STY_Normal))
 	{
-		SetSkinStyle(Style, None);
+		class'SkinUtils'.static.SetSkinStyle(Self, Style, None);
 		if (!IsA('Terrorist'))
 		    SetCollision(false, false, false);
 		else
@@ -790,11 +811,27 @@ function PostBeginPlay()
 		KillShadow();
 		bHasShadow = False;
 		bCanBleed = False;
+        bHasCloak = False;
 	}
         
     SetupSkin();
 }
 
+// ----------------------------------------------------------------------
+// SetSkinStyle() and ResetSkinStyle()
+// SARGE: These are only here because DXRando uses them.
+// They literally just call off to the static versions
+// ----------------------------------------------------------------------
+    
+function ResetSkinStyle()
+{
+    class'SkinUtils'.static.ResetSkinStyle(self);
+}
+
+function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional float newScaleGlow)
+{
+    class'SkinUtils'.static.SetSkinStyle(Self, newStyle, newTex, newScaleGlow, false);
+}
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
@@ -806,6 +843,8 @@ function PostPostBeginPlay()
 
 	// Bind any conversation events to this ScriptedPawn
 	ConBindEvents();
+
+    SetupCloakManager();
 
 	//bCloakOn = True;                                                            //RSD: Failsafe
 	//EnableCloak(False);
@@ -828,6 +867,9 @@ simulated function Destroyed()
 
 	if ((player != None) && (player.conPlay != None))
 		player.conPlay.ActorDestroyed(Self);
+
+    CriticalDelete(CloakManager);
+    CloakManager = None;
 
 	Super.Destroyed();
 }
@@ -1474,7 +1516,7 @@ function EnableShadow(bool bEnable)
 
 function CreateShadow()
 {
-	if (bHasShadow && bInWorld)
+	if (bHasShadow && bInWorld && !bCloakOn)
 		if (Shadow == None)
 			Shadow = Spawn(class'Shadow', Self,, Location-vect(0,0,1)*CollisionHeight, rot(16384,0,0));
 }
@@ -4672,145 +4714,48 @@ function Bool HasTwoHandedWeapon()
 		return False;
 }
 
-
-// ----------------------------------------------------------------------
-// GetStyleTexture()
-// ----------------------------------------------------------------------
-
-function Texture GetStyleTexture(ERenderStyle newStyle, texture oldTex, optional texture newTex)
-{
-	local texture defaultTex;
-
-	if      (newStyle == STY_Translucent)
-		defaultTex = Texture'BlackMaskTex';
-	else if (newStyle == STY_Modulated)
-		defaultTex = Texture'GrayMaskTex';
-	else if (newStyle == STY_Masked)
-		defaultTex = Texture'PinkMaskTex';
-	else
-		defaultTex = Texture'BlackMaskTex';
-
-	if (oldTex == None)
-		return defaultTex;
-	else if (oldTex == Texture'BlackMaskTex')
-		return Texture'BlackMaskTex';  // hack
-	else if (oldTex == Texture'GrayMaskTex')
-		return defaultTex;
-	else if (oldTex == Texture'PinkMaskTex')
-		return defaultTex;
-	else if (newTex != None)
-		return newTex;
-	else
-		return oldTex;
-
-}
-
-
-// ----------------------------------------------------------------------
-// SetSkinStyle()
-// ----------------------------------------------------------------------
-
-function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional float newScaleGlow)
-{
-	local int     i;
-	local texture curSkin;
-	local texture oldSkin;
-
-	if (newScaleGlow == 0)
-		newScaleGlow = ScaleGlow;
-
-    if (newStyle == STY_Translucent)
-        GlassesFix(); //SARGE: Added
-
-	oldSkin = Skin;
-	for (i=0; i<8; i++)
-	{
-		curSkin = GetMeshTexture(i);
-        if (curSkin != None && curSkin.Name != 'PinkMaskTex')
-            MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
-	}
-	Skin      = GetStyleTexture(newStyle, Skin, newTex);
-	ScaleGlow = newScaleGlow;
-	Style     = newStyle;
-}
-
-
-// ----------------------------------------------------------------------
-// ResetSkinStyle()
-// ----------------------------------------------------------------------
-
-function ResetSkinStyle()
-{
-	local int i;
-
-	for (i=0; i<8; i++)
-		MultiSkins[i] = Default.MultiSkins[i];
-	Skin      = Default.Skin;
-	ScaleGlow = Default.ScaleGlow;
-	Style     = Default.Style;
-    SetupSkin();
-}
-
-
 // ----------------------------------------------------------------------
 // EnableCloak()
 // ----------------------------------------------------------------------
 
 function EnableCloak(bool bEnable)  // beware! called from C++
 {
-local bool bCloaked;
-local SpoofedCorona cor;
 	if (!bHasCloak || (CloakEMPTimer > 0) || (Health <= 0) || bOnFire)
 		bEnable = false;
 
-	if (bEnable && !bCloakOn && !bCloaked)
+	if (bEnable && !bCloakOn)
 	{
-        SetSkinStyle(STY_Translucent, class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.Skins.AlarmLightTex6",IsHDTP()), 0.4);
-        SetTimer(0.4,False);
-        cor = Spawn(class'SpoofedCorona');
-        if (cor != none)
-        cor.SetBase(self);
-        PlaySound(Sound'CloakUp', SLOT_Pain, 0.85, ,768,1.0);
-        AmbientGlow = 255;
-        LightType = LT_Strobe;
-        LightBrightness = 64;
-        LightHue = 160;
-        LightSaturation = 96;
-        LightRadius = 6;
-		KillShadow();
+        CloakManager.SetCloaked(true,true);
 		bCloakOn = bEnable;
-		bCloaked = True;
 	}
 	else if (!bEnable && bCloakOn && !bForcedCloak)
 	{
-		ResetSkinStyle();
-		CreateShadow();
-		LightRadius = 0;
-        AmbientGlow = 0;
+        CloakManager.SetCloaked(false,true);
 		bCloakOn = bEnable;
-		bCloaked = False;
-		if (Health > 0)
-		PlaySound(Sound'CloakDown', SLOT_Pain, 0.85, ,768,1.0);
-        SetupSkin();
 	}
+}
+
+function ApplyCurrentOutfit()
+{
+    SetupSkin();
 }
 
 //SARGE: Added to let us fix up skins when disabling cloak or swapping weapons
 //By default, does nothing, but can be used for things like custom skins for shotgunners
 function SetupSkin()
 {
-    if (!bCloakOn)
-        ApplyCurrentOutfit();
+    if (!IsHDTP() && !bCloakOn)
+        _ApplyCurrentOutfit();
+
+    //Also fix glasses on holograms
+    class'SkinUtils'.static.GlassesFix(Self);
+    //FixAllTextureMasks();
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
 {
-		ResetSkinStyle();
-		CreateShadow();
-		LightRadius = 0;
-        AmbientGlow = 0;
-		bCloakOn = False;
-        SetupSkin();
+    if (!bForcedCloak)
+        CloakManager.ForceOff(true);
 }
 
 // ----------------------------------------------------------------------
@@ -8943,6 +8888,25 @@ function Tick(float deltaTime)
 
     //SARGE: Handle Blinking
     HandleBlink(deltaTime);
+    
+    //SARGE: Tick Cloaking
+    if (CloakManager != None)
+    {
+        CloakManager.TickCloaking(deltaTime);
+        bCloakOn = CloakManager.IsInAnyState();
+        if (bCloakOn)
+        {
+            bNoSmooth=false;
+            CloakManager.UpdateSkin(self);
+            ScaleGlow = CloakManager.GetScaleGlow();
+        }
+        else
+        {
+            ScaleGlow = default.ScaleGlow;
+            Style = default.Style;
+            bNoSmooth=default.bNoSmooth;
+        }
+    }
 
     bFirstTickDone = true;
 }
@@ -8977,21 +8941,8 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 function Timer()
 {
-	//SARGE: Was previously using 'HDTPWeaponCrowbarTex2', vanilla used 'WhiteStatic'
-	//Imported the high-quality one from HDTP, since WhiteStatic is WAY too visible!
-	if (bCloakOn)           //CyberP: for new cloaking effect.
-	{
-			 if (IsA('SecurityBot4'))
-				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
-			 else
-				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.15);
-			 LightRadius = 0;
-			 AmbientGlow = 0;
-	}
-	else
-	{
-	UpdateFire();
-	}
+	if (!bCloakOn)
+        UpdateFire();
 }
 
 

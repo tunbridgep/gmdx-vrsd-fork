@@ -50,7 +50,7 @@ function DisplayWeapon(bool overlay)
             multiskins[0] = handstex;
             
             //Don't show electricity when empty
-            if (!bIsCloaked && !bIsRadar && clipcount == 0)
+            if (clipcount == 0)
             {
                 multiskins[2] = texture'PinkMaskTex';
                 multiskins[3] = texture'PinkMaskTex';
@@ -58,25 +58,26 @@ function DisplayWeapon(bool overlay)
         }
         else
         {
-            //RSD: Need this for some unfathomable reason so the cloak/radar textures animate on the vanilla version. Who fucking knows
-            if (bIsCloaked || bIsRadar)
-            {
-                multiskins[0] = texture'PinkMaskTex';
-                multiskins[3] = texture'PinkMaskTex';
-            }
-            else
-            {
-                multiskins[0] = handstex;
-                multiskins[3] = handstex;
+            multiskins[0] = handstex;
+            multiskins[3] = handstex;
 
-                //Don't show electricity when empty
-                if (clipcount == 0)
-                {
-                    multiskins[1] = texture'PinkMaskTex';
-                    multiskins[2] = texture'PinkMaskTex';
-                }
+            //Don't show electricity when empty
+            if (clipcount == 0)
+            {
+                multiskins[1] = texture'PinkMaskTex';
+                multiskins[2] = texture'PinkMaskTex';
             }
         }
+    }
+}
+
+//RSD: Need this for some unfathomable reason so the cloak/radar textures animate on the vanilla version. Who fucking knows
+function DisplayCloaking(bool overlay, float ScaleGlow, bool bCloak, bool bRadar)
+{
+    if (bRadar || ScaleGlow == class'CloakManager'.default.MinScaleGlow)
+    {
+        multiskins[0] = texture'PinkMaskTex';
+        multiskins[3] = texture'PinkMaskTex';
     }
 }
 

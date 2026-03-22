@@ -125,7 +125,10 @@ function DisplayWeaponBlood(bool overlay)
     if (IsHDTP())
         multiskins[5] = Texture'PinkMaskTex';
     else
+    {
+        Multiskins[2] = Texture'PinkMaskTex'; //Don't texture screws
         multiskins[5] = Texture'PinkMaskTex';
+    }
 }
 
 function DisplayWeapon(bool overlay)
@@ -134,7 +137,7 @@ function DisplayWeapon(bool overlay)
 	super.DisplayWeapon(overlay);
     
     //Display Ammo Type
-    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
+    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0)) //RSD: Overhauled cloak/radar routines
     {
         if(AmmoType.isA('AmmoDartPoison'))
             ammotex = class'HDTPLoader'.static.GetTexture2("HDTPItems.skins.HDTPminicrossbowtex2","RSDCrap.Skins.MiniCrossbowTex2Dart2",IsHDTP());

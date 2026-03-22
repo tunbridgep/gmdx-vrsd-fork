@@ -37,44 +37,6 @@ function Sound GetDefaultUseSound()
         return default.ClassicUseSound;
 }
 
-//SARGE: This is basically a stripped down version of the code in DeusExWeapon
-simulated function renderoverlays(Canvas canvas)
-{
-	local DeusExPlayer PlayerOwner;
-	PlayerOwner = DeusExPlayer(Owner);
-	
-    if ( PlayerOwner != None )
-    {
-
-        DisplayWeapon(true);
-    
-        if (bIsRadar || bIsCloaked)
-        {
-            ShowCamo();
-        }
-    }
-    
-    super.RenderOverlays(canvas);
-
-    //Reset weapon to standard display
-    DisplayWeapon(false);
-}
-
-function DisplayWeapon(bool overlay)
-{
-    local int i;
-    for (i = 0;i < 8;i++)
-    {
-        //SARGE: No HDTP models for these
-        //if (IsHDTP())
-        //    multiskins[i] = none;
-        //else
-            multiskins[i] = default.multiskins[i];
-    }
-    Skin = default.Skin;
-    Texture = default.Texture;
-}
-
 // ----------------------------------------------------------------------
 // PlayUseAnim()
 // ----------------------------------------------------------------------
