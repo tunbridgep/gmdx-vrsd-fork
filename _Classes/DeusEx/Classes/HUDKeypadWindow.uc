@@ -537,7 +537,7 @@ function ValidateCode(bool checkDiscovery)
 
         //SARGE: Easter egg from my childhood....
         //...damn I'm getting old...
-        if (inputCode == "*10#")
+        if (inputCode == "*10#" && player.bShenanigans)
             player.ClientMessage("Call Waiting has been turned on");
 
         if (bDigitDisplay)

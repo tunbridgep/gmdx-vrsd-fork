@@ -36,6 +36,119 @@ var HUDKeypadNotesWindow winNotes;
 
 var const bool bShowNotes;         //SARGE: Added. Show the notes on the first screen(usually login).
 
+//This sucks.
+//So basically, we have to check EVERY username from a given note, to see if it's our current username.
+//If it is, then we need to get the NEXT valid username/password from the note.
+function GetNextAutofillUsername(DeusExNote note, out string code1, out string code2)
+{
+    local string typedUsername;
+    local int i, j, valid;
+    local string validUsernames[8];
+    local string validPasswords[8];
+    local string u1, p1;
+    local bool bNext;
+    local Computers C;
+    local ATM A;
+
+    //First, get the user name
+    if (winComputer != None && ComputerScreenLogin(winComputer) != None)
+        typedUsername = ComputerScreenLogin(winComputer).editUserName.GetText();
+    else if (winComputer != None && ComputerScreenATM(winComputer) != None)
+        typedUsername = ComputerScreenATM(winComputer).editAccount.GetText();
+    
+    C = Computers(compOwner);
+    A = ATM(compOwner);
+    
+    //Get all the possible codes for the note.
+    //We will only get the first 8, no note has more than that...
+    for (i = 0;i < 8;i++)
+    {
+        class'CodeUtils'.static.GetCodeFromNote(note,i,u1,p1);
+        if (p1 != "")
+        {
+            validUsernames[valid] = u1;
+            validPasswords[valid] = p1;
+            valid++;
+        }
+    }
+
+    //In non-hardcore mode, if we haven't typed anything, just get the first valid code
+    if ((!player.bHardCoreMode && player.iNoKeypadCheese == 0) || player.bGMDXDebug)
+    {
+        if (typedUsername == "")
+        {
+            for (i = 0;i < valid;i++)
+            {
+                for (j = 0;j < 8;j++)
+                {
+                    if (C != None && caps(validUsernames[i]) == caps(C.GetUserName(j)) && caps(validPasswords[i]) == caps(C.GetPassword(j)))
+                    {
+                        code1 = validUsernames[i];
+                        code2 = validPasswords[i];
+                        return;
+                    }
+                    else if (A != None && caps(validUsernames[i]) == caps(A.GetAccountNumber(j)) && caps(validPasswords[i]) == caps(A.GetPIN(j)))
+                    {
+                        code1 = validUsernames[i];
+                        code2 = validPasswords[i];
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    //Now go through the usernames list and find if we have one that matches our typed username.
+    //If so, select the NEXT one
+    for (i = 0;i < 8;i++)
+    {
+        if (bNext)
+        {
+            code1 = validUsernames[i];
+            code2 = validPasswords[i];
+            return;
+        }
+
+        if (caps(typedUsername) == caps(validUsernames[i]))
+            bNext = true;
+    }
+    
+    //If we needed to wrap around, or none were valid, just get the first one.
+    if (valid > 0)
+    {
+        code1 = validUsernames[0];
+        code2 = validPasswords[0];
+    }
+}
+
+function AutofillNote(DeusExNote note)
+{
+    local string code1, code2;
+
+    //If we already have a username/password, get the next one
+    //from the note. This lets us "loop" through note autofill
+    GetNextAutofillUsername(note,code1,code2);
+
+    if (winComputer != None && ComputerScreenLogin(winComputer) != None)
+    {
+        if (code1 != "")
+            ComputerScreenLogin(winComputer).editUserName.SetText(code1);
+        if (code2 != "")
+            ComputerScreenLogin(winComputer).editPassword.SetText(code2);
+    }
+    
+    else if (winComputer != None && ComputerScreenATM(winComputer) != None)
+    {
+        if (code1 != "")
+            ComputerScreenATM(winComputer).editAccount.SetText(code1);
+        if (code2 != "")
+            ComputerScreenATM(winComputer).editPIN.SetText(code2);
+    }
+
+    if (code1 != "" || code2 != "")
+        PlaySound(Sound'Menu_Activate', 0.25);
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -499,8 +612,10 @@ function AddNotesWindow()
     winNotes.bUseMenuColors = true;
     for (i = 0; i < numCodes;i++)
         winNotes.AddNote(codeNotes[i]);
+    winNotes.SetEditable(!player.bAutofillPasswords);
     winNotes.CreateNotesList();
     winNotes.StyleChanged();
+    winNotes.SetParentWindow(self);
     winNotes.Hide();
 }
 

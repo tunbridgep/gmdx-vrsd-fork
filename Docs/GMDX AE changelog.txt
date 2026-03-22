@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added Code Autofilling. Left-Click on Notes in the Keypad/Computer UI screens to fill relevant codes automatically.
 - Augmentation Wheel improvements:
     - Now shows a proper mouse cursor when in free mouse mode
     - Fixed mouse position being reset between game loads

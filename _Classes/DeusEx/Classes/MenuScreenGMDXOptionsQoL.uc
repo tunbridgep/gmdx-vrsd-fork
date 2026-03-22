@@ -176,6 +176,7 @@ defaultproperties
      items(128)=(HelpText="Show visible blood on weapons when attacking enemies at close range.",helpText1="Blood will be removed when dropping or putting the weapon away or entering water.",helpText2="Blood will be removed when dropping the weapon or entering water.",actionText="Game: Bloody Weapons",variable="iBloodyWeapons",valueText2="Keep blood when switching",defaultValue=1,bAdvancedModeOnly=false)
      items(129)=(HelpText="The players weapon will be moved backwards when up against a wall.",actionText="Game: Weapon Wall Detection",variable="bWeaponWallDetection",defaultValue=1,bAdvancedModeOnly=false)
      items(130)=(HelpText="Use vanilla-scaled HDTP-Style blood textures when not using HDTP.",actionText="Game: Enhanced Vanilla Blood Textures",variable="bNewBlood",defaultValue=1,bAdvancedModeOnly=true)
+     items(131)=(HelpText="Enable autofilling passwords.",actionText="HUD: Autofill Passwords and Codes",variable="bAutofillPasswords",defaultValue=1)
      items(132)=(HelpText="Show rain and other weather effects.",actionText="Game: Weather Effects",variable="bWeatherEnabled",consoleTarget="Precipitation.Precipitator",defaultValue=1)
      items(133)=(HelpText="When levelling up skills using the skill menu, each level will make a different sound",actionText="Audio: Multiplayer Skill Menu Sounds",variable="bMultiplayerSkillSounds",defaultValue=1)
      items(134)=(HelpText="When enabled, Right-Clicking will speed up end of mission cutscenes.",actionText="Game: Allow Cutscene Speedup",variable="bEnableCutsceneSpeedup")

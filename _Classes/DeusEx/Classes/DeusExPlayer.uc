@@ -954,8 +954,9 @@ var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at 
 
 var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
-var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
+var globalconfig bool bAutofillPasswords;                   //SARGE: Allow auto-filling passwords
 
+var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
 
 var globalconfig bool bHarderLockpicking;                   //SARGE: Enforce hardcore mode lockpicking/tool usage on non-hardcore
 
@@ -20331,6 +20332,7 @@ defaultproperties
      bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
+     bAutofillPasswords=true
      iHackySaveIndex=1
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
