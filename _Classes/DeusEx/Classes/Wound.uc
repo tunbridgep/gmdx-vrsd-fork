@@ -51,6 +51,10 @@ function string GetSeverity()
 
 function AddWoundDamage(int amount)
 {
+    //Don't increment non-displayed wonuds.
+    if (bNoDisplay)
+        return;
+
     woundDamage += amount;
 
     player.DebugMessage(string(Self.Class) $ ": total wound damage is: " $ woundDamage);
