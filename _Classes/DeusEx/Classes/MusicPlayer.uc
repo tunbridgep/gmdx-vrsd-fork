@@ -43,8 +43,10 @@ function SetNewSong(Music song, optional byte section)
     player = GetGameInfo().GetPlayerPawn();
         
     //Reset the music volume for when we change songs while in combat or whatever
+    /*
     if (DeusExPlayer(player) != None)
         DeusExPlayer(player).SoundVolumeHackFix();
+    */
 
     if (currentSong != song || iEnhancedMusicSystem == 0 || currentLevelSection != section)
     {
