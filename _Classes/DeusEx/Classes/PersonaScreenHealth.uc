@@ -1097,8 +1097,10 @@ function EnableButtons()
 
 
     //SARGE: We can only select the Traumas button if we have any wounds
+    /*
     if (buttonTraumas != None)
         buttonTraumas.EnableWindow(player.WoundManager.HasWounds());
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -1198,6 +1200,7 @@ function ToggleTraumaWindow()
         winOverlays.Hide();
         btnHealAll.SetButtonText(CureTraumaButtonLabel);
         buttonStats.SetSensitivity(False);
+        //UpdateRegionWindows();
 
         for (i = 0;i < 6;i++)
             partButtons[i].Hide();
@@ -1225,6 +1228,7 @@ function ToggleTraumaWindow()
         winOverlays.Show();
         btnHealAll.SetButtonText(HealAllButtonLabel);
         buttonStats.SetSensitivity(True);
+        UpdateRegionWindows();
 
         for (i = 0;i < 6;i++)
             partButtons[i].Show();

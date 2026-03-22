@@ -42,7 +42,7 @@ function MedBotCurePlayer()
 {
 	medBot.CurePlayer(player);
 	UpdateMedBotDisplay();
-	UpdateRegionWindows();
+	//UpdateRegionWindows();
 	
 	player.HealScreenEffect(8.0, false);
 }
