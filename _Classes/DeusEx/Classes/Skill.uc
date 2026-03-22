@@ -251,7 +251,10 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.SetTitle(SkillName);
 	winInfo.SetText(sprintf(SkillPointsToMaster,totalcost)); //SARGE: We need to do this here, sprintf can only take 4 values.
     winInfo.SetText(winInfo.CR());
-    winInfo.SetText(GetDescriptionText(player.bHardcoreMode, player.combatDifficulty));
+    if (IsA('SkillLockpicking') || IsA('SkillElectronics'))
+        winInfo.SetText(GetDescriptionText(player.bHardcoreMode || player.bHarderLockpicking, player.combatDifficulty));
+    else
+        winInfo.SetText(GetDescriptionText(player.bHardcoreMode, player.combatDifficulty));
 
 	return True;
 }

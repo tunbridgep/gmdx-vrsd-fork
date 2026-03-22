@@ -59,6 +59,12 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\InventoryBorder_4_big.pcx"			    NAME="InventoryBorder_4_big"	           	GROUP="UserInterface"
 
+//Bigger repair bot interface
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBackground_3edit_big.pcx"			NAME="HUDRepairBotBackground_3edit_big"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBackground_4edit_big.pcx"			NAME="HUDRepairBotBackground_4edit_big"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBorder_3edit_big.pcx"		    	NAME="HUDRepairBotBorder_3edit_big"		        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBorder_4edit_big.pcx"		    	NAME="HUDRepairBotBorder_4edit_big"		        GROUP="UserInterface"
+
 //"Mods Copied" icon
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\modscopied.pcx"		            	    NAME="ModsCopied"	                       	GROUP="UserInterface"
 
@@ -230,6 +236,25 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_2.pcx"			NAME="MenuQoLBackground_2"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_3.pcx"			NAME="MenuQoLBackground_3"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_4.pcx"			NAME="MenuQoLBackground_4"			GROUP="UserInterface"
+
+//New QoL Menu
+//Based off WCCC's Specialisations menu from VMD.
+//Used with permission.
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG01.bmp"			NAME="PictureMenuBG01"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG02.bmp"			NAME="PictureMenuBG02"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG03.bmp"			NAME="PictureMenuBG03"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG04.bmp"			NAME="PictureMenuBG04"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG05.bmp"			NAME="PictureMenuBG05"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG06.bmp"			NAME="PictureMenuBG06"			GROUP="UserInterface"
+//#exec TEXTURE IMPORT FILE="Textures\UserInterface\SpecializationsComputersLarge.pcx"	NAME="SpecializationsComputersLarge"			GROUP="UserInterface" FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\QoL_FreeCursor1.pcx"	            NAME="QoL_FreeCursor1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\QoL_FreeCursor2.pcx"	            NAME="QoL_FreeCursor2"		    	GROUP="UserInterface"    FLAGS=2
+
+//Onboarding Menu
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_Secondaries1.pcx"	            NAME="OBM_Secondaries1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_Secondaries2.pcx"	            NAME="OBM_Secondaries2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_AugWheel1.pcx"	            NAME="OBM_AugWheel1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_AugWheel2.pcx"	            NAME="OBM_AugWheel2"		    	GROUP="UserInterface"    FLAGS=2
 
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"

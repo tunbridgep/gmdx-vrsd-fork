@@ -72,7 +72,6 @@ var() int MPConflictSlot;
 
 var() sound ActivateSound;
 var() sound DeactivateSound;
-var() sound LoopSound;
 
 // SARGE: Has this aug been added to the augmentation wheel?
 var travel bool bAddedToWheel;
@@ -298,11 +297,6 @@ function Activate()
         if (GetAdjustedEnergyReserve() > 0)
             player.Energy -= GetAdjustedEnergyReserve();
 
-		// this block needs to be before bIsActive is set to True, otherwise
-		// NumAugsActive counts incorrectly and the sound won't work
-		if (Player.AugmentationSystem.NumAugsActive() == 0 && !IsToggleAug() && !player.bQuietAugs)
-			Player.AmbientSound = LoopSound;
-
 		bIsActive = True;
 
 		Player.ClientMessage(Sprintf(AugActivated, GetName()));
@@ -355,9 +349,6 @@ function Deactivate()
 			Player.RemoveAugmentationDisplay(Self);
 		Player.RadialMenuUpdateAug(Self);
 
-		if (Player.AugmentationSystem.NumAugsActive() == 0)
-			Player.AmbientSound = None;
-        
         if (!bSilentDeactivation)
             Player.PlaySound(DeactivateSound, SLOT_None,0.7);
 
@@ -745,7 +736,6 @@ defaultproperties
      TypeDescriptorAutomatic="Automatic Augmentations can be activated with no bioelectrical energy cost. While active, bioelectrical energy is drained based on specific circumstances."
      ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
      DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'
-     LoopSound=Sound'DeusExSounds.Augmentation.AugLoop'
      bHidden=true
      bTravel=true
      NetUpdateFrequency=5.000000
