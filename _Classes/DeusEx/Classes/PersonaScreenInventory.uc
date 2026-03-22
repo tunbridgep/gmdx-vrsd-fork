@@ -401,10 +401,8 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
 	local bool bKeyHandled;
     local Inventory anItem;
 
-    if (selectedItem == None)
-        return false;
-
-    anItem = Inventory(selectedItem.GetClientObject());
+    if (selectedItem != None)
+        anItem = Inventory(selectedItem.GetClientObject());
 
     KeyName = player.ConsoleCommand("KEYNAME " $ key);
     Alias = player.ConsoleCommand("KEYBINDING " $ KeyName);
@@ -1021,9 +1019,16 @@ function DropSelectedItem()
 	local Inventory anItem;
 	local int numCopies;
     local bool bRemoved;
+    local bool bDropStack;
 
 	if (selectedItem == None)
 		return;
+
+    //Determine whether or not we should drop a stack, or a single item
+    if (player.iDropStacks == 1 && IsKeyDown(IK_Shift))
+        bDropStack = true;
+    else if (player.iDropStacks == 2 && !IsKeyDown(IK_Shift))
+        bDropStack = true;
 
 	if (Inventory(selectedItem.GetClientObject()) != None)
 	{
@@ -1037,7 +1042,7 @@ function DropSelectedItem()
 				numCopies = DeusExPickup(anItem).NumCopies;
 
 			// First make sure the player can drop it!
-			if (player.DropItem(anItem, True))
+			if (player.DropItem(anItem, True, bDropStack))
 			{
 				// Make damn sure there's nothing pending
                 if ((player.inHandPending == anItem) || (player.inHand == anItem))
@@ -2127,24 +2132,31 @@ function FinishButtonDrag()
 			}
 			else if (lastDragOverButton != dragButton)
 			{   
-                
                 ReturnButton(PersonaInventoryItemButton(dragButton));
-
+            
+                //player.DebugMessage("lastDragOverButton" @ lastDragOverButton);
+                
                 //SARGE: Check if we're in the inventory grid. If not, drop the item.
                 //This is crappy and awful, but I couldn't find a better way to do it...
-                if (player.bDragAndDropOffInventory)
+                if (player.bDragAndDropOffInventory && lastDragOverButton == None)
                 {
+                    /*
                     GetCursorPos(cursorX,cursorY);
                     cursorX -= clientOffsetX;
                     cursorY -= clientOffsetY;
 
+                    //player.DebugMessage("cursorX: " $ cursorX @ "cursorY: " $ cursorY);
+
                     //If we're outside of the grid, drop the item.
                     if (cursorX < 0 || cursorY < 0 || cursorX > invButtonWidth  * player.maxInvCols || cursorY > invButtonHeight * player.maxInvRows)
                     {
+                        */
                         SelectInventory(PersonaInventoryItemButton(dragButton),true);
                         bTickEnabled = True;
                         bDeferredDrop = true;
+                        /*
                     }
+                    */
                 }
 			}
         }

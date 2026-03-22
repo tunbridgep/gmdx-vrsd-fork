@@ -6,6 +6,30 @@ New Features:
     - Fixed mouse position being reset between game loads
     - Fixed being able to select hidden and invalid aug slots
     - Aug Wheel can now use preset positions for every augmentation.
+- "Belt Memory" now has a new third setting, which will allow items to use placeholders from similar items.
+    - For intance, if you have a placeholder for a Ballistic Vest on your belt, and you pickup a HazMat Suit, the HazMat will replace the dimmed Ballistic Vest placeholder icon.
+    - Uses the same rules as the "Shifter-Style Weapon Switch" option.
+    - This can be disabled in the QoL menu if desired, if you just want regular belt memory.
+- The "Shipping and Receiving" addon for GMDX v9 has been integrated.
+    - The original addon can be found here: https://www.moddb.com/mods/gmdx/addons/shipping-receiving-add-on
+    - It adds a new section to the Dockyards map. The map isn't to the same standard as the regular maps so it's disabled by default.
+    - It can be activated using the Playthrough Modifiers menu.
+- Massive overhaul to the QoL menu and other menus
+    - Added search boxes to the QoL, Playthrough Modifiers, and Gameplay menus.
+    - Added a new "simplified" QoL menu, supporting images and longer descriptions.
+    - "Advanced Mode" has been removed from the QoL menu. Now, the simplified menu will be used instead, and will lead to the "Advanced" menu containing all options.
+    - Added a new "Onboarding" menu, containing information about the mod and it's mechanics. This replaces the GMDX "tips" system.
+- Added a new "Harder Lockpicking" gameplay setting to enable Hardcore lockpicking/electronics values on other difficulties.
+- A New head-bobbing algorithm has been implemented which should make bobbing smoother when moving in small increments.
+    - The GMDX v9 headbobbing is still available in the menu.
+    - The headbobbing setting in the Menu now switches between all headbobbing options, rather than "Head Bobbing" toggle and "Alternate Head Bobbing" being different settings.
+- Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
+    - The vanilla ones can still be used by disabling these in the QoL menu.
+- Added blood to weapons when exploding or attacking enemies at extreme close range.
+    - This can be disabled in the QoL menu.
+- Added Texture Filtering setting. It can be turned on in the Display menu and the QoL menu.
+    - This is different to the `bNoFiltering` setting in rendering settings, as it doesn't unfilter shadows, decals, and some other things.
+- Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
@@ -15,26 +39,42 @@ New Features:
 - Added a new playthrough modifier for upfront character creation. You will start with more skill points initially, but will get far less overall.
 - If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.
 - The Frob Display now shows a Red border for Declined items.
+- Right-Clicking can now be used to skip mission-end cutscenes. Disabled by default. Enable in the Advanced QoL Menu.
 - Added a new more readable font, enabled by default. This should fix issues with 1, l and I looking similar to each other.
     - Additionally added a larger version of the console font.
 - Added a new keybinding to access the console without the "say" prompt.
 - Added a new option to use large text when reading books and datacubes. On by default.
+- Added the ability to drop entire stacks of items from the inventory screen, by holding Run/Walk.
+    - Additionally added a setting to invert this behaviour, which will drop stacks by default, and only drop 1 item when holding Run/Walk.
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 - Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
+- Added a new playthrough modifier to remove crates and loose items when UNATCO takes over various areas, such as the Statue of Liberty and Lebedev's Airfield.
 - Added new cut content, available under the "Additional NPC Interactions" modifier
     - Added a phone to Paul's apartment, with a message from a mysterious friend.
     - Added the ability to eavesdrop a conversation between Tong and Lebedev.
 - Added a new "Show on Screen" checkbox to display Goals on the main HUD.
+- Improvements to Weapon Loaded/Unloaded readability and usability
+    - Added a sound for each round loaded by the GEP Gun.
+    - The Plasma Rifle's green circle is now removed when unloaded.
+    - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
+- The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
+- Fixed transparent background for the Stealth Skill in the Skills menu.
+- Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
+    - It now also shows all addons correctly when zooming.
+- Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
+- Fixed GMDX:AE Bug where saving would fail after reaching a save ID of 1000. Now it will loop back around from 0.
 - Fixed GMDX:AE Bugs related to 20mm grenades:
     - Fixed issue where 20mm ammo projectiles would fly sideways.
     - They now use their proper mesh, rather than the Shotgun Casing mesh.
     - They now also have the smoke trail they had in Vanilla.
+- Fixed issue where downloaded Emails would not appear in the keypad/computer notes display.
+- Fixed issue where killing rats would trigger enemy hostility in some cases.
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
@@ -53,8 +93,17 @@ Bugfixes:
 - The Pedometer heartrate display will is no longer unreadable and won't update every frame
     - Now it trends towards target values slowly, like a real heart.
     - For example, if we're at 90 bpm and want to reach 120 bpm due to stress, our heart will slowly rise to 120 bpm over a few seconds.
+- Other minor bugfixes
 
 Misc Changes:
+- Automatic Augmentations will now "hum" even when Quiet Augs is enabled, to signal when they are in-use.
+- With "Right-Click tool selection" enabled, you can now use Walk/Run to select tools while looking at keypads.
+- Synthetic Heart energy penalty reduced from 40%/30%/20%/10% to 35%/25%/15%/5%
+- The Short Fuse perk effect can now be toggled using the Reload key.
+- The Filter Upgrade perk now additionally prevents the "disabled regen" effect from poison, in addition to the stamina drain from the poison itself.
+- Added sounds when levelling up skills, originally used for the Multiplayer skill menu.
+- Minor performance optimisations for flesh fragments and other gore
+- Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
     - This means that you will no longer be able to cancel reloading to regain your previous ammo amount. Instead your weapon will be empty.
@@ -65,6 +114,7 @@ Misc Changes:
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
+- Oxygen is now drained slightly faster while swimming, as a slight buff to the Athletics skill and to make the Rebreather less able to be relied upon.
 - The "Drop Item" and "Assign Secondary" keys will now work properly in the inventory screen, rather than being hardcoded to F and BACKSPACE
 - Added a number of new icons for edibles and other pickups, now inventory icons will always reflect item skins
     - The Belt and Secondary Item display will now show the proper icon for a given item, rather than always showing the default, and belt memory will preserve the icon.
@@ -73,14 +123,19 @@ Misc Changes:
 - Minor changes to phones to make them more realistic (for instance, they will "ring out" rather than ringing once, and disconnected phones won't ring at all).
 - Notes in the Computer/Keypad notes display are now sorted in descending order like the regular Notes screen.
 - Using the "Assign Secondary" hotkey in the Inventory screen will now unassign if used on the secondary item.
-- The Electric Prod will now no longer display electricity in it's viewmodel when empty.
+- Updated the INI to fix an infinite recursion issue with the enhanced renderer, which would cause low-poly models to render and tank performance.
+- Minor updates to weapon description text.
 
 Map Changes:
 - 02_NYC_BatteryPark
     - The Police Boat will now spout dialog when interacted with, and can be used to exit the map.
     - The Police Boat has been moved slightly closer to the dock, in order to allow interacting with it without needing to jump off.
+- 02_NYC_FreeClinic
+    - Doctors and Nurses will no longer disappear when panicked.
 - 02_NYC_Underground
     - Removed a datacube containing the MJ12/Coupdetat password on Hardcore mode, so that you are incentivised to use the much harder entrance (the one with all the lasers and turrets).
+- 05_NYC_UNATCOHQ
+    - The two UNATCO Troopers near the front of the compound will no longer open the locked door and allow the Player to escape before receiving the key from Alex
 - 02_NYC_Hotel/04_NYC_Hotel/08_NYC_Hotel
     - Added a Phone to Paul's apartment, which on Mission 4 will play a message from Lebedev.
         - This message was cut from the vanilla game, and has been restored.
@@ -91,6 +146,14 @@ Map Changes:
     - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
+- 05_NYC_UNATCOMJ12Lab:
+    - The 9905 keypad code has been changed so as to not interfere with the 9905 code from the Airfield mission.
+- 10_Paris_Catacombs:
+    - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
+- 11_Paris_Cathedral:
+    - The rear-entry door (to the wine cellar) can now be picked as well as broken.
+- 10_Paris_Metro:
+    - Datacube at the Security Station now displays a proper Metro map, rather than the catacombs map. This was an unused asset from Vanilla.
 
 1.11 (Hotfix Release):
 
@@ -124,6 +187,7 @@ Bugfixes:
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
 - Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
 - Fixed the information display not updating correctly when attaching/detatching addons for unequipped weapons.
+- Fixed an issue where weapon firing sounds would become silent under certain circumstances.
 - Fixed some typos.
 
 Map Changes:

@@ -92421,7 +92421,6 @@ Begin Actor Class=MusicEvent Name=MusicEvent0
     Name=MusicEvent0
 End Actor
 Begin Actor Class=Trigger Name=Trigger1
-    bTriggerOnceOnly=True
     LastRenderTime=1.763098
     DistanceFromPlayer=4426.132813
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -119818,5 +119817,32 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner21
     Rotation=(Yaw=-13000)
     OldLocation=(X=-239.918228,Y=-2554.495605,Z=-42.720413)
     Name=OutfitSpawner21
+End Actor
+Begin Actor Class=MusicEvent Name=MusicEvent1
+    SongSection=255
+    Transition=MTRAN_SlowFade
+    bSilence=True
+    bDynamicLight=True
+    LastRenderTime=91.822632
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ResetMusic
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=70,ZoneNumber=1)
+    Location=(X=957.135437,Y=-139.840836,Z=-39.900063)
+    OldLocation=(X=957.135437,Y=-139.840836,Z=-39.900063)
+    Name=MusicEvent1
+End Actor
+Begin Actor Class=Trigger Name=Trigger3
+    bDynamicLight=True
+    LastRenderTime=91.822632
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Trigger
+    Event=ResetMusic
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=70,ZoneNumber=1)
+    Location=(X=944.678589,Y=-129.569595,Z=-39.900032)
+    OldLocation=(X=944.678589,Y=-129.569595,Z=-39.900032)
+    bSelected=True
+    CollisionRadius=80.000000
+    CollisionHeight=80.000000
+    Name=Trigger3
 End Actor
 End Map

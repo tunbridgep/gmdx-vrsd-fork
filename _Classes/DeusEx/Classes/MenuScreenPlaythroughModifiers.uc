@@ -67,7 +67,9 @@ defaultproperties
      items(19)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
      items(20)=(HelpText="Start with a large number of skill points, but you won't be able to gain any more during play.",actionText="UNATCO Academy Graduate",variable="bSkillsSetAtStart");
      items(21)=(HelpText="When imprisoned by MJ12, lose ammo in addition to weapons. Your ammo will be placed in a box and can be recovered from the Armoury.",actionText="Take Ammo when Imprisoned",variable="bImprisonmentTakesAmmo");
+     items(22)=(HelpText="When completing missions, UNATCO will clean up corpses and confiscate unopened crates.",actionText="Competent Cleaning Crews",variable="bUNATCOCleanup");
      items(23)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(24)=(HelpText="Adds the Shipping and Receiving map, originally released as a GMDX v9 addon. It's accessible as part of the NYC Dockyard mission.",actionText="Shipping and Receiving",variable="bShippingAndReceiving");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true

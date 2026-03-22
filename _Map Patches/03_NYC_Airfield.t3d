@@ -33303,7 +33303,7 @@ Begin Actor Class=CrateUnbreakableSmall Name=CrateUnbreakableSmall2
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=CrateUnbreakableSmall
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-450.182556,Y=-891.517334,Z=180.789017)
+    Location=(X=-565.182556,Y=-891.517334,Z=180.789017)
     Rotation=(Yaw=5448)
     OldLocation=(X=-616.737854,Y=-869.442261,Z=74.830872)
     Name=CrateUnbreakableSmall2
@@ -148576,6 +148576,7 @@ Begin Actor Class=Brush Name=Brush148
     Name=Brush148
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger10
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=200
     awardMessage="Goal Accomplishment Bonus"
     LastRenderTime=73.599884
@@ -154262,6 +154263,7 @@ Begin Actor Class=Brush Name=Brush233
     Name=Brush233
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover6
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.750000
@@ -156547,6 +156549,7 @@ Begin Actor Class=Brush Name=Brush2656
     Name=Brush2656
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover65
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.500000
@@ -156643,6 +156646,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover65
     Name=DeusExMover65
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover67
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.500000
@@ -156819,6 +156823,7 @@ Begin Actor Class=Brush Name=Brush182
     Name=Brush182
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover19
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.500000
@@ -156915,6 +156920,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover19
     Name=DeusExMover19
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover20
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.500000
@@ -161189,6 +161195,7 @@ Begin Actor Class=Brush Name=Brush19
     Name=Brush19
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover17
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     KeyIDNeeded=securitytower
@@ -165267,6 +165274,7 @@ Begin Actor Class=Brush Name=Brush535
     Name=Brush535
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover25
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     KeyIDNeeded=securitytower
@@ -169364,6 +169372,7 @@ Begin Actor Class=Brush Name=Brush726
     Name=Brush726
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover26
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     KeyIDNeeded=securitytower
@@ -173461,6 +173470,7 @@ Begin Actor Class=Brush Name=Brush1068
     Name=Brush1068
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover27
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     KeyIDNeeded=securitytower
@@ -177558,6 +177568,7 @@ Begin Actor Class=Brush Name=Brush1321
     Name=Brush1321
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover28
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     KeyIDNeeded=securitytower
@@ -179486,6 +179497,7 @@ Begin Actor Class=SavePoint Name=SavePoint13
     Name=SavePoint13
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover5
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.750000
@@ -180856,6 +180868,7 @@ Begin Actor Class=CrateUnbreakableSmall Name=CrateUnbreakableSmall12
     Name=CrateUnbreakableSmall12
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover22
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.150000
     bBreakable=True
@@ -184474,6 +184487,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal38
     Name=PlaceableDecal38
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover7
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     bBreakable=True
@@ -184971,6 +184985,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
     Name=DeusExMover7
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover0
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     bBreakable=True
@@ -185468,6 +185483,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
     Name=DeusExMover0
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover31
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     bBreakable=True
@@ -185967,6 +185983,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover31
     Name=DeusExMover31
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover32
+    bDontOpenOnMissionComplete=false
     lockStrength=0.100000
     bBreakable=True
     doorStrength=0.600000
@@ -191863,6 +191880,7 @@ Begin Actor Class=Brush Name=Brush38
     Name=Brush38
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover18
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.500000
     bBreakable=True
@@ -207465,6 +207483,7 @@ Begin Actor Class=Ammo20mm Name=Ammo20mm1
     Name=Ammo20mm1
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger0
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207477,6 +207496,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger0
     Name=SkillAwardTrigger0
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger1
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207489,6 +207509,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger1
     Name=SkillAwardTrigger1
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger3
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207501,6 +207522,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger3
     Name=SkillAwardTrigger3
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger4
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207513,6 +207535,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger4
     Name=SkillAwardTrigger4
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger5
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True

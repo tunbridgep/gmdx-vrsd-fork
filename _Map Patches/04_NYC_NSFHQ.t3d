@@ -32509,7 +32509,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop0
     Orders=Sitting
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -32543,7 +32543,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop1
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -32581,7 +32581,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop2
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -32617,7 +32617,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop3
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -32653,7 +32653,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop4
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -33355,7 +33355,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop5
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -33899,7 +33899,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop6
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -33936,7 +33936,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop7
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -35765,7 +35765,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop9
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -35801,7 +35801,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop10
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -43535,7 +43535,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop24
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -43573,7 +43573,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop25
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -43611,7 +43611,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop26
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -43650,7 +43650,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop27
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -43686,7 +43686,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop28
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -83341,7 +83341,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop15
     MinHealth=10.000000
     Orders=Standing
     bLikesNeutral=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -92109,7 +92109,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop8
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -122226,5 +122226,15 @@ Begin Actor Class=DeusExMover Name=DeusExMover23
     Brush=Model'MyLevel.Model953'
     PrePivot=(X=-6.782907,Y=7.089838,Z=13.010827)
     Name=DeusExMover23
+End Actor
+Begin Actor Class=DeusExZoneInfo Name=DeusExZoneInfo0
+    bSilentWeaponZone=True
+    LastRenderTime=36.104958
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=DeusExZoneInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=120,ZoneNumber=2)
+    Location=(X=-557.869446,Y=-99.226212,Z=-233.899323)
+    OldLocation=(X=-557.869446,Y=-99.226212,Z=-233.899323)
+    Name=DeusExZoneInfo0
 End Actor
 End Map

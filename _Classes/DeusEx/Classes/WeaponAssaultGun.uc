@@ -116,6 +116,25 @@ simulated function PreBeginPlay()
 	    bHasSilencer = True;
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+    {
+        multiskins[2] = Texture'PinkMaskTex';
+        multiskins[5] = Texture'PinkMaskTex';
+    }
+    else
+    {
+        multiskins[2] = Texture'PinkMaskTex';
+        multiskins[6] = Texture'PinkMaskTex';
+    }
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);
@@ -171,12 +190,6 @@ simulated function SwapMuzzleFlashTexture()
 	if (!bHasMuzzleFlash || bHasSilencer)
 		return;
 
-	if(playerpawn(owner) != none)      //diff meshes, see
-        //SARGE NOTE: HDTP Muzzle Flash was Broken by RSD HDTP 3-round-burst edit
-		MuzzleSlot=2;
-	else
-		MuzzleSlot=4;
-    
     if (GetMuzzleTex() != None && MuzzleSlot < 8 && MuzzleSlot > -1)
         MultiSkins[MuzzleSlot] = GetMuzzleTex();
 	SetTimer(0.1, False);
@@ -355,5 +368,5 @@ defaultproperties
      Mass=30.000000
      minSkillRequirement=3;
      bFancyScopeAnimation=true
-     muzzleSlot=-1
-}
+     muzzleSlot=2
+ }

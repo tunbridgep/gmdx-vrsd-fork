@@ -2,7 +2,7 @@
 // MenuChoice_HeadBob
 //=============================================================================
 
-class MenuChoice_HeadBob extends MenuChoice_EnabledDisabled;
+class MenuChoice_HeadBob extends MenuUIChoiceEnum;
 
 // ----------------------------------------------------------------------
 // LoadSetting()
@@ -10,10 +10,7 @@ class MenuChoice_HeadBob extends MenuChoice_EnabledDisabled;
 
 function LoadSetting()
 {
-	if (player.bob == 0)
-		SetValue(1);
-	else
-		SetValue(0);
+    SetValue(player.iModdedHeadBob);
 }
 
 // ----------------------------------------------------------------------
@@ -22,11 +19,8 @@ function LoadSetting()
 
 function SaveSetting()
 {
-	if (GetValue() == 0)
-//		player.bob = player.default.bob;
-		player.bob = 0.016;			// for some reason, setting default doesn't work
-	else
-		player.bob = 0.0;
+    player.iModdedHeadBob = GetValue();
+    player.SaveConfig();
 }
 
 // ----------------------------------------------------------------------
@@ -34,10 +28,7 @@ function SaveSetting()
 
 function ResetToDefault()
 {
-	if (player.bob == 0)
-		SetValue(1);
-	else
-		SetValue(0);
+    SetValue(player.default.iModdedHeadBob);
 }
 
 // ----------------------------------------------------------------------
@@ -47,5 +38,9 @@ defaultproperties
 {
      defaultInfoWidth=88
      HelpText="If enabled, the player will bob up and down slightly while walking."
-     actionText="|&Player Bob"
+     actionText="|&Head Bob"
+     enumText(0)="Disabled"
+     enumText(1)="Vanilla"
+     enumText(2)="GMDX v9"
+     enumText(3)="GMDX AE"
 }

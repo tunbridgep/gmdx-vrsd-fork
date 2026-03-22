@@ -15,6 +15,7 @@ function FirstFrame()
 	local BlackHelicopter chopper;
     local ScriptedPawn SP;
     local SecurityCamera SC;
+    local Actor A;
 
 	Super.FirstFrame();
 
@@ -54,8 +55,46 @@ function FirstFrame()
 			}
 		}
 	}
+	else if (localURL == "09_NYC_SHIPFAN")
+    {
+        //Destroy the Shipping and Receiving objects
+        if (!player.bShippingAndReceiving && !flags.GetBool('GMDXSNRRemoved2'))
+        {
+            foreach AllActors(class'DeusExMover', M, 'WarehouseVentAccess')
+            {
+                M.bPickable = false;
+                M.bHighlight = false;
+                M.bFrobbable = false;
+                M.bBreakable = false;
+            }
+            
+            foreach AllActors(class'Actor', A, 'warehouseMechanic')
+                A.Destroy();
+			
+            flags.SetBool('GMDXSNRRemoved2', True,, 10);
+        }
+    }
 	else if (localURL == "09_NYC_DOCKYARD")
 	{
+        //Destroy the Shipping and Receiving objects
+        if (!player.bShippingAndReceiving && !flags.GetBool('GMDXSNRRemoved1'))
+        {
+            foreach AllActors(class'Actor', A, 'snrkey')
+                A.Destroy();
+            
+            foreach AllActors(class'Actor', A, 'warehouseKeypad')
+                A.Destroy();
+            
+            foreach AllActors(class'DeusExMover', M, 'warehouseEntry')
+            {
+                M.Event = '';
+                M.FragmentClass = None;
+                M.LowKeyDestroy(player);
+            }
+			
+            flags.SetBool('GMDXSNRRemoved1', True,, 10);
+        }
+
         //In hardcore mode, we don't get the USFEMA login so easily...
         if (player.bHardCoreMode)
         {

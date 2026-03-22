@@ -3,6 +3,13 @@
 //=============================================================================
 class PerkEndurance extends Perk;
 
+/*
+function bool IsVisible()
+{
+    return PerkOwner != None && (PerkOwner.iStaminaSystem == 1 || PerkOwner.bHardcoreMode);
+}
+*/
+
 defaultproperties
 {
     PerkName="ENDURANCE"

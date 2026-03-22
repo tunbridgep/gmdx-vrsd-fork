@@ -92,6 +92,26 @@ simulated function DrawScopeAnimation()
     }
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP() && iHDTPModelToggle == 2) //Clyzm Model
+        multiskins[2] = Texture'PinkMaskTex';
+    if (IsHDTP())
+    {
+    }
+    else
+    {
+        ShowWeaponAddon(3,!bHasSilencer); //Muzzle Break, hidden when we have silencer
+        multiskins[6] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'PinkMaskTex';
+    }
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);

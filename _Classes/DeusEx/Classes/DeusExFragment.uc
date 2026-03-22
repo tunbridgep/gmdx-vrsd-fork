@@ -217,7 +217,12 @@ simulated function Tick(float deltaTime)
 
     //SARGE: Shortcut! If we have already smoked out, and have persistence on, then there's no need to do anything, so just bail
     if (bSmokeDone && bPersistant)
+    {
+        Disable('Tick');
+        bBounce = false;
+        bStasis = true;
         return;
+    }
 
     if ((bSmoking) && (smokeGen == None))
         AddSmoke();

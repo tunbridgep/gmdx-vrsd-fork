@@ -24,6 +24,8 @@ function FirstFrame()
     local DeusExWeapon MiguelWeapon;
     local DeusExAmmo MiguelAmmo;
     local bool bFollowing;
+    local Computers C;
+    local Keypad K;
 
 	Super.FirstFrame();
     
@@ -92,6 +94,8 @@ function FirstFrame()
 
 	if (localURL == "05_NYC_UNATCOMJ12LAB")
 	{
+        Fix9905Code();
+
 		// make sure this goal is completed
 		Player.GoalCompleted('EscapeToBatteryPark');
 		// delete Paul's carcass if he's still alive
@@ -283,6 +287,29 @@ CanQuickSave=true;
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Fix9905Code()
+//
+// Fix the 9905 code from Mission 03 being usable on this map.
+// ----------------------------------------------------------------------
+function Fix9905Code()
+{
+    local Computers C;
+    local Keypad K;
+    
+    //Fix 9905 code by setting it to 1991
+    //TODO: This should probably be done properly, rather than being a hack.
+    foreach AllActors(class'Computers', C)
+    {
+        C.textReplacements[0].original = "9905";
+        C.textReplacements[0].replacement = "1991";
+    }
+
+    foreach AllActors(class'Keypad', K)
+        if (K.validCode == "9905")
+            K.validCode = "1991";
+}
+
+// ----------------------------------------------------------------------
 // PreTravel()
 //
 // Set flags upon exit of a certain map
@@ -330,24 +357,13 @@ function Timer()
 
 	if (localURL == "05_NYC_UNATCOHQ")
 	{
-		if (!flags.GetBool('GMDXEntryDoorFix'))
+        //SARGE: Make the guards near the front door not come running to let you out of the facility
+		if (!flags.GetBool('GMDXEntryDoorFix') && flags.GetBool('M05AlexDone'))
         {
-            //SARGE: Make the guards near the front door not come running to let you out of the facility
-            foreach AllActors(class'DeusExMover', M, 'levelone')
-            {
-                if (M.bLocked == false)
-                {
-                    foreach AllActors(class'UNATCOTroop', Trooper, 'EntryTroop')
-                    {
-                        Trooper.bReactAlarm = true;
-                        Trooper.bReactDistress = true;
-                        Trooper.bReactLoudNoise = true;
-                        Trooper.bReactShot = true;
-                        Trooper.bReactProjectiles = true;
-                    }
-                flags.SetBool('GMDXEntryDoorFix', True,, 6);
-                }
-            }
+            foreach AllActors(class'UNATCOTroop', Trooper, 'EntryTroop')
+                Trooper.EnterWorld();
+
+            flags.SetBool('GMDXEntryDoorFix', True,, 6);
         }
 
 		// unlock a door
