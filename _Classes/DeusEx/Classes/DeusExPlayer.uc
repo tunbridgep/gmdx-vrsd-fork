@@ -2891,14 +2891,12 @@ exec function QuickLoad()
         return;
     }
 
-    saveDir = GetSaveGameDirectory();
-
     //Confirm the save exists before trying to do anything
+    saveDir = GetSaveGameDirectory();
     info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
-    if (info == None)
-        return;
+    CriticalDelete(saveDir);
 
-	if (DeusExRootWindow(rootWindow) != None)
+	if (info != None && DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
 }
 
@@ -9406,7 +9404,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         /*else if (FindInventoryType(FrobTarget.Class) != None)
         	 bCanPickup = False;*/
         if (!bCanPickup)
-			 ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
+			 ClientMessage(Sprintf(CanCarryOnlyOne, Inventory(FrobTarget).itemName));
    	}
 	else
 	{
@@ -9629,7 +9627,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
     
     //SARGE: Swap to a new belt item
-    if (bCanPickup && iBeltMemory >= 2)
+    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2)
         ShifterSwitchAll(Inventory(frobTarget),false,true);
 
 	return bCanPickup && !bDeclined;
