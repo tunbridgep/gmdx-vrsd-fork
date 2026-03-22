@@ -671,6 +671,7 @@ var globalconfig bool bAugWheelDisableAll;                                      
 var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
 var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
 var globalconfig int iAugWheelAutoAdd;                                          //SARGE: Automatically add items to the augmentation wheel. 0 = Don't add. 1 = Active Augs only. 2 = Everything.
+var globalconfig bool bAugWheelPresetPositions;                                 //Sarge: Always show all augmentations in the same positions on the wheel, regardless of how many you have.
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
@@ -971,6 +972,8 @@ var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 
+//For the aug wheel, now we store the mouse position here, so that it gets saved
+var globalconfig Vector radialMenuCursorPos;
 
 //SARGE: If we exceed 1000 saves, wrap around.
 //This whole thing is fucked
@@ -2193,6 +2196,7 @@ event TravelPostAccept()
 		AugmentationSystem.SetPlayer(Self);
 		AugmentationSystem.Setup();
 		AugmentationSystem.RefreshAugDisplay();
+		AugmentationSystem.RefreshAugWheel();
 	}
 
 	// Nuke any existing conversation
@@ -3844,7 +3848,10 @@ simulated function RefreshSystems(float DeltaTime)
 	  return;
 
 	if (AugmentationSystem != None)
+    {
 	  AugmentationSystem.RefreshAugDisplay();
+	  AugmentationSystem.RefreshAugWheel();
+    }
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -4667,9 +4674,9 @@ function RemoveInventoryType(Class<Inventory> removeType)
 // RadialMenuAddAug
 // ----------------------------------------------------------------------
 
-function RadialMenuAddAug(Augmentation aug)
+function RadialMenuAddAug(Augmentation aug, optional bool bAllowNone)
 {
-	if ((rootWindow != None) && (aug != None))
+	if ((rootWindow != None) && (aug != None || bAllowNone))
 		DeusExRootWindow(rootWindow).hud.radialAugMenu.AddItem(aug);
 }
 
@@ -4752,6 +4759,16 @@ function RefreshAugmentationDisplay()
 {
 	if (AugmentationSystem != None)
 		AugmentationSystem.RefreshAugDisplay();
+}
+
+// ----------------------------------------------------------------------
+// SARGE: RefreshAugmentationWheel()
+// ----------------------------------------------------------------------
+
+function RefreshAugmentationWheel()
+{
+	if (AugmentationSystem != None)
+		AugmentationSystem.RefreshAugWheel();
 }
 
 // ----------------------------------------------------------------------
@@ -12499,9 +12516,26 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
             WHEELSAVErotation = ViewRotation;                                   //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
         else                                                                    //RSD: Need to use SAVErotation from when we activated drone though
             WHEELSAVErotation = SAVErotation;
+
+        //SetPause(true);
+        if (!bHardCoreMode && !bRealUI)
+        {
+            SetPause(true);
+            UpdateHUD(true);
+        }
 	}
 	else if (bSpyDroneActive && !bSpyDroneSet)                                  //RSD: Allows the user to toggle between moving and controlling the drone
-	   ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
+    {
+	    ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
+    }
+    else
+    {
+        if (!bHardCoreMode && !bRealUI)
+        {
+            SetPause(false);
+            UpdateHUD(true);
+        }
+    }
 
 
     UpdateCrosshair();
@@ -12763,9 +12797,12 @@ function UpdateCrosshair()
         root.UpdateCrosshair();
 }
 
-function UpdateHUD()
+function UpdateHUD(optional bool bForced)
 {
-    bUpdateHud = true;
+    if (bForced)
+        _UpdateHUD();
+    else
+        bUpdateHud = true;
 }
 
 function private _UpdateHUD()
@@ -12787,9 +12824,12 @@ function private _UpdateHUD()
     //Show/Hide Markers
     UpdateMarkerDisplay(true);
 
-    bUpdateHud = false;
+    //Update aug wheel
+    if (AugmentationSystem != None)
+		AugmentationSystem.RefreshAugWheel();
 
     //DebugMessage("UpdateHUD");
+    bUpdateHud = false;
 }
 
 function UpdateGoalsWindow()

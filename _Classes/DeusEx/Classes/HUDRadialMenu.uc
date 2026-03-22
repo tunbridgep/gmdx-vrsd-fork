@@ -14,7 +14,6 @@ var vector center; // the center of the menu
 var float radius; // the circle's radius
 var vector pos; // a positional vector on the wheel. Like a needle on a tachometer
 var vector tmpVec;
-var Vector cursorPos;
 
 var int maxItems; // maximum number of items
 var int itemCount;
@@ -48,6 +47,9 @@ event InitWindow() {
 	createFocusMarker();
 	SetMaxItems(MAX_AUG_SLOTS);
 	createPowerIcon();
+    ConfigurationChanged();
+    //SetDefaultCursor(Texture'DeusExCursor1', Texture'DeusExCursor1_Shadow', 32, 32, focusMarkerCol);
+    //GrabMouse();
 }
 
 // ----------------------------------------------------------------------
@@ -62,7 +64,8 @@ event ConfigurationChanged() {
 	screenCenter.Y = root.height/2;
 	positionItems();
     positionPowerIcon();
-    positionMarker(mouseToMarkerPos(cursorPos));
+    UpdateFocusMarker();
+    positionMarker(mouseToMarkerPos(player.radialMenuCursorPos));
 }
 
 // ----------------------------------------------------------------------
@@ -73,19 +76,34 @@ event ConfigurationChanged() {
 // ----------------------------------------------------------------------
 
 event Tick(float deltaSeconds) {
-    getCursorPosition(cursorPos.X, cursorPos.Y);
-	if (cursorPos == pos) return;
+    getCursorPosition(player.radialMenuCursorPos.X, player.radialMenuCursorPos.Y);
+	if (player.radialMenuCursorPos == pos) return;
 	// mouse actually moved
-	pos = mouseToMarkerPos(cursorPos);
+	pos = mouseToMarkerPos(player.radialMenuCursorPos);
 	positionMarker(pos);
     if (!skipQuickToggle)
     	highlightSingleItem(getNearestItem(pos));
     else
         highlightSingleItem(None);
 
-	pos = cursorPos; // save last mouse pos for next tick
+	pos = player.radialMenuCursorPos; // save last mouse pos for next tick
+
+    if (!bDoneFirst)
+        ResetCursorToCenter();
+
+    bDoneFirst = true;
 }
 
+
+function ResetCursorToCenter()
+{
+    //Reset cursor to center
+    if (!player.bAugWheelRememberCursor)
+    {
+        player.radialMenuCursorPos = center;
+        positionMarker(mouseToMarkerPos(center+vect(0,1,0)));
+    }
+}
 
 /**
  * Hide/show the Menu
@@ -97,30 +115,27 @@ event VisibilityChanged(bool isVis) {
 
 	if (isVis)
     {
-    
-        //Reset cursor to center
-        if (!player.bAugWheelRememberCursor || !bDoneFirst)
-        {
-            cursorPos = center;
-            //positionMarker(mouseToMarkerPos(center+vect(0,1,0)));
-            bDoneFirst = true;
-        }
-
         positionItems();
         positionPowerIcon();
         if (!player.bQuickAugWheel)
             PlaySound(Sound'Menu_Activate', 0.25);
         skipQuickToggle = false;
         bClicked = false;
+        bDoneFirst = false;
     }
 	else
     {
         //Toggle aug on closing, if we have Quick Aug Menu on
-        if (player.bQuickAugWheel && !skipQuickToggle && !bClicked)
-            ToggleCurrent();
+        if (CheckToggleCurrent(player))
+            ToggleCurrent(true);
         else
     	    PlaySound(Sound'Menu_OK', 0.25);
     }
+}
+
+function bool CheckToggleCurrent(DeusExPlayer player)
+{
+    return player.bQuickAugWheel && !skipQuickToggle && !bClicked;
 }
 
 /**
@@ -158,7 +173,7 @@ function highlightSingleItem(HUDRadialMenuItem item) {
 /**
  * (De-)Activates the currently highlited aug.
  */
-function ToggleCurrent() {
+function ToggleCurrent(optional bool bAllowHidden) {
 
     //Left-click prevents quick-toggle
     bClicked = true;
@@ -170,6 +185,10 @@ function ToggleCurrent() {
         updatePowerStatus();
         return;
     }
+
+    //SARGE: Hacky fix.
+    if (!highlightedItem.IsVisible() && !bAllowHidden)
+        return;
 
     if (highlightedItem.isActive)
         highlightedItem.Deactivate();
@@ -198,8 +217,11 @@ function HUDRadialMenuItem getNearestItem(vector v) {
     for (i = 0; i < itemCount; i++) {
         tmp = orderedItems[i].GetRelativePos()-v;
         if (nearest == None || VSize(tmp) < VSize(minAngle)) {
-            minAngle = tmp;
-            nearest = orderedItems[i];
+            if (orderedItems[i] == power || (IsItemVisible(i,true) && HasAug(i)))
+            {
+                minAngle = tmp;
+                nearest = orderedItems[i];
+            }
         }
     }
 
@@ -213,9 +235,22 @@ function HUDRadialMenuItem getNearestItem(vector v) {
  */
 function createFocusMarker() {
 	focusMarker = NewChild(Class'Window');
-	focusMarker.SetBackground(focusMarkerTex);
 	focusMarker.SetTileColor(focusMarkerCol);
-	focusMarker.SetBackgroundStyle(focusMarkerStyle);
+}
+
+//SARGE: Added
+function UpdateFocusMarker()
+{
+    if (player.bAugWheelFreeCursor)
+    {
+        focusMarker.SetBackground(Texture'DeusExCursor1');
+        focusMarker.SetBackgroundStyle(DSTY_Masked);
+    }
+    else
+    {
+        focusMarker.SetBackground(focusMarkerTex);
+        focusMarker.SetBackgroundStyle(focusMarkerStyle);
+    }
 }
 
 
@@ -257,9 +292,16 @@ function updatePowerStatus() {
        power.SetBackground(powerInactive);
 }
 
-function bool IsItemVisible(int item)
+function bool HasAug(int item)
 {
-    return orderedItems[item].augmentation.bAddedToWheel;
+    return orderedItems[item].augmentation.bHasIt;
+}
+
+function bool IsItemVisible(int item, optional bool bForceCheck)
+{
+    if (!player.bAugWheelPresetPositions || bForceCheck)
+        return orderedItems[item].augmentation.bAddedToWheel;
+    return true;
 }
 
 /**
@@ -364,7 +406,7 @@ function insertSorted(HUDRadialMenuItem item) {
 	itemCount ++;
 
 	i = itemCount-2;
-	while (i >= 1 && orderedItems[i].CompareTo(orderedItems[i+1]) < 0) {
+	while (!player.bAugWheelPresetPositions && i >= 1 && orderedItems[i].CompareTo(orderedItems[i+1]) < 0) {
 		// lower item is higher in order hierarchy -> swap!
 		tmp = orderedItems[i];
 		orderedItems[i] = orderedItems[i+1];
@@ -405,7 +447,8 @@ function AddItem(Augmentation aug) {
 
     item = HUDRadialMenuItem(NewChild(Class'HUDRadialMenuItem'));
     item.SetItem(aug);
-    if (aug.IsActive()) item.Activate();
+    if (aug != None && aug.IsActive())
+        item.Activate();
     // the following order of function calls is necessary for a correct item positioning.
     insertSorted(item);
     positionItems();
@@ -438,7 +481,6 @@ function UpdateItemStatus(Augmentation aug) {
 defaultproperties
 {
      Radius=250.000000
-     cursorPos=(Y=-1.000000)
      focusMarkerCol=(R=255,G=255,B=255)
      focusMarkerStyle=DSTY_Translucent
      focusMarkerTex=Texture'RSDCrap.UserInterface.WhiteDot'

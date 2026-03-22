@@ -11,6 +11,9 @@ function SaveSettings()
     player.UpdateCrosshairStyle();
     player.UpdateHUD();
     
+    //We need to update the aug wheel
+    player.RefreshAugmentationWheel();
+    
     //We need to refresh our item icons too.
     player.UpdateItemIcons();
     
@@ -169,6 +172,7 @@ defaultproperties
      items(124)=(HelpText="Shows icons for map exits.",actionText="Game: Show Map Exits",variable="bShowExits",defaultValue=0,bAdvancedModeOnly=true)
      items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
      items(126)=(HelpText="Enable or Disable smart texture filtering, which will filter only level and item textures while leaving decals, shadows and other elements filtered.",actionText="Game: Texture Filtering",variable="bSmartTextureFiltering",consoleTarget="DeusEx.TextureFilterer",defaultValue=1,bAdvancedModeOnly=false)
+     items(127)=(HelpText="Items on the Augmentation Wheel will always be in preset positions, for maintaining muscle memory.",actionText="Augmentation Wheel: Preset Positions",variable="bAugWheelPresetPositions",defaultValue=0,bAdvancedModeOnly=false)
      items(128)=(HelpText="Show visible blood on weapons when attacking enemies at close range.",helpText1="Blood will be removed when dropping or putting the weapon away or entering water.",helpText2="Blood will be removed when dropping the weapon or entering water.",actionText="Game: Bloody Weapons",variable="iBloodyWeapons",valueText2="Keep blood when switching",defaultValue=1,bAdvancedModeOnly=false)
      items(129)=(HelpText="The players weapon will be moved backwards when up against a wall.",actionText="Game: Weapon Wall Detection",variable="bWeaponWallDetection",defaultValue=1,bAdvancedModeOnly=false)
      items(130)=(HelpText="Use vanilla-scaled HDTP-Style blood textures when not using HDTP.",actionText="Game: Enhanced Vanilla Blood Textures",variable="bNewBlood",defaultValue=1,bAdvancedModeOnly=true)
