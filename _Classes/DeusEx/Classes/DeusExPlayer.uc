@@ -16875,8 +16875,8 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	if ((damageType != 'Stunned') && (damageType != 'TearGas') && (damageType != 'HalonGas') &&
 	    (damageType != 'PoisonGas') && (damageType != 'Radiation') && (damageType != 'EMP') &&
 	    (damageType != 'NanoVirus') && (damageType != 'Drowned') && (damageType != 'KnockedOut'))
-		bleedRate += (origHealth-Health)/30.0;  // 30 points of damage = bleed profusely
     { 
+		bleedRate += (origHealth-Health)/30.0;  // 30 points of damage = bleed profusely
         //SARGE: Add hit flinch
         /*
         if (bHitFlinch || bHardcoreMode)
