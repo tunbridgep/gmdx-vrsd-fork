@@ -148,19 +148,30 @@ function PersonaTitleTextWindow CreateTitleWindow(int posX, int posY, String tit
 
 function CreateClientWindow()
 {
-	local int clientIndex;
-
 	winClient = PersonaClientWindow(NewChild(class'PersonaClientWindow'));
 
 	winClient.SetPos(clientBorderOffsetX + clientOffsetX, clientBorderOffsetY + clientOffsetY);
 	winClient.SetSize(clientWidth, clientHeight);
 	winClient.SetTextureLayout(clientTextureCols, clientTextureRows);
 
+    UpdateClientTextures();
+}
+
+// ----------------------------------------------------------------------
+// SARGE: ReloadClientTextures()
+// Now needed so we can replace the client textures dynamically.
+// ----------------------------------------------------------------------
+
+function UpdateClientTextures()
+{
+	local int texIndex;
+
+	for(texIndex=0; texIndex<arrayCount(clientTextures); texIndex++)
+		player.UnloadTexture(clientTextures[texIndex]);
+
 	// Set background textures
-	for(clientIndex=0; clientIndex<arrayCount(clientTextures); clientIndex++)
-	{
-		winClient.SetClientTexture(clientIndex, clientTextures[clientIndex]);
-	}
+	for(texIndex=0; texIndex<arrayCount(clientTextures); texIndex++)
+		winClient.SetClientTexture(texIndex, clientTextures[texIndex]);
 }
 
 // ----------------------------------------------------------------------

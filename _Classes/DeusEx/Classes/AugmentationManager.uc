@@ -875,6 +875,7 @@ simulated function Float CalcEnergyUse(float deltaTime)
 {
 	local float energyUse;
 	local Augmentation anAug;
+    local Wound wound;
 
 	energyUse = 0;
 
@@ -885,6 +886,14 @@ simulated function Float CalcEnergyUse(float deltaTime)
             energyUse += ((anAug.GetAdjustedEnergyRate()/60) * deltaTime);
 		anAug = anAug.next;
 	}
+
+    //SARGE: Shock now increases bioenergy use by 25%
+    if (player.WoundManager != None)
+    {
+        wound = player.WoundManager.GetWoundByType(class'WoundShock');
+        if (wound != None && wound.HasWound())
+            energyUse = energyUse * wound.woundData[0];
+    }
 
 	return energyUse;
 }

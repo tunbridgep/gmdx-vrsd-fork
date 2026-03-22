@@ -146,6 +146,26 @@ function Frob(Actor Frobber, Inventory frobWith)
 // HealPlayer()
 // ----------------------------------------------------------------------
 
+function CurePlayer(DeusExPlayer player)
+{
+	local int healedPoints;
+
+	if (player != None)
+	{
+	    if (player.CombatDifficulty > 1.0)                                      //RSD: Changed from 2.5 to 1.0, now affects Medium and Hard as well as Realistic/Hardcore
+	  	    healMaxTimes--;
+		lastHealTime = Level.TimeSeconds;
+
+        //SARGE: Also cure all wounds
+        if (player.WoundManager != None)
+            player.WoundManager.ClearAllWounds();
+	}
+}
+
+// ----------------------------------------------------------------------
+// HealPlayer()
+// ----------------------------------------------------------------------
+
 function int HealPlayer(DeusExPlayer player)
 {
 	local int healedPoints;

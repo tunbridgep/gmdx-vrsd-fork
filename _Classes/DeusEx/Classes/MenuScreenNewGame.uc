@@ -86,6 +86,7 @@ var bool bCollectibles;
 var bool bHardcoreFilterOption;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
+var bool bWoundSystem;
 var bool bImprisonmentTakesAmmo;
 var bool bSkillsSetAtStart;
 var bool bUNATCOCleanup;
@@ -191,6 +192,7 @@ event InitWindow()
     bHardcoreFilterOption=false;                                                //Sarge
     bPermaCloak=false;                                                          //Sarge
     bNoStartingWeaponChoices=false;                                             //Sarge
+    bWoundSystem=false;                                                         //Sarge
     bImprisonmentTakesAmmo=false;                                               //Sarge
     bSkillsSetAtStart=false;                                                    //Sarge
     bUNATCOCleanup=false;                                                       //Sarge
@@ -218,6 +220,7 @@ event InitWindow()
     default.bHardcoreFilterOption=false;                                        //Sarge
     default.bPermaCloak=false;                                                  //Sarge
     default.bNoStartingWeaponChoices=false;                                     //Sarge
+    default.bWoundSystem=false;                                                 //Sarge
     default.bImprisonmentTakesAmmo=false;                                       //Sarge
     default.bSkillsSetAtStart=false;                                            //Sarge
     default.bUNATCOCleanup=false;                                               //Sarge
@@ -892,6 +895,7 @@ function SaveSettings()
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
+    player.bWoundSystem=bWoundSystem;                                           //Sarge
     player.bImprisonmentTakesAmmo=bImprisonmentTakesAmmo;                       //Sarge
     player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
     player.bUNATCOCleanup=bUNATCOCleanup;                                       //Sarge
