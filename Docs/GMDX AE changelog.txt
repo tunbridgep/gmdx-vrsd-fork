@@ -1,7 +1,7 @@
 1.2:
 
 New Features:
-- Added a new "Plasma Breeder" perk that allows creating a less-powerful variant of plasma ammo when firing.
+- Added a new "Plasma Breeder" perk that allows creating plasma ammo when firing.
     - Requires Heavy Weapons: MASTER
 - Added a new "Breakdown" perk that allows destroying pickable but previously un-breakable containers
     - Requires Demolitions: MASTER
