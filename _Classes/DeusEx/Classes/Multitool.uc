@@ -13,9 +13,9 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
    return (BeltSpot == 8);
 }
 
-function DisplayWeapon(bool overlay)
+function Display(bool overlay)
 {
-    super.DisplayWeapon(overlay);
+    super.Display(overlay);
     if (overlay)
     {
         Multiskins[1] = handsTex;

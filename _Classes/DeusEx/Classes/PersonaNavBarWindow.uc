@@ -28,6 +28,9 @@ var localized String OutfitsButtonLabel;
 var localized String ImgButtonLabelShort; //Ygll: Added
 var localized String LogButtonLabel;
 
+var localized String MsgBoxAugmentiqueTitle;
+var localized String MsgBoxAugmentiqueBody;
+
 // ----------------------------------------------------------------------
 // CreateButtons()
 // ----------------------------------------------------------------------
@@ -61,6 +64,7 @@ function CreateOutfitsButton()
     if (test != None)
     {
 		btnOutfits   = CreateNavButton(winNavButtons, OutfitsButtonLabel);
+        //btnOutfits.SetSensitivity(!player.IsHDTP());
 		btnImages.SetButtonText(ImgButtonLabelShort);
 		btnLogs.SetButtonText(LogButtonLabel);
     }
@@ -113,6 +117,11 @@ function bool ButtonActivated( Window buttonPressed )
 
         //Sarge: Add new button for Outfits
 		case btnOutfits:
+            if (player.IsHDTP() && DeusExRootWindow(player.rootWindow) != None)
+            {
+                DeusExRootWindow(player.rootWindow).MessageBox(MsgBoxAugmentiqueTitle,MsgBoxAugmentiqueBody,1,false,self,Player.bRealUI || Player.bHardCoreMode);
+                bHandled = false;
+            }
             winClass = class<PersonaScreenBaseWindow>(DynamicLoadObject("Augmentique.PersonaScreenOutfits", class'Class'));
 			break;
 
@@ -136,6 +145,13 @@ function bool ButtonActivated( Window buttonPressed )
 	}
 }
 
+event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
+{
+    // Destroy the msgbox!  
+	root.PopWindow();
+    return true;
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -150,6 +166,8 @@ defaultproperties
      ImagesButtonLabel="I|&mages"
      LogsButtonLabel="|&Logs"
      OutfitsButtonLabel="|&Outfit"
-     ImgButtonLabelShort="I|&mg."
+     ImgButtonLabelShort="I|&mg"
      LogButtonLabel="|&Log"
+     MsgBoxAugmentiqueTitle="HDTP is enabled"
+     MsgBoxAugmentiqueBody="Augmentique is not compatible with the HDTP JC Denton skin. To use the Outfits menu, please disable the JC Denton model in the HDTP Model Selection menu."
 }

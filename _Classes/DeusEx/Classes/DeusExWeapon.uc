@@ -217,7 +217,6 @@ var float	TimeLockSet;
 
 var() sound FireSilentSound;
 //GMDX:
-var travel bool bIsCloaked;
 var travel bool bContactDeton; //CyberP: toggle contact detonation
 var vector RecoilShaker; //cosmetic shaking per shot, amount +/- added to dxplayers current as frand
 var int maxiAmmo;  //CyberP: for frobbing weapon pickups when we have max ammo
@@ -268,10 +267,7 @@ var vector ironSightLoc;     //unused
 var float meleeStaminaDrain;
 var bool activateAn;
 var float lerpAid;
-var texture NormalPlayerViewSkins[10];
-var texture CamoPlayerViewSkins[10];
 var float sustainedRecoil;
-var bool bJustUncloaked;
 var bool bMantlingEffect;
 var float PawnAccuracyModifier;
 var float burstTimer;
@@ -289,8 +285,6 @@ var bool bAmmoSelectWait;                                                       
 var float slugSpreadAcc;                                                        //RSD
 var() int		NPCMaxRange;			                                        //RSD: for NPC engagement distance and accuracy
 var() int		NPCAccurateRange;                           			        //RSD: for NPC engagement distance and accuracy
-var travel bool bIsRadar;                                                       //RSD: for splitting cloak/radar texture functionality
-var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var float attackSpeedMult;                                                      //RSD: to differentiate melee weapon attack speeds, only used on crowbar (0.8 for 20% reduction)
 var bool bPerShellReload;                                                       //RSD: To avoid convoluted class checking (Sawed-Off, Assault Shotgun, Mini-Crossbow, and GEP)
 var localized string abridgedName;                                              //RSD: For weapons with 30+ char names in MenuScreenHDTPToggles.uc
@@ -386,7 +380,8 @@ enum EAddonPenaltyType
 var const float addonPenalties[3];
 
 //SARGE: Blood on weapons
-var private travel bool bCoveredInBlood;
+var private travel bool bBloodOnWeapon;
+var private travel bool bBloodOnHands;
 
 struct BloodTex
 {
@@ -394,7 +389,7 @@ struct BloodTex
     var string tex2;
 };
 
-var travel BloodTex BloodTextures[7];
+var travel BloodTex BloodTextures[8];
 
 //SARGE: No more checking for specific grenade types, now we just set this instead.
 var const bool bIsPlaceableOnWall;
@@ -953,8 +948,6 @@ function DropFrom(vector StartLocation)
 		return;
     UpdateHDTPSettings();
 	//checkweaponskins();                                                       //RSD
-    if (bIsCloaked || bIsRadar)                                                 //RSD: Overhauled cloak/radar routines
-	 SetCloakRadar(false,false,true);//SetCloak(false,true);
 	bMantlingEffect = False;
     BobDamping=default.BobDamping;
 	bAimingDown=False;
@@ -962,6 +955,7 @@ function DropFrom(vector StartLocation)
      //if (IsA('WeaponFlamethrower'))
       // if (Owner.IsA('DeusExPlayer'))
        //   DeusExPlayer(Owner).UpdateSensitivity(DeusExPlayer(Owner).default.MouseSensitivity);
+    Style = default.Style;
     ScaleGlow = default.ScaleGlow;                                              //RSD: Also reset ScaleGlow so we don't get dim/bright due to cloak/radar
 
 	super.dropfrom(startlocation);
@@ -977,149 +971,11 @@ function bool IsClyzmModel()
 function SetWeaponHandTex()
 {
 	local deusexplayer p;
-	
-    p = deusexplayer(owner);
-	
-    //FOMOD weapons use the FOMOD hands
-    if (p != None && IsClyzmModel())
-    {
-        switch (p.PlayerSkin)
-        {
-			//default, black, latino, ginger, albino, respectively
-			case 0: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
-			case 1: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
-			case 2: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
-			case 3: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
-			case 4: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
-        }
-    }
-    else if(p != None)
-        handsTex = p.GetWeaponHandTex();
-    else
-        handsTex = None;
-    //p.ClientMessage("Skin Tex: " $ handsTex);
+	p = deusexplayer(owner);
+	if(p != none)
+        handsTex = p.GetWeaponHandTex(IsClyzmModel());
 }
 
-function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
-{
-	local bool bCheckCloak, bCheckRadar;
-
-    if ((Owner==none)||(!Owner.IsA('DeusExPlayer'))) return;
-	if (Owner!=none && Owner.IsA('DeusExPlayer'))
-	{
-	//DeusExPlayer(Owner).BroadcastMessage("Owner");
-	//DeusExPlayer(Owner).BroadcastMessage(bIsRadar);
-	if(!bEnableCloak&&(bIsCloaked||bForce))
-	{
- 	  //if (ScaleGlow==10.500001)                                               //RSD: Bad implementation and also no longer needed
-      //   Style=default.Style;
-
-	  bJustUncloaked = True;
-	  if (bIsCloaked)
-	     HideCamo();
-	  bIsCloaked=false;
-	  bCheckRadar=true;
-	  CheckWeaponSkins();
-	  //DeusExPlayer(Owner).BroadcastMessage("Cloak Off");
-	}
-	if (!bEnableRadar&&(bIsRadar||bForce))
-	{
- 	  //if (ScaleGlow==10.500001)                                               //RSD: Bad implementation and also no longer needed
-      //    Style=default.Style;
-
-	  bJustUnradar = True;
-	  if (bIsRadar)
-	     HideCamo();
-	  bIsRadar=false;
-	  bCheckCloak=true;
-	  CheckWeaponSkins();
-	  //DeusExPlayer(Owner).BroadcastMessage("Radar Off");
-	}
-	if (bEnableRadar &&(!bIsRadar||bForce||bCheckRadar))
-	{
-	  //AmbientGlow=255;                                                        //RSD: Removed ambient glow for proper stacking effect
-	  bIsRadar=true;
- 	  CheckWeaponSkins();
- 	  ShowCamo();
- 	  //DeusExPlayer(Owner).BroadcastMessage("Radar On");
-	}
-    if (bEnableCloak&&(!bIsCloaked||bForce||bCheckCloak))
-	{
-	  //AmbientGlow=255;
-	  bIsCloaked=true;
-	  CheckWeaponSkins();
-	  ShowCamo();
-	  //DeusExPlayer(Owner).BroadcastMessage("Cloak On");
-	}
-    }
-}
-
-function ShowCamo()
-{
-	local int     i;
-	local texture curSkin;
-
-		for (i=0; i<8; i++)
-		{
-			curSkin = GetMeshTexture(i);
-			CamoPlayerViewSkins[i] = GetGridTexture(curSkin);
-		}
-
-		for (i=0; i<8; i++)
-		{
-		    if (i==MuzzleSlot && bHasMuzzleFlash)
-		    {
-		    }
-		    else
-			    MultiSkins[i] = CamoPlayerViewSkins[i];
-        }
-
-        //RSD: Overhauled cloak/radar routines
-        if (bIsCloaked && !bIsRadar)
-        {
-		    Skin = FireTexture'GameEffects.InvisibleTex';
-		    Texture = FireTexture'GameEffects.InvisibleTex';
-		    Style = STY_Translucent;
-		    ScaleGlow=0.500000;                                                 //RSD: If only cloak on, use cloak ScaleGlow
-        }
-        else if (bIsRadar && !bIsCloaked)
-        {
-            Skin = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Texture = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Style = STY_Normal;                                                 //RSD: Going for a solid texture here
-		    ScaleGlow=10.500001;                                                //RSD: If only radar on, use radar ScaleGlow
-        }
-        else
-        {
-            Skin = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Texture = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Style = STY_Translucent;                                            //RSD: But translucent if we have cloak + radar
-		    ScaleGlow=default.ScaleGlow;                                        //RSD: If both are on, default to cloak ScaleGlow
-        }
-}
-
-function HideCamo()
-{
-    UpdateHDTPSettings();
-}
-
-function Texture GetGridTexture(Texture tex)
-{
-	if (tex == None)
-		return Texture'BlackMaskTex';
-	else if (tex == Texture'BlackMaskTex')
-		return Texture'BlackMaskTex';
-	else if (tex == Texture'GrayMaskTex')
-		return Texture'BlackMaskTex';
-	else if (tex == Texture'PinkMaskTex')
-		return Texture'BlackMaskTex';
-	else if (bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-	    return FireTexture'GameEffects.InvisibleTex';
-	else if (bIsRadar)//class'DeusExPlayer'.default.bRadarTran==True)           //RSD
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-	/*else                                                                      //RSD
-		return FireTexture'GameEffects.InvisibleTex';*/
-}
 //=============================================================================
 // Weapon rendering
 // Draw first person view of inventory
@@ -1155,12 +1011,7 @@ simulated event RenderOverlays( canvas Canvas )
 			return;
 		}
     
-        DisplayWeapon(true);
-    
-        if (bIsRadar || bIsCloaked)
-        {
-            ShowCamo();
-        }
+        PreDisplayWeapon(true);
 	}
 
 	if ( !bPlayerOwner || (PlayerOwner.Player == None) )
@@ -1191,13 +1042,14 @@ simulated event RenderOverlays( canvas Canvas )
 	else
 		bSetFlashTime = false;
         
+    if (activateAn && bHasScope)
+        DrawScopeAnimation();
+    else
+        activateAn = false;
+        
     cachedDrawOffset = CalcDrawOffset();
 	if (PlayerOwner != none)
-    {
         cachedRotation = PlayerOwner.GetCurrentViewRotation();
-        //RSD: Overhauled cloak/radar routines
-        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
-    }
         
     
     PositionViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
@@ -1206,22 +1058,18 @@ simulated event RenderOverlays( canvas Canvas )
     {
         Canvas.DrawActor(self, false);
 
-        if (activateAn && bHasScope)
-            DrawScopeAnimation();
-        else
-            activateAn = false;
-
-        DrawBloodyViewModel(canvas);
+        if (PlayerOwner != none && PlayerOwner.CloakManager != None && !PlayerOwner.CloakManager.IsInAnyState())
+            DrawBloodyViewModel(canvas);
 
         //Reset weapon to standard display
-        DisplayWeapon(false);
+        PreDisplayWeapon(false);
     }
 }
 
 function DrawBloodyViewModel(Canvas canvas)
 {
     //Draw blood effects
-    if (DeusExPlayer(Owner) != None && !Level.Game.bLowGore && !Level.Game.bVeryLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).iBloodyWeapons > 0 && !Level.Game.bLowGore && !Level.Game.bVeryLowGore && (bBloodOnHands || bBloodOnWeapon))
     {
         Style = STY_Modulated;
         ScaleGlow = 0.25;
@@ -1859,7 +1707,7 @@ function bool IsHDTPMuzzle()
 
 function CheckWeaponSkins()
 {
-    DisplayWeapon(false);
+    PreDisplayWeapon(false);
 }
 
 
@@ -2986,21 +2834,6 @@ simulated function Tick(float deltaTime)
 		if (recoil < 0.0)
 			recoil = 0.0;
 
-		if (bJustUncloaked && !bIsCloaked)
-		{
-		   ScaleGlow+=DeltaTime;
-		   if (ScaleGlow >= default.ScaleGlow)
-		   {
-		       if (bIsRadar)                                                    //RSD: Need this so we still get gradual uncloaking but don't mess up ScaleGlow when Radar+Cloak-Cloak
-		           ScaleGlow = 10.500001;
-		       else
-                   ScaleGlow = default.ScaleGlow;
-		       bJustUncloaked = False;
-		       Style = default.Style;
-		       AmbientGlow=default.AmbientGlow;
-		   }
-		}
-
         if (bFiring)
         {
 		// simulate recoil while firing  //CyberP: vastly overhauled recoil system
@@ -3469,9 +3302,17 @@ function ShowWeaponAddon(int slot, bool condition)
     else
         multiskins[slot] = none;
 }
-function DisplayWeapon(bool overlay)
+
+//SARGE: TODO: Cache most of this stuff.
+function private PreDisplayWeapon(bool overlay)
 {
     local int i;
+    local DeusExPlayer OP;
+    local ScriptedPawn OSP;
+    local bool bHDTP;
+
+    bHDTP = IsHDTP();
+
     for (i = 0;i < 8;i++)
     {
         if (bHasMuzzleFlash && i == muzzleslot && !bHasSilencer)
@@ -3480,11 +3321,55 @@ function DisplayWeapon(bool overlay)
             continue;
         }
 
-        if (IsHDTP())
+        if (bHDTP)
             multiskins[i] = none;
         else
             multiskins[i] = default.multiskins[i];
     }
+    
+    Skin = default.Skin;
+    Texture = default.Texture;
+    
+    Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),HDTPSkin != "" && bHDTP);
+    
+    Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),HDTPTexture != "" && bHDTP);
+
+    ScaleGlow = default.ScaleGlow;
+    Style = default.Style;
+    
+    DisplayWeapon(overlay);
+
+    OP = DeusExPlayer(Owner);
+    OSP = ScriptedPawn(Owner);
+    if (OP != None && OP.CloakManager != None && OP.CloakManager.IsInAnyState())
+    {
+        bNoSmooth=false;
+        DisplayWeapon(overlay);
+        OP.CloakManager.UpdateSkin(self);
+        ScaleGlow = OP.CloakManager.GetScaleGlow();
+        EraseMuzzleFlashTexture();
+        DisplayCloaking(overlay,ScaleGlow,OP.CloakManager.IsCloaked(),OP.CloakManager.IsRadar());
+    }
+    else if (OSP != None && OSP.CloakManager != None && OSP.CloakManager.IsInAnyState())
+    {
+        bNoSmooth=false;
+        OSP.CloakManager.UpdateSkin(self);
+        ScaleGlow = OSP.CloakManager.GetScaleGlow();
+        EraseMuzzleFlashTexture();
+        DisplayCloaking(overlay,ScaleGlow,OSP.CloakManager.IsCloaked(),OSP.CloakManager.IsRadar());
+    }
+    else
+        bNoSmooth=default.bNoSmooth;
+}
+
+//SARGE: Override this
+function DisplayWeapon(bool overlay)
+{
+}
+
+//SARGE: Override this for custom behaviour while cloaking or radar trans'd
+function DisplayCloaking(bool overlay, float ScaleGlow, bool bCloak, bool bRadar)
+{
 }
 
 //SARGE: NOTE: We're deliberately using the vanilla blood tex here,
@@ -3515,19 +3400,29 @@ function private BloodTex GetRandomBloodTex()
     return tex;
 }
 
-function SetCoveredInBlood(bool value)
+function private _GenerateWeaponBloodTextures()
 {
     local int i;
-    if (bCoveredInBlood == value)
-        return;
 
     //Repopulate the blood texture
-    bCoveredInBlood = value;
-    if (value)
-    {
-        for (i = 0;i < 7;i++)
-            BloodTextures[i] = GetRandomBloodTex();
-    }
+    for (i = 0;i < 8;i++)
+        BloodTextures[i] = GetRandomBloodTex();
+}
+
+function SetBloodyHands(bool bCovered)
+{
+    if (!bBloodOnWeapon && !bBloodOnHands)
+        _GenerateWeaponBloodTextures();
+    bBloodOnHands = bCovered;
+}
+
+//Determine if our weapon is covered in blood
+function SetBloodyWeapon(bool bCovered)
+{
+    local bool prev;
+    if (!bBloodOnWeapon && !bBloodOnHands)
+        _GenerateWeaponBloodTextures();
+    bBloodOnWeapon = bCovered;
 }
 
 //SARGE: Show blood on weapons
@@ -3537,7 +3432,15 @@ function DisplayWeaponBlood(bool overlay)
 
     for (i = 0;i < 8;i++)
         if (multiskins[i] != Texture'PinkMaskTex' && (i != muzzleslot || bHasSilencer || !bHasMuzzleFlash))
+        {
+            if (multiskins[i] == handstex && !bBloodOnHands)
+                continue;
+            
+            if (multiskins[i] != handstex && !bBloodOnWeapon)
+                continue;
+
             multiskins[i] = class'HDTPLoader'.static.GetTexture2(BloodTextures[i].tex1,BloodTextures[i].tex2,IsHDTP());
+        }
 }
 
 simulated function EraseMuzzleFlashTexture()
@@ -4974,6 +4877,10 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
     local float TempAcc;                                                        //RSD
     local Rotator AdjustedAimCenter;                                            //RSD
     local int finalDamage;                                                      //RSD
+    
+    //SARGE: Remove blood from weapon
+    if (bDisposableWeapon)
+        SetBloodyWeapon(false);
 
 	speedMult=1.0;
 	// AugCombat increases our speed (distance) if hand to hand
@@ -6853,6 +6760,7 @@ exec function UpdateHDTPsettings()
     Skin = default.Skin;
     Texture = default.Texture;
     largeIconUnrot = default.largeIcon;
+    class'SkinUtils'.static.ResetSkinStyle(Self);
 
     if (HDTPLargeIcon != "")
         LargeIconUnrot = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
@@ -6876,15 +6784,6 @@ exec function UpdateHDTPsettings()
     else
         Mesh = PickupViewMesh;
     
-    for (slot = 0; slot < 8;slot++)
-    {
-        //if (slot != MuzzleSlot || !overlay)
-            if (IsHDTP())
-                multiskins[slot] = none;
-            else
-                multiskins[slot] = default.multiskins[slot];
-    }
-
     SetWeaponHandTex();
     UpdateLargeIcon();
     CheckWeaponSkins();
@@ -7647,7 +7546,6 @@ Begin:
 	}
 
 	//SetCloak(class'DeusExPlayer'.default.bCloakEnabled,true);//GMDX force cloak
-    SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran,true);//RSD: Overhauled cloak/radar routines
 
 	if (!Owner.IsA('ScriptedPawn'))
 		FinishAnim();
@@ -7718,9 +7616,6 @@ Begin:
 	   ScopeOff();
     //if (Owner.IsA('DeusExPlayer') && !DeusExPlayer(Owner).IsInState('Mantling'))
 	   LaserOff(true);
-    if (Owner.IsA('DeusExPlayer') && !bLasing)
-	//if (!class'DeusExPlayer'.default.bRadarTran)                              //RSD: Overhauled cloak/radar routines
-       SetCloakRadar(false,false);//SetCloak(false);                            //RSD: Overhauled cloak/radar routines
 
 	if (( Level.NetMode == NM_DedicatedServer ) || ((Level.NetMode == NM_ListenServer) && Owner.IsA('DeusExPlayer') && !DeusExPlayer(Owner).PlayerIsListenClient()))
 		ClientDownWeapon();

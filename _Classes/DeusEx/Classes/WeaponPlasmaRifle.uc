@@ -14,6 +14,18 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 }
 */
 
+//Hide the green firing streaks
+function DisplayCloaking(bool overlay, float ScaleGlow, bool bCloak, bool bRadar)
+{
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[1] = texture'PinkMaskTex';
+    else
+        multiskins[2] = texture'PinkMaskTex';
+}
+
 //SARGE: Don't make the green bit bloody
 function DisplayWeaponBlood(bool overlay)
 {
@@ -24,12 +36,14 @@ function DisplayWeaponBlood(bool overlay)
 
     if (IsHDTP())
     {
+        multiskins[1] = Texture'PinkMaskTex'; //Green energy burst when firing
         multiskins[3] = Texture'PinkMaskTex';
         multiskins[5] = Texture'PinkMaskTex';
     }
     else
     {
         multiskins[1] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'PinkMaskTex'; //Green energy burst when firing
         multiskins[4] = Texture'PinkMaskTex';
     }
 }

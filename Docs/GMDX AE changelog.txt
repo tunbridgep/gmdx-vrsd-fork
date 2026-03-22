@@ -6,6 +6,8 @@ New Features:
     - Fixed mouse position being reset between game loads
     - Fixed being able to select hidden and invalid aug slots
     - Aug Wheel can now use preset positions for every augmentation.
+- Added Precipitation Mod support.
+    - All the NYC maps will now have rain. This can be turned off in the QoL menu.
 - "Belt Memory" now has a new third setting, which will allow items to use placeholders from similar items.
     - For intance, if you have a placeholder for a Ballistic Vest on your belt, and you pickup a HazMat Suit, the HazMat will replace the dimmed Ballistic Vest placeholder icon.
     - Uses the same rules as the "Shifter-Style Weapon Switch" option.
@@ -39,6 +41,13 @@ New Features:
 - Added a new playthrough modifier for upfront character creation. You will start with more skill points initially, but will get far less overall.
 - If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.
 - The Frob Display now shows a Red border for Declined items.
+- Complete rewrite of the Cloak/Radar system from scratch
+    - Fixed a lot of bugs and inconsistencies with the old method
+    - The player will now gracefully "fade out" over about 1 second, rather than instantly becoming cloaked
+        - This has no effect on gameplay
+    - Player an NPC Weapons now reflect their cloaking status exactly
+        - This means NPC weapons have proper cloak textures, rather than simply being transparent
+            - As a result of this change, cloaked NPCs are a bit harder to see, since their weapons are less obvious.
 - Right-Clicking can now be used to skip mission-end cutscenes. Disabled by default. Enable in the Advanced QoL Menu.
 - Added a new more readable font, enabled by default. This should fix issues with 1, l and I looking similar to each other.
     - Additionally added a larger version of the console font.
@@ -96,6 +105,11 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- The GMDX v9 feature to move weapons back when you're up next to a wall is now optional and can be toggled in the QoL settings as I know some people don't like it.
+- Significantly improved weapon rendering efficiency including removing up to 4 additional `Trace()`'s per frame (!!!) caused by a previous developer's bad coding habits.
+- Implemented DXGNative TraceTexture fix. This means footsteps are now always accurate to the surface you're standing on
+    - Additionally enabled some previously unused footstep sounds.
+    - Generalised a lot of footstep code between the Player and NPCs, so everyone should now always have the same footstep sounds.
 - Automatic Augmentations will now "hum" even when Quiet Augs is enabled, to signal when they are in-use.
 - With "Right-Click tool selection" enabled, you can now use Walk/Run to select tools while looking at keypads.
 - Synthetic Heart energy penalty reduced from 40%/30%/20%/10% to 35%/25%/15%/5%

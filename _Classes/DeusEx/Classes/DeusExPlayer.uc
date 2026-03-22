@@ -5,6 +5,8 @@ class DeusExPlayer extends PlayerPawnExt native;
 
 #exec OBJ LOAD FILE=Effects
 #exec OBJ LOAD FILE=GMDXText
+#exec OBJ LOAD FILE=Precipitation
+
 // Name and skin assigned to PC by player on the Character Generation screen
 var travel String	TruePlayerName;
 var travel int      PlayerSkin;
@@ -514,9 +516,6 @@ var bool bCanTiptoes; //based on legs/crouch/can raise body
 var bool bIsTiptoes;
 var bool bPreTiptoes;
 var bool bLeftToe,bRightToe;
-var bool bRadarTran; //CyberP: radar trans effect
-var bool bCloakEnabled; //player is cloaked was class'DeusExWeapon'.default.this=T/F wow :)
-var transient bool bIsCloaked; //weapon is cloaked
 var int LightLevelDisplay; //CyberP: augIFF light value
 var travel int KillerCount; //CyberP: are we a pacifist
 var travel Actor RocketTarget; //GEPDummyTarget (basic actor)
@@ -539,7 +538,7 @@ var float LadTime;
 var bool bSpecialUpgrade;
 var travel bool bBoosterUpgrade;
 var float enviroAutoTime;
-var Name SpecTex;
+var name FloorTexture;
 var globalconfig bool bFirstTimeGMDX;
 var globalconfig int iStaminaSystem;
 var bool bDeadLoad;
@@ -645,6 +644,7 @@ var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 var travel FontManager FontManager;
 var travel KeybindManager KeybindManager;
+var travel CloakManager CloakManager;
 var DecalManager DecalManager;
 
 const DRUG_TOBACCO = 0;
@@ -975,6 +975,10 @@ var travel float lastCombatTime;                             //SARGE: The last t
 //For the aug wheel, now we store the mouse position here, so that it gets saved
 var globalconfig Vector radialMenuCursorPos;
 
+//SARGE: If we exceed 1000 saves, wrap around.
+//This whole thing is fucked
+var globalconfig int iHackySaveIndex;
+
 //SARGE: Added a new check for playing Loot Sounds, so we only play it once per frame.
 var private transient bool bPlaySoundCheck;
 //Short Fuse
@@ -1073,14 +1077,40 @@ exec function RedoOutfits()
     }
 }
 
+//SARGE: Inform the Precipitation system that we've entered a new zone.
+function UpdatePrecipitation(ZoneInfo NewZone)
+{
+    local PrecipitationInfoBase PI;
+
+    DebugMessage("Zone is: " $ HeadRegion.Zone @ NewZone);
+
+    //Inform that we've left the old zone
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(HeadRegion.Zone);
+    if (PI != None)
+        PI.ActorLeaving(Self);
+   
+    //Inform that we've entered the new zone
+    PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(NewZone);
+    if (PI != None)
+        PI.ActorEntered(Self);
+}
+
 //SARGE: Do a blood effect on the screen and on our weapon
 function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool flash)
 {
     local float dist;
+    local float maxDist;
+
+    maxDist = 90;
+
     if (Damage > 0 && (damageType == 'Shot' || damageType == 'Exploded' || damageType == 'Sabot' || (DamageType == 'Burned' && Damage >= 10)))
     {
+        //Get bloody from a longer range if gibbed
+        if (damageType == 'Exploded' || (DamageType == 'Burned' && Damage >= 10))
+            maxDist = 180;
+
         dist = Abs(VSize(Location - ObjLocation));
-        if (dist < 160)
+        if (dist < maxdist)
         {
             if (flash)
             {
@@ -1088,7 +1118,10 @@ function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool fla
                 bloodTime = 4.000000;
             }
             if (iBloodyWeapons > 0 && DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(true);
+            {
+                DeusExWeapon(inHand).SetBloodyWeapon(true);
+                DeusExWeapon(inHand).SetBloodyHands(true);
+            }
         }
     }
 }
@@ -1365,11 +1398,7 @@ function UpdateHDTPsettings()
 	}
 	else
 	{
-		mesh = default.mesh;
-		for(i=0; i<=7;i++)
-		{
-			multiskins[i]=default.multiskins[i];
-		}
+        class'SkinUtils'.static.ResetSkinStyle(Self);
 	}
 }
 
@@ -1814,6 +1843,18 @@ function SetupDecalManager()
     }
 }
 
+function SetupCloakManager()
+{
+	// install the Perk Manager if not found
+	if (CloakManager == None)
+    {
+        DebugMessage("Make new Cloak Manager");
+	    CloakManager = new(Self) class'CloakManager';
+    }
+    CloakManager.Init(Self);
+    CloakManager.SetSkinStyle(SK_Animated); //Wavy tex
+}
+
 function SetupPerkManager()
 {
 	// install the Perk Manager if not found
@@ -1923,6 +1964,7 @@ function InitializeSubSystems()
 	SetupFontManager();
     SetupKeybindManager();
 	SetupDecalManager();
+	SetupCloakManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1990,6 +2032,8 @@ function PostPostBeginPlay()
     
     //Display or hide any Exits as necessary based on settings.
     ShowExits();
+        
+    UpdatePrecipitation(Region.Zone);
 }
 
 // ----------------------------------------------------------------------
@@ -2066,6 +2110,7 @@ event TravelPostAccept()
     SetupFontManager();
     SetupKeybindManager();
 	SetupDecalManager();
+	SetupCloakManager();
 
     //reset "fake" death
     bFakeDeath = false;
@@ -2624,47 +2669,6 @@ exec function LoadGame(int saveIndex)
     SetupRendererSettings();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
-	// Reset the FOV
-	if (class'DeusExPlayer'.default.bRadarTran == True)
-    {
-       class'DeusExPlayer'.default.bRadarTran = False;   //CyberP: disable the radar effect
-       class'DeusExPlayer'.default.bCloakEnabled = False;
-       ScaleGlow = default.ScaleGlow;
-       Style = default.Style;
-       AmbientGlow = default.AmbientGlow;
-       if (inhand != None)
-       {
-           if (inHand.IsA('DeusExWeapon'))
-           {
-              DeusExWeapon(inHand).HideCamo();
-           }
-           else if (inHand.IsA('DeusExPickup'))
-           {
-              DeusExPickup(inHand).HideCamo();
-           }
-       }
-    }
-	else if (class'DeusExPlayer'.default.bCloakEnabled || class'DeusExPlayer'.default.bRadarTran) //RSD: Added bRadarTran
-	{
-       class'DeusExPlayer'.default.bCloakEnabled = False; //CyberP: disable the cloak effect
-       class'DeusExPlayer'.default.bRadarTran = False;
-       ScaleGlow = default.ScaleGlow;
-       Style = default.Style;
-       MultiSkins[6] = Texture'DeusExCharacters.Skins.FramesTex4';
-       MultiSkins[7] = Texture'DeusExCharacters.Skins.LensesTex5';
-       AmbientGlow = default.AmbientGlow;
-       if (inhand != None)
-       {
-           if (inHand.IsA('DeusExWeapon'))
-           {
-              DeusExWeapon(inHand).HideCamo();
-           }
-           else if (inHand.IsA('DeusExPickup'))
-           {
-              DeusExPickup(inHand).HideCamo();
-           }
-       }
-    }
     if (DeusExRootWindow(rootWindow) != None)
     {
        DeusExRootWindow(rootWindow).ClearWindowStack();
@@ -2674,6 +2678,8 @@ exec function LoadGame(int saveIndex)
 	   DeusExRootWindow(rootWindow).ClearWindowStack();
 	}
     if (bRadialAugMenuVisible) ToggleRadialAugMenu();
+	
+    // Reset the FOV
 	DesiredFOV = Default.DesiredFOV;
 	ClientTravel("?loadgame=" $ saveIndex, TRAVEL_Absolute, False);
 }
@@ -2733,12 +2739,14 @@ function GameDirectory GetSaveGameDirectory()
 	return saveDir;
 }
 
-//We can't modify the native function, so do this here, and then call it
+//SARGE: We can't modify the native function, so do this here, and then call it
 function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
 	local GameDirectory saveDir;
     local TechGoggles tech;
 	local DeusExRootWindow root;
+	local DeusExSaveInfo saveInfo;
+    local int i;
 	
 	root = DeusExRootWindow(rootWindow);
 
@@ -2760,9 +2768,39 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
 
-    //Loop back around
+    /*
+    //SARGE: This doesn't actually work.
+    //Loop back around and find something unused
     if (saveIndex >= 1000)
-        saveIndex = 1;
+    {
+        for (i = 0; i < 1000;i++)
+        {
+            saveInfo = saveDir.GetSaveInfoFromDirectoryIndex(i);
+            if (saveInfo == None)
+            {
+                saveIndex = i;
+                DebugLog("Found empty save index: " $ saveIndex);
+                break;
+            }
+            else
+                saveDir.DeleteSaveInfo(saveInfo);
+        }
+    }
+    */
+    
+    //If we're STILL unable to find a slot, just start overwriting stuff
+    //SARGE: This is a horrible hack!
+    //We don't ever want to get here, but it's still better than not saving!
+    if (saveIndex >= 1000)
+    {
+        DebugMessage("WARNING: Using hacky save index");
+        saveIndex = iHackySaveIndex++;
+        
+        if (iHackySaveIndex >= 1000)
+            iHackySaveIndex = 1;
+
+        SaveConfig();
+    }
     
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
@@ -2770,6 +2808,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 
     //root.hide();
     root.GenerateSnapshot(True);
+    DebugLog("Save Game: " $ saveIndex @ saveDesc);
     SaveGame(saveIndex, saveDesc);
     root.HideSnapshot();
     //root.show();
@@ -5052,57 +5091,12 @@ function name GetWallMaterial(out vector wallNormal)
 // GetFloorMaterial()
 //
 // gets the name of the texture group that we are standing on
+// SARGE: Now we just get it from PawnUtils...
 // ----------------------------------------------------------------------
 
-function name GetFloorMaterial()
+function name UpdateFloorMaterial()
 {
-	local vector EndTrace, HitLocation, HitNormal;
-	local actor target;
-	local int texFlags;
-	local name texName, texGroup;
-
-	// trace down to our feet
-	EndTrace = Location - CollisionHeight * 2 * vect(0,0,1);
-
-	foreach TraceTexture(class'Actor', target, texName, texGroup, texFlags, HitLocation, HitNormal, EndTrace)
-	{
-		if ((target == Level) || target.IsA('Mover'))
-			break;
-	}
-
-    if (target != None && target.IsA('DeusExMover')) //CyberP: special case for movers.
-    {
-     if (target.IsA('BreakableGlass'))
-        texGroup = 'Glass';
-     else if (DeusExMover(target).FragmentClass == Class'DeusEx.WoodFragment')
-        texGroup = 'Wood';
-     else if (DeusExMover(target).FragmentClass == Class'DeusEx.MetalFragment')
-        texGroup = 'Metal';
-     else
-        texGroup = 'Stucco';
-    }
-    SpecTex = texName;
-    //ClientMessage("GetFloorMaterial: " $ texName);
-	return texGroup;
-}
-
-function name GetVentMaterial()
-{
-	local vector EndTrace, HitLocation, HitNormal;
-	local actor target;
-	local int texFlags;
-	local name texName, texGroup;
-
-	// trace down to our feet
-	EndTrace = Location - CollisionHeight * 2 * vect(0,0,1);
-
-	foreach TraceTexture(class'Actor', target, texName, texGroup, texFlags, HitLocation, HitNormal, EndTrace)
-	{
-		if ((target == Level) || target.IsA('Mover'))
-			break;
-	}
-
-	return texName;
+    class'PawnUtils'.static.GetFloorMaterial(self,FloorMaterial,FloorTexture);
 }
 
 // ----------------------------------------------------------------------
@@ -5116,7 +5110,6 @@ function name GetVentMaterial()
 simulated function PlayFootStep()
 {
 	local Sound stepSound;
-	local float rnd;
 	local float speedFactor, massFactor;
 	local float volume, pitch, range;
 	local float radius, mult;
@@ -5127,6 +5120,11 @@ simulated function PlayFootStep()
     local float stealthLevel;
 	local Pawn P;
     local bool bPawnCheck;
+    
+    //SARGE: Precipitation Stuff
+    local float RainstepVolMod;
+    local PrecipitationInfoBase PI;
+    local int bRainStep;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5137,222 +5135,10 @@ simulated function PlayFootStep()
 	else
 		bOtherPlayer = False;
 
-	rnd = FRand();
+    //DebugMessage("FloorMaterial: " $ FloorMaterial @ "FloorTexture: " $ FloorTexture);
 
 	volumeMultiplier = 1.0;
-	if (IsInState('PlayerSwimming') || (Physics == PHYS_Swimming))
-	{
-		volumeMultiplier = 0.5;
-		if (rnd < 0.5)
-			stepSound = Sound'Swimming';
-		else
-			stepSound = Sound'Treading';
-	}
-	else if (FootRegion.Zone.bWaterZone)
-	{
-		volumeMultiplier = 1.0;
-		if (rnd < 0.33)
-			stepSound = Sound'WaterStep1';
-		else if (rnd < 0.66)
-			stepSound = Sound'WaterStep2';
-		else
-			stepSound = Sound'WaterStep3';
-	}
-	else
-	{
-		switch(FloorMaterial)
-		{
-			case 'Textile':
-			case 'Paper':
-				volumeMultiplier = 0.6;
-				if (rnd < 0.25)
-					stepSound = Sound'CarpetStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'CarpetStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'CarpetStep3';
-				else
-					stepSound = Sound'CarpetStep4';
-				break;
-
-                case 'Earth':
-                volumeMultiplier = 0.8;
-				if (rnd < 0.25)
-					stepSound = Sound'DIRT1';
-				else if (rnd < 0.5)
-					stepSound = Sound'DIRT2';
-				else if (rnd < 0.75)
-					stepSound = Sound'DIRT3';
-				else
-					stepSound = Sound'DIRT4';
-				break;
-
-			case 'Foliage':
-				volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'GrassStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GrassStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GrassStep3';
-				else
-					stepSound = Sound'GrassStep4';
-				break;
-
-			case 'Metal':
-				volumeMultiplier = 0.9;
-			if (SpecTex == 'A51_Floor_01')
-			{
-			    if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-			}
-			else if (SpecTex == 'metalgrate_a')
-			{
-                if (rnd < 0.2)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_01';
-                else if (rnd < 0.4)
-			   		stepSound = Sound'GMDXSFX.Player.metal_grate_02';
-			    else if (rnd < 0.6)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_03';
-		  	    else if (rnd < 0.8)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_04';
-		  	    else
-				   	stepSound = Sound'GMDXSFX.Player.metal_grate_05';
-			}
-			else
-			{
-            	if (rnd < 0.25)
-					stepSound = Sound'MetalStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'MetalStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'MetalStep3';
-				else
-					stepSound = Sound'MetalStep4';
-			}
-				break;
-
-			case 'Ladder':
-				volumeMultiplier = 1.0;
-                if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-                 break;
-
-            case 'Glass':
-            volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'GLASS1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GLASS2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GLASS3';
-				else
-					stepSound = Sound'GLASS4';
-				break;
-
-			case 'Ceramic':
-			case 'Tiles':
-				volumeMultiplier = 0.75;
-				if (rnd < 0.25)
-					stepSound = Sound'TileStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'TileStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'TileStep3';
-				else
-					stepSound = Sound'TileStep4';
-				break;
-
-			case 'Wood':
-				volumeMultiplier = 0.825;
-				if (SpecTex == 'OldeOakPlank_A')
-				{
-				    if (rnd < 0.2)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_01';
-				    else if (rnd < 0.4)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_02';
-				    else if (rnd < 0.6)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_03';
-			     	else if (rnd < 0.8)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_04';
-			    	else
-				    	stepSound = Sound'GMDXSFX.Player.Wood_05';
-				}
-				else
-				{
-			    	if (rnd < 0.25)
-			     		stepSound = Sound'WoodStep1';
-			       	else if (rnd < 0.5)
-			        	stepSound = Sound'WoodStep2';
-			       	else if (rnd < 0.75)
-				       	stepSound = Sound'WoodStep3';
-				    else
-				       	stepSound = Sound'WoodStep4';
-				}
-                break;
-
-            case 'Stucco':
-            volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'CARDB1';
-				else if (rnd < 0.5)
-					stepSound = Sound'CARDB2';
-				else if (rnd < 0.75)
-					stepSound = Sound'CARDB3';
-				else
-					stepSound = Sound'CARDB4';
-				break;
-
-			case 'Brick':
-			case 'Concrete':
-			volumeMultiplier = 0.9;
-				if (rnd < 0.25)
-					stepSound = Sound'STEP1';
-				else if (rnd < 0.5)
-					stepSound = Sound'STEP2';
-				else if (rnd < 0.75)
-					stepSound = Sound'STEP3';
-				else
-					stepSound = Sound'STEP4';
-				break;
-
-			/*case 'Stone':
-				volumeMultiplier = 0.8;
-				if (rnd < 0.25)
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_01';
-				else if (rnd < 0.5)
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_02';
-				else if (rnd < 0.75)
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_03';
-				else
-					stepSound = Sound'GMDXSFX.Player.concrete_ct_04';
-				break;
-            */
-			default:
-                    volumeMultiplier = 0.8;
-					if (rnd < 0.25)
-			    		stepSound = Sound'StoneStep1';
-				    else if (rnd < 0.5)
-			     		stepSound = Sound'StoneStep2';
-			    	else if (rnd < 0.75)
-			     		stepSound = Sound'StoneStep3';
-			    	else
-			     		stepSound = Sound'StoneStep4';
-					break;
-		}
-	}
+    stepSound = class'PawnUtils'.static.GetFootstepSound(self,FloorMaterial,FloorTexture,volumeMultiplier,bRainStep);
 
 	// compute sound volume, range and pitch, based on mass and speed
 	if (IsInState('PlayerSwimming') || (Physics == PHYS_Swimming))
@@ -5393,9 +5179,9 @@ simulated function PlayFootStep()
 
        if (Velocity.Z < -500)
        {
-	   if (SpecTex == 'A51_Floor_01' || FloorMaterial=='Ladder')
+	   if (FloorTexture == 'A51_Floor_01' || FloorMaterial=='Ladder')
           PlaySound(sound'bouncemetal',SLOT_None,volume*1.5,,,0.6);
-       else if (SpecTex == 'metalgrate_a')
+       else if (FloorTexture == 'metalgrate_a')
           PlaySound(sound'metal_chainlink_07',SLOT_None,volume*1.5,,,0.9);
        else if (FloorMaterial=='Metal')
           PlaySound(sound'MetalDoorClose',SLOT_None,volume*1.5,,,1.5);
@@ -5422,17 +5208,18 @@ simulated function PlayFootStep()
             volume *= 0.8 - (0.2 * stealthLevel);
     }
 
-	//if (bJustLanded) log("PlayFootStep bJustLanded vol="@volume@": mod="@volumeMod@": Z="@Velocity.Z);
-
-    /*
-    else if (bIsWalking)
-       volume *= 0.5;  //CyberP: can walk up behind enemies.
-    */
-
-    //BroadcastMessage(volume);
+    // PRECIPITATION
+	// check for running in the rain, then multiply the sound volume by the return value below
+	// (only for the sound effect, not the AI sound event)
+    //PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
+    //if (PI != None)
+    if (bRainStep == 1)
+        RainstepVolMod = class'PrecipitationInfoBase'.static.RainStep( self, FloorMaterial, volume, range, pitch );
+    else
+        RainStepVolMod = 1.0;
 
     stepCount++;
-    PlaySound(stepSound, SLOT_Interact, volume, , range, pitch);
+    PlaySound(stepSound, SLOT_Interact, volume*RainstepVolMod, , range, pitch);
     if (!bHardCoreMode) //CyberP: Nerf footsteps a touch on lower diffs.
         range*=0.9;
 
@@ -7278,7 +7065,10 @@ state PlayerWalking
 			{
                 //SARGE: Remove blood from weapon
                 if (DeusExWeapon(inHand) != None)
-                    DeusExWeapon(inHand).SetCoveredInBlood(false);
+                {
+                    DeusExWeapon(inHand).SetBloodyWeapon(false);
+                    DeusExWeapon(inHand).SetBloodyHands(false);
+                }
             DropDecoration();
             //loc = Location + VRand() * 4;
 	        //loc.Z += CollisionHeight * 0.9;
@@ -7468,7 +7258,7 @@ state PlayerWalking
 		   }
         }
 		// save some texture info
-		FloorMaterial = GetFloorMaterial();
+		UpdateFloorMaterial();
 		WallMaterial = GetWallMaterial(WallNormal);
 
 		// Check if player has walked outside a first-person convo.
@@ -7548,10 +7338,28 @@ state PlayerWalking
         else
             lastWalkTimer = 0.4;
 
+        //SARGE: Tick Cloaking
+        if (CloakManager != None)
+        {
+            CloakManager.TickCloaking(deltaTime);
+            if (CloakManager.IsInAnyState())
+            {
+                bNoSmooth=false;
+                CloakManager.UpdateSkin(self);
+                ScaleGlow = CloakManager.GetScaleGlow();
+            }
+            else
+            {
+                ScaleGlow = default.ScaleGlow;
+                Style = default.Style;
+                bNoSmooth=default.bNoSmooth;
+            }
+        }
+
         //SARGE: Reset the played transfer sound
         bPlaySoundCheck = false;
 
-		Super.PlayerTick(deltaTime);
+		    Super.PlayerTick(deltaTime);
 	}
 }
 
@@ -7568,7 +7376,10 @@ state PlayerFlying
         {
             //SARGE: Remove blood from weapon
             if (DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(false);
+            {
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+            }
 
 			DropDecoration();
         }
@@ -7614,6 +7425,8 @@ state PlayerFlying
 event HeadZoneChange(ZoneInfo newHeadZone)
 {
 	local float mult, augLevel;
+        
+    UpdatePrecipitation(NewHeadZone);
 
 	// hack to get the zone's ambientsound working until Tim fixes it
 	if (newHeadZone.AmbientSound != None)
@@ -7721,7 +7534,10 @@ state PlayerSwimming
 		{
             //SARGE: Remove blood from weapon
             if (DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(false);
+            {
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+            }
 
 			DropDecoration();
 			if (bOnFire)
@@ -7756,7 +7572,7 @@ state PlayerSwimming
             RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 
 		// save some texture info
-		FloorMaterial = GetFloorMaterial();
+		UpdateFloorMaterial();
 		WallMaterial = GetWallMaterial(WallNormal);
 
 		// don't let the player run if swimming
@@ -10113,8 +9929,12 @@ function UpdateInHand()
 		if (bSwitch)
 		{
             //SARGE: Remove blood from weapon
-            if (iBloodyWeapons == 1 && DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(false);
+            if (DeusExWeapon(inHand) != None)
+            {
+                if (iBloodyWeapons < 2)
+                    DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+            }
 
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
@@ -11577,11 +11397,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 			{
 				DeusExWeapon(item).ScopeOff();
 				DeusExWeapon(item).LaserOff(false);
-				if (DeusExWeapon(item).bIsCloaked)
-				{
-				   DeusExWeapon(item).HideCamo();
-				   DeusExWeapon(item).AmbientGlow=DeusExWeapon(item).default.AmbientGlow;
-				}
 			}
 		}
 
@@ -11676,11 +11491,17 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
                 // hand originally!!!
                 if (previousItemInHand == item)
                     PutInHand(previousItemInHand);
+                    
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
 
                 item = Spawn(item.Class, Owner);
             }
             else
             {
+                    
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+
                 // Keep track of this so we can undo it
 				// if necessary
 				bRemovedFromSlots = True;
@@ -11908,9 +11729,12 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
     
     //SARGE: Remove blood from weapon
     if (bDropped && DeusExWeapon(item) != None && (!DeusExWeapon(item).bDisposableWeapon || bFullDrop))
-        DeusExWeapon(item).SetCoveredInBlood(false);
+    {
+        DeusExWeapon(item).SetBloodyWeapon(false);
+        DeusExWeapon(item).SetBloodyHands(false);
+    }
 
-	return bDropped;
+	  return bDropped;
 }
 
 // ----------------------------------------------------------------------
@@ -12424,17 +12248,24 @@ exec function ShowAcceleration(bool bShow)
 }
 
 //Sarge: Moved this from DeusExWeapon because it's also used by SkilledTools
-function texture GetWeaponHandTex()
+function texture GetWeaponHandTex(bool bClyzm)
 {
 	local texture tex;
     local bool femHands;
     
-    if (bRadarTran)
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else if (bIsCloaked)
-        return FireTexture'GameEffects.InvisibleTex';
-
-	if (FemaleEnabled() && (bFemaleHandsAlways || (FlagBase != None && FlagBase.GetBool('LDDPJCIsFemale'))))
+    if (bClyzm)
+    {
+        switch (PlayerSkin)
+        {
+			//default, black, latino, ginger, albino, respectively
+			case 0: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
+        }
+    }
+	else if (FemaleEnabled() && (bFemaleHandsAlways || (FlagBase != None && FlagBase.GetBool('LDDPJCIsFemale'))))
     {
         switch(PlayerSkin)
         {
@@ -20500,6 +20331,7 @@ defaultproperties
      bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
+     iHackySaveIndex=1
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"

@@ -563,7 +563,7 @@ function Timer()
 		    foreach AllActors(class'Male3', GenericMale)
 			{
 			if (genericMale.IsInState('FirstPersonConversation'))
-			    if (!player.bIsCloaked && FRand() < 0.7)
+			    if (!player.CloakManager.IsCloaked() && FRand() < 0.7)
 		             Player.AISendEvent('WeaponFire',EAITYPE_Audio,1.0,160);
 		    }
 		}
