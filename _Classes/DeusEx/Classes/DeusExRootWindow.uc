@@ -617,6 +617,7 @@ event bool BoxOptionSelected(Window msgWindow, int buttonNumber)
     if (msgWindow == onboardingBox)
     {
         DeusExPlayer(parentPawn).bDoneGMDXOnboarding = true;
+        DeusExPlayer(parentPawn).SaveConfig();
 	    if (buttonNumber == 0)
             InvokeMenuScreen(class'MenuScreenGMDXOnboarding');
     }

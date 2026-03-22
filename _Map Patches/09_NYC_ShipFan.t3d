@@ -98163,6 +98163,7 @@ Begin Actor Class=Teleporter Name=Teleporter7
     Tag=2Warehouse
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1843,ZoneNumber=1)
     Location=(X=-6177.880371,Y=-1253.043335,Z=-708.895996)
+    Rotation=(Yaw=16384)
     OldLocation=(X=-6177.880371,Y=-1253.043335,Z=-745.895996)
     Name=Teleporter7
 End Actor
