@@ -60872,4 +60872,40 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner10
     OldLocation=(X=1305.028687,Y=-2031.902954,Z=6.099565)
     Name=OutfitSpawner10
 End Actor
+Begin Actor Class=PrecipitationSound Name=PrecipitationSound0
+    LastRenderTime=253.659195
+    DistanceFromPlayer=4062.830078
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationSound
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=157,ZoneNumber=1)
+    Location=(X=3220.579346,Y=1331.181519,Z=244.101563)
+    OldLocation=(X=3220.579346,Y=1331.181519,Z=202.101563)
+    AmbientSound=Sound'Precipitation.Ambient.RainInside'
+    Name=PrecipitationSound0
+End Actor
+Begin Actor Class=PrecipitationSound Name=PrecipitationSound1
+    LastRenderTime=287.540833
+    DistanceFromPlayer=4114.795898
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationSound
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=157,ZoneNumber=1)
+    Location=(X=3379.579346,Y=-847.818481,Z=1557.101563)
+    OldLocation=(X=3252.579346,Y=1363.181519,Z=244.101563)
+    bSelected=True
+    SoundRadius=255
+    AmbientSound=Sound'Precipitation.Ambient.RainInside'
+    Name=PrecipitationSound1
+End Actor
+Begin Actor Class=PrecipitationSound Name=PrecipitationSound2
+    LastRenderTime=25.081413
+    DistanceFromPlayer=4062.830078
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationSound
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=157,ZoneNumber=1)
+    Location=(X=3236.579346,Y=1347.181519,Z=244.101563)
+    OldLocation=(X=3252.579346,Y=1363.181519,Z=244.101563)
+    bSelected=True
+    AmbientSound=Sound'Precipitation.Ambient.RainCity'
+    Name=PrecipitationSound2
+End Actor
 End Map

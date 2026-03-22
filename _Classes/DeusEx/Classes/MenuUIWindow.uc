@@ -644,7 +644,12 @@ function ProcessMenuAction(EMenuActions action, Class menuActionClass, optional 
 			break;
 
 		case MA_NewGame:
-			StartNewGame();
+			
+			//SARGE: Show GMDX Onboarding
+			if (player != None && !player.bDoneGMDXOnboarding)
+					root.ConfirmOnboarding();
+			else
+				StartNewGame();
 			break;
 
 		case MA_Training:

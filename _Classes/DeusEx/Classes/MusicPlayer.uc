@@ -22,13 +22,13 @@ enum EMusicMode
 };
 
 //Copied from DeusExPlayer
-var Music currentSong;
-var int currentLevelSection;
-var EMusicMode musicMode;
-var byte savedSection;
-var float musicCheckTimer;
-var float musicChangeTimer;
-var float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
+var transient travel Music currentSong;
+var transient travel int currentLevelSection;
+var transient travel EMusicMode musicMode;
+var transient travel byte savedSection;
+var transient travel float musicCheckTimer;
+var transient travel float musicChangeTimer;
+var transient travel float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
@@ -41,6 +41,12 @@ function SetNewSong(Music song, optional byte section)
     local int i;
 
     player = GetGameInfo().GetPlayerPawn();
+        
+    //Reset the music volume for when we change songs while in combat or whatever
+    /*
+    if (DeusExPlayer(player) != None)
+        DeusExPlayer(player).SoundVolumeHackFix();
+    */
 
     if (currentSong != song || iEnhancedMusicSystem == 0 || currentLevelSection != section)
     {
@@ -62,6 +68,11 @@ function SetNewSong(Music song, optional byte section)
         else
             player.ClientSetMusic(currentSong,section,255,MTRAN_Instant);
     }
+    //Just in case, reset our part
+    else if (fMusicHackTimer > 0)
+        player.ClientSetMusic(song,savedSection,255,MTRAN_Instant);
+
+
 }
 
 //Replace all MusicEvent's with GMDXMusicTriggers
@@ -114,9 +125,10 @@ function SetDefaultLevelMusic(DeusExLevelInfo info)
         //musicChangeTimer = 5.0;
         //SetNewSection(savedSection, true);
     }
-    //savedSection = info.SongAmbientSection;
     musicCheckTimer = 5.0;
     musicChangeTimer = 5.0;
+    
+    currentLevelSection = info.SongAmbientSection;
 }
 
 function SetNewSection(byte section, optional bool bInstant)
@@ -155,7 +167,6 @@ function PlayerLogin(PlayerPawn P)
 
     SetDefaultLevelMusic(info);
     ReplaceMusicEvents();
-    currentLevelSection = info.SongAmbientSection;
 }
 
 function DeusExLevelInfo GetLevelInfo()
@@ -173,7 +184,7 @@ function DeusExLevelInfo GetLevelInfo()
 
 function bool CanSetAsSavedSection(int section)
 {
-    return fMusicHackTimer == 0 && section != 255 && section != 1 && savedSection != 3 && savedSection != 4 && savedSection != 5;
+    return fMusicHackTimer == 0 && section != 255 && section != 1 && section != 3 && section != 4 && (section != 5 || string(currentSong) == "NYCStreets_Music.NYCStreets_Music");
 }
 
 //Update music state every frame
@@ -208,6 +219,10 @@ function Tick(float deltaTime)
 
     //Log("Ticking MusicPlayer: " $ deltaTime @ info @ fMusicHackTimer @ player.GetStateName());
     //Log("  " @ bAllowConverse @ bAllowCombat @ bAllowOther @ musicMode);
+
+    //SARGE: Failsafe                    
+    //if (fMusicHackTimer == 0 && musicMode == MUS_Ambient)
+    //    savedSection = info.SongAmbientSection;
 
 	if (player.IsInState('Interpolating'))
 	{
@@ -296,8 +311,7 @@ function Tick(float deltaTime)
 						player.ClientSetMusic(currentSong, savedSection, 255, MTRAN_FastFade);
 					else
 						player.ClientSetMusic(currentSong, savedSection, 255, MTRAN_Fade);
-
-                    savedSection = info.SongAmbientSection;
+                    
                     musicMode = MUS_Ambient;
 					musicChangeTimer = 0.0;
                     SetHackTimer();

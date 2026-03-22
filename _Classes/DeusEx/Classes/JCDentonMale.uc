@@ -17,9 +17,12 @@ function UpdateHDTPSettings()
         SetSkin();
     }
 
-    //Augmentique overrides HDTP
-    if (outfitManager != None)
+    //HDTP Overrides Augmentique
+    if (outfitManager != None && !IsHDTP())
         outfitManager.ApplyCurrentOutfit();
+    
+    //Fix up cloaked glasses etc.
+    class'SkinUtils'.static.GlassesFix(Self);
 }
 
 //Set HDTP Skin

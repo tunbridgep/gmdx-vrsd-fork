@@ -176,7 +176,7 @@ simulated function UpdateSkillLevelValues(class SkillClass)
 
 	if (aSkill != None && (aSkill.IsA('SkillLockpicking') || aSkill.IsA('SkillTech') ))
 	{
-	    if (player.bHardCoreMode)
+	    if (player.bHardCoreMode || player.bHarderLockpicking)
 	    {
 	        aSkill.LevelValues[0]=0.050000;
 	        aSkill.LevelValues[1]=0.100000;

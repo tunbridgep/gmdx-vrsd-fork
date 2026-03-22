@@ -102,7 +102,9 @@ function ChargedPickupBegin(DeusExPlayer Player)
 		BeltPos=default.BeltPos;
 	}
     if (IsA('AdaptiveArmor'))
-        class'DeusExPlayer'.default.bCloakEnabled=true;
+    {
+        player.CloakManager.SetCloaked(true,false);
+    }
 
 	bIsActive = True;
 }
@@ -131,8 +133,8 @@ function ChargedPickupEnd(DeusExPlayer Player)
 	}  */
     if (IsA('AdaptiveArmor'))
     {
-    class'DeusExPlayer'.default.bCloakEnabled=False;
-    class'DeusExPlayer'.default.bRadarTran=False;
+        player.CloakManager.ForceOff(false);
+        player.CloakManager.SetRadar(false);
     }
 	bIsActive = False;
 	Player.RefreshChargedPickups(); //SARGE: Now we need to refresh, rather than remove, because an item can be still be assigned to the special weapon slot
@@ -345,13 +347,13 @@ state Activated
 			if (!IsA('HazMatSuit') && !IsA('BallisticArmor')) //CyberP: start to make new armor system
 			Charge -= CalcChargeDrain(Player);
             if (IsA('AdaptiveArmor'))
-            class'DeusExPlayer'.default.bCloakEnabled=true;
+				player.CloakManager.SetCloaked(true,false);
 
 			if (Charge <= 0)
 			{
                 UsedUp();
 				if (IsA('AdaptiveArmor'))
-                 class'DeusExPlayer'.default.bCloakEnabled=False;
+                    player.CloakManager.ForceOff(false);
 			}
 		}
 	}
