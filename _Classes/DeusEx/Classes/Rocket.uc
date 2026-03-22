@@ -32,7 +32,7 @@ function PostBeginPlay()
 	if (Level.NetMode == NM_DedicatedServer)
 	  return;
 
-    if (default.ItemName=="GEP Rocket")
+    if (default.ItemName=="GEP Rocket" || default.ItemName=="WP Rocket") //SARGE: Now it applies to WP Rockets too
         if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHERocket').bPerkObtained == true)
             blastRadius=576.000000;
 

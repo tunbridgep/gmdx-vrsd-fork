@@ -204435,9 +204435,10 @@ Begin Actor Class=Brush Name=Brush1947
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover22
     bLocked=True
-    bPickable=False
+    bPickable=True
     bBreakable=True
     doorStrength=0.800000
+    lockStrength=0.800000
     minDamageThreshold=55
     FragmentScale=1.500000
     OpeningSound=Sound'MoverSFX.door.WoodDoorOpen'
@@ -204660,8 +204661,9 @@ Begin Actor Class=DeusExMover Name=DeusExMover22
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover23
     bLocked=True
-    bPickable=False
+    bPickable=True
     bBreakable=True
+    lockStrength=0.800000
     doorStrength=0.800000
     minDamageThreshold=55
     FragmentScale=1.500000

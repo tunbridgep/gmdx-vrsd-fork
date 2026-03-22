@@ -55,7 +55,7 @@ function DisplayWeapon(bool overlay)
 	if (overlay)
 		multiskins[0] = handsTex;
 
-    if (clipcount == 0 || Owner == None)
+    if (clipcount == 0 || Pawn(Owner) == None || Pawn(Owner).HeadRegion.Zone.bWaterZone)
     {
         if (IsHDTP())
             multiskins[2] = texture'PinkMaskTex';

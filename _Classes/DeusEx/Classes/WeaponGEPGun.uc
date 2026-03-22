@@ -211,11 +211,12 @@ function RenderME(Canvas canvas,bool bSetWire,optional bool bClearZ)
 //  PlayerViewOffset=default.PlayerViewOffset*100;
 //   SetHand(PlayerPawn(Owner).Handedness); //meh meh
 
-    DisplayWeapon(true);
+    PreDisplayWeapon(true);
 	Canvas.DrawActor(self, bSetWire,bClearZ);
 
-    DrawBloodyViewModel(canvas);
-    DisplayWeapon(false);
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).CloakManager != None && !DeusExPlayer(Owner).CloakManager.IsInAnyState())
+        DrawBloodyViewModel(canvas);
+    PreDisplayWeapon(false);
 
 	if (lightFlicker!=none) lightFlicker.UpdateLocation(player);
 }
@@ -564,10 +565,10 @@ defaultproperties
      LockTime=3.000000
      LockedSound=Sound'DeusExSounds.Weapons.GEPGunLock'
      TrackingSound=Sound'DeusExSounds.Weapons.GEPGunTrack'
-     AmmoNames(0)=Class'DeusEx.AmmoRocket'
-     AmmoNames(1)=Class'DeusEx.AmmoRocketWP'
-     ProjectileNames(0)=Class'DeusEx.Rocket'
-     ProjectileNames(1)=Class'DeusEx.RocketWP'
+     AmmoNames(0)=Class'DeusEx.AmmoRocketWP'
+     AmmoNames(1)=Class'DeusEx.AmmoRocket'
+     ProjectileNames(0)=Class'DeusEx.RocketWP'
+     ProjectileNames(1)=Class'DeusEx.Rocket'
      bHasMuzzleFlash=False
      recoilStrength=1.100000
      bUseWhileCrouched=False
@@ -595,7 +596,7 @@ defaultproperties
      largeIconRot=Texture'GMDXSFX.Icons.LargeIconRotGEP'
      invSlotsXtravel=3
      invSlotsYtravel=2
-     AmmoName=Class'DeusEx.AmmoRocket'
+     AmmoName=Class'DeusEx.AmmoRocketWP'
      ReloadCount=1
      PickupAmmoCount=2
      FireOffset=(X=-52.000000,Y=16.000000,Z=6.000000)
@@ -615,6 +616,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.GEPgun'
      PickupViewMesh=LodMesh'DeusExItems.GEPgunPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.GEPgun3rd'
+     Mesh=LodMesh'DeusExItems.GEPgunPickup'
      VanillaAddonPlayerViewMesh="VisibleAttachments.GEPGun_Mod"
      VanillaAddonPickupViewMesh="VisibleAttachments.GEPGunPickup_Mod"
      VanillaAddonThirdPersonMesh="VisibleAttachments.GEPGun3rd_Mod"

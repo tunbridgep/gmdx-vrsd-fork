@@ -5,9 +5,11 @@ class HUDMedBotNavBarWindow expands PersonaNavBarBaseWindow;
 
 var PersonaNavButtonWindow btnHealth;
 var PersonaNavButtonWindow btnAugs;
+var PersonaNavButtonWindow btnWounds;
 
 var localized String HealthButtonLabel;
 var localized String AugsButtonLabel;
+var localized String WoundsButtonLabel;
 
 // ----------------------------------------------------------------------
 // CreateButtons()
@@ -16,6 +18,8 @@ var localized String AugsButtonLabel;
 function CreateButtons()
 {
 	btnAugs      = CreateNavButton(winNavButtons, AugsButtonLabel);
+    if (player.bWoundSystem)
+        btnWounds    = CreateNavButton(winNavButtons, WoundsButtonLabel);
 	btnHealth    = CreateNavButton(winNavButtons, HealthButtonLabel);
 
 	Super.CreateButtons();
@@ -35,9 +39,10 @@ function CreateButtonWindows()
 // ----------------------------------------------------------------------
 // InvokeHealthScreen()
 // SARGE: Now a function, so we can call it from our children
+// SARGE: Also now takes an argument to show Traumas
 // ----------------------------------------------------------------------
 
-function InvokeHealthScreen()
+function InvokeHealthScreen(optional bool bShowTraumas)
 {
 	local HUDMedBotHealthScreen healthScreen;
 	local HUDMedBotAddAugsScreen augScreen;
@@ -52,9 +57,20 @@ function InvokeHealthScreen()
         augScreen.SkipAnimation(True);
         medBot = augScreen.medBot;
     }
+    
+    //Allow switching from wounds screen to health screen and vice versa
+    healthScreen = HUDMedBotHealthScreen(GetParent());
+    if (healthScreen != None)
+    {
+        healthScreen.SkipAnimation(True);
+        medBot = healthScreen.medBot;
+    }
 
     // Invoke the health screen
-    healthScreen = HUDMedBotHealthScreen(root.InvokeUIScreen(Class'HUDMedBotHealthScreen', True));
+    if (bShowTraumas)
+        healthScreen = HUDMedBotWoundScreen(root.InvokeUIScreen(Class'HUDMedBotWoundScreen', True));
+    else
+        healthScreen = HUDMedBotHealthScreen(root.InvokeUIScreen(Class'HUDMedBotHealthScreen', True));
 
     // Now set the medBot if it's not none
     if (medBot != None)
@@ -76,6 +92,9 @@ function bool ButtonActivated(Window buttonPressed)
 
 	switch(buttonPressed)
 	{
+        case btnWounds:
+            InvokeHealthScreen(true);
+			break;
 		case btnHealth:
             InvokeHealthScreen();
 			break;
@@ -117,4 +136,5 @@ defaultproperties
 {
      HealthButtonLabel=" |&Health   "
      AugsButtonLabel="   |&Augmentations   "
+     WoundsButtonLabel="   |&Traumas   "
 }

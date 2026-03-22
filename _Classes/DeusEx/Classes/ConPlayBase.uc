@@ -658,6 +658,40 @@ function Inventory SpawnItemAtFeet(class<Inventory> itemtype, Actor source, opti
     return spawnedItem;
 }
 
+//SARGE: Transfer a special ammo type (that's not in a weapon) in addition to our normal item
+function Ammo TransferSpecialAmmo(Actor source, DeusExPlayer transferTo, class<Ammo> AmmoName, int amount)
+{
+    local int missedAmount, extraAmmo;
+    local Ammo AmmoType;
+
+    AmmoType = Ammo(transferTo.FindInventoryType(AmmoName));
+
+    if (AmmoType == None)
+    {
+        AmmoType = spawn(AmmoName);
+        AmmoType.AmmoAmount = 0;
+        AmmoType.Frob(transferTo,None);
+        AmmoType = Ammo(transferTo.FindInventoryType(AmmoName));
+    }
+
+    //Now try to add it
+    If(ItemTransferHelper(AmmoType,amount,extraAmmo,missedAmount))
+    {
+    }
+
+    if (extraAmmo > 0)
+    {
+        conWinThird.ShowReceivedItemFrom(source, AmmoType, extraAmmo);
+    }
+    if (missedAmount > 0)
+    {
+        SpawnItemAtFeet(class'AmmoSabot',transferTo,missedAmount);
+        conWinThird.ShowReceivedItemFrom(source, AmmoType, missedAmount, true);
+    }
+
+    return AmmoType;
+}
+
 function EEventAction SetupEventTransferObject( ConEventTransferObject event, out String nextLabel )
 {
 	local EEventAction nextAction;
@@ -761,6 +795,11 @@ log("  event.toActor    = " $ event.toActor );
                 //conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 5);
             }
         }
+        else if (invItemFrom.IsA('WeaponGEPGun'))
+        {
+            //Now that GEP uses WP ammo by default, we should give the player some regular rockets too.
+            TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoRocket',1);
+        }
     }
     else if (invokeActor != none && invokeActor.IsA('Male2'))           //RSD: accessed none?
     {
@@ -775,9 +814,9 @@ log("  event.toActor    = " $ event.toActor );
             wepMod.ApplyMod(WeaponAssaultShotgun(invItemFrom));
             wepMod.Destroy();
             //SARGE: Smuggler says it has sabot rounds, let's make it so.
-            //Weapon(invItemFrom).AmmoName = class'AmmoSabot'; //only works with a fresh shotgun.
-            //Weapon(invItemFrom).PickupAmmoCount = 0; //So instead, do it manually
-            Weapon(invItemFrom).PickupAmmoCount = 24; //Ehh fuck it, just give better mods and more ammo instead
+            Weapon(invItemFrom).PickupAmmoCount = 0; //empty it
+            TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoSabot',8);
+
         }
     }
     
@@ -1391,13 +1430,20 @@ function EEventAction SetupEventAddNote( ConEventAddNote event, out String nextL
 	// Only add the note if it hasn't been added already (in case the
 	// PC has the same conversation more than once)
     local DeusExNote note;
+    local Name flagName;
 
 	if ( !event.bNoteAdded )
 	{
 		// Add the note to the player's list of notes
 		note = player.AddNote(event.noteText, False, True);
         note.SetConversationNote(true);             //SARGE: Tell the Note that it was added by Consys
+        //Log("Con Note Added: " $ currentEvent @ con @ startActor @ playingSoundId);
         //Log("Con note added: " $ note.originalText @ note.bConNote);
+		
+        //SARGE: Now we add a special text tag for con notes, to identify them
+        //flagName = player.rootWindow.StringToName( con.conName $ "_" $ playingSoundId );
+        flagName = player.rootWindow.StringToName( con.conName );
+        note.SetTextTag(flagName);
 
 		event.bNoteAdded = True;
 	}

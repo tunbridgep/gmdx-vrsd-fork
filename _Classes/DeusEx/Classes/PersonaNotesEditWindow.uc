@@ -42,7 +42,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
     if (bNoteSet && note != None)
         bFakeReadOnly = !default.bTempEdit && (!player.bAllowNoteEditing || (!player.bEditDefaultNotes && !note.bUserNote));
-    Log("bFakeReadOnly1: " $ bNoteSet @ note != None @ bFakeReadOnly @ "---" @ default.bTempEdit @ player.bAllowNoteEditing @ player.bEditDefaultNotes @ note.bUserNote @ Left(note.text,5));
+    //Log("bFakeReadOnly1: " $ bNoteSet @ note != None @ bFakeReadOnly @ "---" @ default.bTempEdit @ player.bAllowNoteEditing @ player.bEditDefaultNotes @ note.bUserNote @ Left(note.text,5));
 
     //when editing is turned off, we have to stop editing operations
     if (bFakeReadOnly)

@@ -14640,7 +14640,7 @@ Begin Actor Class=Brush Name=Brush36
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
+    PolyFlags=10
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -14648,7 +14648,7 @@ Begin Actor Class=Brush Name=Brush36
     Rotation=(Pitch=32768,Yaw=131072,Roll=-32768)
     Begin Brush Name=Model33
        Begin PolyList
-          Begin Polygon Texture=WareHousIron_B Flags=296 Link=0
+          Begin Polygon Texture=WareHousIron_B Flags=298 Link=0
              Origin   -00048.000000,-00384.000000,+00000.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -15436,7 +15436,7 @@ Begin Actor Class=Brush Name=Brush40
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
+    PolyFlags=10
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -15445,7 +15445,7 @@ Begin Actor Class=Brush Name=Brush40
     OldLocation=(X=120.000000,Y=920.000000,Z=-512.000000)
     Begin Brush Name=Model43
        Begin PolyList
-          Begin Polygon Texture=WareHousIron_B Flags=296 Link=0
+          Begin Polygon Texture=WareHousIron_B Flags=298 Link=0
              Origin   -00048.000000,-00384.000000,+00000.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -53140,26 +53140,24 @@ Begin Actor Class=EnterWorldTrigger Name=EnterWorldTrigger2
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover0
     bLocked=True
-    bPickable=False
-    bHighlight=False
-    bFrobbable=False
+    lockStrength=0.500000
     MoveAmbientSound=Sound'MoverSFX.door.MetalDoorMove'
-    KeyRot(1)=(Pitch=20480)
-    BasePos=(X=-2693.000000,Y=80.000000,Z=40.000000)
+    KeyRot(1)=(Pitch=-17480)
+    BasePos=(X=-481.977264,Y=80.999992,Z=-4.000000)
     SavedPos=(X=-12345.000000,Y=-12345.000000,Z=-12345.000000)
-    BaseRot=(Yaw=32768)
     SavedRot=(Pitch=123,Yaw=456,Roll=789)
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
+    bDynamicLight=True
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=DeusExMover
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-2693.000000,Y=80.000000,Z=40.000000)
-    Rotation=(Yaw=32768)
+    Tag=WarehouseVentAccess
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1192,ZoneNumber=2)
+    Location=(X=-481.977264,Y=80.999992,Z=-4.000000)
     OldLocation=(X=-1888.000000,Y=192.000000,Z=40.000000)
+    bSelected=True
     Begin Brush Name=Model400
        Begin PolyList
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=0
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=0
              Origin   +00032.000000,+00032.000000,+00012.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -53169,9 +53167,9 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00032.000000,-00032.000000,+00056.000000
              Vertex   +00032.000000,-00032.000000,+00054.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=1
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=1
              Origin   +00030.000000,-00032.000000,+00012.000000
-             Normal   -00001.000000,-00000.000000,-00000.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
              TextureV +00000.000000,+00000.000000,-00001.000000
              Vertex   +00030.000000,-00032.000000,+00054.000000
@@ -53179,7 +53177,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,+00032.000000,+00056.000000
              Vertex   +00030.000000,+00032.000000,+00054.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=2
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=2
              Origin   +00030.000000,+00032.000000,+00056.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -53189,7 +53187,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00032.000000,-00032.000000,+00056.000000
              Vertex   +00032.000000,+00032.000000,+00056.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=3
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=3
              Origin   +00032.000000,+00032.000000,+00012.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU -00001.000000,-00000.000000,-00000.000000
@@ -53199,7 +53197,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,-00032.000000,+00012.000000
              Vertex   +00030.000000,+00032.000000,+00012.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=4
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=4
              Origin   +00032.000000,-00030.000000,+00014.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU -00001.000000,-00000.000000,-00000.000000
@@ -53209,7 +53207,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00032.000000,-00030.000000,+00054.000000
              Vertex   +00032.000000,-00030.000000,+00014.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=5
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=5
              Origin   +00030.000000,+00030.000000,+00014.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -53219,7 +53217,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,+00030.000000,+00054.000000
              Vertex   +00030.000000,+00030.000000,+00014.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Flags=1073741824 Link=6
+          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Link=6
              Origin   +00030.500000,+00029.500000,+00053.500000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00008.000000,+00000.000000,+00000.000000
@@ -53229,7 +53227,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00031.500000,-00029.500000,+00053.500000
              Vertex   +00031.500000,+00029.500000,+00053.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=7
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=7
              Origin   +00030.000000,+00030.000000,+00054.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -53239,7 +53237,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,-00030.000000,+00054.000000
              Vertex   +00030.000000,+00030.000000,+00054.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Flags=1073741824 Link=8
+          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Link=8
              Origin   +00031.500000,+00029.500000,+00014.500000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU -00008.000000,+00000.000000,+00000.000000
@@ -53249,7 +53247,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.500000,-00029.500000,+00014.500000
              Vertex   +00030.500000,+00029.500000,+00014.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=9
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=9
              Origin   +00032.000000,+00030.000000,+00014.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU -00001.000000,-00000.000000,-00000.000000
@@ -53259,7 +53257,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00032.000000,-00030.000000,+00014.000000
              Vertex   +00032.000000,+00030.000000,+00014.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Flags=1073741824 Link=10
+          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Link=10
              Origin   +00031.500000,+00029.500000,+00014.500000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00008.000000,+00000.000000
@@ -53269,9 +53267,9 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00031.500000,-00029.500000,+00053.500000
              Vertex   +00031.500000,-00029.500000,+00014.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Flags=1073741824 Link=11
+          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Link=11
              Origin   +00030.500000,-00029.500000,+00014.500000
-             Normal   -00001.000000,-00000.000000,-00000.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00008.000000,+00000.000000
              TextureV +00000.000000,+00000.000000,-00008.000000
              Vertex   +00030.500000,-00029.500000,+00014.500000
@@ -53279,7 +53277,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.500000,+00029.500000,+00053.500000
              Vertex   +00030.500000,+00029.500000,+00014.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Flags=1073741824 Link=12
+          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Link=12
              Origin   +00031.500000,-00029.500000,+00014.500000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00008.000000,+00000.000000,+00000.000000
@@ -53289,7 +53287,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.500000,-00029.500000,+00053.500000
              Vertex   +00030.500000,-00029.500000,+00014.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Flags=1073741824 Link=13
+          Begin Polygon Item=OUTSIDE Texture=Chainlnk_01 Link=13
              Origin   +00030.500000,+00029.500000,+00014.500000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00008.000000,+00000.000000,+00000.000000
@@ -53299,7 +53297,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00031.500000,+00029.500000,+00053.500000
              Vertex   +00031.500000,+00029.500000,+00014.500000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=14
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=14
              Origin   +00030.000000,+00032.000000,+00012.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -53309,7 +53307,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00032.000000,+00032.000000,+00056.000000
              Vertex   +00032.000000,+00032.000000,+00012.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=15
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=15
              Origin   +00032.000000,-00032.000000,+00012.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,-00000.000000,-00000.000000
@@ -53319,9 +53317,9 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,-00032.000000,+00056.000000
              Vertex   +00030.000000,-00032.000000,+00012.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=16
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=16
              Origin   +00030.000000,-00032.000000,+00012.000000
-             Normal   -00001.000000,-00000.000000,-00000.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
              TextureV +00000.000000,+00000.000000,-00001.000000
              Vertex   +00030.000000,-00032.000000,+00012.000000
@@ -53329,9 +53327,9 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,+00032.000000,+00014.000000
              Vertex   +00030.000000,+00032.000000,+00012.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=17
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=17
              Origin   +00030.000000,-00032.000000,+00012.000000
-             Normal   -00001.000000,-00000.000000,-00000.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
              TextureV +00000.000000,+00000.000000,-00001.000000
              Vertex   +00030.000000,-00030.000000,+00014.000000
@@ -53339,9 +53337,9 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,-00032.000000,+00054.000000
              Vertex   +00030.000000,-00030.000000,+00054.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=18
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=18
              Origin   +00030.000000,-00032.000000,+00012.000000
-             Normal   -00001.000000,-00000.000000,-00000.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
              TextureV +00000.000000,+00000.000000,-00001.000000
              Vertex   +00030.000000,+00030.000000,+00014.000000
@@ -53349,7 +53347,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00030.000000,+00032.000000,+00054.000000
              Vertex   +00030.000000,+00032.000000,+00014.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=19
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=19
              Origin   +00032.000000,+00032.000000,+00012.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -53359,7 +53357,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00032.000000,-00032.000000,+00014.000000
              Vertex   +00032.000000,-00032.000000,+00012.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=20
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=20
              Origin   +00032.000000,+00032.000000,+00012.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -53369,7 +53367,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00032.000000,-00032.000000,+00054.000000
              Vertex   +00032.000000,-00032.000000,+00014.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Flags=1073741824 Link=21
+          Begin Polygon Item=OUTSIDE Texture=ClenGrayMetal_A Link=21
              Origin   +00032.000000,+00032.000000,+00012.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -53382,7 +53380,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
        End PolyList
     End Brush
     Brush=Model'MyLevel.Model400'
-    PrePivot=(X=29.000000,Y=-31.000000,Z=58.000000)
+    PrePivot=(X=30.000000,Y=31.999996,Z=14.000000)
     Name=DeusExMover0
 End Actor
 Begin Actor Class=BioelectricCell Name=BioelectricCell0
@@ -53398,7 +53396,7 @@ Begin Actor Class=MechanicCarcass Name=MechanicCarcass0
     InitialInventory(0)=(Inventory=Class'DeusEx.Credits',Count=1)
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=MechanicCarcass
+    Tag=warehouseMechanic
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-2772.101563,Y=40.628487,Z=-0.899989)
     Rotation=(Yaw=-2824)
@@ -55214,7 +55212,6 @@ Begin Actor Class=Brush Name=Brush4
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55292,7 +55289,6 @@ Begin Actor Class=Brush Name=Brush356
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55371,7 +55367,6 @@ Begin Actor Class=Brush Name=Brush357
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55450,7 +55445,6 @@ Begin Actor Class=Brush Name=Brush367
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55529,7 +55523,6 @@ Begin Actor Class=Brush Name=Brush375
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55608,7 +55601,6 @@ Begin Actor Class=Brush Name=Brush377
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55687,7 +55679,6 @@ Begin Actor Class=Brush Name=Brush378
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55766,7 +55757,6 @@ Begin Actor Class=Brush Name=Brush379
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -55845,7 +55835,6 @@ Begin Actor Class=Brush Name=Brush380
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=32
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
@@ -83510,7 +83499,7 @@ Begin Actor Class=Brush Name=Brush258
              Vertex   +00060.000000,+00001.000000,+00028.000000
              Vertex   +00060.000000,+00001.000000,-00028.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=HDTP01_Newspaper03 Link=3
+          Begin Polygon Item=OUTSIDE Texture=UN_Wall_White Link=3
              Origin   +00060.000000,-00001.000000,-00028.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              Pan      U=1960 V=-3280
@@ -87600,7 +87589,7 @@ Begin Actor Class=Brush Name=Brush599
              Vertex   +00060.000000,+00001.000000,+00028.000000
              Vertex   +00060.000000,+00001.000000,-00028.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=HDTP01_Newspaper03 Link=3
+          Begin Polygon Item=OUTSIDE Texture=UN_Wall_White Link=3
              Origin   +00060.000000,-00001.000000,-00028.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              Pan      U=1960 V=-3280
@@ -97991,6 +97980,159 @@ Begin Actor Class=ChangePhysicsTrigger Name=ChangePhysicsTrigger3
     OldLocation=(X=58.044548,Y=-243.726913,Z=-108.013443)
     Name=ChangePhysicsTrigger3
 End Actor
+Begin Actor Class=Brush Name=Brush1399
+    CsgOper=CSG_Subtract
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1192,ZoneNumber=2)
+    Location=(X=-642.000000,Y=48.000000,Z=16.000000)
+    Begin Brush Name=Model1537
+       Begin PolyList
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=0
+             Origin   -00160.000000,-00032.000000,+00024.000000
+             Normal   +00000.000000,+00000.000000,+00001.000000
+             TextureU -00000.500000,+00000.000000,+00000.000000
+             TextureV +00000.000000,-00000.500000,+00000.000000
+             Vertex   -00160.000000,-00032.000000,+00024.000000
+             Vertex   +00160.000000,-00032.000000,+00024.000000
+             Vertex   +00160.000000,+00032.000000,+00024.000000
+             Vertex   -00160.000000,+00032.000000,+00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=1
+             Origin   -00160.000000,+00032.000000,-00024.000000
+             Normal   +00000.000000,+00000.000000,-00001.000000
+             TextureU -00000.500000,+00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.500000,+00000.000000
+             Vertex   -00160.000000,+00032.000000,-00024.000000
+             Vertex   +00160.000000,+00032.000000,-00024.000000
+             Vertex   +00160.000000,-00032.000000,-00024.000000
+             Vertex   -00160.000000,-00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=2
+             Origin   -00160.000000,+00032.000000,-00024.000000
+             Normal   +00000.000000,+00001.000000,+00000.000000
+             Pan      U=8 V=0
+             TextureU +00000.500000,+00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00000.500000
+             Vertex   -00160.000000,+00032.000000,-00024.000000
+             Vertex   -00160.000000,+00032.000000,+00024.000000
+             Vertex   +00160.000000,+00032.000000,+00024.000000
+             Vertex   +00160.000000,+00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=3
+             Origin   +00160.000000,-00032.000000,-00024.000000
+             Normal   +00000.000000,-00001.000000,+00000.000000
+             Pan      U=-33 V=0
+             TextureU -00000.500000,+00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00000.500000
+             Vertex   +00160.000000,-00032.000000,-00024.000000
+             Vertex   +00160.000000,-00032.000000,+00024.000000
+             Vertex   -00160.000000,-00032.000000,+00024.000000
+             Vertex   -00160.000000,-00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=4
+             Origin   +00160.000000,+00032.000000,-00024.000000
+             Normal   +00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,-00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00160.000000,+00032.000000,-00024.000000
+             Vertex   +00160.000000,+00032.000000,+00024.000000
+             Vertex   +00160.000000,-00032.000000,+00024.000000
+             Vertex   +00160.000000,-00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=5
+             Origin   -00160.000000,-00032.000000,-00024.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   -00160.000000,-00032.000000,-00024.000000
+             Vertex   -00160.000000,-00032.000000,+00024.000000
+             Vertex   -00160.000000,+00032.000000,+00024.000000
+             Vertex   -00160.000000,+00032.000000,-00024.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model1537'
+    PrePivot=(X=-2.000000,Y=-1.000000)
+    Name=Brush1399
+End Actor
+Begin Actor Class=Brush Name=Brush1400
+    CsgOper=CSG_Subtract
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1195,ZoneNumber=2)
+    Location=(X=-463.910675,Y=48.987259,Z=16.000000)
+    Begin Brush Name=Model1539
+       Begin PolyList
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=0
+             Origin   -00016.000000,-00032.000000,+00024.000000
+             Normal   +00000.000000,+00000.000000,+00001.000000
+             TextureU +00000.000000,+00001.000000,-00000.000000
+             TextureV -00001.000000,+00000.000000,+00000.000000
+             Vertex   -00016.000000,-00032.000000,+00024.000000
+             Vertex   +00016.000000,-00032.000000,+00024.000000
+             Vertex   +00016.000000,+00032.000000,+00024.000000
+             Vertex   -00016.000000,+00032.000000,+00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=1
+             Origin   -00016.000000,+00032.000000,-00024.000000
+             Normal   +00000.000000,+00000.000000,-00001.000000
+             TextureU -00000.000000,-00001.000000,-00000.000000
+             TextureV -00001.000000,+00000.000000,+00000.000000
+             Vertex   -00016.000000,+00032.000000,-00024.000000
+             Vertex   +00016.000000,+00032.000000,-00024.000000
+             Vertex   +00016.000000,-00032.000000,-00024.000000
+             Vertex   -00016.000000,-00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=2
+             Origin   -00016.000000,+00032.000000,-00024.000000
+             Normal   +00000.000000,+00001.000000,+00000.000000
+             TextureU +00001.000000,-00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   -00016.000000,+00032.000000,-00024.000000
+             Vertex   -00016.000000,+00032.000000,+00024.000000
+             Vertex   +00016.000000,+00032.000000,+00024.000000
+             Vertex   +00016.000000,+00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=3
+             Origin   +00016.000000,-00032.000000,-00024.000000
+             Normal   +00000.000000,-00001.000000,+00000.000000
+             TextureU -00001.000000,-00000.000000,-00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00016.000000,-00032.000000,-00024.000000
+             Vertex   +00016.000000,-00032.000000,+00024.000000
+             Vertex   -00016.000000,-00032.000000,+00024.000000
+             Vertex   -00016.000000,-00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=4
+             Origin   +00016.000000,+00032.000000,-00024.000000
+             Normal   +00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,-00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00016.000000,+00032.000000,-00024.000000
+             Vertex   +00016.000000,+00032.000000,+00024.000000
+             Vertex   +00016.000000,-00032.000000,+00024.000000
+             Vertex   +00016.000000,-00032.000000,-00024.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=ClenGreyVent_A Link=5
+             Origin   -00016.000000,-00032.000000,-00024.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   -00016.000000,-00032.000000,-00024.000000
+             Vertex   -00016.000000,-00032.000000,+00024.000000
+             Vertex   -00016.000000,+00032.000000,+00024.000000
+             Vertex   -00016.000000,+00032.000000,-00024.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model1539'
+    Name=Brush1400
+End Actor
 Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner2
     Id="mechanic2"
     bDynamicLight=True
@@ -98014,5 +98156,15 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner17
     Rotation=(Yaw=1000)
     OldLocation=(X=-113.312668,Y=2354.900391,Z=-506.721100)
     Name=OutfitSpawner17
+End Actor
+Begin Actor Class=Teleporter Name=Teleporter7
+    LastRenderTime=425.253479
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=2Warehouse
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1843,ZoneNumber=1)
+    Location=(X=-6177.880371,Y=-1253.043335,Z=-708.895996)
+    Rotation=(Yaw=16384)
+    OldLocation=(X=-6177.880371,Y=-1253.043335,Z=-745.895996)
+    Name=Teleporter7
 End Actor
 End Map

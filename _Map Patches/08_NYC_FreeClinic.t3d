@@ -38283,4 +38283,261 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner7
     bSelected=True
     Name=OutfitSpawner7
 End Actor
+Begin Actor Class=Brush Name=Brush2505
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    PolyFlags=67109129
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=61,ZoneNumber=1)
+    Location=(X=384.000000,Y=-896.000000,Z=-252.000000)
+    Begin Brush Name=Model2563
+       Begin PolyList
+          Begin Polygon Flags=8 Link=0
+             Origin   -00032.000000,+00000.000000,-00068.000000
+             Normal   +00000.000000,+00001.000000,+00000.000000
+             TextureU +00001.000000,-00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   -00032.000000,+00000.000000,-00068.000000
+             Vertex   -00032.000000,+00000.000000,+00068.000000
+             Vertex   +00032.000000,+00000.000000,+00068.000000
+             Vertex   +00032.000000,+00000.000000,-00068.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model2563'
+    Name=Brush2505
+End Actor
+Begin Actor Class=Brush Name=Brush2506
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    PolyFlags=67109129
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=57,ZoneNumber=1)
+    Location=(X=560.000000,Y=-736.000000,Z=-224.000000)
+    Begin Brush Name=Model2564
+       Begin PolyList
+          Begin Polygon Flags=8 Link=0
+             Origin   +00000.000000,-00104.000000,-00056.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00000.000000,-00104.000000,-00056.000000
+             Vertex   +00000.000000,-00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,-00056.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model2564'
+    Name=Brush2506
+End Actor
+Begin Actor Class=Brush Name=Brush2507
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    PolyFlags=67109129
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo12',iLeaf=124,ZoneNumber=2)
+    Location=(X=560.000000,Y=-352.000000,Z=-224.000000)
+    Begin Brush Name=Model2565
+       Begin PolyList
+          Begin Polygon Flags=8 Link=0
+             Origin   +00000.000000,-00104.000000,-00056.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00000.000000,-00104.000000,-00056.000000
+             Vertex   +00000.000000,-00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,-00056.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model2565'
+    Name=Brush2507
+End Actor
+Begin Actor Class=Brush Name=Brush2508
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    PolyFlags=67109129
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=623,ZoneNumber=1)
+    Location=(X=208.000000,Y=-352.000000,Z=-224.000000)
+    Begin Brush Name=Model2566
+       Begin PolyList
+          Begin Polygon Flags=8 Link=0
+             Origin   +00000.000000,-00104.000000,-00056.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00000.000000,-00104.000000,-00056.000000
+             Vertex   +00000.000000,-00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,-00056.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model2566'
+    Name=Brush2508
+End Actor
+Begin Actor Class=Brush Name=Brush2509
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    PolyFlags=67109129
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=662,ZoneNumber=1)
+    Location=(X=208.000000,Y=-736.000000,Z=-224.000000)
+    Begin Brush Name=Model2567
+       Begin PolyList
+          Begin Polygon Flags=8 Link=0
+             Origin   +00000.000000,-00104.000000,-00056.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00000.000000,-00104.000000,-00056.000000
+             Vertex   +00000.000000,-00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,+00056.000000
+             Vertex   +00000.000000,+00104.000000,-00056.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model2567'
+    Name=Brush2509
+End Actor
+Begin Actor Class=Brush Name=Brush2510
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    PolyFlags=67109129
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo12',iLeaf=130,ZoneNumber=2)
+    Location=(X=384.000000,Y=-208.000000,Z=-224.000000)
+    Begin Brush Name=Model2568
+       Begin PolyList
+          Begin Polygon Flags=8 Link=0
+             Origin   -00104.000000,+00000.000000,-00056.000000
+             Normal   +00000.000000,+00001.000000,+00000.000000
+             TextureU +00001.000000,-00000.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   -00104.000000,+00000.000000,-00056.000000
+             Vertex   -00104.000000,+00000.000000,+00056.000000
+             Vertex   +00104.000000,+00000.000000,+00056.000000
+             Vertex   +00104.000000,+00000.000000,-00056.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model2568'
+    Name=Brush2510
+End Actor
+Begin Actor Class=PrecipitationInfo Name=PrecipitationInfo1
+    LastRenderTime=1794.946289
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo12',iLeaf=134,ZoneNumber=2)
+    Location=(X=520.293396,Y=-248.519806,Z=-297.898041)
+    OldLocation=(X=520.293396,Y=-306.519806,Z=-297.898041)
+    Name=PrecipitationInfo1
+End Actor
+Begin Actor Class=ZoneInfo Name=ZoneInfo12
+    LastRenderTime=1794.946289
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ZoneInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo12',iLeaf=134,ZoneNumber=2)
+    Location=(X=450.860657,Y=-376.784912,Z=-297.899811)
+    OldLocation=(X=450.860657,Y=-376.784912,Z=-297.899811)
+    Name=ZoneInfo12
+End Actor
+Begin Actor Class=ZoneInfo Name=ZoneInfo13
+    LastRenderTime=1792.323608
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ZoneInfo
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=210,ZoneNumber=1)
+    Location=(X=723.552673,Y=-271.191833,Z=-297.899078)
+    OldLocation=(X=723.552673,Y=-271.191833,Z=-297.899078)
+    Name=ZoneInfo13
+End Actor
+Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter4
+    FirstNodeTag=ClinicPrecip1
+    SoundTag=ClinicPrecipSounds
+    bDynamicLight=True
+    LastRenderTime=1781.980835
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PrecipitationShelter
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=668,ZoneNumber=1)
+    Location=(X=43.912300,Y=-707.311279,Z=-296.899078)
+    OldLocation=(X=43.912300,Y=-707.311279,Z=-296.899078)
+    Name=PrecipitationShelter4
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode8
+    bDynamicLight=True
+    LastRenderTime=1788.885376
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClinicPrecip1
+    Event=ClinicPrecip2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo12',iLeaf=29,ZoneNumber=2)
+    Location=(X=391.562958,Y=-716.900024,Z=227.603088)
+    OldLocation=(X=391.562958,Y=-799.900024,Z=227.603088)
+    Name=PrecipitationNode8
+End Actor
+Begin Actor Class=PrecipitationNode Name=PrecipitationNode9
+    bDynamicLight=True
+    LastRenderTime=1788.885376
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClinicPrecip2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo12',iLeaf=29,ZoneNumber=2)
+    Location=(X=390.562958,Y=-406.900024,Z=229.603088)
+    OldLocation=(X=423.562958,Y=-767.900024,Z=227.603088)
+    Name=PrecipitationNode9
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound0
+    bDynamicLight=True
+    LastRenderTime=1790.822632
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClinicPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo12',iLeaf=59,ZoneNumber=2)
+    Location=(X=378.881866,Y=-888.424438,Z=-250.899689)
+    OldLocation=(X=378.881866,Y=-888.424438,Z=-309.899689)
+    AmbientSound=Sound'Precipitation.Ambient.RainCity'
+    Name=ShelterSound0
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound2
+    bDynamicLight=True
+    LastRenderTime=1652.444336
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClinicPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=631,ZoneNumber=1)
+    Location=(X=-7.023766,Y=1145.776367,Z=572.100647)
+    OldLocation=(X=2.976236,Y=-339.223663,Z=-100.899353)
+    Name=ShelterSound2
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound6
+    bDynamicLight=True
+    LastRenderTime=1642.941284
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClinicPrecipSounds
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo13',iLeaf=214,ZoneNumber=1)
+    Location=(X=1057.976196,Y=-1442.223633,Z=-253.899353)
+    OldLocation=(X=737.976196,Y=-69.223633,Z=-253.899353)
+    Name=ShelterSound6
+End Actor
+Begin Actor Class=ShelterSound Name=ShelterSound8
+    bDynamicLight=True
+    LastRenderTime=1642.941284
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ClinicPrecipSounds
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1055.976196,Y=-825.223633,Z=-253.899353)
+    OldLocation=(X=1089.976196,Y=-1410.223633,Z=-253.899353)
+    Name=ShelterSound8
+End Actor
 End Map

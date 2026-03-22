@@ -96,6 +96,8 @@ function InitData()
 
 	winText.SetTextColor(colHeaderText);
 	winText.SetText(msgEnterCode);
+
+    TransposeAll();
 }
 
 // ----------------------------------------------------------------------
@@ -167,6 +169,14 @@ function DrawBorder(GC gc)
 	}
 }
 
+function TransposeAll()
+{
+	local int i;
+	
+    for (i=0; i<ArrayCount(btnKeys); i++)
+        btnKeys[i].num = TransposeNumber(i);
+}
+
 // ----------------------------------------------------------------------
 // SARGE: TransposeNumber()
 // Now that the keys can be out of order, we need to
@@ -175,6 +185,11 @@ function DrawBorder(GC gc)
 
 function int TransposeNumber(int number)
 {
+    local bool bPhoneStyle;
+
+    if (keypadOwner == None)
+        return 0;
+
     if (number < 3 && bNumberPadStyle && !keypadOwner.bForcePhoneStyleKeypad)
         return 6 + number;
     else if (number > 8 || number < 6 || !bNumberPadStyle || keypadOwner.bForcePhoneStyleKeypad)
@@ -202,7 +217,6 @@ function CreateKeypadButtons()
 			i = x + y * 3;
 			btnKeys[i] = HUDKeypadButton(NewChild(Class'HUDKeypadButton'));
 			btnKeys[i].SetPos((x * 26) + 16, (y * 28) + 35);
-            btnKeys[i].num = TransposeNumber(i);
             btnKeys[i].StyleChanged();
 		}
 	}
@@ -523,7 +537,7 @@ function ValidateCode(bool checkDiscovery)
 
         //SARGE: Easter egg from my childhood....
         //...damn I'm getting old...
-        if (inputCode == "*10#")
+        if (inputCode == "*10#" && player.bShenanigans)
             player.ClientMessage("Call Waiting has been turned on");
 
         if (bDigitDisplay)

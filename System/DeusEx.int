@@ -773,7 +773,7 @@ HealthButtonLabel="|&Health"
 AugsButtonLabel="|&Augs"
 SkillsButtonLabel="|&Skills/Perks"
 GoalsButtonLabel="|&Goals/Notes"
-ConsButtonLabel="|&Comms"
+ConsButtonLabel="|&Conv"
 ImagesButtonLabel="I|&mages"
 LogsButtonLabel="|&Logs"
 
@@ -1590,10 +1590,10 @@ ItemArticle="a"
 ItemName="Ship's Wheel"
 
 [AmmoRocket]
-ItemName="Rockets"
+ItemName="HE Rockets"
 ItemArticle="some"
 Description="A gyroscopically stabilized rocket with limited onboard guidance systems for in-flight course corrections. Engineered for use with the GEP gun."
-beltDescription="ROCKET"
+beltDescription="HE ROCKET"
 
 [CageLight]
 ItemName="Light Fixture"
@@ -2227,7 +2227,7 @@ UnfamiliarName="Pigeon"
 
 [AugHeartLung]
 AugmentationName="Synthetic Heart"
-Description="This synthetic heart circulates not only blood but a steady concentration of mechanochemical power cells, smart phagocytes, and liposomes containing prefab diamondoid machine parts, resulting in permanently upgraded performance for all augmentations, at the cost of permanently increased power drain for augmentation use, as well as an increase of reserved energy used by augmentations.|n|nTECH ONE: Additional power drain is at a maximum (+40%).|n|nTECH TWO: Additional power drain is reduced slightly (+30%).|n|nTECH THREE: Additional power drain is reduced moderately (+20%).|n|nTECH FOUR: Additional power drain is near-negligible (+10%)."
+Description="This synthetic heart circulates not only blood but a steady concentration of mechanochemical power cells, smart phagocytes, and liposomes containing prefab diamondoid machine parts, resulting in permanently upgraded performance for all augmentations, at the cost of permanently increased power drain for augmentation use, as well as an increase of reserved energy used by augmentations.|n|nTECH ONE: Additional power drain is at a maximum (+35%).|n|nTECH TWO: Additional power drain is reduced slightly (+25%).|n|nTECH THREE: Additional power drain is reduced moderately (+15%).|n|nTECH FOUR: Additional power drain is near-negligible (+5%)."
 
 [Seagull]
 FamiliarName="Seagull"

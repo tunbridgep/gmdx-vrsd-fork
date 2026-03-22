@@ -51,9 +51,9 @@ defaultproperties
      AugmentationName="Synthetic Heart"
      Description="This synthetic heart circulates not only blood but a steady concentration of mechanochemical power cells, smart phagocytes, and liposomes containing prefab diamondoid machine parts, resulting in upgraded performance for all installed augmentations.|n|n<UNATCO OPS FILE NOTE JR133-VIOLET> However, this will not enhance any augmentation past its maximum upgrade level. -- Jaime Reyes <END NOTE>|n|nNO UPGRADES"
      CombinedDesc="When combined with Power Recirculator, the energy bonus and penalty are added together. Current energy rate: %d%%"
-     LevelValues(0)=1.400000
-     LevelValues(1)=1.300000
-     LevelValues(2)=1.200000
-     LevelValues(3)=1.100000
+     LevelValues(0)=1.350000
+     LevelValues(1)=1.250000
+     LevelValues(2)=1.150000
+     LevelValues(3)=1.050000
      AugmentationLocation=LOC_Torso
 }

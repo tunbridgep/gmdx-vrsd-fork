@@ -59,7 +59,19 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\InventoryBorder_4_big.pcx"			    NAME="InventoryBorder_4_big"	           	GROUP="UserInterface"
 
-//Bigger repair bot interface
+//New Health/Traumas screen
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HealthBackground_4.pcx"			        NAME="HealthBackground_4"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HealthBackground_5.pcx"			        NAME="HealthBackground_5"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_1.pcx"			        NAME="TraumaBackground_1"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_2.pcx"			        NAME="TraumaBackground_2"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_4.pcx"			        NAME="TraumaBackground_4"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_5.pcx"			        NAME="TraumaBackground_5"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_1.pcx"			NAME="HUDMedBotTraumaBackground_1"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_2.pcx"			NAME="HUDMedBotTraumaBackground_2"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_4.pcx"			NAME="HUDMedBotTraumaBackground_4"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_5.pcx"			NAME="HUDMedBotTraumaBackground_5"		    GROUP="UserInterface"
+
+  //Bigger repair bot interface
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBackground_3edit_big.pcx"			NAME="HUDRepairBotBackground_3edit_big"		    GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBackground_4edit_big.pcx"			NAME="HUDRepairBotBackground_4edit_big"		    GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBorder_3edit_big.pcx"		    	NAME="HUDRepairBotBorder_3edit_big"		        GROUP="UserInterface"

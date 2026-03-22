@@ -7,11 +7,54 @@ class HUDKeypadContainerWindow extends DeusExBaseWindow;
 var HUDKeypadWindow keypadwindow;
 var HUDKeypadNotesWindow winNotes;
 
+//Iterate through all the code notes, and return the first one matching our actual code
+function GetAutofillCode(DeusExNote note, out string code1)
+{
+    local string valid, c1, c2;
+    local int i;
+    
+    if (keypadWindow != None && keypadWindow.keypadOwner != None)
+        valid = keypadWindow.keypadOwner.validCode;
+
+    if (valid != "")
+    {
+        for (i = 0;i < 8;i++)
+        {
+            class'CodeUtils'.static.GetCodeFromNote(note,i,c1,c2);
+            
+            if (caps(c1) == caps(valid) && c1 != "" && c2 == "")
+            {
+                code1 = c1;
+                return;
+            }
+        }
+    }
+            
+    //No valid codes found, so just use the first one
+    class'CodeUtils'.static.GetCodeFromNote(note,0,c1,c2);
+    if (c2 == "")
+        code1 = c1;
+}
+
+function AutofillNote(DeusExNote note)
+{
+    local string code;
+    
+    if (keypadwindow != None && !keypadWindow.bWait)
+    {
+        GetAutofillCode(note,code);
+        if (code != "")
+        {
+            keypadWindow.inputCode = code;
+            keypadWindow.ValidateCode(false);
+        }
+    }
+}
+
 event InitWindow()
 {
 	Super.InitWindow();
 	SetMouseFocusMode(MFocus_click);
-
 }
 
 function InitKeypadWindow(Keypad owner, DeusExPlayer user, bool instantSuccess)
@@ -51,6 +94,7 @@ function AddNotesWindow(DeusExPlayer player, DeusExNote codeNote, bool fakeDispl
     winNotes.AddNote(codeNote);
     winNotes.CreateNotesList();
     winNotes.StyleChanged();
+    winNotes.SetParentWindow(self);
 }
 
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)

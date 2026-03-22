@@ -23,6 +23,7 @@ var Localized String MedBotOutOfJuice;
 
 var Localized String TotalHealthStr;
 var Localized String TotalRestoreAmount;
+var Localized String healsRemaining;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -33,8 +34,6 @@ var Localized String TotalRestoreAmount;
 event InitWindow()
 {
 	Super.InitWindow();
-
-	HUDMedBotNavBarWindow(winNavBar).btnHealth.SetSensitivity(False);
 
 	bTickEnabled = True;
 
@@ -137,11 +136,11 @@ function CreateButtons()
 
 	winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(346, 346);
-	winActionButtons.SetWidth(97);
+    winActionButtons.SetWidth(97);
 	winActionButtons.FillAllSpace(False);
 
 	btnHealAll = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	btnHealAll.SetButtonText(HealAllButtonLabel);
+    btnHealAll.SetButtonText(HealAllButtonLabel);
 }
 
 // ----------------------------------------------------------------------
@@ -178,8 +177,8 @@ function CreateMedBotDisplay()
 {
 	winHealthBar = ProgressBarWindow(winClient.NewChild(Class'ProgressBarWindow'));
 
-	winHealthBar.SetPos(446, 348);
-	winHealthBar.SetSize(140, 12);
+    winHealthBar.SetPos(446, 348);
+    winHealthBar.SetSize(140, 12);
 	winHealthBar.SetValues(0, 100);
 	winHealthBar.UseScaledColor(True);
 	winHealthBar.SetVertical(False);
@@ -187,16 +186,19 @@ function CreateMedBotDisplay()
 	winHealthBar.SetDrawBackground(False);
 
 	winHealthBarText = TextWindow(winClient.NewChild(Class'TextWindow'));
-	winHealthBarText.SetPos(446, 349);
-	winHealthBarText.SetSize(140, 12);
+    
+    winHealthBarText.SetPos(446, 349);
+    winHealthBarText.SetSize(140, 12);
 	winHealthBarText.SetTextMargins(0, 0);
 	winHealthBarText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
 	winHealthBarText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winHealthBarText.SetTextColorRGB(255, 255, 255);
 
 	winHealthInfoText = PersonaNormalTextWindow(winClient.NewChild(Class'PersonaNormalTextWindow'));
-	winHealthInfoText.SetPos(348, 293);
-	winHealthInfoText.SetSize(238, 50);
+
+    winHealthInfoText.SetPos(348, 293);
+    winHealthInfoText.SetSize(238, 50);
+
 	winHealthInfoText.SetTextMargins(2, 0);
 }
 
@@ -220,7 +222,7 @@ function UpdateMedBotDisplay()
 			winHealthBar.SetCurrentValue(100);
 			readyText = ReadyLabel;                                             //RSD
 			if (player.CombatDifficulty > 1.0)                                  //RSD: Print number of uses remaining
-            	readyText = readyText @ "(" $ medBot.healMaxTimes - medBot.lowerThreshold @ "heals)";
+            	readyText = readyText @ sprintf(healsRemaining,medBot.healMaxTimes - medBot.lowerThreshold);
 			winHealthBarText.SetText(readyText);                                //RSD: Was ReadyLabel
 			if (IsPlayerDamaged())
 				infoText = infoText $ MedBotReadyLabel;
@@ -273,7 +275,7 @@ function bool ButtonActivated(Window buttonPressed)
 	switch(buttonPressed)
 	{
 		case btnHealAll:
-			MedBotHealPlayer();
+            MedBotHealPlayer();
 			break;
 
 		default:
@@ -307,9 +309,12 @@ function MedBotHealPlayer()
 function EnableButtons()
 {
 	if (medBot != None)
-		btnHealAll.EnableWindow(medBot.CanHeal() && IsPlayerDamaged());
+        btnHealAll.EnableWindow(medBot.CanHeal() && IsPlayerDamaged());
 	else
 		btnHealAll.EnableWindow(False);
+	
+    HUDMedBotNavBarWindow(winNavBar).btnHealth.SetSensitivity(False);
+
 }
 
 // ----------------------------------------------------------------------
@@ -408,6 +413,7 @@ defaultproperties
      ReadyLabel="Ready!"
      NotReadyLabel="Offline!"
      MedBotOutOfJuice="|nThis medical unit has no charge left."
+     healsRemaining="(%d charges)"
      bShowHealButtons=False
      HealAllButtonLabel="  H|&eal All  "
      TotalRestoreAmount="Total Restoration Amount: "
