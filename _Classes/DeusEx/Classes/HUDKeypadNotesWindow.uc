@@ -140,7 +140,7 @@ function TileWindow CreateTileWindow(Window parent)
 	tileWindow.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	tileWindow.SetOrder(ORDER_Down);
 	tileWindow.SetChildAlignments(HALIGN_Full, VALIGN_Top);
-	tileWindow.MakeWidthsEqual(False);
+	tileWindow.MakeWidthsEqual(True);
 	tileWindow.MakeHeightsEqual(False);
 	tileWindow.SetMinorSpacing(4);
 
@@ -219,7 +219,7 @@ function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExN
     else
         newNoteWindow.EnableEditing(false);
 
-	newNoteWindow.Lower();
+	newNoteWindow.Raise();
     newNoteWindow.bUseMenuColors = bUseMenuColors;
     newNoteWindow.StyleChanged();
     //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
