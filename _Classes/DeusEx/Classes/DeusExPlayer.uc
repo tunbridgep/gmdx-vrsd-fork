@@ -473,7 +473,7 @@ var globalconfig int iModdedHeadBob;                                            
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
-var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
+var globalconfig int iBeltMemory;  								     			//Sarge: Added new feature to allow belt to rember items. 0 = Disabled, 1 = Enabled, 2 = Autofill Placeholders.
 var globalconfig int iSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
 var travel BeltInfo beltInfos[12];                                              //Sarge: Holds information about belt slots
@@ -495,9 +495,9 @@ var travel int beltScrolled;                                                //Sa
 var travel bool bBeltSkipNextPrimary;                                       //SARGE: Don't assign the next weapon we select as our primary.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
-var int clickCountCyber; //CyberP: for double clicking to unequip
-var bool bStunted; //CyberP: for slowing player under various conditions
-var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
+var transient int clickCountCyber; //CyberP: for double clicking to unequip
+var travel bool bStunted; //CyberP: for slowing player under various conditions
+var travel float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
@@ -543,7 +543,7 @@ var travel bool bBoosterUpgrade;
 var float enviroAutoTime;
 var name FloorTexture;
 var globalconfig bool bFirstTimeGMDX;
-var globalconfig bool bStaminaSystem;
+var globalconfig int iStaminaSystem;
 var bool bDeadLoad;
 var bool bGMDXNewGame;
 //var travel int topCharge[4];
@@ -957,6 +957,17 @@ var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapo
 
 var globalconfig bool bMultiplayerSkillSounds;              //SARGE: More sounds in the Skills menu
 
+
+var globalconfig bool bHarderLockpicking;                   //SARGE: Enforce hardcore mode lockpicking/tool usage on non-hardcore
+
+var globalconfig bool bEnableCutsceneSpeedup;               //SARGE: Allow speeding up cutscenes with right click.
+
+var globalconfig int iDropStacks;                          //SARGE: Allow dropping stacks of items from the inventory with the shift key. 0 = Disabled, 1 = Enabled, 2 = Swap (Drop stacks by default, shift to drop one)
+
+var globalconfig bool bAutofillPlaceholders;               //SARGE: Allow automatically overriding placeholders for similar items.
+
+//var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -1034,6 +1045,13 @@ replication
 	  BuySkillSound, ShowMultiplayerWin, ForceDroneOff ,AddDamageDisplay, ClientSpawnHits, CloseThisComputer, ClientPlayAnimation, ClientSpawnProjectile, LocalLog,
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
+}
+
+//SARGE: Check the aug hum
+simulated function CheckAugHum()
+{
+    if (AugmentationSystem != None)
+        AugmentationSystem.HandleAugHum();
 }
 
 //SARGE: Update the visibility of the AMMO Hud whenever we use ammo
@@ -2887,17 +2905,24 @@ exec function QuickLoad()
 	if (Level.Netmode != NM_Standalone || bFakeDeath)
 	  return;
 
-    saveDir = GetSaveGameDirectory();
+    //When dead, use the LoadHack state instead so we wait.
+    if (IsInState('dying'))
+    {
+        if (!bDeadLoad) //Don't re-load when already reloading
+        {
+            bDeadLoad = true;
+            GoToState('Dying','LoadHack');
+        }
+        return;
+    }
 
     //Confirm the save exists before trying to do anything
+    saveDir = GetSaveGameDirectory();
     info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
-    if (info == None)
-        return;
+    CriticalDelete(saveDir);
 
-	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
+	if (info != None && DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
-	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad)
-	{ bDeadLoad=True; GoToState('Dying','LoadHack');   }
 }
 
 // ----------------------------------------------------------------------
@@ -3643,7 +3668,7 @@ function PlayMusic(String musicToPlay, optional int sectionToPlay)
 
 function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition)
 {
-    Log("ClientSetMusic: " $ NewSong @ NewSection @ NewCdTrack @ NewTransition);
+    DebugLog("ClientSetMusic: " $ NewSong @ NewSection @ NewCdTrack @ NewTransition);
     super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
 }
 
@@ -4451,8 +4476,8 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
 
     //Select the new weapon
     if (bSelect && inHand == from)
-        SetInHandPending(to);
-    
+        PutInHand(to);
+
     DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
 
     //Finally, update the HUD
@@ -4461,11 +4486,13 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     return true;
 }
 
-function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
+function bool DoShifterWeaponSwitch(bool bSelectWeapon, bool bPlaceholderMode, class<Inventory> toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
 {
 	local Inventory items[6], itemToCheck;
 	local Class<Inventory> itemClasses[6];
     local int i, start, times;
+    local bool bCheck;
+    local int placeholder;
 
     //If it's not enabled, bail
     if (iShifterWeaponSwitch == 0)
@@ -4502,11 +4529,42 @@ function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck
         if (i >= 6)
             i = 0;
 
-        //DebugMessage("item" @ i @ items[i]);
-        if (items[i] != None && items[i] != GetSecondary() && (!items[i].bInObjectBelt || (itemToCheck != None && !itemToCheck.bInObjectBelt) || iShifterWeaponSwitch == 1 ))
+        if (items[i] != None && !bPlaceholderMode)
         {
-            _ShifterSwitch(itemToCheck,toCheck,items[i],bSelectWeapon);
-            return true;
+            //SARGE: Only check the belt in belt mode.
+            bCheck = true;
+            if (iShifterWeaponSwitch > 1)
+                bCheck = !items[i].bInObjectBelt && items[i] != GetSecondary();
+
+            //SARGE: Don't select empty chargedpickups
+            if (items[i].IsA('ChargedPickup') && ChargedPickup(items[i]).Charge == 0)
+                bCheck = false;
+
+            if (bCheck)
+            {
+                _ShifterSwitch(itemToCheck,toCheck,items[i],bSelectWeapon);
+                return true;
+            }
+        }
+        else if (bPlaceholderMode) //Allow overriding belt memory
+        {
+            switch (i) //SARGE: Yuck...
+            {
+                case 0: placeholder = HasPlaceholderSlot(switch1); break;
+                case 1: placeholder = HasPlaceholderSlot(switch2); break;
+                case 2: placeholder = HasPlaceholderSlot(switch3); break;
+                case 3: placeholder = HasPlaceholderSlot(switch4); break;
+                case 4: placeholder = HasPlaceholderSlot(switch5); break;
+                case 5: placeholder = HasPlaceholderSlot(switch6); break;
+            }
+
+            if (placeholder != -1)
+            {
+                itemToCheck.beltPos = placeholder;
+                itemToCheck.bInObjectBelt = true;
+                UpdateHUD();
+                return true;
+            }
         }
         times++;
     }
@@ -4514,7 +4572,7 @@ function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck
     return false;
 }
 
-function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect)
+function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect, optional bool bPlaceholderMode)
 {
     local bool bSwitch;
     local Class<Inventory> invToCheck;
@@ -4524,14 +4582,18 @@ function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect)
 
     invToCheck = invItemToCheck.Class;
 
-    bSwitch = DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Lockpick',class'Multitool');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Medkit',class'BioelectricCell');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles',class'Rebreather');
+    //In placeholder mode, do nothing if we already have it in a slot.
+    if (bPlaceholderMode && invItemToCheck.bInObjectBelt)
+        return false;
+
+    bSwitch = DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'Lockpick',class'Multitool');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'Medkit',class'BioelectricCell');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,bPlaceholderMode,invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles',class'Rebreather');
 
     return bSwitch;
 }
@@ -6797,7 +6859,7 @@ state PlayerWalking
           newSpeed *= mult3;
       }
 
-      if (Physics == PHYS_Walking && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
+      if (Physics == PHYS_Walking && (iStaminaSystem > 0 || bHardCoreMode))   //CyberP: stamina system
       {
       if (bIsWalking == false && !IsCrouching() && (Velocity.X != 0 || Velocity.Y != 0 ))
 	  {
@@ -6816,7 +6878,7 @@ state PlayerWalking
 		if (swimTimer < 0)
         {
         swimTimer = 0;
-            if (bStaminaSystem || bHardCoreMode)
+            if (iStaminaSystem > 0 || bHardCoreMode)
             {
                bStunted = true;
                if (!bOnLadder && FRand() < 0.7)
@@ -6834,7 +6896,7 @@ state PlayerWalking
 	  {
 		
 		//SARGE: Moved Endurance check to here.
-        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
+        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained || (iStaminaSystem == 2 && !bHardCoreMode);
 	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder && (inHand == None || !inHand.IsA('POVCorpse')) && CarriedDecoration == None) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder //SARGE: Added corpse carrying //SARGE: And decoration carrying
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
@@ -7341,7 +7403,7 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		SoundPitch = 46;
 		Buoyancy=155.000000;
 		//if (bBoosterUpgrade && Energy > 0)
-		if (!bHardCoreMode && !bStaminaSystem)
+		if (!bHardCoreMode && iStaminaSystem == 0)
 		   SwimTimer = swimDuration;
         //SARGE: Disabled so we can't "dolphin dive" repeatedly for free stamina
         /*
@@ -7846,17 +7908,17 @@ Begin:
    if (Level.NetMode != NM_Standalone)
       HidePlayer();
 
-   LoadHack:
+LoadHack:
     if (bDeadLoad)
-	{
+    {
         //SARGE: Now we sleep until we've been dead for at least 1.5 seconds
         //This prevents a nasty crash when loading too quickly
         //DebugLog("DEADLOAD: " $ Level.TimeSeconds @ FrobTime @ Level.TimeSeconds - FrobTime);
         if (Level.TimeSeconds - FrobTime < 1.0)
             Sleep(1.0 - (Level.TimeSeconds - FrobTime));
-	    bDeadLoad = False;
-	    QuickLoadConfirmed();
-	}
+        bDeadLoad = False;
+        QuickLoadConfirmed();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -8742,15 +8804,29 @@ exec function ParseRightClick()
     local DeusExRootWindow root;
     local bool bFarAway;
     local Inventory assigned;
+    local InterpolationPoint interp;
 
     //SARGE: Add quickloading if pressing right click while dead.
-    if (IsInState('dying') && !bDeadLoad)
+    if (IsInState('dying'))
     {
         QuickLoad();
+        return;
     }
 
     if (RestrictInput())
+    {
+        //SARGE: Allow speeding up cutscenes
+        if (IsInState('Interpolating') && bEnableCutsceneSpeedup)
+        {
+            interp = InterpolationPoint(Target);
+            while (interp != None && interp.Next.position != 0)
+            {
+                interp.GameSpeedModifier = 100;
+                interp = interp.Next;
+            }
+        }
 		return;
+    }
 
     if (bRadialAugMenuVisible)
     {
@@ -9103,7 +9179,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         /*else if (FindInventoryType(FrobTarget.Class) != None)
         	 bCanPickup = False;*/
         if (!bCanPickup)
-			 ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
+			 ClientMessage(Sprintf(CanCarryOnlyOne, Inventory(FrobTarget).itemName));
    	}
 	else
 	{
@@ -9324,6 +9400,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //I really shouldn't have rewritten the ammo system...
     if ((!bCanPickup || bDeclined) && frobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
         DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
+    
+    //SARGE: Swap to a new belt item
+    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2)
+        ShifterSwitchAll(Inventory(frobTarget),false,true);
 
 	return bCanPickup && !bDeclined;
 }
@@ -10296,10 +10376,10 @@ function RemoveObjectFromBelt(Inventory item, optional bool bNoPlaceholder)
 
 	if (DeusExRootWindow(rootWindow) != None)
     {
-        DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,!bNoPlaceholder && bBeltMemory);
+        DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,!bNoPlaceholder && iBeltMemory > 0);
 
         //SARGE: Smart Keyring needs to be updated if we just removed from it's slot.
-        if ((bNoPlaceholder || !bBeltMemory) && beltPos == DeusExRootWindow(rootWindow).hud.belt.KeyringSlot)
+        if ((bNoPlaceholder || iBeltMemory == 0) && beltPos == DeusExRootWindow(rootWindow).hud.belt.KeyringSlot)
             DeusExRootWindow(rootWindow).hud.belt.CreateNanoKeySlot();
     }
 }
@@ -11166,7 +11246,7 @@ function DropDecoration()
                     ThrowDecoration(deco);
 
                 //SARGE: Stamina cost for throwing objects.
-                if (bStaminaSystem)
+                if (iStaminaSystem == 1 || bHardCoreMode)
                 {
                     swimTimer -= MAX(MIN(deco.Mass * 0.005,3),2);
                     if (swimTimer < 0)
@@ -11196,7 +11276,7 @@ function DropDecoration()
 // or places it on your currently highlighted object
 // if None is passed in, it drops what's inHand
 // ----------------------------------------------------------------------
-exec function bool DropItem(optional Inventory inv, optional bool bDrop)
+exec function bool DropItem(optional Inventory inv, optional bool bDrop, optional bool bFullDrop)
 {
 	local Inventory item, previtem;
 	local Inventory previousItemInHand;
@@ -11278,7 +11358,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			PutInHand(None);
 
 		// handle throwing pickups that stack
-		if (item.IsA('DeusExPickup'))
+		if (item.IsA('DeusExPickup') && !bFullDrop)
 		{
 			// turn it off if it is on
 			if (DeusExPickup(item).bActive)
@@ -11341,7 +11421,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			}
 		}
         //If it's a disposable weapon, throw away only one, and deduct ammo
-        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != None)
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != None && !bFullDrop)
         {
             AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
             amm = ammoType.ammoAmount;
@@ -11570,14 +11650,19 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
         AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
         if (ammoType != None && ammoType.AmmoAmount > 0)
         {
-            ammoType.ammoAmount -= 1;
+            if (bFullDrop)
+                amm = ammoType.ammoAmount;
+            else
+                amm = 1;
+
+            ammoType.ammoAmount -= amm;
             UpdateAmmoBeltText(AmmoType);
-            DeusExWeapon(item).PickupAmmoCount = 1;
+            DeusExWeapon(item).PickupAmmoCount = amm;
         }
     }
     
     //SARGE: Remove blood from weapon
-    if (bDropped && DeusExWeapon(item) != None)
+    if (bDropped && DeusExWeapon(item) != None && (!DeusExWeapon(item).bDisposableWeapon || bFullDrop))
         DeusExWeapon(item).SetCoveredInBlood(false);
 
 	return bDropped;
@@ -12631,7 +12716,7 @@ function private _UpdateHUD()
 	root = DeusExRootWindow(rootWindow);
 
     // Reset Belt Memory
-    if (!bBeltMemory)
+    if (iBeltMemory == 0)
     {
         for(i = 0;i < 12;i++)
             ClearPlaceholder(i);
@@ -13762,6 +13847,7 @@ ignores SeePlayer, HearNoise, Bump;
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
 		MaintainEnergy(deltaTime);
+        CheckAugHum();
 
 		// must update viewflash manually incase a flash happens during a convo
 		ViewFlash(deltaTime);
@@ -16561,7 +16647,14 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	if ((damageType != 'Stunned') && (damageType != 'TearGas') && (damageType != 'HalonGas') &&
 	    (damageType != 'PoisonGas') && (damageType != 'Radiation') && (damageType != 'EMP') &&
 	    (damageType != 'NanoVirus') && (damageType != 'Drowned') && (damageType != 'KnockedOut'))
+    { 
 		bleedRate += (origHealth-Health)/30.0;  // 30 points of damage = bleed profusely
+        //SARGE: Add hit flinch
+        /*
+        if (bHitFlinch || bHardcoreMode)
+            stuntedTime = 0.3;
+        */
+    }
 
 	if (CarriedDecoration != None)
         if (FRand() < 0.3 && AugmentationSystem.GetAugLevelValue(class'AugMuscle') < 2 && Damage > 0)
@@ -16786,7 +16879,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
         if (damageType == 'TearGas' || damageType == 'PoisonGas' || damageType == 'Poison' || damageType == 'PoisonEffect') //CyberP: gas grenades and poison barrels drain stamina. // Trash: Now with more damange types!
         {
 
-            if (newDamage >= 1 && bStaminaSystem)
+            if (newDamage >= 1 && (iStaminaSystem > 0 || bHardcoreMode))
             {
 				if (UsingChargedPickup(class'HazMatSuit') && PerkManager.GetPerkWithClass(class'DeusEx.PerkFilterUpgrade').bPerkObtained == true)
         		{
@@ -16802,7 +16895,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                         augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
                     }
                 	swimTimer -= ((newDamage*0.4) + 3) * augLevel;
-                    log("Stamina Damage AugLevel: " $ augLevel);
+                    DebugLog("Stamina Damage AugLevel: " $ augLevel);
                 }
 				
                 if (swimTimer < 0)
@@ -19061,6 +19154,7 @@ function MultiplayerTick(float DeltaTime)
 	}
 
 	MaintainEnergy(lastRefreshTime);
+    CheckAugHum();
 	UpdateTranslucency(lastRefreshTime);
 	if ( bNintendoImmunity )
 	{
@@ -19994,7 +20088,7 @@ defaultproperties
      RocketTargetMaxDistance=40000.000000
      bShowStatus=True
      bShowAugStatus=True
-     bStaminaSystem=True
+     iStaminaSystem=1
      RecoilSimLimit=(X=7.000000,Y=16.000000,Z=7.000000)
      RecoilDrain=0.950000
      RecoilTime=0.140000
@@ -20042,7 +20136,7 @@ defaultproperties
      bToolWindowShowQuantityColours=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
-     bBeltMemory=True
+     iBeltMemory=2
      bEnhancedCorpseInteractions=True
      bBeltShowModified=true
      iSearchedCorpseText=3
@@ -20141,4 +20235,6 @@ defaultproperties
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
+     bMultiplayerSkillSounds=true
+     iDropStacks=1
 }

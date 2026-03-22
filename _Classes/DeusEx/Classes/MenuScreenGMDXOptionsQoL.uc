@@ -45,7 +45,7 @@ defaultproperties
      items(3)=(HelpText="Remember the Cursor Position in the Augmentation Wheel",actionText="Augmentation Wheel: Remember Cursor Position",variable="bAugWheelRememberCursor");
      items(4)=(HelpText="Enable/Disable the 'Disable All' button on the Augmentation Wheel.",actionText="Augmentation Wheel: Show 'Disable All'",variable="bAugWheelDisableAll",defaultValue=1,bAdvancedModeOnly=true);
      items(5)=(HelpText="Automtically add newly-acquired items to the toolbelt.",actionText="Belt: Autofill Belt",variable="bBeltAutofill",bAdvancedModeOnly=true);
-     items(6)=(HelpText="After consuming the last item in a belt slot, its position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="bBeltMemory",defaultValue=1,bAdvancedModeOnly=true);
+     items(6)=(HelpText="After consuming the last item in a belt slot, its position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="iBeltMemory",defaultValue=1,valueText2="Auto-Swap Placeholders",helpText2="Placeholders will also be replaced when picking up similar items.");
      items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches to the primary selection if the primary selection was initially unholstered.");
      items(8)=(HelpText="Belt size is extended to 12 items. The - and = keys will be rebound to use the new belt slots.",actionText="Belt: Larger Belt",variable="bBiggerBelt",defaultValue=1,bAdvancedModeOnly=true);
      items(9)=(HelpText="Allows replacing the keyring in the toolbelt, making its slot available to general items. The keyring is always selectable via left-clicking on a locked object. No Keyring mode removes the keyring entirely.",actionText="Belt: Smart Keyring",variable="iSmartKeyring",valueText2="No Keyring",defaultValue=1,bAdvancedModeOnly=true);
@@ -174,6 +174,8 @@ defaultproperties
      items(130)=(HelpText="Use vanilla-scaled HDTP-Style blood textures when not using HDTP.",actionText="Game: Enhanced Vanilla Blood Textures",variable="bNewBlood",defaultValue=1,bAdvancedModeOnly=true)
      items(132)=(HelpText="Show rain and other weather effects.",actionText="Game: Weather Effects",variable="bWeatherEnabled",consoleTarget="Precipitation.Precipitator",defaultValue=1)
      items(133)=(HelpText="When levelling up skills using the skill menu, each level will make a different sound",actionText="Audio: Multiplayer Skill Menu Sounds",variable="bMultiplayerSkillSounds",defaultValue=1)
+     items(134)=(HelpText="When enabled, Right-Clicking will speed up end of mission cutscenes.",actionText="Game: Allow Cutscene Speedup",variable="bEnableCutsceneSpeedup")
+     items(135)=(HelpText="When enabled, Holding Shift in the inventory screen will drop stacks of items. In Inverted mode, stacks will drop by default, and Shift will drop single items.",actionText="HUD: Allow Dropping Item Stacks",variable="iDropStacks",defaultValue=1,valueText2="Inverted")
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

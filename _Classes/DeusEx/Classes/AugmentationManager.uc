@@ -25,6 +25,8 @@ var Augmentation augie;
 
 var travel int heartOverflow;
 
+var const sound LoopSound;
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -40,6 +42,44 @@ replication
 	reliable if (Role < ROLE_Authority)
 	    ActivateAugByKey, AddAllAugs, SetAllAugsToMaxLevel, ActivateAll, DeactivateAll, GivePlayerAugmentation;
 
+}
+
+// ----------------------------------------------------------------------
+// SARGE: HandleAugHum()
+// Updated every frame, to determine if we need to play the aug hum sound
+// This used to simply be turned on/off for each aug, but now it needs to be checked, because
+// augs can have displayAsActiveTime, which we want to always hum anyway.
+// ----------------------------------------------------------------------
+
+function HandleAugHum()
+{
+    local Augmentation aug;
+    local bool bHum;
+
+    aug = FirstAug;
+
+    while (aug != None)
+    {
+        if (aug.bIsActive && !player.bQuietAugs && aug.AugmentationType == Aug_Active)
+        {
+            bHum = true;
+            break;
+        }
+        if (aug.displayAsActiveTime >= player.saveTime)
+        {
+            bHum = true;
+            break;
+        }
+        aug = aug.next;
+    }
+
+    if (bHum)
+    {
+        Player.DebugMessage(aug @ aug.bIsActive @ player.bQuietAugs @ aug.AugmentationType @ aug.displayAsActiveTime);
+        player.AmbientSound = LoopSound;
+    }
+    else
+        Player.AmbientSound = None;
 }
 
 // ----------------------------------------------------------------------
@@ -1002,4 +1042,5 @@ defaultproperties
      NoAugInSlot="There is no augmentation in that slot"
      bHidden=True
      bTravel=True
+     LoopSound=Sound'DeusExSounds.Augmentation.AugLoop'
 }

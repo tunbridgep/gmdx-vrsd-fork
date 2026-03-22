@@ -23770,7 +23770,6 @@ Begin Actor Class=Doctor Name=Doctor0
 End Actor
 Begin Actor Class=Nurse Name=Nurse0
     HomeTag=Start
-    bLeaveAfterFleeing=True
     bCower=True
     bReactShot=True
     bReactCarcass=True
@@ -23795,7 +23794,6 @@ Begin Actor Class=Nurse Name=Nurse0
 End Actor
 Begin Actor Class=Nurse Name=Nurse1
     HomeTag=Start
-    bLeaveAfterFleeing=True
     bCower=True
     bReactShot=True
     bReactCarcass=True
@@ -24941,7 +24939,6 @@ Begin Actor Class=BumMale Name=BumMale6
 End Actor
 Begin Actor Class=Doctor Name=Doctor1
     HomeTag=Start
-    bLeaveAfterFleeing=True
     bCower=True
     bReactShot=True
     bReactCarcass=True
