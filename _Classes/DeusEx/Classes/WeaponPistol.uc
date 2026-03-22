@@ -84,7 +84,10 @@ function DisplayWeaponBlood(bool overlay)
     if (IsHDTP())
         multiskins[3] = Texture'PinkMaskTex';
     else
+    {
         multiskins[6] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'PinkMaskTex';
+    }
 }
 
 function DisplayWeapon(bool overlay)

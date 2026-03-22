@@ -32,6 +32,14 @@ var const bool allowHackingLockout;       // Can the player be locked out of thi
 
 var(GMDX) name LoginFlag;      //SARGE: Set a flag when this computer is logged in for the first time.
 
+struct sTextReplacements
+{
+    var string original;
+    var string replacement;
+};
+
+var sTextReplacements textReplacements[10];   //SARGE: Allow replacing email text dynamically.
+
 //SARGE: This needs to be a separate struct, because otherwise it fucks the game
 struct sSpecialOptionsExtra
 {

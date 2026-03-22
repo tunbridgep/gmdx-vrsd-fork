@@ -211,7 +211,7 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
         //Remove any non-declined items that match 
         for (i = 0;i < itemNum;i++)
         {
-            if (items[i].owner != "" && items[i].owner == declinedItems[declinedItemNum].owner && items[i].icon == declinedItems[declinedItemNum].icon && items[i].quantity == declinedItems[declinedItemNum].quantity)
+            if (items[i].owner != "" && items[i].owner == declinedItems[declinedItemNum].owner && items[i].icon == declinedItems[declinedItemNum].icon && items[i].quantity == declinedItems[declinedItemNum].quantity && items[i].batchTime < player.saveTime)
             {
                 //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
                 items[i].bHidden = true;
@@ -239,7 +239,7 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
         for (i = 0;i < declinedItemNum;i++)
         {
             //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
-            if (declineditems[i].owner != "" && declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity)
+            if (declineditems[i].owner != "" && declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity && declinedItems[i].batchTime < player.saveTime)
             {
                 //Log("Adding hitten item: " $ declinedItems[i].icon);
                 declinedItems[i].bHidden = true;

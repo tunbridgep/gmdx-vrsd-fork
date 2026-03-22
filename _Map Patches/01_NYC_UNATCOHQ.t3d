@@ -14087,7 +14087,7 @@ Begin Actor Class=BoxSmall Name=BoxSmall4
     Name=BoxSmall4
 End Actor
 Begin Actor Class=Phone Name=Phone0
-    AnswerSound=AS_CircuitsBusy
+    bUnatcoPhone=True
     LastRenderTime=71.844528
     DistanceFromPlayer=1826.290283
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -100653,8 +100653,6 @@ Begin Actor Class=NewPencil Name=NewPencil3
     Name=NewPencil3
 End Actor
 Begin Actor Class=Phone Name=Phone1
-    AnswerSound=AS_OutOfService
-    ringFreq=0.000000
     bUnatcoPhone=True
     LastRenderTime=71.844528
     DistanceFromPlayer=1283.840088

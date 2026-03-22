@@ -5079,7 +5079,8 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
                   {
                   if (bContactDeton)
                      proj.bContactDetonation=True;
-                  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkShortFuse').bPerkObtained == true)
+
+                  if(DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkShortFuse').bPerkObtained && DeusExPlayer(Owner).bShortFuseEnabled)
                   {
                      //proj.MaxSpeed=1650.000000;
                      //proj.Velocity*=1.4;
