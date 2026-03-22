@@ -51,6 +51,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkBlastEnergy');
 	AddPerk(Class'DeusEx.PerkHeavilyTweaked');
 	AddPerk(Class'DeusEx.PerkHERocket');
+	AddPerk(Class'DeusEx.PerkPlasmaBreeder');
 	AddPerk(Class'DeusEx.PerkMobileOrdnance');
 
 	// Demolition Perks
@@ -59,6 +60,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkShortFuse');
 	AddPerk(Class'DeusEx.PerkSensorBurnout');
 	AddPerk(Class'DeusEx.PerkKnockoutGas');
+	AddPerk(Class'DeusEx.PerkBreakdown');
 
 	// Lockpicking Perks
 	AddPerk(Class'DeusEx.PerkSleightOfHand');

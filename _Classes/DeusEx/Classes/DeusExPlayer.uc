@@ -19835,6 +19835,14 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
         else
             return 1;
     }
+    
+    //SARGE: Special case for HE Rockets
+    //4 base, + 1 per heavy level, + 1 per ammo capacity level
+    if (ammoType == class'AmmoRocket')
+    {
+        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + AugmentationSystem.GetAug(class'AugAmmoCap').CurrentLevel;
+    }
+
 
     else if (ammotype != None)
     {

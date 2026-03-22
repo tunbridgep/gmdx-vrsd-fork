@@ -3,7 +3,63 @@
 //=============================================================================
 class WeaponPlasmaRifle extends DeusExWeapon;
 
+var vector axesX;//fucking weapon rotation fix
+var vector axesY;
+var vector axesZ;
+var DeusExPlayer player;
+var bool bFlipFlopCanvas;
+var bool bGEPjit;
+var float GEPinout;
+var bool bGEPout;
+var vector MountedViewOffset;
+var float scopeTime;
 var int lerpClamp;
+
+var travel int breedCount;
+
+//SARGE: Generate breeder ammo
+function OnProjectileFired(Projectile firedProjectile)
+{
+    local DeusExPlayer P;
+    local Ammo AmmoType;
+    local PerkPlasmaBreeder PK;
+
+    P = DeusExPlayer(Owner);
+
+    if (P != None && P.PerkManager != None)
+    {
+        //Log("Plasma Check");
+        PK = PerkPlasmaBreeder(P.PerkManager.GetPerkWithClass(class'PerkPlasmaBreeder'));
+        if (PK != None)
+        {
+            if (PK.bPerkObtained)
+                breedCount++;
+
+            //Log("Perk Exists: " $ PK.bPerkObtained @ breedCount @ PK.PerkValue);
+
+            if (breedCount >= PK.PerkValue)
+            {
+                AmmoType = Ammo(P.FindInventoryType(class'AmmoPlasma'));
+                //Log("AmmoType: " $ AmmoType);
+
+                if (AmmoType == None)
+                {
+                    //Log("AmmoType 1: " $ AmmoType);
+                    AmmoType = spawn(class'AmmoPlasma');
+                    AmmoType.AmmoAmount = 1;
+                    AmmoType.Frob(P,None);
+                } 
+                else
+                {
+                    //Log("AmmoType 2: " $ AmmoType);
+                    AmmoType.AmmoAmount += 1;
+                }
+
+                breedCount = 0;
+            }
+        }
+    }
+}
 
 /*
 //SARGE: Resize if we have the Mobile Ordnance perk
@@ -13,6 +69,58 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return super.DoRightFrob(Frobber,objectInHand);
 }
 */
+
+//SARGE: Added a scope anim for this
+simulated function DrawScopeAnimation()
+{
+    local rotator rfs;
+	local vector dx;
+	local vector dy;
+	local vector dz;
+	local vector unX,unY,unZ;
+
+	if(!bGEPout)
+	{
+		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
+	} else
+		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
+
+	rfs.Yaw=2912*Fmin(1.0,GEPinout);
+	rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
+	GetAxes(rfs,axesX,axesY,axesZ);
+    
+    player = DeusExPlayer(Owner);
+
+	dx=axesX>>player.ViewRotation;
+	dy=axesY>>player.ViewRotation;
+	dz=axesZ>>player.ViewRotation;
+	rfs=OrthoRotation(dx,dy,dz);
+
+	SetRotation(rfs);
+
+	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
+	SetHand(player.Handedness); //meh meh
+
+	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
+	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
+	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+
+	SetLocation(player.Location+ CalcDrawOffset());
+	scopeTime+=1;
+
+    if (scopeTime>=18)
+    {
+        activateAn = False;
+        scopeTime = 0;
+        ScopeToggle();
+        GEPinout = 0;
+        axesX = vect(0,0,0);
+        axesY = vect(0,0,0);
+        axesZ = vect(0,0,0);
+        PlayerViewOffset=Default.PlayerViewOffset*100;
+        SetHand(player.Handedness);
+    }
+}
 
 //Hide the green firing streaks
 function DisplayCloaking(bool overlay, float ScaleGlow, bool bCloak, bool bRadar)
@@ -87,10 +195,12 @@ function DisplayWeapon(bool overlay)
 
     //If we're unloaded, get rid of the green plasma effect.
     if (overlay && clipcount == 0)
+    {
         if (IsHDTP())
             multiskins[3] = Texture'BlackMaskTex';
         else
             multiskins[1] = Texture'BlackMaskTex';
+    }
 }
 
 state Reload
@@ -141,6 +251,7 @@ state Reload
 defaultproperties
 {
      weaponOffsets=(X=10.000000,Z=-7.000000)
+     MountedViewOffset=(X=4.000000,Y=3.500000,Z=-65.500000)
      LowAmmoWaterMark=12
      GoverningSkill=Class'DeusEx.SkillWeaponHeavy'
      NoiseLevel=5.000000

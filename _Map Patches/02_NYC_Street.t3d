@@ -223959,6 +223959,33 @@ Begin Actor Class=Phone Name=Phone0
     OldLocation=(X=-408.455261,Y=437.454193,Z=-8.119958)
     Name=Phone0
 End Actor
+Begin Actor Class=AmmoRocket Name=AmmoRocket0
+    LastRenderTime=123.423027
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=AmmoRocket
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=6858,ZoneNumber=2)
+    Location=(X=-2380.461426,Y=2836.600098,Z=-439.099640)
+    OldLocation=(X=-2372.461426,Y=2836.600098,Z=-439.099640)
+    Name=AmmoRocket0
+End Actor
+Begin Actor Class=AmmoRocket Name=AmmoRocket1
+    LastRenderTime=123.423027
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=AmmoRocket
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=6858,ZoneNumber=2)
+    Location=(X=-2413.672607,Y=2836.600098,Z=-439.098999)
+    OldLocation=(X=-2413.672607,Y=2836.600098,Z=-439.098999)
+    Name=AmmoRocket1
+End Actor
+Begin Actor Class=AmmoRocketWP Name=AmmoRocketWP0
+    LastRenderTime=123.423027
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=AmmoRocketWP
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=6858,ZoneNumber=2)
+    Location=(X=-2447.760498,Y=2836.600098,Z=-439.099823)
+    OldLocation=(X=-2447.760498,Y=2836.600098,Z=-439.099823)
+    Name=AmmoRocketWP0
+End Actor
 Begin Actor Class=ZoneInfo Name=ZoneInfo0
     bDynamicLight=True
     LastRenderTime=994.879700

@@ -1,6 +1,16 @@
 1.2:
 
 New Features:
+- Added a new "Plasma Breeder" perk that allows creating plasma ammo when firing.
+    - Requires Heavy Weapons: MASTER
+- Added a new "Breakdown" perk that allows destroying pickable but previously un-breakable containers
+    - Requires Demolitions: MASTER
+- GEP Gun now uses WP Rockets by default
+    - Regular rockets have been renamed to HE Rockets
+    - WP Rockets will be a lot more plentiful, but regular rockets are still available
+    - Paul will now additionally give you a rocket at the start of the game, if picking the GEP Gun as a starting item.
+    - The H.E. Rocket perk is now called Rocket Rigger and applies to WP Rockets as well as HE Rockets.
+- More enemies with heavy weapons have been added to later maps on harder difficulties.
 - Added a new Trauma system playthrough modifier.
     - Taking damage will add certain wounds, which give negative effects.
     - Wounds can be cured using medkits and medical bots.
@@ -110,6 +120,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Added a scope animation for the Plasma Rifle to match the other weapons.
 - The GMDX v9 feature to move weapons back when you're up next to a wall is now optional and can be toggled in the QoL settings as I know some people don't like it.
 - Significantly improved weapon rendering efficiency including removing up to 4 additional `Trace()`'s per frame (!!!) caused by a previous developer's bad coding habits.
 - Implemented DXGNative TraceTexture fix. This means footsteps are now always accurate to the surface you're standing on
@@ -149,6 +160,8 @@ Map Changes:
 - 02_NYC_BatteryPark
     - The Police Boat will now spout dialog when interacted with, and can be used to exit the map.
     - The Police Boat has been moved slightly closer to the dock, in order to allow interacting with it without needing to jump off.
+- 02_NYC_Streets
+    - The garage containing a GEP Gun now additionally contains a few rockets and WP Rockets. This is a good source of rockets early-game.
 - 02_NYC_FreeClinic
     - Doctors and Nurses will no longer disappear when panicked.
 - 02_NYC_Underground
@@ -167,6 +180,8 @@ Map Changes:
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
 - 05_NYC_UNATCOMJ12Lab:
     - The 9905 keypad code has been changed so as to not interfere with the 9905 code from the Airfield mission.
+- 08_NYC_Smug
+    - The Assault Shotgun sold by Smuggler will now properly contain Sabot rounds.
 - 10_Paris_Catacombs:
     - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
 - 11_Paris_Cathedral:
