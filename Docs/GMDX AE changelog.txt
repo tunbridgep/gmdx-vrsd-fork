@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added Code Autofilling. Left-Click on Notes in the Keypad/Computer UI screens to fill relevant codes automatically.
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
     - The vanilla ones can still be used by disabling these in the QoL menu.
 - Added blood to weapons when exploding or attacking enemies at extreme close range.
