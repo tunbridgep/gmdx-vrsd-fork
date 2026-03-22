@@ -963,6 +963,9 @@ var globalconfig bool bEnableCutsceneSpeedup;               //SARGE: Allow speed
 var globalconfig int iDropStacks;                          //SARGE: Allow dropping stacks of items from the inventory with the shift key. 0 = Disabled, 1 = Enabled, 2 = Swap (Drop stacks by default, shift to drop one)
 
 var globalconfig bool bAutofillPlaceholders;               //SARGE: Allow automatically overriding placeholders for similar items.
+
+//var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
