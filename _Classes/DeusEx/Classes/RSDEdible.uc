@@ -15,6 +15,8 @@ var private PerkGlutton glutton;
 
 var const bool bGluttonous;                                         //SARGE: Is this edible affected by gluttony
 
+var localized String TooSick;
+
 function RefreshGlutton()
 {
     local DeusExPlayer player;
@@ -37,6 +39,15 @@ function bool CanAssignSecondary(DeusExPlayer player)
 function int GetHealAmount(DeusExPlayer player)
 {
     local float amount;
+    local Wound wound;
+    
+    //SARGE: Radiation poisoning now removes healing entirely
+    if (player.WoundManager != None)
+    {
+        wound = player.WoundManager.GetWoundByType(class'WoundRadiation');
+        if (wound != None && wound.HasWound())
+            return 0;
+    }
 
     if (glutton != None && glutton.bPerkObtained)
         amount = super.GetHealAmount(player) * 1.5;
@@ -61,9 +72,22 @@ function int GetBioenergyAmount(DeusExPlayer player)
 }
 
 //Check hunger before letting us use them
-function bool RestrictedUse(DeusExPlayer player)
+function bool RestrictedUse(DeusExPlayer player, optional out string RestrictedMsg)
 {
     local int maxFullness;
+    local Wound wound, wound2;
+    
+    //SARGE: Radiation sickness and poisoning now stop eating entirely
+    if (player.WoundManager != None)
+    {
+        wound = player.WoundManager.GetWoundByType(class'WoundRadiation');
+        wound2 = player.WoundManager.GetWoundByType(class'WoundPoison');
+        if ((wound != None && wound.HasWound()) || (wound2 != None && wound2.HasWound()))
+        {
+            RestrictedMsg = TooSick;
+            return true;
+        }
+    }
     
     RefreshGlutton();
 
@@ -125,6 +149,7 @@ defaultproperties
      fullness=0
      HungerLabel="Fullness Amount: %d%%"
      CannotUse="You cannot consume any more at this time"
+     TooSick="You feel too nauseous to eat"
      bGluttonous=true
      msgConsumed="%d consumed"
 }

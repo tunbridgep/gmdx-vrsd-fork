@@ -32,7 +32,7 @@ var bool bBeenHacked; //RSD: For having been hacked at least once
 
 var float               previousStrength;        //Sarge: What was the strength before we started bypassing?
 
-var const bool          bAllowRightClickToolSelection; //Sarge: Used to prevent right-click tool selection on keypads
+var const bool          bShiftRightClickToolSelection; //Sarge: Used to prevent right-click tool selection on keypads without shift held
 
 var const localized string msgNeedMultitool;        //SARGE: Tell the user that they need a tool (Wireless Strength perk)
 
@@ -59,7 +59,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //SARGE: Use the "right-click to autoselect" revision-style interaction, if enabled
-    if (bAllowRightClickToolSelection && DisplayHackText() && frobber.bRightClickToolSelection && frobber.inHand != None && !frobber.inHand.IsA('Multitool'))
+    if ((!bShiftRightClickToolSelection || frobber.bRun == 1) && DisplayHackText() && frobber.bRightClickToolSelection && frobber.inHand != None && !frobber.inHand.IsA('Multitool'))
         return DoLeftFrob(frobber);
 
     return true;
@@ -336,5 +336,4 @@ defaultproperties
      msgNeedMultitool="You need a Multitool"
      Physics=PHYS_None
      bCollideWorld=false
-     bAllowRightClickToolSelection=true
 }

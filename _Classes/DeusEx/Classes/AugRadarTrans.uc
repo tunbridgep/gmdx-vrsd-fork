@@ -9,19 +9,13 @@ var float mpEnergyDrain;
 state Active
 {
 Begin:
-class'DeusExPlayer'.default.bRadarTran=true;
-//class'DeusExPlayer'.default.bCloakEnabled=true;                               //RSD: Overhauled cloak/radar routines
-Player.PlaySound(Sound'GMDXSFX.Generic.Select', SLOT_Interact, 0.85, ,768,0.8);
+	player.CloakManager.SetRadar(true); //GMDX
 }
 
 function Deactivate()
 {
 	Super.Deactivate();
-
-	class'DeusExPlayer'.default.bRadarTran=false;
-	/*if (Player.AugmentationSystem.GetAugLevelValue(class'AugCloak')== -1.0)   //RSD: Overhauled cloak/radar routines
-	   class'DeusExPlayer'.default.bCloakEnabled=false;*/
-	Player.PlaySound(Sound'biomodoff', SLOT_Interact, 0.85, ,768,1.0);
+	player.CloakManager.SetRadar(false); //GMDX
 }
 
 function float GetEnergyRate()
@@ -38,7 +32,7 @@ simulated function PreBeginPlay()
 	{
 		LevelValues[3] = mpAugValue;
 		EnergyRate = mpEnergyDrain;
-      AugmentationLocation = LOC_Torso;
+        AugmentationLocation = LOC_Torso;
 	}
 }
 

@@ -105,11 +105,6 @@ simulated event RenderOverlays( canvas Canvas )
     //multiskins[0] = POVSkin;
     multiskins[1] = handstex;
     
-    if (bIsRadar || bIsCloaked)
-    {
-        ShowCamo();
-    }
-    
     super.RenderOverlays(canvas);
     multiskins[1] = none;
 }

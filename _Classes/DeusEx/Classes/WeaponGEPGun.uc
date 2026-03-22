@@ -211,11 +211,12 @@ function RenderME(Canvas canvas,bool bSetWire,optional bool bClearZ)
 //  PlayerViewOffset=default.PlayerViewOffset*100;
 //   SetHand(PlayerPawn(Owner).Handedness); //meh meh
 
-    DisplayWeapon(true);
+    PreDisplayWeapon(true);
 	Canvas.DrawActor(self, bSetWire,bClearZ);
 
-    DrawBloodyViewModel(canvas);
-    DisplayWeapon(false);
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).CloakManager != None && !DeusExPlayer(Owner).CloakManager.IsInAnyState())
+        DrawBloodyViewModel(canvas);
+    PreDisplayWeapon(false);
 
 	if (lightFlicker!=none) lightFlicker.UpdateLocation(player);
 }

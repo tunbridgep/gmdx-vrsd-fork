@@ -39,8 +39,11 @@ function UpdateDisplayColor()
 {
 	if (augmentation != none)                         //RSD: ensure we are actually using the correct color
     {
-        //DeusExPlayer(GetPlayerPawn()).ClientMessage("Updating Aug " $ Augmentation.Name);
-        SetTileColor(Augmentation.GetAugColor());
+        if (augmentation.bHasIt && augmentation.bAddedToWheel)
+            //DeusExPlayer(GetPlayerPawn()).ClientMessage("Updating Aug " $ Augmentation.Name);
+            SetTileColor(Augmentation.GetAugColor());
+        else
+            SetTileColorRGB(64,64,64);
     }
 }
 
@@ -56,7 +59,7 @@ function int CompareTo(HUDRadialMenuItem item) {
 
 function Activate() {
 
-    if (!augmentation.CanBeActivated())
+    if (augmentation == None || !augmentation.CanBeActivated())
         return;
 
     // check if the augmentation needs to be activated (it can be already activated in some circumstances!)
@@ -119,6 +122,7 @@ function SetItem(Augmentation aug) {
     if (aug != None)
     {
         augmentation = aug;
+        UpdateDisplayColor();
         drawIcon();
     }
 }

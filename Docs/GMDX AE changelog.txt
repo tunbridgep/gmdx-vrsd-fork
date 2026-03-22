@@ -11,6 +11,34 @@ New Features:
     - Paul will now additionally give you a rocket at the start of the game, if picking the GEP Gun as a starting item.
     - The H.E. Rocket perk is now called Rocket Rigger and applies to WP Rockets as well as HE Rockets.
 - More enemies with heavy weapons have been added to later maps on harder difficulties.
+- Added a new Trauma system playthrough modifier.
+    - Taking damage will add certain wounds, which give negative effects.
+    - Wounds can be cured using medkits and medical bots.
+- Added Code Autofilling. Left-Click on Notes in the Keypad/Computer UI screens to fill relevant codes automatically.
+- Augmentation Wheel improvements:
+    - Now shows a proper mouse cursor when in free mouse mode
+    - Fixed mouse position being reset between game loads
+    - Fixed being able to select hidden and invalid aug slots
+    - Aug Wheel can now use preset positions for every augmentation.
+- Added Precipitation Mod support.
+    - All the NYC maps will now have rain. This can be turned off in the QoL menu.
+- "Belt Memory" now has a new third setting, which will allow items to use placeholders from similar items.
+    - For intance, if you have a placeholder for a Ballistic Vest on your belt, and you pickup a HazMat Suit, the HazMat will replace the dimmed Ballistic Vest placeholder icon.
+    - Uses the same rules as the "Shifter-Style Weapon Switch" option.
+    - This can be disabled in the QoL menu if desired, if you just want regular belt memory.
+- The "Shipping and Receiving" addon for GMDX v9 has been integrated.
+    - The original addon can be found here: https://www.moddb.com/mods/gmdx/addons/shipping-receiving-add-on
+    - It adds a new section to the Dockyards map. The map isn't to the same standard as the regular maps so it's disabled by default.
+    - It can be activated using the Playthrough Modifiers menu.
+- Massive overhaul to the QoL menu and other menus
+    - Added search boxes to the QoL, Playthrough Modifiers, and Gameplay menus.
+    - Added a new "simplified" QoL menu, supporting images and longer descriptions.
+    - "Advanced Mode" has been removed from the QoL menu. Now, the simplified menu will be used instead, and will lead to the "Advanced" menu containing all options.
+    - Added a new "Onboarding" menu, containing information about the mod and it's mechanics. This replaces the GMDX "tips" system.
+- Added a new "Harder Lockpicking" gameplay setting to enable Hardcore lockpicking/electronics values on other difficulties.
+- A New head-bobbing algorithm has been implemented which should make bobbing smoother when moving in small increments.
+    - The GMDX v9 headbobbing is still available in the menu.
+    - The headbobbing setting in the Menu now switches between all headbobbing options, rather than "Head Bobbing" toggle and "Alternate Head Bobbing" being different settings.
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
     - The vanilla ones can still be used by disabling these in the QoL menu.
 - Added blood to weapons when exploding or attacking enemies at extreme close range.
@@ -18,6 +46,7 @@ New Features:
 - Added Texture Filtering setting. It can be turned on in the Display menu and the QoL menu.
     - This is different to the `bNoFiltering` setting in rendering settings, as it doesn't unfilter shadows, decals, and some other things.
 - Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
+- Added new settings for controlling how Secondary Weapons are selected.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
@@ -27,10 +56,20 @@ New Features:
 - Added a new playthrough modifier for upfront character creation. You will start with more skill points initially, but will get far less overall.
 - If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.
 - The Frob Display now shows a Red border for Declined items.
+- Complete rewrite of the Cloak/Radar system from scratch
+    - Fixed a lot of bugs and inconsistencies with the old method
+    - The player will now gracefully "fade out" over about 1 second, rather than instantly becoming cloaked
+        - This has no effect on gameplay
+    - Player an NPC Weapons now reflect their cloaking status exactly
+        - This means NPC weapons have proper cloak textures, rather than simply being transparent
+            - As a result of this change, cloaked NPCs are a bit harder to see, since their weapons are less obvious.
+- Right-Clicking can now be used to skip mission-end cutscenes. Disabled by default. Enable in the Advanced QoL Menu.
 - Added a new more readable font, enabled by default. This should fix issues with 1, l and I looking similar to each other.
     - Additionally added a larger version of the console font.
 - Added a new keybinding to access the console without the "say" prompt.
 - Added a new option to use large text when reading books and datacubes. On by default.
+- Added the ability to drop entire stacks of items from the inventory screen, by holding Run/Walk.
+    - Additionally added a setting to invert this behaviour, which will drop stacks by default, and only drop 1 item when holding Run/Walk.
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
@@ -46,6 +85,7 @@ New Features:
     - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
+- The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
 - Fixed transparent background for the Stealth Skill in the Skills menu.
@@ -81,6 +121,18 @@ Bugfixes:
 
 Misc Changes:
 - Added a scope animation for the Plasma Rifle to match the other weapons.
+- The GMDX v9 feature to move weapons back when you're up next to a wall is now optional and can be toggled in the QoL settings as I know some people don't like it.
+- Significantly improved weapon rendering efficiency including removing up to 4 additional `Trace()`'s per frame (!!!) caused by a previous developer's bad coding habits.
+- Implemented DXGNative TraceTexture fix. This means footsteps are now always accurate to the surface you're standing on
+    - Additionally enabled some previously unused footstep sounds.
+    - Generalised a lot of footstep code between the Player and NPCs, so everyone should now always have the same footstep sounds.
+- Automatic Augmentations will now "hum" even when Quiet Augs is enabled, to signal when they are in-use.
+- With "Right-Click tool selection" enabled, you can now use Walk/Run to select tools while looking at keypads.
+- Synthetic Heart energy penalty reduced from 40%/30%/20%/10% to 35%/25%/15%/5%
+- The Short Fuse perk effect can now be toggled using the Reload key.
+- The Filter Upgrade perk now additionally prevents the "disabled regen" effect from poison, in addition to the stamina drain from the poison itself.
+- Added sounds when levelling up skills, originally used for the Multiplayer skill menu.
+- Minor performance optimisations for flesh fragments and other gore
 - Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
@@ -110,6 +162,8 @@ Map Changes:
     - The Police Boat has been moved slightly closer to the dock, in order to allow interacting with it without needing to jump off.
 - 02_NYC_Streets
     - The garage containing a GEP Gun now additionally contains a few rockets and WP Rockets. This is a good source of rockets early-game.
+- 02_NYC_FreeClinic
+    - Doctors and Nurses will no longer disappear when panicked.
 - 02_NYC_Underground
     - Removed a datacube containing the MJ12/Coupdetat password on Hardcore mode, so that you are incentivised to use the much harder entrance (the one with all the lasers and turrets).
 - 05_NYC_UNATCOHQ
@@ -124,10 +178,14 @@ Map Changes:
     - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
+- 05_NYC_UNATCOMJ12Lab:
+    - The 9905 keypad code has been changed so as to not interfere with the 9905 code from the Airfield mission.
 - 08_NYC_Smug
     - The Assault Shotgun sold by Smuggler will now properly contain Sabot rounds.
 - 10_Paris_Catacombs:
     - The phone portreying Icarus's voice message will now ring to inform the player that it should be picked up.
+- 11_Paris_Cathedral:
+    - The rear-entry door (to the wine cellar) can now be picked as well as broken.
 - 10_Paris_Metro:
     - Datacube at the Security Station now displays a proper Metro map, rather than the catacombs map. This was an unused asset from Vanilla.
 

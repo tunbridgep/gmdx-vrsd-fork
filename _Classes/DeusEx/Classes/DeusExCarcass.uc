@@ -333,6 +333,10 @@ function InitFor(Actor Other)
         //SARGE: Set us to the exact size of our corresponding actor.
         SetCollisionSize(Other.CollisionRadius, default.CollisionHeight);
 
+        //SARGE: If we were cloaked, play the uncloaking sound
+        if (ScriptedPawn(Other) != None && ScriptedPawn(Other).bCloakOn)
+            Other.PlaySound(Sound'CloakDown', SLOT_Pain, 0.85, ,768,1.0);
+
         UpdateName();
 
 		Mass           = Other.Mass;

@@ -32,7 +32,7 @@ function BlowItUp(Pawn instigatedBy)
     {
         Player = DeusExPlayer(GetPlayerPawn());
 
-        if (Player != None && !class'DeusExPlayer'.default.bCloakEnabled && !Player.bIsCloaked)
+        if (Player != None && !Player.CloakManager.IsCloaked())
         {
             ForEach Player.RadiusActors(class'ScriptedPawn',P,2048)
             {

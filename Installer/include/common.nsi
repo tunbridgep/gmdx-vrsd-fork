@@ -48,14 +48,19 @@ SetOutPath $INSTDIR\Mods\GMDX_AE\System
 File "${SARGE_U_FILES}\DeusEx.u"
 File "${SARGE_U_FILES}\RSDCrap.u"
 File "${SARGE_U_FILES}\GMDXText.u"
+File "${SARGE_U_FILES}\Precipitation.u"
 
 ;Copy int file
 File "..\System\DeusEx.int"
 
 ;Install RenderExt
 SetOutPath $INSTDIR\System
-File "game\System\RenderExt.dll"
-File "game\System\RenderExt.int"
+File "${SARGE_U_FILES}\RenderExt.dll"
+File "${SARGE_U_FILES}\RenderExt.int"
+
+;Install DXGNative
+File "${SARGE_U_FILES}\DXGNative.u"
+File "${SARGE_U_FILES}\DXGNative.dll"
 
 ;Install docs
 SetOutPath $INSTDIR\Mods\GMDX_AE\Docs

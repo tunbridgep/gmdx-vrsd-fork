@@ -304,9 +304,9 @@ Begin:
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
-function DisplayWeapon(bool overlay)
+function Display(bool overlay)
 {
-    super.DisplayWeapon(overlay);
+    super.Display(overlay);
     if (overlay)
         multiskins[0] = handstex;
 }
