@@ -28,6 +28,9 @@ This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe, Made In China,
 RoSoDude, Solomon Ichi, ShadowDancer, BennyTheFearless, Tony Swan, Corbent, NG+ and many others.
 
+A Very Special Thanks to my Patrons, without whom development would be a miserable experience:
+- BorderlineSilence
+
 Special thanks to the Revision Framerowk team for some small code snippets
 which were used as inspiration for fixing the HUD aspect ratio for cinematics,
 which previously didn't show subtitles.
