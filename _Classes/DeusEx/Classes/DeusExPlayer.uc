@@ -13317,7 +13317,6 @@ exec function NextBeltItem()
 
 			do
 			{
-                //SARGE: UnrealScript doesn't short-circuit, aparrently
                 slot++;
                 if (bBiggerBelt && slot >= 12)
                     slot = 0;
@@ -13354,6 +13353,10 @@ exec function NextBeltItem()
 		if (root != None)
 		{
             startSlot = advBelt;
+
+            //SARGE: Hacky infinite loop fix...
+            if (startSlot == -1)
+                startSlot = 0;
 			do
 			{
                 //SARGE: UnrealScript doesn't short-circuit, aparrently
@@ -13446,12 +13449,14 @@ exec function PrevBeltItem()
 			startSlot = slot;
 			do
 			{
-                //SARGE: UnrealScript doesn't short-circuit, aparrently
                 slot--;
-                if (bBiggerBelt && slot <= -1)
-					slot = 11;
-				else if (!bBiggerBelt && slot <= -1)
-					slot = 9;
+                if (slot <= -1)
+                {
+                    if (bBiggerBelt)
+                        slot = 11;
+                    else
+                        slot = 9;
+                }
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
@@ -13483,14 +13488,21 @@ exec function PrevBeltItem()
 		if (root != None)
 		{	
 			startSlot = advBelt;
+            
+            //SARGE: Hacky infinite loop fix...
+            if (startSlot == -1)
+                startSlot = 0;
+
 			do
 			{
-                //SARGE: UnrealScript doesn't short-circuit, aparrently
                 advBelt--;
-                if (bBiggerBelt && advBelt <= -1)
-					advBelt = 11;
-				else if (!bBiggerBelt && advBelt <= -1)
-					advBelt = 9;
+                if (advBelt <= -1)
+                {
+                    if (bBiggerBelt)
+                        advBelt = 11;
+                    else
+                        advBelt = 9;
+                }
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
             root.hud.belt.RefreshAlternateToolbelt();
@@ -19831,7 +19843,8 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     //SARGE: Special case for LAW ammo
     if (ammoType == class'AmmoLAW')
     {
-        lawfare = PerkManager.GetPerkWithClass(class'PerkLawfare');
+        if (PerkManager != None)
+            lawfare = PerkManager.GetPerkWithClass(class'PerkLawfare');
         if (lawfare != None && lawfare.bPerkObtained)
             return lawfare.PerkValue;
         else
@@ -19840,13 +19853,13 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     
     //SARGE: Special case for HE Rockets
     //4 base, + 1 per heavy level, + 1 per ammo capacity level
-    if (ammoType == class'AmmoRocket')
+    if (ammoType == class'AmmoRocket' && DXammoType != None && SkillSystem != None && AugmentationSystem != None)
     {
         return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + AugmentationSystem.GetAug(class'AugAmmoCap').CurrentLevel;
     }
 
 
-    else if (ammotype != None)
+    else if (DXammotype != None)
     {
         adjustedMaxAmmo = DXammotype.default.MaxAmmo;
         associatedSkill = DXammotype.default.ammoSkill;
