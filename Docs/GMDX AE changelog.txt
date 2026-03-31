@@ -1,6 +1,10 @@
 1.2:
 
 New Features:
+- Added findable weapon skins.
+    - Weapon skins are available throughout the world.
+    - Once unlocked, they can be applied to any weapon of the same type.
+    - Weapon skin unlocks are kept between playthroughs.
 - Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
     - Unconscious bodies are relatively vulnerable and can't fall very far without dying!
     - This can be disabled in the Gameplay menu.

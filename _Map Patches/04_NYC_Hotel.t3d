@@ -70484,6 +70484,7 @@ Begin Actor Class=WeaponPistol Name=WeaponPistol0
     Location=(X=-2.336853,Y=-2570.799561,Z=99.099792)
     OldLocation=(X=-232.336853,Y=-2663.799561,Z=65.099785)
     Name=WeaponPistol0
+    currentWeaponSkin="goldengun"
 End Actor
 Begin Actor Class=Phone Name=Phone0
     AnswerSound=AS_ShutDownByUNATCO

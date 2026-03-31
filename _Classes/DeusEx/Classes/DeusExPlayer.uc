@@ -998,6 +998,7 @@ var travel bool bShortFuseEnabled;          //SARGE: Allow manually activating/d
 
 // OUTFIT STUFF
 var travel OutfitManagerBase outfitManager;
+var travel WeaponSkinManagerBase weaponSkinManager;
 var globalconfig string unlockedOutfits[255];
 
 // native Functions
@@ -9343,6 +9344,13 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //This should prevent the item dupe glitch.
     if (frobTarget.bDeleteMe)
         return false;
+
+    //SARGE: Handle weapon skin changes.
+    if (DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
+    {
+        WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget).currentWeaponSkin);
+        WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
+    }
 
     //SARGE: Set the source of the interaction (used by the HUD Display)
     if (FromCorpse != None)

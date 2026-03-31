@@ -23,6 +23,7 @@ This fork is possible thanks to the following awesome people:
 - Diva - for the masked models (except GM_Trench)
 - TheAstropath - for the new more readable HUD Fonts.
 - The Scummiest of them All - for the GMDX AE logos, splash screens, and other promotional artwork.
+- Popmechanics - Augmentique weapon skins
 
 This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe, Made In China,

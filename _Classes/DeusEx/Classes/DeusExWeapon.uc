@@ -391,6 +391,13 @@ struct BloodTex
 
 var travel BloodTex BloodTextures[8];
 
+//SARGE: Augmentique Skin system
+var(GMDX) travel string currentWeaponSkin;
+var Texture skinTextures[9]; //SARGE: Holds the textures for our current weapon skin.
+var Texture skinTextures3rd[9]; //SARGE: Holds the textures for our current weapon skin (on the floor).
+var Texture skinBeltIconTex;        //SARGE: If we have any updated belt texture
+var Texture skinLargeIconTex;        //SARGE: If we have any updated belt texture
+
 //SARGE: No more checking for specific grenade types, now we just set this instead.
 var const bool bIsPlaceableOnWall;
 
@@ -628,6 +635,8 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
 function string GetFrobString(DeusExPlayer player)
 {
     local string str;
+    local DeusExPlayer pl;
+    local string skinName;
     
     //Disposable weapons show their ammo count, if above 1 (which should only ever happen in the MJ12 prison facility)
     if (bDisposableWeapon)
@@ -664,6 +673,21 @@ function string GetFrobString(DeusExPlayer player)
     if (str != "")
         str = " (" $ str $ ")";
 
+    if (currentWeaponSkin != "default")
+    {
+        if (DeusExPlayer(owner) != None)
+            pl = DeusExPlayer(owner);
+        else
+            pl = DeusExPlayer(GetPlayerPawn());
+
+        if (pl != None)
+        {
+            skinName = pl.WeaponSkinManager.GetSkinName(self);
+            if (skinName != "")
+                return skinName $ str;
+        }
+    }
+    
     return itemName $ str;
 }
 
@@ -3338,6 +3362,7 @@ function private PreDisplayWeapon(bool overlay)
     Style = default.Style;
     
     DisplayWeapon(overlay);
+    DisplayWeaponSkin(overlay);
 
     OP = DeusExPlayer(Owner);
     OSP = ScriptedPawn(Owner);
@@ -3362,9 +3387,41 @@ function private PreDisplayWeapon(bool overlay)
         bNoSmooth=default.bNoSmooth;
 }
 
-//SARGE: Override this
+//SARGE: Override this for basic weapon display, addons etc
 function DisplayWeapon(bool overlay)
 {
+}
+
+//SARGE: Override this for custom weapon skins.
+//Shouldn't need overriding in most cases
+function DisplayWeaponSkin(bool overlay)
+{
+    local int i;
+
+    for(i = 0;i < 8;i++)
+    {
+        if (overlay)
+        {
+            if (multiSkins[i] != Texture'PinkMaskTex' && skinTextures[i] != None)
+                multiSkins[i] = skinTextures[i];
+        }
+        else
+        {
+            if (multiSkins[i] != Texture'PinkMaskTex' && skinTextures3rd[i] != None)
+                multiSkins[i] = skinTextures3rd[i];
+        }
+    }
+
+    if (overlay)
+    {
+        if (Texture != Texture'PinkMaskTex' && skinTextures[8] != None)
+            Texture = skinTextures[8];
+    }
+    else
+    {
+        if (Texture != Texture'PinkMaskTex' && skinTextures3rd[8] != None)
+            Texture = skinTextures3rd[8];
+    }
 }
 
 //SARGE: Override this for custom behaviour while cloaking or radar trans'd
@@ -5945,13 +6002,18 @@ simulated function bool UpdateInfo(Object winObject)
     else
         winInfo.SetTitle(itemName);
 
-    //SARGE: Add Decline Button
     if (P.IsA('DeusExPlayer'))
     {
+        //SARGE: Add Decline Button
 		winInfo.AddDeclineButton(class);
 
+        //SARGE: Add Secondary Button
         if (CanAssignSecondary(DeusExPlayer(P)))
 	       winInfo.AddSecondaryButton(self);
+		
+        //SARGE: Add Skins Button
+        if (DeusExPlayer(P).WeaponSkinManager.GetSkinCountFor(self) > 1)
+            winInfo.AddSkinsButtons(self);
     }
 
 	winInfo.SetText(msgInfoWeaponStats);
@@ -6787,8 +6849,33 @@ exec function UpdateHDTPsettings()
     SetWeaponHandTex();
     UpdateLargeIcon();
     CheckWeaponSkins();
+    UpdateSkin();
     if (Owner != None && Owner.IsA('DeusExPlayer'))
         DoWeaponOffset(DeusExPlayer(Owner));
+}
+
+function SelectNextSkin()
+{
+    if (DeusExPlayer(owner) != None)
+        DeusExPlayer(owner).WeaponSkinManager.SelectNextSkin(self);
+}
+
+function SelectPreviousSkin()
+{
+    if (DeusExPlayer(owner) != None)
+        DeusExPlayer(owner).WeaponSkinManager.SelectPreviousSkin(self);
+}
+
+function UpdateSkin()
+{
+    local DeusExPlayer pl;
+    if (DeusExPlayer(owner) != None)
+        pl = DeusExPlayer(owner);
+    else
+        pl = DeusExPlayer(GetPlayerPawn());
+
+    if (pl != None && pl.WeaponSkinManager != None)
+        pl.WeaponSkinManager.UpdateWeaponSkinTextures(self);
 }
 
 //
@@ -7802,4 +7889,5 @@ defaultproperties
      addonPenalties(0)=0.1 //Scope
      addonPenalties(1)=0.2 //Silencer
      addonPenalties(2)=0.075 //Laser
+     currentWeaponSkin="default"
 }

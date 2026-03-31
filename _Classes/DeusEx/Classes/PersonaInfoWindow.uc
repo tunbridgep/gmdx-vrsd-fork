@@ -17,6 +17,8 @@ var PersonaActionButtonWindow    buttonDeclineG;
 var PersonaActionButtonWindow    buttonAddRemoveLaser; //SARGE: Weapon mod buttons
 var PersonaActionButtonWindow    buttonAddRemoveScope; //SARGE: Weapon mod buttons
 var PersonaActionButtonWindow    buttonAddRemoveSilencer; //SARGE: Weapon mod buttons
+var PersonaActionButtonWindow    buttonNextSkin;            //SARGE: Skin System
+var PersonaActionButtonWindow    buttonPrevSkin;            //SARGE: Skin System
 var localized String UpgradeButtonLabel;
 var localized String PurchasedButtonLabel;
 var localized String UnobtainableButtonLabel;
@@ -36,6 +38,11 @@ var localized string msgAssigned;                                               
 var localized string msgDoAssign;
 var localized string msgDoUnassign;
 var localized string msgUnassigned;                                             //RSD: Added
+var localized string msgSkinNext;                                               //Sarge: Added
+var localized string msgSkinPrev;                                               //Sarge: Added
+var localized string msgSkinName;                                               //Sarge: Added
+
+var PersonaNormalLargeTextWindow winSkinName;                                    //SARGE: Added
 
 var bool bStylization;
 var bool bStylization2;
@@ -54,6 +61,8 @@ var PersonaButtonBarWindow winActionButtonsSecondary;
 var PersonaButtonBarWindow winActionButtonsWeaponMods;
 var PersonaActionButtonWindow buttonUpgrade[10];
 var Window winSkillIconP[10];
+
+var PersonaButtonBarWindow winActionButtonsAssigned;
 
 //Perk Stuff
 var localized String GeneralPerksTitleText;
@@ -393,6 +402,14 @@ function bool ButtonActivated( Window buttonPressed )
                 UpdateDeclineButtonG(declineThis);
 			}
 			break;		
+		case buttonPrevSkin:
+            DeusExWeapon(assignThis).SelectPreviousSkin();
+            UpdateSkinName();
+            break;
+		case buttonNextSkin:
+            DeusExWeapon(assignThis).SelectNextSkin();
+            UpdateSkinName();
+            break;
 		default:
 			bHandled = false;
 			break;
@@ -745,6 +762,39 @@ function AddWeaponModDrawbacks(DeusExWeapon weapon)
 }
 
 // ----------------------------------------------------------------------
+// SARGE: AddSkinsButtons()
+// ----------------------------------------------------------------------
+
+function AddSkinsButtons(DeusExWeapon wep)
+{
+	if (wep != None)
+	{
+        winSkinName = SetText(sprintf(msgSkinName,player.WeaponSkinManager.GetSkinName(wep)));
+		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
+		winActionButtonsSecondary.SetWidth(32); //149
+		winActionButtonsSecondary.FillAllSpace(false);
+		
+        buttonNextSkin = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+        buttonNextSkin.SetButtonText(msgSkinNext);
+
+		buttonPrevSkin = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+        buttonPrevSkin.SetButtonText(msgSkinPrev);
+
+		assignThis = wep;
+		AddLine();
+	}
+}
+
+function UpdateSkinName()
+{
+    local DeusExWeapon wep;
+    wep = DeusExWeapon(assignThis);
+
+    if (winSkinName != None && wep != None)
+        winSkinName.SetText(sprintf(msgSkinName,player.WeaponSkinManager.GetSkinName(wep)));
+}
+
+// ----------------------------------------------------------------------
 // SARGE: AddDeclinedInfoWindow()
 // Based off the Ammo Info Window.
 // ----------------------------------------------------------------------
@@ -860,4 +910,7 @@ defaultproperties
      DamagePenaltyLabel="Damage"
      AttachDetachLabel="Attach/Detach Weapon Mods:"
      WeaponModEffectsLabel="Some weapon mods provide negative effects:"
+     msgSkinNext="Next"
+     msgSkinPrev="Prev"
+     msgSkinName="Current Skin: %s"
 }
