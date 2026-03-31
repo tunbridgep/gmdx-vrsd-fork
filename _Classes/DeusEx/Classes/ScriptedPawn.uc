@@ -3884,6 +3884,7 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
     {
         Multiskins[6]=None;
         bHasHelmet=False;
+        AugmentiqueData.textures[6] = None;
         if (IsA('UNATCOTroop'))
             CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
         else if (IsA('Soldier'))
