@@ -2000,7 +2000,7 @@ function Landed(vector HitNormal)
         TakeDamage(1000, player, Location, Velocity, 'Exploded');
     else if (Velocity.Z < -1000)
         TakeDamage(20, player, Location, Velocity, 'Shot');
-    else if (Velocity.Z < -600 && player.bHardCoreMode) //SARGE: Extra check, even a low fall will kill you, you just won't bleed everywhere. Only on hardcore mode. Be careful when lugging around corpses!
+    else if (Velocity.Z < -600 && (player.bHardCoreMode || player.bUnconsciousFallDamage)) //SARGE: Extra check, even a low fall will kill you, you just won't bleed everywhere. Only on hardcore mode. Be careful when lugging around corpses!
         TakeDamage(5, player, Location, Velocity, 'Throw'); //Sarge: Changed from Shot to Throw
 }
 // ----------------------------------------------------------------------

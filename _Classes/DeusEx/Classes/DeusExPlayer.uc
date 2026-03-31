@@ -970,6 +970,8 @@ var globalconfig bool bAutofillPlaceholders;               //SARGE: Allow automa
 
 var globalconfig int iSecondaryMode;                       //SARGE: How will the secondary key operate. 0 = Select Only, 1 = Auto-Activate everything (as gmdxv9), 2 = Smart (only activate disposable weapons and items, when shift is held).
 
+var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscious Carcasses die when thrown some distance? Always enabled in Hardcore.
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
@@ -20493,4 +20495,5 @@ defaultproperties
      bMultiplayerSkillSounds=true
      iDropStacks=1
      iSecondaryMode=1
+     bUnconsciousFallDamage=true
 }

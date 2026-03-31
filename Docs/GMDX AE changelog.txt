@@ -1,6 +1,9 @@
 1.2:
 
 New Features:
+- Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
+    - Unconscious bodies are relatively vulnerable and can't fall very far without dying!
+    - This can be disabled in the Gameplay menu.
 - Added a new "Plasma Breeder" perk that allows creating plasma ammo when firing.
     - Requires Heavy Weapons: MASTER
 - Added a new "Breakdown" perk that allows destroying pickable but previously un-breakable containers
