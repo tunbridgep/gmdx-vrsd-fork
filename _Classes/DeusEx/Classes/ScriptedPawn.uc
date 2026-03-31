@@ -17297,7 +17297,12 @@ function Sound GetDeathSound()
 
     //If we're using our original sound, or not valid, use the default
     else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
-        return default.Die;
+    {
+        //SARGE: But only if we actually have a meaningful one set...
+        //Otherwise we need to defer to the vanilla code below (to fix chicks)
+        if (default.Die != Sound'DeusExSounds.Player.MaleDeath')
+            return default.Die;
+    }
 
     //Otherwise do vanilla sounds, if set
     else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
