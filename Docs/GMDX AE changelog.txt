@@ -92,6 +92,7 @@ New Features:
 
 Bugfixes:
 - Fixed transparent background for the Stealth Skill in the Skills menu.
+- Fixed extra hacking text being added to the Computers skill description when not using the hacking changes.
 - Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
     - It now also shows all addons correctly when zooming.
 - Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
