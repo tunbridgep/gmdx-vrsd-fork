@@ -4568,7 +4568,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     }
 
     //Select the new weapon
-    if (bSelect && inHand == from)
+    if (bSelect && inHandPending == from)
         PutInHand(to);
 
     DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
@@ -4706,8 +4706,9 @@ exec function SwitchAmmo()
         bSwitch = ShifterSwitchAll(inHandPending,true);
         
         //SARGE: Fallback
-        if (!bSwitch && inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
-            DeusExWeapon(inHand).CycleAmmo();
+        //SARGE: Changed to inHandPending, so it's more responsive
+        if (!bSwitch && inHandPending != None && inHandPending.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
+            DeusExWeapon(inHandPending).CycleAmmo();
     }
 
     //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
