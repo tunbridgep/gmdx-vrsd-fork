@@ -80,7 +80,10 @@ function ShowVersionInfo()
 	version.SetWindowAlignments(HALIGN_Right, VALIGN_Bottom);
 	version.SetTextColorRGB(255, 255, 255);
 	version.SetTextAlignments(HALIGN_Right, VALIGN_Top);
-	version.SetText(GMDXText);
+    if (player.bGMDXDebug)
+        version.SetText(GMDXText @ "(Debug Mode)");
+    else
+        version.SetText(GMDXText);
 }
 
 // ----------------------------------------------------------------------
@@ -88,7 +91,7 @@ function ShowVersionInfo()
 
 defaultproperties
 {
-     GMDXText="GMDX: Augmented Edition 1.2 BETA 1"
+     GMDXText="GMDX: Augmented Edition 1.2 BETA 19"
      ButtonNames(0)="New Game"
      ButtonNames(1)="Save Game"
      ButtonNames(2)="Load Game"
