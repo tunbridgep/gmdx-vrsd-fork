@@ -2737,16 +2737,11 @@ exec function LoadGame(int saveIndex)
 {
     SetupRendererSettings();
 
-//   log("MYCHK:LoadGame: ,"@saveIndex);
     if (DeusExRootWindow(rootWindow) != None)
-    {
        DeusExRootWindow(rootWindow).ClearWindowStack();
-	}
-	if (DeusExRootWindow(rootWindow) != None)
-	{
-	   DeusExRootWindow(rootWindow).ClearWindowStack();
-	}
-    if (bRadialAugMenuVisible) ToggleRadialAugMenu();
+    
+    if (bRadialAugMenuVisible)
+        ToggleRadialAugMenu();
 	
     // Reset the FOV
 	DesiredFOV = Default.DesiredFOV;
