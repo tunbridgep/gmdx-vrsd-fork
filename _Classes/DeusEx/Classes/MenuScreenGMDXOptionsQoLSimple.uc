@@ -11,9 +11,6 @@ function SaveSettings()
     player.UpdateCrosshairStyle();
     player.UpdateHUD();
     
-    //We need to update the aug wheel
-    player.RefreshAugmentationWheel();
-    
     //We need to refresh our item icons too.
     player.UpdateItemIcons();
     
