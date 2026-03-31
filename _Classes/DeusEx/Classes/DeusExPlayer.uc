@@ -5297,8 +5297,8 @@ simulated function PlayFootStep()
 
     if (volume > 0)
     {
-        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls
-        //class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
+        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls //SARGE: Actually yes, but ignore zone boundaries
+        class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier,true);
         AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
 
         //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.

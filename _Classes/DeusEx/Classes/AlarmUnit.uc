@@ -41,7 +41,7 @@ function UpdateAIEvents()
 	{
 		// Make noise and light
 		SoundRadius = 128;
-        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+1));
+        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+1),false);
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+1)); //CyberP:
 	}
 	else

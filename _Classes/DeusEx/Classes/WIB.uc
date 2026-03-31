@@ -36,7 +36,7 @@ function Explode()
 
 	// alert NPCs that I'm exploding
     //SARGE: Fix the broken sound propagation
-    class'PawnUtils'.static.WakeUpAI(self,explosionRadius*16);
+    class'PawnUtils'.static.WakeUpAI(self,explosionRadius*16,false);
 	AISendEvent('LoudNoise', EAITYPE_Audio, , explosionRadius*16);
 	PlaySound(Sound'LargeExplosion1', SLOT_None,,, explosionRadius*16);
 

@@ -9,7 +9,7 @@ class PawnUtils extends Object abstract;
 //This allows things like sound propagation to actually work properly.
 //This is the hackiest hack that ever hacked.
 //NOT FOR THE FEINT OF HEART!
-static function WakeUpAI(Actor S, float radius)
+static function WakeUpAI(Actor S, float radius, bool bZoneCheck)
 {
     local ScriptedPawn SP;
     local Pawn P;
@@ -35,7 +35,7 @@ static function WakeUpAI(Actor S, float radius)
         if (SP == None)
             continue;
 
-        if (SP.InStasis() && SP.bInWorld && VSize(SP.Location - S.Location) <= radius * info.SoundPropagationMult)
+        if (SP.InStasis() && SP.bInWorld && VSize(SP.Location - S.Location) <= radius * info.SoundPropagationMult && (!bZoneCheck || SP.Region.Zone == S.Region.Zone))
             SP.lastRendertime = S.Level.TimeSeconds;
     }
 }
