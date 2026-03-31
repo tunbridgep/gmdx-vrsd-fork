@@ -127,6 +127,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Flamethrower enemies now drop 11-35 rounds of ammunition, rather than 5-25
 - Added a scope animation for the Plasma Rifle to match the other weapons.
 - The GMDX v9 feature to move weapons back when you're up next to a wall is now optional and can be toggled in the QoL settings as I know some people don't like it.
 - Significantly improved weapon rendering efficiency including removing up to 4 additional `Trace()`'s per frame (!!!) caused by a previous developer's bad coding habits.
