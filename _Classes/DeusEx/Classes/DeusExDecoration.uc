@@ -63,6 +63,7 @@ var bool bFirstTickDone;                                                        
 //SARGE: Moved from Containers, now affects all DeusExDecorations
 var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
 var() bool bHardcoreRemoveIt; //Remove on hardcore only
+var() bool bHardcoreOnly; //Keep on hardcore only
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;

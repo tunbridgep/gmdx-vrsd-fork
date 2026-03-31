@@ -74,7 +74,7 @@ static function SetSkinStyle(Actor src, ERenderStyle newStyle, optional texture 
 // SARGE: Copied from ScriptedPawn
 // ----------------------------------------------------------------------
 
-static function ResetSkinStyle(Actor src)
+static function ResetSkinStyle(Actor src, optional bool bResetStyle)
 {
 	local int i;
 
@@ -82,8 +82,12 @@ static function ResetSkinStyle(Actor src)
 		src.MultiSkins[i] = src.Default.MultiSkins[i];
 	src.Skin      = src.Default.Skin;
 	src.ScaleGlow = src.Default.ScaleGlow;
-	src.Style     = src.Default.Style;
-	src.bUnlit     = src.Default.bUnlit;
+
+    if (bResetStyle)
+    {
+        src.Style     = src.Default.Style;
+        src.bUnlit     = src.Default.bUnlit;
+    }
 }
 
 //SARGE: Remove glasses and frames textures for holograms and cloaked pawns.

@@ -27,8 +27,11 @@ function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
         title = strHardcore;
     else if (class'DeusExPlayer'.default.bHackLockouts)
         title = strNewHackSystem;
-        
-    return text $ "|n" $ "|n" $ title $ "|n" $ "|n" $ strDescExtra;
+
+    if (title != "")
+        return text $ "|n" $ "|n" $ title $ "|n" $ "|n" $ strDescExtra;
+    else
+        return text;
 }
 
 simulated function PreBeginPlay()

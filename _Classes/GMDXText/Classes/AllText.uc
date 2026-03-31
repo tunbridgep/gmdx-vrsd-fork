@@ -5,6 +5,7 @@
 class AllText expands Object abstract;
 
 #exec DEUSEXTEXT IMPORT FILE=Text\GMDXCredits.txt
+#exec DEUSEXTEXT IMPORT FILE=Text\GMDXPatrons.txt
 #exec DEUSEXTEXT IMPORT FILE=Text\Datacube00.txt
 #exec DEUSEXTEXT IMPORT FILE=Text\Datacube01.txt
 #exec DEUSEXTEXT IMPORT FILE=Text\Datacube02.txt

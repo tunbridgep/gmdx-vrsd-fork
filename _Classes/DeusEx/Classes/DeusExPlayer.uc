@@ -970,6 +970,8 @@ var globalconfig bool bAutofillPlaceholders;               //SARGE: Allow automa
 
 var globalconfig int iSecondaryMode;                       //SARGE: How will the secondary key operate. 0 = Select Only, 1 = Auto-Activate everything (as gmdxv9), 2 = Smart (only activate disposable weapons and items, when shift is held).
 
+var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscious Carcasses die when thrown some distance? Always enabled in Hardcore.
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
@@ -1525,7 +1527,7 @@ local DeusExPickup     PU;                                                      
         }
         ForEach AllActors(class'DeusExDecoration', DC)
         {
-           if (DC.bLowDifficultyOnly && CombatDifficulty >= 3.0)
+           if ((DC.bLowDifficultyOnly && CombatDifficulty >= 3.0) || DC.bHardcoreOnly)
            {
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
@@ -2735,16 +2737,11 @@ exec function LoadGame(int saveIndex)
 {
     SetupRendererSettings();
 
-//   log("MYCHK:LoadGame: ,"@saveIndex);
     if (DeusExRootWindow(rootWindow) != None)
-    {
        DeusExRootWindow(rootWindow).ClearWindowStack();
-	}
-	if (DeusExRootWindow(rootWindow) != None)
-	{
-	   DeusExRootWindow(rootWindow).ClearWindowStack();
-	}
-    if (bRadialAugMenuVisible) ToggleRadialAugMenu();
+    
+    if (bRadialAugMenuVisible)
+        ToggleRadialAugMenu();
 	
     // Reset the FOV
 	DesiredFOV = Default.DesiredFOV;
@@ -4566,7 +4563,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     }
 
     //Select the new weapon
-    if (bSelect && inHand == from)
+    if (bSelect && inHandPending == from)
         PutInHand(to);
 
     DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
@@ -4704,8 +4701,9 @@ exec function SwitchAmmo()
         bSwitch = ShifterSwitchAll(inHandPending,true);
         
         //SARGE: Fallback
-        if (!bSwitch && inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
-            DeusExWeapon(inHand).CycleAmmo();
+        //SARGE: Changed to inHandPending, so it's more responsive
+        if (!bSwitch && inHandPending != None && inHandPending.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
+            DeusExWeapon(inHandPending).CycleAmmo();
     }
 
     //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
@@ -13315,7 +13313,6 @@ exec function NextBeltItem()
 
 			do
 			{
-                //SARGE: UnrealScript doesn't short-circuit, aparrently
                 slot++;
                 if (bBiggerBelt && slot >= 12)
                     slot = 0;
@@ -13352,6 +13349,10 @@ exec function NextBeltItem()
 		if (root != None)
 		{
             startSlot = advBelt;
+
+            //SARGE: Hacky infinite loop fix...
+            if (startSlot == -1)
+                startSlot = 0;
 			do
 			{
                 //SARGE: UnrealScript doesn't short-circuit, aparrently
@@ -13444,12 +13445,14 @@ exec function PrevBeltItem()
 			startSlot = slot;
 			do
 			{
-                //SARGE: UnrealScript doesn't short-circuit, aparrently
                 slot--;
-                if (bBiggerBelt && slot <= -1)
-					slot = 11;
-				else if (!bBiggerBelt && slot <= -1)
-					slot = 9;
+                if (slot <= -1)
+                {
+                    if (bBiggerBelt)
+                        slot = 11;
+                    else
+                        slot = 9;
+                }
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
@@ -13481,14 +13484,21 @@ exec function PrevBeltItem()
 		if (root != None)
 		{	
 			startSlot = advBelt;
+            
+            //SARGE: Hacky infinite loop fix...
+            if (startSlot == -1)
+                startSlot = 0;
+
 			do
 			{
-                //SARGE: UnrealScript doesn't short-circuit, aparrently
                 advBelt--;
-                if (bBiggerBelt && advBelt <= -1)
-					advBelt = 11;
-				else if (!bBiggerBelt && advBelt <= -1)
-					advBelt = 9;
+                if (advBelt <= -1)
+                {
+                    if (bBiggerBelt)
+                        advBelt = 11;
+                    else
+                        advBelt = 9;
+                }
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
             root.hud.belt.RefreshAlternateToolbelt();
@@ -19829,7 +19839,8 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     //SARGE: Special case for LAW ammo
     if (ammoType == class'AmmoLAW')
     {
-        lawfare = PerkManager.GetPerkWithClass(class'PerkLawfare');
+        if (PerkManager != None)
+            lawfare = PerkManager.GetPerkWithClass(class'PerkLawfare');
         if (lawfare != None && lawfare.bPerkObtained)
             return lawfare.PerkValue;
         else
@@ -19838,13 +19849,13 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     
     //SARGE: Special case for HE Rockets
     //4 base, + 1 per heavy level, + 1 per ammo capacity level
-    if (ammoType == class'AmmoRocket')
+    if (ammoType == class'AmmoRocket' && DXammoType != None && SkillSystem != None && AugmentationSystem != None)
     {
         return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + AugmentationSystem.GetAug(class'AugAmmoCap').CurrentLevel;
     }
 
 
-    else if (ammotype != None)
+    else if (DXammotype != None)
     {
         adjustedMaxAmmo = DXammotype.default.MaxAmmo;
         associatedSkill = DXammotype.default.ammoSkill;
@@ -20493,4 +20504,5 @@ defaultproperties
      bMultiplayerSkillSounds=true
      iDropStacks=1
      iSecondaryMode=1
+     bUnconsciousFallDamage=true
 }

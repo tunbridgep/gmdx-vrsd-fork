@@ -436,10 +436,11 @@ function UpdateRepairBotWindows()
 function CreateButtons()
 {
 	local PersonaButtonBarWindow winActionButtons;
-	local PersonaButtonBarWindow winEquipButtons[5];                            //RSD: Added
+	local PersonaButtonBarWindow winEquipButtons[6];                            //RSD: Added
     local int i, offset;                                                        //RSD: Added
     local ChargedPickup armor;                                                  //RSD: Added
     local String btnEquipText;                                                  //RSD: Added
+    local int amount;
 
     offset = 38;                                                                //RSD
 
@@ -453,8 +454,14 @@ function CreateButtons()
 
 	btnRecharge = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnRecharge.SetButtonText(RechargeButtonLabel);
+    
+    //SARGE: Hack to ignore the nanosword
+    if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+        amount = 6;
+    else
+        amount = 5;
 
-	for (i=0; i<6; i++)                                                         //RSD: for equipment recharging system
+	for (i=0; i<amount; i++)                                                         //RSD: for equipment recharging system
 	{
         winEquipButtons[i] = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
     	winEquipButtons[i].SetPos(186, 109+i*offset);

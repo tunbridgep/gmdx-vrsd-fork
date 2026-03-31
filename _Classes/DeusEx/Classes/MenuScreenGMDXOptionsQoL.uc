@@ -11,9 +11,6 @@ function SaveSettings()
     player.UpdateCrosshairStyle();
     player.UpdateHUD();
     
-    //We need to update the aug wheel
-    player.RefreshAugmentationWheel();
-    
     //We need to refresh our item icons too.
     player.UpdateItemIcons();
     
@@ -138,7 +135,7 @@ defaultproperties
      items(92)=(HelpText="Queued Infolinks will play much faster, without needing to wait 5 seconds to finish and start each one.",actionText="HUD: Faster Infolink Playback",variable="bFasterInfolinks",defaultValue=1,bAdvancedModeOnly=true);
      items(93)=(HelpText="Shows a green border on the tool display window when looking at doors and hackable devices for which you have the key or the code. Not displayed in Hardcore mode or with the Unknown Codes modifier.",actionText="Tool Windows: Show Known Codes",variable="bToolWindowShowKnownCodes",defaultValue=1,bAdvancedModeOnly=true);
      items(94)=(HelpText="Shows a blue border on the tool display window when looking at readable items which you have previously read.",actionText="Tool Windows: Show Read Objects",variable="bToolWindowShowRead",defaultValue=0,bAdvancedModeOnly=true);
-     items(95)=(HelpText="Shows a blue border on the tool display window when looking at aug canisters where you can only replace an augmentation, and red when you cannot use the container.",actionText="Tool Windows: Show Augmentation Canister Status",variable="bToolWindowShowAugState",defaultValue=1,bAdvancedModeOnly=true);
+     items(95)=(HelpText="Shows a blue border on the tool display window when looking at aug canisters where you can only replace an augmentation, and red when you cannot use the container.",actionText="Tool Windows: Show Aug Canister Status",variable="bToolWindowShowAugState",defaultValue=1,bAdvancedModeOnly=true);
      items(96)=(HelpText="Shows a red border on the tool display window when looking at duplicate nano keys",actionText="Tool Windows: Show Duplicate Keys",variable="iToolWindowShowDuplicateKeys",valueText1="Text Only",valueText2="Border Only",valueText3="Border and Text",defaultValue=1,bAdvancedModeOnly=true);
      items(97)=(HelpText="Shows the names of Books, Datacubes and Newspapers when highlighting them.",actionText="Tool Windows: Show Book Names",variable="iToolWindowShowBookNames",valueText1="When Read",valueText2="Always",defaultValue=1,bAdvancedModeOnly=true);
      items(98)=(HelpText="Items that can't be picked up due to inventory limitations will display with a Red border when highlighted. Ammo that can be partially looted will show a blue border.",actionText="Tool Windows: Show Invalid Pickups",variable="bToolWindowShowInvalidPickup",defaultValue=0,bAdvancedModeOnly=true);

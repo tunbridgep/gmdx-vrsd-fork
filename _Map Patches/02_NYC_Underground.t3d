@@ -107401,4 +107401,17 @@ Begin Actor Class=ControlPanel Name=ControlPanel3
     bSelected=True
     Name=ControlPanel3
 End Actor
+Begin Actor Class=DataCube Name=DataCube0
+    textTag=02_Datacube11
+    bHardcoreOnly=True
+    bDynamicLight=True
+    LastRenderTime=24.683769
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=DataCube
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=3072,ZoneNumber=3)
+    Location=(X=-4147.754883,Y=1300.791016,Z=-1020.631104)
+    Rotation=(Yaw=-4304)
+    OldLocation=(X=-4149.184570,Y=1300.572510,Z=-1020.631104)
+    Name=DataCube0
+End Actor
 End Map

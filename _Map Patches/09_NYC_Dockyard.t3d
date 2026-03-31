@@ -104624,6 +104624,7 @@ End Actor
 Begin Actor Class=GasGrenade Name=GasGrenade10
     bProximityTriggered=True
     bArmed=True
+    Physics=PHYS_None
     LastRenderTime=428.538879
     DistanceFromPlayer=2559.786865
     Level=LevelInfo'MyLevel.LevelInfo0'

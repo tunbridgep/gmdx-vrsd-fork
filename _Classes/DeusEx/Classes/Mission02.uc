@@ -155,6 +155,7 @@ function FirstFrame()
 
             //SARGE: Trigger the full takeover
             TriggerUNATCOTakeover();
+            flags.SetBool('GMDXCleanupBatteryPark', True,, 3);
             
             flags.SetBool('GMDXRemoveTNT', True,, 3);
         }
@@ -227,7 +228,8 @@ function Timer()
 	if (localURL == "02_NYC_BATTERYPARK")
 	{
 		// after terrorists are dead, set guards to wandering
-		if (!flags.GetBool('BatteryParkSlaughter') && !flags.GetBool('CastleClintonCleared'))
+        //SARGE: Added additional flag check so we don't count removed carcasses and think the player was lethal after switching maps.
+		if (!flags.GetBool('BatteryParkSlaughter') && !flags.GetBool('CastleClintonCleared') && !flags.GetBool('GMDXCleanupBatteryPark'))
 		{
 			count = 0;
 

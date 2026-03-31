@@ -198,7 +198,8 @@ event DrawWindow(GC gc)
 		}
 
 		// Check to see if we need to print "x copies"
-		if (anItem.IsA('DeusExPickup') && (!anItem.IsA('NanoKeyRing')))
+        //SARGE: Added multiple copies check
+		if (anItem.IsA('DeusExPickup') && (!anItem.IsA('NanoKeyRing')) && DeusExPickup(anItem).bCanHaveMultipleCopies)
 		{
             //SARGE: Always show Charged Pickup counts if the setting is on.
             if (player.iShowTotalCounts > 1)

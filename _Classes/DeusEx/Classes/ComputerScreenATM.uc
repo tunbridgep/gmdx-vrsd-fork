@@ -283,4 +283,5 @@ defaultproperties
      textureCols=2
      bAlwaysCenter=True
      statusPosY=206
+     bShowNotesWindow=true
 }

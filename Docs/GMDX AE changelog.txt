@@ -1,6 +1,9 @@
 1.2:
 
 New Features:
+- Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
+    - Unconscious bodies are relatively vulnerable and can't fall very far without dying!
+    - This can be disabled in the Gameplay menu.
 - Added a new "Plasma Breeder" perk that allows creating plasma ammo when firing.
     - Requires Heavy Weapons: MASTER
 - Added a new "Breakdown" perk that allows destroying pickable but previously un-breakable containers
@@ -89,6 +92,9 @@ New Features:
 
 Bugfixes:
 - Fixed transparent background for the Stealth Skill in the Skills menu.
+- Fixed extra hacking text being added to the Computers skill description when not using the hacking changes.
+- Fixed "Qty 0/0" labels on some items when using the option to make more inventory items show quantities.
+- Various fixes for the Keypad/Computer notes screen.
 - Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
     - It now also shows all addons correctly when zooming.
 - Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
@@ -102,6 +108,7 @@ Bugfixes:
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
+- Fixed a crash when scrolling up or down through weapon slots when improsoned by MJ12 and having all items taken.
 - Fixed typo in Synth Heart description.
 - Fixed attempting to select melee weapons with Left Frob when unable to use them due to the Weapon Requirements Matter modifier.
 - Fixed a bug where interacting with empty datacubes would cause the crosshair and selection brackets to disappear.
@@ -121,6 +128,7 @@ Bugfixes:
 
 Misc Changes:
 - A number of Repair Bots have been removed on Hardcore difficulty in order to better balance Energy availability.
+- Flamethrower enemies now drop 11-35 rounds of ammunition, rather than 5-25
 - Added a scope animation for the Plasma Rifle to match the other weapons.
 - The GMDX v9 feature to move weapons back when you're up next to a wall is now optional and can be toggled in the QoL settings as I know some people don't like it.
 - Significantly improved weapon rendering efficiency including removing up to 4 additional `Trace()`'s per frame (!!!) caused by a previous developer's bad coding habits.
