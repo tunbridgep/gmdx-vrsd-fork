@@ -23,5 +23,4 @@ defaultproperties
 {
      FirstScreen=Class'DeusEx.ComputerScreenBulletins'
      bUsesHackWindow=False
-     bShowNotes=False
 }

@@ -34,8 +34,6 @@ var int shadowOffsetY;
 
 var HUDKeypadNotesWindow winNotes;
 
-var const bool bShowNotes;         //SARGE: Added. Show the notes on the first screen(usually login).
-
 //This sucks.
 //So basically, we have to check EVERY username from a given note, to see if it's our current username.
 //If it is, then we need to get the NEXT valid username/password from the note.
@@ -381,12 +379,6 @@ function ShowFirstScreen()
         ShowScreen(LockoutScreen);
     else
     	ShowScreen(FirstScreen);
-    //Show the notes screen
-    if (winNotes != None)
-    {
-        winNotes.Show();
-        winNotes.ResetNotePosition();
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -402,6 +394,15 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 		winComputer.Destroy();
 		winComputer = None;
 	}
+
+    //SARGE: Show notes window.
+    if (winNotes != None)
+    {
+        if (newScreen.default.bShowNotesWindow)
+            winNotes.Show();
+        else
+            winNotes.Hide();
+    }
 
 	// Now invoke the new screen
 	if (newScreen != None)
@@ -471,21 +472,9 @@ function CloseScreen(String action)
 		bNoHack = True;
 	}
 	
-    //SARGE: Hide notes screen when logging in
-    if (action == "LOGIN")
-    {
-        if (winNotes != None)
-            winNotes.Hide();
-    }
-	
-    //SARGE: Re-show notes and the hack window when logging out.
+    //SARGE: Re-show the hack window when logging out.
     if (action == "LOGOUT")
     {
-        if (winNotes != None)
-        {
-            winNotes.Show();
-            winNotes.ResetNotePosition();
-        }
         CreateHackWindow();
 		bNoHack = False;
     }
@@ -571,7 +560,7 @@ function AddNotesWindow()
     local ATM A;
     local int i;
 
-    if (!player.bShowCodeNotes || !bShowNotes || player.RandomizerEnabled())
+    if (!player.bShowCodeNotes || player.RandomizerEnabled())
         return;
 
     C = Computers(compOwner);
@@ -889,5 +878,4 @@ defaultproperties
      shadowOffsetY=15
      ScreenType=ST_Computer
 	 LockoutScreen=Class'DeusEx.ComputerScreenDisabled'
-     bShowNotes=true
 }
