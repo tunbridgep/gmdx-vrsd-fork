@@ -93,6 +93,8 @@ New Features:
 Bugfixes:
 - Fixed transparent background for the Stealth Skill in the Skills menu.
 - Fixed extra hacking text being added to the Computers skill description when not using the hacking changes.
+- Fixed "Qty 0/0" labels on some items when using the option to make more inventory items show quantities.
+- Various fixes for the Keypad/Computer notes screen.
 - Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
     - It now also shows all addons correctly when zooming.
 - Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
@@ -106,6 +108,7 @@ Bugfixes:
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
+- Fixed a crash when scrolling up or down through weapon slots when improsoned by MJ12 and having all items taken.
 - Fixed typo in Synth Heart description.
 - Fixed attempting to select melee weapons with Left Frob when unable to use them due to the Weapon Requirements Matter modifier.
 - Fixed a bug where interacting with empty datacubes would cause the crosshair and selection brackets to disappear.
