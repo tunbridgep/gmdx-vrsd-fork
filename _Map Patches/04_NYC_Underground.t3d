@@ -48469,15 +48469,6 @@ Begin Actor Class=Lockpick Name=Lockpick0
     OldLocation=(X=-177.049118,Y=844.778625,Z=-331.000885)
     Name=Lockpick0
 End Actor
-Begin Actor Class=Lockpick Name=Lockpick0
-    LastRenderTime=47.721607
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=Lockpick
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-177.049118,Y=844.778625,Z=-331.000885)
-    OldLocation=(X=-177.049118,Y=844.778625,Z=-331.000885)
-    Name=Lockpick0
-End Actor
 Begin Actor Class=Brush Name=Brush504
     CsgOper=CSG_Subtract
     MainScale=(SheerAxis=SHEER_ZX)

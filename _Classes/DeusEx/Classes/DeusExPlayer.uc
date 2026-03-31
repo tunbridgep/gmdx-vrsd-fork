@@ -1527,7 +1527,7 @@ local DeusExPickup     PU;                                                      
         }
         ForEach AllActors(class'DeusExDecoration', DC)
         {
-           if (DC.bLowDifficultyOnly && CombatDifficulty >= 3.0)
+           if ((DC.bLowDifficultyOnly && CombatDifficulty >= 3.0) || DC.bHardcoreOnly)
            {
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
