@@ -58,6 +58,10 @@ SetOutPath $INSTDIR\System
 File "${SARGE_U_FILES}\RenderExt.dll"
 File "${SARGE_U_FILES}\RenderExt.int"
 
+;Install Engine Fix
+SetOutPath $INSTDIR\System
+File extras\enginefix\*.dll
+
 ;Install DXGNative
 File "${SARGE_U_FILES}\DXGNative.u"
 File "${SARGE_U_FILES}\DXGNative.dll"
