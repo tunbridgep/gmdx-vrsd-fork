@@ -983,6 +983,10 @@ var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscio
 
 var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our reserve energy on the bioenergy bar in the HUD
 
+var globalconfig bool bViewmodelInertia;                       //SARGE: Add inertia to weapon and item viewmodels.
+
+var globalconfig bool bPickupsUseFOV;                       //SARGE: Pickups, Lockpicks, etc, will use the players FOV properly, rather than always being as big as possible.
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently

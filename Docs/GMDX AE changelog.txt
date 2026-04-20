@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added weapon inertia. All weapons and held tools (lockpicks etc) will move with inertia, giving a more natural feeling.
 - Medical and Repair bots recharge timer is now reduced on higher difficulties because they have limited uses.
 - The installer now installs DXVK. Use `dxvk_enable.cmd` in the System folder to use it.
 - Added a visual red section to the energy bar to show energy reserve.
