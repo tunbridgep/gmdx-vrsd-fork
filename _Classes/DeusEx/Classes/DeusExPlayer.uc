@@ -20528,7 +20528,6 @@ defaultproperties
      bDragAndDropOffInventory=true
      bRememberTheName=true
      iShifterWeaponSwitch=2
-     bExperimentalAmmoSpawning=true
      iSmartBinocs=1
      bSkinnedBeltIcons=true
      bShowGoalsOnScreen=false
