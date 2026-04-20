@@ -540,6 +540,8 @@ var bool bAlreadyDistributedWeapon;
 //SARGE: Cloak manager
 var travel CloakManager CloakManager;
 
+var const localized string msgDance;            //SARGE: Shenanigans dance string
+
 //SARGE: Enum used for the swoocy bullshit that we have to do for our IsValidEnemy override.
 enum EAllianceCheckType
 {
@@ -16752,7 +16754,15 @@ state Stunned
 
 Begin:
 	Acceleration = vect(0, 0, 0);
-	PlayStunned();
+
+    //SARGE: Shenanigans Dancing
+    if (DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bShenanigans && HasAnim('Dance'))
+    {
+        PlayDancing();
+        DeusExPlayer(GetPlayerPawn()).ClientMessage(msgDance);
+    }
+    else
+        PlayStunned();
 	/*if (enemy != None && enemy.IsA('DeusExPlayer'))                           //RSD: Reworked stun duration mechanics
 	{
 	    if (DeusExPlayer(enemy).inHand != None && DeusExPlayer(enemy).inHand.IsA('WeaponRiotProd')) //CyberP: flawless hack! :/
@@ -17563,4 +17573,5 @@ defaultproperties
      randomPainSoundsM(17)=Sound'DeusExSounds.Player.MaleGrunt'
      bCanBlink=true
      fHighAlertChance=0.2
+     msgDance="Get electric on the dance floor!"
 }
