@@ -213,6 +213,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPFlamethrower"
      HDTPPickupViewMesh="HDTPItems.HDTPflamethrowerPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPflamethrower3rd"
+     Mesh=LodMesh'DeusExItems.FlamethrowerPickup'
      PlayerViewMesh=LodMesh'DeusExItems.Flamethrower'
      PickupViewMesh=LodMesh'DeusExItems.FlamethrowerPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Flamethrower3rd'

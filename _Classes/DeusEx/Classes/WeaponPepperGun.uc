@@ -71,6 +71,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPPepperGun"
      HDTPPickupViewMesh="HDTPItems.HDTPpeppergunpickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPpeppergun3rd"
+     Mesh=LodMesh'DeusExItems.PepperGunPickup';
      PlayerViewMesh=LodMesh'DeusExItems.PepperGun';
      PickupViewMesh=LodMesh'DeusExItems.PepperGunPickup';
      ThirdPersonMesh=LodMesh'DeusExItems.PepperGun3rd';
