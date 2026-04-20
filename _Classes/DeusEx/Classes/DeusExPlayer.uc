@@ -3447,6 +3447,7 @@ function ResetPlayerToDefaults()
 
 	SetInHandPending(None);
 	SetInHand(None);
+    primaryWeapon = None;
 
 	bInHandTransition = False;
 
@@ -5274,7 +5275,7 @@ simulated function PlayFootStep()
 	   else if (FloorMaterial=='Earth' || FloorMaterial=='Foliage')
 	      stepSound=sound'pl_jumpland1';
 
-       if (CombatDifficulty >= 3.0)
+       if (CombatDifficulty >= 2.0)
           volume*=1.3;
        else
           volume*=1.15;
@@ -5326,7 +5327,10 @@ simulated function PlayFootStep()
         range*=0.9;
 
     //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
-    //volumeMultiplier *= 1.15;
+    if (bHardCoreMode)
+        volumeMultiplier *= 1.25;
+    else if (CombatDifficulty >= 3.0)
+        volumeMultiplier *= 1.15;
 
     if (volume > 0)
     {
@@ -5336,22 +5340,19 @@ simulated function PlayFootStep()
 
         //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.
         //I bet this is real slow!
-        if (bExperimentalFootstepDetection || bHardCoreMode)
+        for( P=Level.PawnList; P!=None; P=P.nextPawn )
         {
-            for( P=Level.PawnList; P!=None; P=P.nextPawn )
-            {
-                //We need to do several pawn checks, lets start with the cheapest ones...
-                bPawnCheck = P.IsA('ScriptedPawn') && !P.IsA('Robot') && !P.IsA('Animal') && ScriptedPawn(P).bReactLoudNoise;
-                bPawnCheck = bPawnCheck && P.LastRendered() < 5.0;
-                bPawnCheck = bPawnCheck && (P.IsInState('Patrolling') || P.IsInState('Wandering') || P.IsInState('Standing') || P.IsInState('Sitting'));
-                bPawnCheck = bPawnCheck && VSize(P.Location - Location) < range*volumeMultiplier*0.8;
-                bPawnCheck = bPawnCheck && P.LineOfSightTo(Self);
-                //bPawnCheck = bPawnCheck && P.AICanSee(Self) > 0;
-                //Log("Pawn: " $ P.Name @  P.AICanSee(Self));
+            //We need to do several pawn checks, lets start with the cheapest ones...
+            bPawnCheck = P.IsA('ScriptedPawn') && !P.IsA('Robot') && !P.IsA('Animal') && ScriptedPawn(P).bReactLoudNoise;
+            bPawnCheck = bPawnCheck && P.LastRendered() < 5.0;
+            bPawnCheck = bPawnCheck && (P.IsInState('Patrolling') || P.IsInState('Wandering') || P.IsInState('Standing') || P.IsInState('Sitting'));
+            bPawnCheck = bPawnCheck && VSize(P.Location - Location) < range*volumeMultiplier*0.8;
+            bPawnCheck = bPawnCheck && P.LineOfSightTo(Self);
+            //bPawnCheck = bPawnCheck && P.AICanSee(Self) > 0;
+            //Log("Pawn: " $ P.Name @  P.AICanSee(Self));
 
-                if (bPawnCheck)
-                    ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.6);
-            }
+            if (bPawnCheck)
+                ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.6);
         }
 
         //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
@@ -9028,6 +9029,7 @@ exec function ParseRightClick()
     local bool bFarAway;
     local Inventory assigned;
     local InterpolationPoint interp;
+    local DeusExLevelInfo dxinfo;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying'))
@@ -9035,8 +9037,10 @@ exec function ParseRightClick()
         QuickLoad();
         return;
     }
+    
+    dxInfo=GetLevelInfo();
 
-    if (RestrictInput())
+    if (RestrictInput() && dxInfo.missionNumber > 0)
     {
         //SARGE: Allow speeding up cutscenes
         if (IsInState('Interpolating') && bEnableCutsceneSpeedup)
@@ -13620,7 +13624,7 @@ function PostIntro()
 	if (bStartNewGameAfterIntro)
 	{
 		bStartNewGameAfterIntro = False;
-		StartNewGame(strStartMap);
+		//StartNewGame(strStartMap);
         if (bPrisonStart)
             StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
         else
@@ -14168,6 +14172,9 @@ ignores SeePlayer, HearNoise, Bump;
 		bBehindView = false;
 		StopBlendAnims();
 		ConversationActor = None;
+    
+        //SARGE: Re-enable weapon laser
+        EnableLaser();
 
         //SARGE: This is needed otherwise the belt doesn't update properly if we lose an item during a convo
         UpdateHUD();
@@ -14206,7 +14213,23 @@ ignores SeePlayer, HearNoise, Bump;
           conPlay.startActor.IsA('Terrorist') || conPlay.startActor.Style == STY_Translucent || conPlay.startActor.IsA('DeusExDecoration') || conPlay.startActor.IsA('JuanLebedev') || conPlay.startActor.IsA('BobPage'));
     }
 
+    function DisableLaser()
+    {
+        if (DeusExWeapon(inHand) != None && DeusExWeapon(inHand).Emitter != none)
+            DeusExWeapon(inHand).Emitter.TurnOff();
+    }
+
+    function EnableLaser()
+    {
+        if (DeusExWeapon(inHand) != None && DeusExWeapon(inHand).Emitter != none && DeusExWeapon(inHand).bLasing)
+            DeusExWeapon(inHand).Emitter.TurnOn();
+    }
+
 Begin:
+	
+    //SARGE: Turn off laser
+    DisableLaser();
+
 	// Make sure we're stopped
 	Velocity.X = 0;
 	Velocity.Y = 0;
@@ -14293,7 +14316,8 @@ function bool InConversation(optional bool bCheckFirstPerson)
 // 6) The player isn't CheatFlying (ghost)
 // 7) The player isn't in PHYS_Falling
 // 8) The game is in 'bPlayersOnly' mode
-// 9) UI screen of some sort isn't presently active.
+// 9) SARGE: The player is not in combat **NEW**
+// 10) UI screen of some sort isn't presently active.
 // ----------------------------------------------------------------------
 
 function bool CanStartConversation()
@@ -14306,6 +14330,7 @@ function bool CanStartConversation()
 		 ( IsInState('CheatFlying') ) ||
 		 ( Physics == PHYS_Falling ) ||
 		 ( Level.bPlayersOnly ) ||
+		 ( GetCombatants() > 0 && conPlay != None && conPlay.con != None && conPlay.con.bFirstPerson == false ) || //SARGE: Added. No third-person conversations in combat.
 	     (!DeusExRootWindow(rootWindow).CanStartConversation()))
 		return False;
 	else
@@ -17632,22 +17657,6 @@ function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 	//}
 }
 
-
-		  /*
-             mov.minDamageThreshold -= 5;
-             if (mov.minDamageThreshold <= 0)
-                mov.minDamageThreshold = 1;
-             mov.bPerkApplied = True; */
-		/* 
-          case "COMBAT MEDIC'S BAG":
-          PerkNamesArray[30]= 1;
-          foreach AllActors(class'Medkit',med)
-             med.MaxCopies = 20;
-          foreach AllActors(class'BioelectricCell',cell)
-             cell.MaxCopies = 25;
-          break;
-		  */
-
 // ----------------------------------------------------------------------
 // MakePlayerIgnored()
 // ----------------------------------------------------------------------
@@ -20043,6 +20052,22 @@ function bool FemaleEnabled()
 function bool RandomizerEnabled()
 {
     return(Level.Game.Class.Name == 'DXRandoGameInfo');
+}
+
+//Sarge: Checks if specific DXRandomizer features are installed
+function bool RandomizerFeatureEnabled(string feature)
+{
+    local name flagName;
+
+    if (!RandomizerEnabled())
+        return false;
+	
+    flagName = rootWindow.StringToName("Rando_" $ feature);
+
+	if (flagBase.CheckFlag(flagName, FLAG_Int))
+        return true;
+	else if (flagBase.CheckFlag(flagName, FLAG_Bool))
+        return true;
 }
 
 //SARGE: We can be stunted through stamina, which needs to be recharged (bStunted), or through
