@@ -981,6 +981,8 @@ var globalconfig int iSecondaryMode;                       //SARGE: How will the
 
 var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscious Carcasses die when thrown some distance? Always enabled in Hardcore.
 
+var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our reserve energy on the bioenergy bar in the HUD
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
@@ -20548,4 +20550,5 @@ defaultproperties
      iSecondaryMode=1
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
+     bEnergyBarShowsReserve=true
 }

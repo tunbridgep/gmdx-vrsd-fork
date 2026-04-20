@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added a visual red section to the energy bar to show energy reserve.
 - Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
     - Unconscious bodies are relatively vulnerable and can't fall very far without dying!
     - This can be disabled in the Gameplay menu.

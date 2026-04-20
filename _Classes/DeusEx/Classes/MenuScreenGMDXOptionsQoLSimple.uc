@@ -87,6 +87,7 @@ defaultproperties
      items(32)=(HelpText="Show visible blood on weapons when attacking enemies at close range.",helpText1="Blood will be removed when dropping or putting the weapon away or entering water.",helpText2="Blood will be removed when dropping the weapon or entering water.",actionText="Game: Bloody Weapons",variable="iBloodyWeapons",valueText2="Keep blood when switching",defaultValue=1)
      items(33)=(HelpText="Show rain and other weather effects.",actionText="Game: Weather Effects",variable="bWeatherEnabled",consoleTarget="Precipitation.Precipitator",defaultValue=1)
      items(34)=(HelpText="Belt Memory preserves the position of depleted items on the belt by showing darkened placeholder icons.|n|nIf 'Autofill Belt' is also enabled, placeholders will not be shown when dropping items from the belt with the 'Drop Item' key.|n|nAdditionally, if set to 'Auto Swap Placeholders', placeholders will be automatically replaced when picking up similar items. For instance, when picking up a LAM, it will replace a darkened Gas Grenade on the belt.",actionText="Belt: Belt Memory",variable="iBeltMemory",valueText2="Auto-Swap Placeholders",defaultValue=1)
+     items(36)=(HelpText="If enabled, the bioenergy bar will show the reserved energy amount in red.",actionText="HUD: Show Reserved Energy",variable="bEnergyBarShowsReserve",defaultValue=1)
 
      Title="GMDX Quality of Life Options"
      actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Advanced Settings",Key="ADVANCED")
