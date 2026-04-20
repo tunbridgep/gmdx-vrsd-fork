@@ -29237,7 +29237,7 @@ Begin Actor Class=ScientistFemale Name=ScientistFemale0
     BindName="Storage_ComputerTech"
     BarkBindName="Woman"
     FamiliarName="Dr. Harrison"
-    UnfamiliarName="Nonotechnology Researcher"
+    UnfamiliarName="Nanotechnology Researcher"
     Name=ScientistFemale0
 End Actor
 Begin Actor Class=PatrolPoint Name=PatrolPoint13

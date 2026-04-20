@@ -1428,6 +1428,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                     if (!bPickedItemUp && item != None)
 					{
+
 						// Special case if this is a DeusExPickup(), it can have multiple copies
 						// and the player already has it.
 
@@ -1526,7 +1527,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 								}
 
                                 //SARGE: Stupid fix for empty chargedpickups
-                                if (invItem.Charge == 0)
+                                if (invItem.Charge == 0 && ChargedPickup(item) != None)
                                 {
                                     ChargedPickup(invItem).bActivatable=true;//RSD: Since now you can hold one at 0%
                                     ChargedPickup(invItem).bDrained = false;

@@ -63,8 +63,8 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkBreakdown');
 
 	// Lockpicking Perks
-	AddPerk(Class'DeusEx.PerkSleightOfHand');
 	AddPerk(Class'DeusEx.PerkDoorsman');
+	AddPerk(Class'DeusEx.PerkSleightOfHand');
 	AddPerk(Class'DeusEx.PerkLocksport');
 
 	// Electronics Perks

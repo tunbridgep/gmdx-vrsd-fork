@@ -10,8 +10,6 @@ var Float lastHealTime;
 var int healMaxTimes;
 var int lowerThreshold;                                                         //RSD: Added
 
-var int healRefreshTimeShort; //SARGE: Have a much shorter charge time if we have charges.
-
 // ----------------------------------------------------------------------
 // Network replication
 // ----------------------------------------------------------------------
@@ -84,8 +82,7 @@ function Frob(Actor Frobber, Inventory frobWith)
       return;
       
     //SARGE: Shorten charge time if we're on higher difficulties, since we have limited charges to stop abuse already.
-    if (player.CombatDifficulty > 1.0)
-        healRefreshTime = healRefreshTimeShort;
+    healRefreshTime = default.healRefreshTime / (lowerThreshold + 1);
 
    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)
       healAmount = 375;                                                         //RSD: Was 450
@@ -207,7 +204,6 @@ defaultproperties
 {
      healAmount=250
      healRefreshTime=60
-     healRefreshTimeShort=20
      mphealRefreshTime=30
      healMaxTimes=3
      WalkingSpeed=0.200000

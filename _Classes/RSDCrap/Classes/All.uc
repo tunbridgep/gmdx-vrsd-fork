@@ -259,14 +259,20 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG05.bmp"			NAME="PictureMenuBG05"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG06.bmp"			NAME="PictureMenuBG06"			GROUP="UserInterface"
 //#exec TEXTURE IMPORT FILE="Textures\UserInterface\SpecializationsComputersLarge.pcx"	NAME="SpecializationsComputersLarge"			GROUP="UserInterface" FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\UserInterface\QoL_FreeCursor1.pcx"	            NAME="QoL_FreeCursor1"		    	GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\UserInterface\QoL_FreeCursor2.pcx"	            NAME="QoL_FreeCursor2"		    	GROUP="UserInterface"    FLAGS=2
+
+////QoL and OBM Menu images
+
+//QoL Menu
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FreeCursor1.pcx"	            NAME="QoL_FreeCursor1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FreeCursor2.pcx"	            NAME="QoL_FreeCursor2"		    	GROUP="UserInterface"    FLAGS=2
 
 //Onboarding Menu
-#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_Secondaries1.pcx"	            NAME="OBM_Secondaries1"		    	GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_Secondaries2.pcx"	            NAME="OBM_Secondaries2"		    	GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_AugWheel1.pcx"	            NAME="OBM_AugWheel1"		    	GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\UserInterface\OBM_AugWheel2.pcx"	            NAME="OBM_AugWheel2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries1.pcx"	            NAME="OBM_Secondaries1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries2.pcx"	            NAME="OBM_Secondaries2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel1.pcx"	            NAME="OBM_AugWheel1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel2.pcx"	            NAME="OBM_AugWheel2"		    	GROUP="UserInterface"    FLAGS=2
+//#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline01.pcx"	            NAME="OBM_Decline01"		    	GROUP="UserInterface"    FLAGS=2
+//#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline02.pcx"	            NAME="OBM_Decline02"		    	GROUP="UserInterface"    FLAGS=2
 
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"

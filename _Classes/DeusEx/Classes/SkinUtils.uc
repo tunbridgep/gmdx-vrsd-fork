@@ -101,15 +101,25 @@ static function GlassesFix(Pawn P)
     if (P.Style == STY_Normal)
         return;
 
-    if (P.Mesh == LodMesh'DeusExCharacters.GM_Trench' || string(P.Mesh) == "Augmentique.AMTGM_Trench")
+    if (P.Mesh == LodMesh'DeusExCharacters.GM_Trench' || P.Mesh == LodMesh'DeusExCharacters.GM_Trench_F' || string(P.Mesh) == "Augmentique.AMTGM_Trench")
     {
-        Log(P $ " Mesh: " $ string(P.Mesh));
+        //Log(P $ " Mesh: " $ string(P.Mesh));
         P.multiSkins[6] = GetStyleTexture(P.Style);
         P.multiSkins[7] = GetStyleTexture(P.Style);
-        Log(P $ " Multiskins[6]: " $ P.multiskins[6]);
+        //Log(P $ " Multiskins[6]: " $ P.multiskins[6]);
     }
     else if (P.Mesh == LodMesh'RSDCrap.Fixed_Jumpsuit' || P.Mesh == LodMesh'DeusExCharacters.GM_Jumpsuit')
     {
         P.multiSkins[5] = GetStyleTexture(P.Style);
+    }
+    else if (P.Mesh == LodMesh'DeusExCharacters.GFM_TShirtPants')
+    {
+        P.multiSkins[3] = GetStyleTexture(P.Style);
+        P.multiSkins[4] = GetStyleTexture(P.Style);
+    }
+    else if (P.Mesh == LodMesh'DeusExCharacters.GM_Suit')
+    {
+        P.multiSkins[5] = GetStyleTexture(P.Style);
+        P.multiSkins[6] = GetStyleTexture(P.Style);
     }
 }

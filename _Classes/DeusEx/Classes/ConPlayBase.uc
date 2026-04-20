@@ -615,9 +615,6 @@ function Inventory SpawnItemAtFeet(class<Inventory> itemtype, Actor source, opti
     local Inventory spawnedItem;                            //SARGE: The item spawned at our feet.
     local Vector loc;                                       //SARGE: Stores the position of spawned items
 
-    if (!class'DeusExPlayer'.default.bExperimentalAmmoSpawning)
-        return None;
-
     //SARGE: DIRTY HACK TIME!!!
     //We sometimes need to spawn the relevant weapons instead of ammo!
     switch itemType
@@ -797,8 +794,9 @@ log("  event.toActor    = " $ event.toActor );
         }
         else if (invItemFrom.IsA('WeaponGEPGun'))
         {
-            //Now that GEP uses WP ammo by default, we should give the player some regular rockets too.
-            TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoRocket',1);
+            //When the GEP uses WP ammo by default, we should give the player some regular rockets too.
+            if (class'DeusExPlayer'.default.bGEPUsesWPByDefault)
+                TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoRocket',1);
         }
     }
     else if (invokeActor != none && invokeActor.IsA('Male2'))           //RSD: accessed none?

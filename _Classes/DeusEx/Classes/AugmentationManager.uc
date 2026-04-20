@@ -728,6 +728,31 @@ function AssignAugHotKeys()
 // GivePlayerAugmentation()
 // ----------------------------------------------------------------------
 
+//If we're above 100% reserve energy, disable the most expensive toggle augs until we're
+//back below 100% reserve.
+function HeartLungHack()
+{
+	local Augmentation aug;
+    local float res;
+
+    aug = FirstAug;
+
+    res = CalcEnergyReserve();
+
+    Log("HeartLungHack: " $ res);
+
+    while (aug != None && res > player.GetMaxEnergy(true))
+    {
+        Log("HeartLungHack: " $ aug @ res);
+        if (aug.bIsActive && aug.IsToggleAug() && aug.GetAdjustedEnergyReserve() > 0)
+        {
+            ActivateAug(aug,false);
+            res -= aug.GetAdjustedEnergyReserve();
+        }
+        aug = aug.next;
+    }
+}
+
 function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 {
 	local Augmentation anAug, augie, allTheAugs;                                //RSD: Added allTheAugs
@@ -813,6 +838,10 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
     //Refresh display
     RefreshAugDisplay();
     RefreshAugWheel();
+        
+
+    if (anAug.IsA('AugHeartLung')) //Fix energy reserve going over 100
+        HeartLungHack();
 
 	return anAug;
 }

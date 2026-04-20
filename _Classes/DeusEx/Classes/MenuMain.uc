@@ -92,6 +92,7 @@ function ShowVersionInfo()
 defaultproperties
 {
      GMDXText="GMDX: Augmented Edition 1.2 BETA 19"
+     //SARGE: Don't forget to disable the "Testing" menu in the NewGameMenu!
      ButtonNames(0)="New Game"
      ButtonNames(1)="Save Game"
      ButtonNames(2)="Load Game"

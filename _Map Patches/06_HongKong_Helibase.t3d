@@ -107536,7 +107536,7 @@ Begin Actor Class=Keypad2 Name=Keypad0
 End Actor
 Begin Actor Class=ProjectileGenerator Name=ProjectileGenerator4
     ejectSpeed=60.000000
-    ProjectileClass=Class'DeusEx.PoisonGas'
+    ProjectileClass=Class'DeusEx.PoisonGasBig'
     ProjectileLifeSpan=90.000000
     bTriggered=True
     spewTime=1.000000

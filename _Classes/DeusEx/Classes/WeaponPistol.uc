@@ -3,75 +3,12 @@
 //=============================================================================
 class WeaponPistol extends DeusExWeapon;
 
-var vector axesX;//fucking weapon rotation fix
-var vector axesY;
-var vector axesZ;
-var DeusExPlayer player;
-var bool bFlipFlopCanvas;
-var bool bGEPjit;
-var float GEPinout;
-var bool bGEPout;
-var vector MountedViewOffset;
-var vector MountedViewOffset2;
-var float scopeTime;
 var int lerpClamp;
 
-simulated function DrawScopeAnimation()
+function DisplayCloaking(bool overlay, float ScaleGlow, bool bCloak, bool bRadar)
 {
-    local rotator rfs;
-    local vector dx;
-    local vector dy;
-    local vector dz;
-    local vector unX,unY,unZ;
-    local vector mvOffset;
-
-    if (IsHDTP())
-        mvOffset = MountedViewOffset;
-    else
-        mvOffset = MountedViewOffset2;
-
-    rfs.Yaw=2912*Fmin(1.0,GEPinout);
-    rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
-
-    if(!bGEPout)
-    {
-        if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-    } else
-        if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-    
-    GetAxes(rfs,axesX,axesY,axesZ);
-    
-    player = DeusExPlayer(Owner);
-
-    dx=axesX>>player.ViewRotation;
-    dy=axesY>>player.ViewRotation;
-    dz=axesZ>>player.ViewRotation;
-    rfs=OrthoRotation(dx,dy,dz);
-
-    SetRotation(rfs);
-
-    PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-    SetHand(player.Handedness); //meh meh
-
-    PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,mvoffset.X*100);
-    PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,mvoffset.Y*100);
-    PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*mvoffset.Z*100);
-
-    SetLocation(player.Location+ CalcDrawOffset());
-    scopeTime+=1;
-
-    if (scopeTime>=18)
-    {
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
+    if ((bCloak || bRadar) && !IsHDTP() && overlay)
+        multiskins[0] = texture'PinkMaskTex';
 }
 
 function DisplayWeaponBlood(bool overlay)
@@ -225,23 +162,6 @@ simulated function EraseMuzzleFlashTexture()
         multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPGlockTex4");
 }
 
-state DownWeapon
-{
-	function EndState()
-	{
-	    Super.EndState();
-	    activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        if (Owner != None && Owner.IsA('DeusExPlayer'))
-        SetHand(DeusExPlayer(Owner).Handedness);
-	}
-}
-
 state Reload
 {
    function BeginState()
@@ -338,8 +258,8 @@ Begin:
 defaultproperties
 {
      weaponOffsets=(X=18.000000,Y=-10.000000,Z=-17.000000)
-     MountedViewOffset=(X=2.555000,Y=-6.703000,Z=-110.500000)
-     MountedViewOffset2=(X=2.555000,Y=0.703000,Z=-90.500000)
+     MountedViewOffset=(X=2.555000,Y=0.703000,Z=-90.500000)
+     MountedViewOffset2=(X=2.555000,Y=-6.703000,Z=-110.500000)
      LowAmmoWaterMark=4
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'
      NoiseLevel=6.000000
@@ -348,9 +268,9 @@ defaultproperties
      ShotTime=0.300000
      reloadTime=2.000000
      HitDamage=11
-     maxRange=3600
-     AccurateRange=1800
-     BaseAccuracy=0.650000
+     maxRange=2500
+     AccurateRange=1280
+     BaseAccuracy=0.750000
      bCanHaveScope=True
      ScopeFOV=40
      bCanHaveLaser=True
@@ -421,4 +341,5 @@ defaultproperties
      CollisionHeight=1.000000
      minSkillRequirement=1;
      bFancyScopeAnimation=true
+     totalScopeTime=0.31 //Slightly faster
 }

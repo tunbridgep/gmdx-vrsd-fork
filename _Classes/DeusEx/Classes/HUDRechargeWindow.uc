@@ -34,6 +34,7 @@ var Float lastRefresh;
 var Float refreshInterval;
 
 var ProgressBarWindow winBioBar;
+var ProgressBarWindow winBioReserved;
 var TextWindow winBioBarText;
 var PersonaNormalTextWindow winBioInfoText;
 
@@ -72,6 +73,7 @@ var Localized String EquipButtonLabel1, EquipButtonLabel2, EquipButtonLabel3;
 
 var Color    colBlue; //SARGE: Added
 var Color    colWhite; //SARGE: Added
+var Color colReserved; //SARGE: Added
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -281,6 +283,18 @@ function CreateBioWindows()
 	winBioBar.SetVertical(False);
 	winBioBar.SetScaleColorModifier(0.5);
 	winBioBar.SetDrawBackground(False);
+	
+    winBioReserved = ProgressBarWindow(NewChild(Class'ProgressBarWindow'));
+
+	winBioReserved.SetPos(114, 91+addedSize);                                                  //RSD: was 114, 91
+	winBioReserved.SetSize(140, 12);
+	winBioReserved.SetValues(0, 100);
+    winBioReserved.SetColors(colReserved,colReserved);
+	if (player.bAnimBar1)
+	    winBioReserved.bSpecialFX = True;
+	winBioReserved.SetVertical(False);
+	winBioReserved.SetScaleColorModifier(0.5);
+	winBioReserved.SetDrawBackground(False);
 
 	winBioBarText = TextWindow(NewChild(Class'TextWindow'));
 	winBioBarText.SetPos(114, 93+addedSize);                                              //RSD: was 114, 93
@@ -367,7 +381,11 @@ function UpdateBioWindows()
 	
     energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 
-	winBioBar.SetCurrentValue(energyPercent);
+    if (player.bEnergyBarShowsReserve)
+        winBioBar.SetCurrentValue(energyPercent + player.AugmentationSystem.CalcEnergyReserve());
+    else
+        winBioBar.SetCurrentValue(energyPercent);
+
     maxEnergy = player.GetMaxEnergy();
 	actualMaxEnergy = player.GetMaxEnergy(true);
 	
@@ -381,6 +399,16 @@ function UpdateBioWindows()
     winBioBarText.SetText(text);
 
 	winBioInfoText.SetText(BioStatusLabel);
+    
+    if (winBioReserved != None && player.bEnergyBarShowsReserve)
+    {
+        winBioReserved.SetCurrentValue(player.AugmentationSystem.CalcEnergyReserve());
+        winBioReserved.Show();
+	}
+    else
+    {
+        winBioReserved.Hide();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -911,4 +939,5 @@ defaultproperties
      ScreenType=ST_Popup
      colBlue=(R=20,G=20,B=255)
      colWhite=(R=255,G=255,B=255)
+     colReserved=(R=255,G=10,B=10)
 }

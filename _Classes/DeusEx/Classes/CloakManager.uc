@@ -229,7 +229,7 @@ function DoSpecialLighting(bool bDoEffects)
 function DoCorona()
 {
     local ExplosionLight lite;
-    local SpoofedCorona cor;
+    local SpoofedCoronaSmall cor;
 
     lite = sourceObject.Spawn(class'ExplosionLight',,,sourceObject.Location);
     if (lite != none)
@@ -240,7 +240,7 @@ function DoCorona()
         lite.SetBase(sourceObject);
     }
         
-    cor = sourceObject.Spawn(class'SpoofedCorona',,,sourceObject.Location);
+    cor = sourceObject.Spawn(class'SpoofedCoronaSmall',,,sourceObject.Location);
     if (cor != none)
         cor.SetBase(sourceObject);
 }

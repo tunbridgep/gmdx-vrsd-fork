@@ -13,6 +13,7 @@ var PersonaAugmentationOverlaysWindow	winOverlays;
 var PersonaItemDetailWindow             winBioCells;
 var PersonaItemDetailWindow             winAugCans;
 var ProgressBarWindow					winBioEnergy;
+var ProgressBarWindow					winBioEnergyReserved;
 var TextWindow                          winBioEnergyText;
 
 // Currently selected button, either a skill or augmentation
@@ -34,6 +35,7 @@ var int augSlotSpacingX;
 var int augSlotSpacingY;
 
 var Color colBarBack;
+var Color colReserved; //SARGE: Added
 
 var localized String AugmentationsTitleText;
 var localized String UpgradeButtonLabel;
@@ -606,6 +608,20 @@ function CreateBioCellBar()
 	winBioEnergy.SetScaleColorModifier(0.5);
 	winBioEnergy.SetDrawBackground(True);
 	winBioEnergy.SetBackColor(colBarBack);
+	
+	winBioEnergyReserved = ProgressBarWindow(winClient.NewChild(Class'ProgressBarWindow'));
+    winBioEnergyReserved.SetPos(446, 389);
+    winBioEnergyReserved.SetPos(446, 389);
+	winBioEnergyReserved.SetSize(140, 12);
+	winBioEnergyReserved.SetValues(0, 100);
+	//winBioEnergy.UseScaledColor(True); //SARGE: Disabled since the purely blue bar looks way better
+    winBioEnergyReserved.SetColors(colReserved,colReserved);
+	if (player.bAnimBar1)
+	    winBioEnergyReserved.bSpecialFX = True;
+	winBioEnergyReserved.SetVertical(False);
+	//winBioEnergyReserved.UseInvertedFill(True);
+	winBioEnergyReserved.SetScaleColorModifier(0.5);
+	winBioEnergyReserved.SetDrawBackground(False);
 
 	winBioEnergyText = TextWindow(winClient.NewChild(Class'TextWindow'));
 	winBioEnergyText.SetPos(446, 391);
@@ -624,10 +640,19 @@ function CreateBioCellBar()
 
 function UpdateBioEnergyBar()
 {
-	local float energyPercent, maxEnergy, actualMaxEnergy;
+	local float energyPercent, actualEnergyPercent, maxEnergy, actualMaxEnergy;
     local string text;
 
-	energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
+    actualEnergyPercent = 100.0 * (player.Energy / player.GetMaxEnergy(true));
+    energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
+
+    if (winBioEnergy != None)
+    {
+        if (player.bEnergyBarShowsReserve)
+            winBioEnergy.SetCurrentValue(actualEnergyPercent + player.AugmentationSystem.CalcEnergyReserve());
+        else
+            winBioEnergy.SetCurrentValue(energyPercent);
+    }
 	
     maxEnergy = player.GetMaxEnergy();
 	actualMaxEnergy = player.GetMaxEnergy(true);
@@ -635,14 +660,20 @@ function UpdateBioEnergyBar()
     if (maxEnergy != actualMaxEnergy)
         text = Sprintf(BarStringRes,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent),int(player.AugmentationSystem.CalcEnergyReserve()));
     else
-        //text = Sprintf(BarString,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent));
         text = Sprintf(BarString,int(energyPercent));
-
-    if (winBioEnergy != None)
-    {
-        winBioEnergy.SetCurrentValue(energyPercent);
+    
+    if (winBioEnergyText != None)
         winBioEnergyText.SetText(text);
+    
+    if (winBioEnergyReserved != None && player.bEnergyBarShowsReserve)
+    {
+        winBioEnergyReserved.SetCurrentValue(player.AugmentationSystem.CalcEnergyReserve());
+        winBioEnergyReserved.Show();
 	}
+    else
+    {
+        winBioEnergyReserved.Hide();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1322,7 +1353,7 @@ function EnableButtons()
 	// 2.  The player's energy is above 0
 	// 3.  This augmentation isn't "AlwaysActive"
 
-	btnActivate.EnableWindow((selectedAug != None) && (player.Energy > 0) && (selectedAug.CanBeActivated()));
+	btnActivate.EnableWindow((selectedAug != None) && (player.Energy > 0 || selectedAug.IsToggleAug()) && (selectedAug.CanBeActivated()));
     btnDeactivateAll.EnableWindow(player.AugmentationSystem.CalcEnergyUse(0.06) > 0);
 	if ( selectedAug != None )
 	{
@@ -1421,4 +1452,5 @@ defaultproperties
      clientBorderTextureCols=3
      colBlue=(R=20,G=20,B=255)
      colWhite=(R=255,G=255,B=255)
+     colReserved=(R=255,G=10,B=10)
 }

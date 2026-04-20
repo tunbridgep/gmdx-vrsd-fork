@@ -176,14 +176,14 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         f2 = player.AugmentationSystem.AreSlotsFull(aug);
 
         //player.ClientMessage("Augie: " $ h1 $ ":" $ f1 $ ", " $ h2 $ ":" $ f2);
-        
-        //If we have both augs, and slots are full, then the can is unusable, so return red
-        if (h1 && f1 && h2 && f2)
-            return colBadAug;
 
         //if we have only one of them, and slots are full, then we can replace, so return blue
-        if ((h1 && f2) || (h2 && f1))
+        if ((h1 && f2 && !h2) || (h2 && f1 && !h1))
             return colWireless;
+        
+        //If we have both augs, and slots are full, then the can is unusable, so return red
+        if ((h1 || f1) && (h2 || f2))
+            return colBadAug;
     }
 
     //Cannot disarm grenade

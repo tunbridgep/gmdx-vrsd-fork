@@ -136,6 +136,11 @@ static function bool CreateCarriedObjectFor(DeusExPlayer pawn,Inventory item)
             carrier.copiedData[15] = string(W.ARClipSize);
         }
 
+        //DTS Charge
+        if (WeaponNanoSword(W) != None)
+            carrier.copiedData[22] = string(WeaponNanoSword(W).chargeManager.GetCurrentCharge());
+
+
     }
 
     carrier.copiedSkin = string(item.Skin);
@@ -299,6 +304,10 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
         W.ARGLLoaded = 0;
 
         W.GivenFreeReload = true;
+                    
+        //Copy any charge from the target
+        if (WeaponNanoSword(W) != None)
+            WeaponNanoSword(W).chargeManager.SetCharge(int(carrier.copiedData[22]));
         
         W.UpdateHDTPSettings();
     }
