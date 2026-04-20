@@ -9038,18 +9038,12 @@ exec function ParseRightClick()
     {
         if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inhand).bZoomed)
         {
-            DeusExWeapon(inhand).ScopeToggle();
+            DeusExWeapon(inhand).activateAn = true;
             return;
         }
         else if (inHand.IsA('Binoculars') && Binoculars(inhand).bActive)
         {
             Binoculars(inhand).Activate();
-            return;
-        }
-        
-        if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inhand).bZoomed)
-        {
-            DeusExWeapon(inhand).ScopeToggle();
             return;
         }
     }
@@ -10908,10 +10902,7 @@ exec function ToggleScope()
 	    if (W.AnimSequence == 'Idle1' || W.AnimSequence == 'Idle2' || W.AnimSequence == 'Idle3')
         W.PlayAnim('Still');
 		
-	    if (!W.bZoomed)
-            W.activateAn = true;
-        else
-            W.ScopeToggle();
+        W.activateAn = true;
         
         if (W.bZoomed&&W.IsA('WeaponGEPGun'))
             SetLaser(false);

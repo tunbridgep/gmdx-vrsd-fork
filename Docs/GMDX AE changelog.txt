@@ -408,6 +408,7 @@ Map Changes:
   - Made the UC enemy respawners spawn more reliably.
 
 Bug Fixes:
+- Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
 - Complete overhaul of the Unknown Codes system, now it should be much more robust and a lot less error-prone.
 - Fixed GMDX:AE issue where pain and death sounds were not randomising accurately.
 - Fixed several "Accessed None" and "Array index out of bounds" errors.
