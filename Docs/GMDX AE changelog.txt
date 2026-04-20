@@ -94,6 +94,7 @@ New Features:
 - The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
+- Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
 - Fixed crash to desktop when being killed by hacking timeouts.
 - Fixed reserved energy going into the negative sometimes when installing Synthetic Heart.
 - Fixed transparent background for the Stealth Skill in the Skills menu.
@@ -133,6 +134,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Added engine fix DLL to allow playing at high framerates.
 - A number of Repair Bots have been removed on Hardcore difficulty in order to better balance Energy availability.
 - Sleight of Hand and Doorsman have been swapped in the Lockpicking perk tree.
 - Flamethrower enemies now drop 11-35 rounds of ammunition, rather than 5-25
@@ -416,7 +418,6 @@ Map Changes:
   - Made the UC enemy respawners spawn more reliably.
 
 Bug Fixes:
-- Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
 - Complete overhaul of the Unknown Codes system, now it should be much more robust and a lot less error-prone.
 - Fixed GMDX:AE issue where pain and death sounds were not randomising accurately.
 - Fixed several "Accessed None" and "Array index out of bounds" errors.
@@ -473,7 +474,6 @@ Bug Fixes:
 - Ammo counter for current bullets in clip now scales properly when determining whether to use green or red text when max ammo is an odd number.
 
 Misc Changes:
-- Added engine fix DLL to allow playing at high framerates.
 - Removed the 1-2 second recharge time on most augmentations.
 - The QoL Menu has now been reduced to only the most impactful and important options. Turn on Advanced Mode to see all of the options.
 - The mod now includes RenderExt by Hanfling, which should prevent rendering errors and crashes.
