@@ -2100,7 +2100,7 @@ function PostPostBeginPlay()
     
     //Display or hide any Exits as necessary based on settings.
     ShowExits();
-        
+    
     UpdatePrecipitation(Region.Zone);
 }
 
@@ -7171,8 +7171,6 @@ state PlayerWalking
          	}
 	        else
 	        {
-	          if (inHand != None && inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bAimingDown)
-	              DeusExWeapon(inHand).ScopeToggle();
 	          RecoilTime=default.RecoilTime;
 		      RecoilShake.Z-=lerp(min(Abs(Velocity.Z),4.0*JumpZ)/(4.0*JumpZ),0,14.0); //CyberP: 7
 		      RecoilShake.Y-=lerp(min(Abs(Velocity.Z),4.0*JumpZ)/(4.0*JumpZ),0,6.0);
