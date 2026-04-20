@@ -1158,6 +1158,13 @@ defaultproperties
      clientTextures(5)=Texture'DeusExUI.UserInterface.MenuNewGameBackground_6'
      bUsesHelpWindow=False
      bEscapeSavesSettings=False
+
+     //Playthrough Mods
+     bCutInteractions=true
+     bImprisonmentTakesAmmo=true
+     bRealKillswitch=true
+     bAddictionSystem=true
+     bCollectibles=true
      bGEPUsesWPByDefault=true
      
      //LDDP Settings
