@@ -11,6 +11,6 @@ defaultproperties
     PerkDescription="If the bloodstream is exposed to toxic poisoning, an agent's vision is not distorted and internal damage is reduced marginally."
     PerkSkill=Class'DeusEx.SkillEnviro'
     PerkCost=175
-    PerkLevelRequirement=2
+    PerkLevelRequirement=1
     PerkValue=1
 }

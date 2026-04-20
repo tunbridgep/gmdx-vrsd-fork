@@ -33844,6 +33844,7 @@ Begin Actor Class=Light Name=Light6
     Name=Light6
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot0
+    bHardcoreRemove=True
     Orders=Standing
     bHateInjury=False
     bReactAlarm=False

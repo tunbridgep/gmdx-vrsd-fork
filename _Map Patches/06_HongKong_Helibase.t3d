@@ -91224,6 +91224,7 @@ Begin Actor Class=NanoKey Name=NanoKey3
     Name=NanoKey3
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot1
+    bHardcoreRemove=True
     bAlliancesChanged=False
     Orders=Patrolling
     OrderTag=hangar1
