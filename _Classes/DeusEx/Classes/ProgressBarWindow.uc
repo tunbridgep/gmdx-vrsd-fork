@@ -15,6 +15,7 @@ var Bool  bUseScaledColor;
 var Bool  bDrawBackground;
 var Float scaleColorModifier;
 var Bool bSpecialFX, bSpecialFX2;
+var bool bInvertFill;               //SARGE: Fill it up from the opposite direction
 
 // ----------------------------------------------------------------------
 // DrawWindow()
@@ -22,6 +23,7 @@ var Bool bSpecialFX, bSpecialFX2;
 
 event DrawWindow(GC gc)
 {
+    local Texture tex;
 	Super.DrawWindow(gc);
 
 	// First draw the background
@@ -33,22 +35,22 @@ event DrawWindow(GC gc)
 
 	// Now draw the foreground
 	gc.SetTileColor(colForeground);
-
-	if (bVertical)
-	{
-	    if (bSpecialFX)
-	        gc.DrawPattern(0, height - barSize, width, barSize, 0, 0, Texture'Effects.Electricity.Nano_SFX');
-		else if (bSpecialFX2)
-	        gc.DrawPattern(0, height - barSize, width, barSize, 0, 0, Texture'PersonaItemHighlight_Top');
-	    else
-            gc.DrawPattern(0, height - barSize, width, barSize, 0, 0, Texture'Solid');
-    }
-    else if (bSpecialFX)
-        gc.DrawPattern(0, 0, barSize, height, 0, 0, Texture'Effects.Electricity.Nano_SFX');
+	    
+    if (bSpecialFX)
+        tex = Texture'Effects.Electricity.Nano_SFX';
     else if (bSpecialFX2)
-        gc.DrawPattern(0, 0, barSize, height, 0, 0, Texture'PersonaItemHighlight_Top');
+        tex = Texture'PersonaItemHighlight_Top';
+    else
+        tex = Texture'Solid';
+
+	if (bVertical && bInvertFill)
+        gc.DrawPattern(0, 0, width, barSize, 0, 0, tex);
+	else if (bVertical)
+        gc.DrawPattern(0, height - barSize, width, barSize, 0, 0, tex);
+	else if (bInvertFill)
+		gc.DrawPattern(width - barSize, 0, barSize, height, 0, 0, tex);
 	else
-		gc.DrawPattern(0, 0, barSize, height, 0, 0, Texture'Solid');
+		gc.DrawPattern(0, 0, barSize, height, 0, 0, tex);
 }
 
 // ----------------------------------------------------------------------
@@ -183,6 +185,15 @@ function SetDrawBackground(Bool bNewDraw)
 function UseScaledColor(Bool bNewScaled)
 {
 	bUseScaledColor = bNewScaled;
+}
+
+// ----------------------------------------------------------------------
+// SARGE: UseInvertedFill()
+// ----------------------------------------------------------------------
+
+function UseInvertedFill(Bool bNewInvert)
+{
+	bInvertFill = bNewInvert;
 }
 
 // ----------------------------------------------------------------------

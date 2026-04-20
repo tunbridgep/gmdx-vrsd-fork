@@ -1,5 +1,5 @@
 //=============================================================================
-// MenuScreenPlaythroughModifiers                                               //RSD: Adapted from MenuScreenCustomizeKeys.uc so I can steal the scrolling window
+// MenuScreenPlaythroughModifiers
 //=============================================================================
 
 class MenuScreenPlaythroughModifiers expands MenuScreenListWindow;
@@ -25,6 +25,7 @@ function BuildModifierList()
         RemoveItem("bRestrictedSaving");
         RemoveItem("bHardcoreFilterOption");
         RemoveItem("bImprisonmentTakesAmmo");
+        RemoveItem("bGEPUsesWPByDefault");
         //RemoveItem("bRestrictedMetabolism");
     }
 
@@ -51,26 +52,27 @@ defaultproperties
      items(3)=(HelpText="Randomizes weapon mods. Mods are swapped for related types (e.g. accuracy for range) based on in-game item distribution.",actionText="Weapon Mod Randomization",variable="bRandomizeMods");
      items(4)=(HelpText="Shuffles the order of aug canisters in the game. Total number of each aug canister type is unchanged.",actionText="Aug Canister Shuffle",variable="bRandomizeAugs");
      items(5)=(HelpText="Equipped weapons will be swapped randomly between hostile enemies. Total number of weapons remains the same.",actionText="Enemy Weapon Shuffle",variable="bRandomizeEnemies");
-     items(6)=(HelpText="Replaces drug effects with temporary buffs on use and debuffs on withdrawal. Addiction accumulates with use and depreciates through play.",actionText="Addiction System",variable="bAddictionSystem");
+     items(6)=(HelpText="Replaces drug effects with temporary buffs on use and debuffs on withdrawal. Addiction accumulates with use and depreciates through play.",actionText="Addiction System",variable="bAddictionSystem",defaultValue=1);
      items(7)=(HelpText="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal. Always enabled in Hardcore mode.",actionText="Restricted Saving",variable="bRestrictedSaving");
      items(8)=(HelpText="Prevents using keypads and logins unless you have them in your notes. No Plot Skips setting also prevents certain sequence breaks.",actionText="Undiscovered Codes",variable="iNoKeypadCheese",valueText2="Enabled + No Plot Skips",valueText3="Enabled + NPS + Keypad Length Unknown");
-     items(9)=(HelpText="Allow arming Miguel and giving Tiffany thermoptic camo. Also enables some cut content from the base game, such as various phone messages.",actionText="Additional NPC Interactions",variable="bCutInteractions");
+     items(9)=(HelpText="Allow arming Miguel and giving Tiffany thermoptic camo. Also enables some cut content from the base game, such as various phone messages.",actionText="Additional NPC Interactions",variable="bCutInteractions",defaultValue=1);
      items(10)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
      items(11)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
      items(12)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
-     items(13)=(HelpText="When imprisoned by MJ12, your killswitch will be activated, exactly how it's described by Paul",actionText="Killswitch Engaged",variable="bRealKillswitch");
+     items(13)=(HelpText="When imprisoned by MJ12, your killswitch will be activated, exactly how it's described by Paul",actionText="Killswitch Engaged",variable="bRealKillswitch",defaultValue=1);
      items(14)=(HelpText="In hardcore mode you face enemies and hazards in greater numbers. Enable this option to have this feature in other difficulty modes.",actionText="Overwhelming Odds",variable="bHardcoreFilterOption");
-     items(15)=(HelpText="Collectibles can be found around the game world. There's one per mission.",actionText="Collectibles",variable="bCollectibles");
+     items(15)=(HelpText="Collectibles can be found around the game world. There's one per mission.",actionText="Collectibles",variable="bCollectibles",defaultValue=1);
 	 items(16)=(HelpText="Enable cameras to detect unconscious bodies. Realism option - Not recommended for normal play.",actionText="Cameras Detect Unconscious",variable="bCameraDetectUnconscious");
 	 items(17)=(HelpText="When enabled, NPCs with cloaking will be permanently cloaked. Extremely difficult - Not recommended for normal play.",actionText="Permanent Cloaking",variable="bPermaCloak");
      items(18)=(HelpText="No longer receive a starting weapon from Paul during the first mission.",actionText="Limited Starting Equipment",variable="bNoStartingWeaponChoices");
      items(19)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
      items(20)=(HelpText="Start with a large number of skill points, but you won't be able to gain any more during play.",actionText="UNATCO Academy Graduate",variable="bSkillsSetAtStart");
-     items(21)=(HelpText="When imprisoned by MJ12, lose ammo in addition to weapons. Your ammo will be placed in a box and can be recovered from the Armoury.",actionText="Take Ammo when Imprisoned",variable="bImprisonmentTakesAmmo");
+     items(21)=(HelpText="When imprisoned by MJ12, lose ammo in addition to weapons. Your ammo will be placed in a box and can be recovered from the Armoury.",actionText="Take Ammo when Imprisoned",variable="bImprisonmentTakesAmmo",defaultValue=1);
      items(22)=(HelpText="When completing missions, UNATCO will clean up corpses and confiscate unopened crates.",actionText="Competent Cleaning Crews",variable="bUNATCOCleanup");
      items(23)=(HelpText="Taking damage will add traumas, which need to be removed using medical kits.",actionText="Trauma System",variable="bWoundSystem");
      items(24)=(HelpText="Adds the Shipping and Receiving map, originally released as a GMDX v9 addon. It's accessible as part of the NYC Dockyard mission.",actionText="Shipping and Receiving",variable="bShippingAndReceiving");
-     items(25)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(25)=(HelpText="The GEP Gun will use WP Rockets by default. All GEP Gun pickups will contain WP rockets. Recommended. Always enabled in Hardcore Mode",actionText="GEP Gun defaults to WP Rockets",variable="bGEPUsesWPByDefault");
+     items(26)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true

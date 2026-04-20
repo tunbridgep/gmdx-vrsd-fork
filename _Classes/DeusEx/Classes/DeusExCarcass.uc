@@ -1428,6 +1428,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                     if (!bPickedItemUp && item != None)
 					{
+
 						// Special case if this is a DeusExPickup(), it can have multiple copies
 						// and the player already has it.
 
@@ -1524,6 +1525,19 @@ function Frob(Actor Frobber, Inventory frobWith)
 										startcopies++;
 									}
 								}
+
+                                //SARGE: Stupid fix for empty chargedpickups
+                                if (invItem.Charge == 0 && ChargedPickup(item) != None)
+                                {
+                                    ChargedPickup(invItem).bActivatable=true;//RSD: Since now you can hold one at 0%
+                                    ChargedPickup(invItem).bDrained = false;
+                                    ChargedPickup(invItem).unDimIcon();
+                                    ChargedPickup(invItem).Charge = ChargedPickup(invItem).default.Charge;
+                                    invItem.numCopies -= 1;
+                    
+                                    if (player.bItemRechargeSound) //SARGE: Rosodude asked for this to be an option.
+                                        LootPickupSound = sound'BioElectricHiss';
+                                }
 
 								DeleteInventory(item);
                                 ShowFixedPickupMessage(player,invItem,itemCount,true);

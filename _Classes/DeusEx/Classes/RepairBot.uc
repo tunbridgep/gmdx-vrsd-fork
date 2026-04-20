@@ -14,8 +14,6 @@ var int lowerThreshold;                                                         
 var localized string msgCharging;
 var localized string msgDepleted;
 
-var int chargeRefreshTimeShort; //SARGE: Have a much shorter charge time if we have charges.
-
 // ----------------------------------------------------------------------
 // Network replication
 // ----------------------------------------------------------------------
@@ -122,8 +120,7 @@ simulated function ActivateRepairBotScreens(DeusExPlayer PlayerToDisplay)
    if (root != None)
    {
       //SARGE: Shorten charge time if we're on higher difficulties, since we have limited charges to stop abuse already.
-      if (playerToDisplay.CombatDifficulty > 1.0)
-          chargeRefreshTime = chargeRefreshTimeShort;
+      chargeRefreshTime = default.chargeRefreshTime / (lowerThreshold + 1);
       winCharge = HUDRechargeWindow(root.InvokeUIScreen(Class'HUDRechargeWindow', True));
       root.MaskBackground( True );
       winCharge.SetRepairBot( Self );
@@ -231,7 +228,6 @@ defaultproperties
 {
      chargeAmount=60
      chargeRefreshTime=30
-     chargeRefreshTimeShort=15
      mpChargeRefreshTime=30
      mpChargeAmount=100
      chargeMaxTimes=3

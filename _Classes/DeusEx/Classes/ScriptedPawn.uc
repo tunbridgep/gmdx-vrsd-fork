@@ -540,6 +540,8 @@ var bool bAlreadyDistributedWeapon;
 //SARGE: Cloak manager
 var travel CloakManager CloakManager;
 
+var const localized string msgDance;            //SARGE: Shenanigans dance string
+
 //SARGE: Enum used for the swoocy bullshit that we have to do for our IsValidEnemy override.
 enum EAllianceCheckType
 {
@@ -3884,6 +3886,7 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
     {
         Multiskins[6]=None;
         bHasHelmet=False;
+        AugmentiqueData.textures[6] = None;
         if (IsA('UNATCOTroop'))
             CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
         else if (IsA('Soldier'))
@@ -8902,10 +8905,14 @@ function Tick(float deltaTime)
         {
             bNoSmooth=false;
             CloakManager.UpdateSkin(self);
+            if (Weapon != None)
+                CloakManager.UpdateSkin(Weapon);
             ScaleGlow = CloakManager.GetScaleGlow();
         }
         else
         {
+            if (DeusExWeapon(Weapon) != None && Style != default.Style)
+                DeusExWeapon(Weapon).UpdateHDTPSettings();
             ScaleGlow = default.ScaleGlow;
             Style = default.Style;
             bNoSmooth=default.bNoSmooth;
@@ -16747,7 +16754,15 @@ state Stunned
 
 Begin:
 	Acceleration = vect(0, 0, 0);
-	PlayStunned();
+
+    //SARGE: Shenanigans Dancing
+    if (DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bShenanigans && HasAnim('Dance'))
+    {
+        PlayDancing();
+        DeusExPlayer(GetPlayerPawn()).ClientMessage(msgDance);
+    }
+    else
+        PlayStunned();
 	/*if (enemy != None && enemy.IsA('DeusExPlayer'))                           //RSD: Reworked stun duration mechanics
 	{
 	    if (DeusExPlayer(enemy).inHand != None && DeusExPlayer(enemy).inHand.IsA('WeaponRiotProd')) //CyberP: flawless hack! :/
@@ -17297,7 +17312,12 @@ function Sound GetDeathSound()
 
     //If we're using our original sound, or not valid, use the default
     else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
-        return default.Die;
+    {
+        //SARGE: But only if we actually have a meaningful one set...
+        //Otherwise we need to defer to the vanilla code below (to fix chicks)
+        if (default.Die != Sound'DeusExSounds.Player.MaleDeath')
+            return default.Die;
+    }
 
     //Otherwise do vanilla sounds, if set
     else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
@@ -17553,4 +17573,5 @@ defaultproperties
      randomPainSoundsM(17)=Sound'DeusExSounds.Player.MaleGrunt'
      bCanBlink=true
      fHighAlertChance=0.2
+     msgDance="Get electric on the dance floor!"
 }

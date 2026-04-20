@@ -27,6 +27,7 @@ var Color    col02;
 var Color    colRed;
 var Color    colBlue; //SARGE: Added
 var Color    colWhite; //SARGE: Added
+var Color    colReserved; //SARGE: Added
 
 var float    damageFlash;
 var float    healFlash;
@@ -41,6 +42,7 @@ var float	breathPercent;
 
 // Energy bar
 var ProgressBarWindow winEnergy;
+var ProgressBarWindow winEnergyReserve;
 var float	energyPercent;
 
 // Used by DrawWindow
@@ -117,6 +119,10 @@ event InitWindow()
 	
     winEnergy = CreateProgressBar(15, 20);
 	winEnergy.UseScaledColor(False);
+    
+    winEnergyReserve = CreateProgressBar(15, 20);
+	winEnergyReserve.UseScaledColor(False);
+
 	winBreath = CreateProgressBar(61, 20);
 
     UpdateBars();
@@ -128,7 +134,16 @@ function UpdateBars()
         winEnergy.SetColors(colWhite,colWhite);
     else
         winEnergy.SetColors(colBlue,colBlue);
+        
+    winEnergyReserve.SetColors(colReserved,colReserved);
+
+    if (player.bEnergyBarShowsReserve)
+        winEnergyReserve.Show();
+    else
+        winEnergyReserve.Hide();
+
     winEnergy.bSpecialFX = player.bAnimBar1;
+    winEnergyReserve.bSpecialFX = player.bAnimBar1;
     winBreath.bSpecialFX2 = player.bAnimBar2;
 }
 
@@ -454,8 +469,18 @@ event Tick(float deltaSeconds)
         //if (!winBreath.IsVisible())
 		//		winBreath.Show();
 		// Calculate the energy bar percentage
-		energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
-		winEnergy.SetCurrentValue(energyPercent);
+        if (player.bEnergyBarShowsReserve)
+        {
+            energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy(true));
+            winEnergy.SetCurrentValue(energyPercent + player.AugmentationSystem.CalcEnergyReserve());
+        }
+        else
+        {
+            energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
+            winEnergy.SetCurrentValue(energyPercent);
+        }
+
+        winEnergyReserve.SetCurrentValue(player.AugmentationSystem.CalcEnergyReserve());
 
         breathPercent = 100.0 * player.swimTimer / player.swimDuration;
 	    breathPercent = FClamp(breathPercent, 0.0, 100.0);
@@ -587,4 +612,5 @@ defaultproperties
 	 swimming="Swimming";
 	 tiptoes="Tiptoes";
 	 mantling="Mantling";
+     colReserved=(R=255,G=10,B=10)
 }

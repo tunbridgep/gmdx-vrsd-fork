@@ -267,6 +267,7 @@ var vector ironSightLoc;     //unused
 var float meleeStaminaDrain;
 var bool activateAn;
 var float lerpAid;
+const lerpAidSpeed = 7500;                   //SARGE: How far to lerp per second
 var float sustainedRecoil;
 var bool bMantlingEffect;
 var float PawnAccuracyModifier;
@@ -339,11 +340,12 @@ var localized String msgRequires;                                     //Sarge: "
 var float GEPinout;
 var bool bGEPout;
 var vector MountedViewOffset;
+var vector MountedViewOffset2; //HDTP offset
+var vector MountedViewOffset3; //Clyzm offset
 var float scopeTime;
-var vector axesX;//fucking weapon rotation fix
-var vector axesY;
-var vector axesZ;
-var bool bFancyScopeAnimation;
+var const bool bFancyScopeAnimation;
+var const bool bShowWeaponWhenZoomed;
+var const float totalScopeTime;
 
 //SARGE: String when weapon mods are copies from another weapon
 var localized String msgModsCopied;
@@ -1010,8 +1012,6 @@ simulated event RenderOverlays( canvas Canvas )
 	local bool bPlayerOwner;
 	local int Hand;
 	local DeusExPlayer PlayerOwner;
-    local Vector cachedDrawOffset;
-    local Rotator cachedRotation;
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
@@ -1023,8 +1023,8 @@ simulated event RenderOverlays( canvas Canvas )
 		//if ( PlayerOwner.DesiredFOV != PlayerOwner.DefaultFOV )
 		//	return;
 		//if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
-		if (bZoomed)
-		    return;
+		if (bZoomed && !bShowWeaponWhenZoomed)
+            return;
 
 		bPlayerOwner = true;
 		Hand = PlayerOwner.Handedness;
@@ -1066,17 +1066,7 @@ simulated event RenderOverlays( canvas Canvas )
 	else
 		bSetFlashTime = false;
         
-    if (activateAn && bHasScope)
-        DrawScopeAnimation();
-    else
-        activateAn = false;
-        
-    cachedDrawOffset = CalcDrawOffset();
-	if (PlayerOwner != none)
-        cachedRotation = PlayerOwner.GetCurrentViewRotation();
-        
-    
-    PositionViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
+    PositionViewModel(canvas,PlayerOwner,CalcDrawOffset(),PlayerOwner.GetCurrentViewRotation());
 
     if (!bDontActuallyRenderViewModel)
     {
@@ -1113,8 +1103,9 @@ function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawO
     local vector dx, dy, dz;                                                    //RSD: Added
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 
-	SetLocation( Owner.Location + drawOffset );
     NewRot = Pawn(Owner).ViewRotation;
+	
+    SetLocation( Owner.Location + drawOffset );
 
     if (PlayerOwner != None)
     {
@@ -1136,33 +1127,62 @@ function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawO
 // Draw the scope view
 //
 
-function DrawScopeAnimation()
+//SARGE: Fixed so it's no longer frame dependent
+function DrawScopeAnimation(float deltaTime)
 {
-    ScopeToggle(); 
-    activateAn = false;
+    lerpAid = 0;
+    if (bFancyScopeAnimation)
+        DrawFancyScopeAnimation(deltaTime);
+    else
+    {
+        ScopeToggle(); 
+        activateAn = false;
+    }
 }
 
-simulated function DrawFancyScopeAnimation()
+function BecomePickup()
+{
+    bGepOut = false;
+    GEPinout = 0;
+	super.BecomePickup();
+}
+
+function Vector GetMountedViewOffset()
+{
+    if (IsClyzmModel() && VSize(MountedViewOffset3) > 0)
+        return MountedViewOffset3;
+    else if (IsHDTP() && iHDTPModelToggle == 1 && VSize(MountedViewOffset2) > 0)
+        return MountedViewOffset2;
+    else
+        return MountedViewOffset;
+}
+
+//SARGE: Used by the below function.
+//Used to draw our weapon in a certain state of zoom.
+simulated function DrawZoomedState(float inoutstate, float totalscopetime)
 {
     local DeusExPlayer player;
     local rotator rfs;
 	local vector dx;
 	local vector dy;
 	local vector dz;
-	local vector unX,unY,unZ;
-    local int totalScopeTime;
-
-	if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-
-	rfs.Yaw=6912*Fmin(1.0,GEPinout);
-	rfs.Pitch=2912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
+    local vector mvOffset;
+    local float adjust;
+    local vector axesX;//fucking weapon rotation fix
+    local vector axesY;
+    local vector axesZ;
+    local float tsti;
     
+    mvOffset = GetMountedViewOffset();
+
     player = DeusExPlayer(Owner);
+
+    //player.ClientMessage("inoutstate: " $ inoutstate);
+    //Log("inoutstate: " $ inoutstate);
+
+	rfs.Yaw=6912*Fmin(1.0,inoutstate);
+	rfs.Pitch=2912*sin(Fmin(1.0,inoutstate)*Pi);
+	GetAxes(rfs,axesX,axesY,axesZ);
 
 	dx=axesX>>player.ViewRotation;
 	dy=axesY>>player.ViewRotation;
@@ -1171,42 +1191,63 @@ simulated function DrawFancyScopeAnimation()
 
 	SetRotation(rfs);
 
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
+	//PlayerViewOffset=Default.PlayerViewOffset*100;//meh
 	SetHand(player.Handedness); //meh meh
-
-    //SARGE: This probably shouldn't be hardcoded!
-    if (GoverningSkill == Class'DeusEx.SkillWeaponRifle' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
-    {
-        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-        totalScopeTime = 17;
-	}
-	else
-	{
-        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-        totalScopeTime = 25;
-	}
-
+    
+    tsti = 1.0 - totalScopeTime;
+    PlayerViewOffset.X=Smerp(sin(FMin(1.0,inoutstate)*tsti*0.7*Pi),PlayerViewOffset.X,mvOffset.X*100);
+    PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,inoutstate)*tsti*0.7*Pi),PlayerViewOffset.Y,mvOffset.Y*100);
+    PlayerViewOffset.Z=Lerp(sin(FMin(1.0,inoutstate)*tsti*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,inoutstate)*tsti*1.8*Pi)*mvOffset.Z*100);
+        
 	SetLocation(player.Location+ CalcDrawOffset());
-	scopeTime+=1;
+}
 
-	if (scopeTime>=totalScopeTime)
-	{
+simulated function DrawFancyScopeAnimation(float deltaTime)
+{
+    local DeusExPlayer player;
+    local rotator rfs;
+    local float adjust;
+    local float tst, tsti;
+    
+    //SARGE: Rifles will scope a bit faster with the perk.
+    //SARGE TODO: This probably shouldn't be hardcoded!
+    //Was previously 25 and 17 frames, respectively
+    
+    player = DeusExPlayer(Owner);
+
+    tst = totalScopeTime;
+    if (player != None && GoverningSkill == Class'DeusEx.SkillWeaponRifle' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained)
+        tst *= 0.7;
+    
+    adjust = deltaTime / tst;
+
+    if (!bGEPout && GEPinout<1)
+        GEPinout = Fmin(1.0,GEPinout+adjust);
+    else if (bGEPout && GEPinout>0)
+        GEPinout = Fmax(0,GEPinout-adjust);
+
+    DrawZoomedState(GEPinout,tst);
+
+	scopeTime+=deltaTime;
+ 
+    if (bGEPOut && bZoomed)
+        ScopeOff(true);
+	
+    if (scopeTime>=tst)
+    {
+        FullyScoped();
+        if (!bGEPOut)
+            ScopeToggle();
+        SetHand(player.Handedness);
         activateAn = False;
         scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
+        bGEPOut=!bGEPOut;
     }
 }
 
+function FullyScoped()
+{
+}
 
 //
 // PostBeginPlay
@@ -1241,7 +1282,6 @@ local DeusExPlayer playa;
         ClipCount = ReloadCount;
         givenFreeReload = true;
     }
-
 }
 
 function ReloadMaxAmmo()
@@ -1284,6 +1324,7 @@ function PostPostBeginPlay()
 
     if (!bUnlit && ScaleGlow > 0.5)
         ScaleGlow = 0.5;
+
 }
 
 singular function BaseChange()
@@ -1599,7 +1640,7 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
     else if (IsA('WeaponShuriken'))
         PickupAmmoCount = MAX(1,amountPassed / 2);                //SARGE: capped at 2
     else if (IsA('WeaponFlamethrower'))
-        PickupAmmoCount = (amountPassed * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
+        PickupAmmoCount = 10 + (amountPassed * 5);              //SARGE: Now 10-30 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponPepperGun'))
         PickupAmmoCount = 35 + (amountPassed * 3);               //SARGE: Now 38-50 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponAssaultGun'))
@@ -1851,9 +1892,6 @@ function int CalculateTrueDamage()
         hit = HitDamage;
 
     trueDamage = int(hit * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage));
-
-    if (ammoType != None && ammoType.Class == class'AmmoRocketWP')
-        trueDamage *= 0.25 * 0.25;
 
     //P.ClientMessage("Damage: " $ hit $ " - " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")" $ ", AmmoType is " $ ammoType.Class);
 	return trueDamage;
@@ -2610,8 +2648,36 @@ simulated function Tick(float deltaTime)
 	  LockTimer = 0;
 		return;
 	}
+        
+
+    if (!activateAn && bZoomed && bShowWeaponWhenZoomed && Gepinout >= 1.0)
+        DrawZoomedState(1.0,totalScopeTime);
+    else if (activateAn && bHasScope)
+        DrawScopeAnimation(deltaTime);
+    else
+        activateAn = false;
 
     bCachedNearWall = NearWallCheck();
+
+    //SARGE: Do near wall detection
+    //Moved from CalcDrawOffset so that it can be done in Tick
+    //This lets it be independent of framerate.
+    //The actual view offset is adjusted in CalcDrawOffset.
+    if (PlayerPawn(Owner) != None && activateAn == False /*&& !IsA('WeaponGEPGun')*/ && !bIsPlaceableOnWall)
+    {
+        if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && DeusExPlayer(Owner).bWeaponWallDetection && (bCachedNearWall || bMantlingEffect))
+        {
+            lerpAid -= lerpAidSpeed*deltaTime;
+            if (lerpAid < -1000)
+                lerpAid = -1000;
+        }
+        else
+        {
+            lerpAid += lerpAidSpeed*deltaTime;
+            if (lerpAid > 0)
+                lerpAid = 0;
+        }
+    }
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -3066,10 +3132,16 @@ function ScopeOn()
 	}
 }
 
-function ScopeOff()
+function ScopeOff(optional bool bNoResetAnim)
 {
 	if (bHasScope && bZoomed && (Owner != None) && Owner.IsA('DeusExPlayer'))
 	{
+        if (!bNoResetAnim)
+        {
+            gepinout = 0;
+            bGepOut = false;
+        }
+
 		bZoomed = False;
 		// Hide the Scope View
 	  RefreshScopeDisplay(DeusExPlayer(Owner), False, bZoomed);
@@ -3111,7 +3183,7 @@ simulated function RefreshScopeDisplay(DeusExPlayer player, bool bInstant, bool 
     scope = root.scopeView;
     if (scope == None) return;
 
-	bIsGEP=bHasScope&&(IsA('WeaponGEPGun'))&&(player.RocketTarget!=none);
+	bIsGEP=bHasScope&&(IsA('WeaponGEPGun'));//&&(player.RocketTarget!=none);
 
 	if (bScopeOn)
 		// Show the Scope View
@@ -3375,14 +3447,17 @@ function private PreDisplayWeapon(bool overlay)
         EraseMuzzleFlashTexture();
         DisplayCloaking(overlay,ScaleGlow,OP.CloakManager.IsCloaked(),OP.CloakManager.IsRadar());
     }
+    /*
     else if (OSP != None && OSP.CloakManager != None && OSP.CloakManager.IsInAnyState())
     {
         bNoSmooth=false;
+        DisplayWeapon(overlay);
         OSP.CloakManager.UpdateSkin(self);
         ScaleGlow = OSP.CloakManager.GetScaleGlow();
         EraseMuzzleFlashTexture();
         DisplayCloaking(overlay,ScaleGlow,OSP.CloakManager.IsCloaked(),OSP.CloakManager.IsRadar());
     }
+    */
     else
         bNoSmooth=default.bNoSmooth;
 }
@@ -4788,39 +4863,26 @@ simulated function vector CalcDrawOffset()
 	}
 	else
 	{
-	    if (activateAn == False && !IsA('WeaponGEPGun') && !bIsPlaceableOnWall)
+        //Apply lerp-aid
+	    if (activateAn == False && !bGEPOut)
 	    {
-		if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && DeusExPlayer(Owner).bWeaponWallDetection && (bCachedNearWall || bMantlingEffect))
-	    {
-	       lerpAid -= 8.4;
-	       if (lerpAid < -100)
-	           lerpAid = -100;
-	       else
-	           PlayerViewOffset.X += lerpAid;
-	    }
-        else
-        {
-	       lerpAid += 8.4;
-	       if (lerpAid > 0)
-	       {
-	           lerpAid = 0;
-	           PlayerViewOffset.X = default.PlayerViewOffset.X*100;
-	       }
-	       else
-	           PlayerViewOffset.X -= lerpAid;
-        }
+            PlayerViewOffset.X = default.PlayerViewOffset.X*100;
+            PlayerViewOffset.X += lerpAid;
         }       
-        // copied from Engine.Inventory to not be FOVAngle dependent
+
+// copied from Engine.Inventory to not be FOVAngle dependent
 		PawnOwner = Pawn(Owner);
 
         vr = PawnOwner.ViewRotation;
         if (PawnOwner.isa('DeusExPlayer'))
             vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
 
-		DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
-		DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
+        DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+        DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
+
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
 		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
+
 		DrawOffset += WeaponBob;
 	}
 	if (Owner.IsA('DeusExPlayer'))
@@ -7507,7 +7569,7 @@ Begin:
 	FinishAnim();
 
 	if (bWasZoomed)
-		ScopeOn();
+		activateAn = true;
 
 	GotoState('SimIdle');
 }
@@ -7657,6 +7719,18 @@ Begin:
 state DownWeapon
 {
 ignores Fire, AltFire;
+	
+    function EndState()
+	{
+	    Super.EndState();
+	    activateAn = False;
+        scopeTime = 0;
+        GEPinout = 0;
+        bGEPOut=false;
+        PlayerViewOffset=Default.PlayerViewOffset*100;
+        if (Owner != None && Owner.IsA('DeusExPlayer'))
+            SetHand(DeusExPlayer(Owner).Handedness);
+	}
 
 	function bool PutDown()
 	{
@@ -7890,4 +7964,5 @@ defaultproperties
      addonPenalties(1)=0.2 //Silencer
      addonPenalties(2)=0.075 //Laser
      currentWeaponSkin="default"
+     totalScopeTime=0.41
 }

@@ -68,7 +68,7 @@ defaultproperties
      ItemName="WP Rocket"
      HDTPMesh="HDTPItems.HDTPRocketHE"
      hdtpReference=Class'DeusEx.WeaponGEPGun'
-     Damage=60.000000
+     Damage=15.000000
      ImpactSound=Sound'DeusExSounds.Generic.SmallExplosion2'
      Mesh=LodMesh'DeusExItems.RocketHE'
      AmbientSound=Sound'DeusExSounds.Weapons.WPApproach'

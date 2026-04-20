@@ -74,7 +74,7 @@ static function SetSkinStyle(Actor src, ERenderStyle newStyle, optional texture 
 // SARGE: Copied from ScriptedPawn
 // ----------------------------------------------------------------------
 
-static function ResetSkinStyle(Actor src)
+static function ResetSkinStyle(Actor src, optional bool bResetStyle)
 {
 	local int i;
 
@@ -82,8 +82,12 @@ static function ResetSkinStyle(Actor src)
 		src.MultiSkins[i] = src.Default.MultiSkins[i];
 	src.Skin      = src.Default.Skin;
 	src.ScaleGlow = src.Default.ScaleGlow;
-	src.Style     = src.Default.Style;
-	src.bUnlit     = src.Default.bUnlit;
+
+    if (bResetStyle)
+    {
+        src.Style     = src.Default.Style;
+        src.bUnlit     = src.Default.bUnlit;
+    }
 }
 
 //SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
@@ -97,15 +101,25 @@ static function GlassesFix(Pawn P)
     if (P.Style == STY_Normal)
         return;
 
-    if (P.Mesh == LodMesh'DeusExCharacters.GM_Trench' || string(P.Mesh) == "Augmentique.AMTGM_Trench")
+    if (P.Mesh == LodMesh'DeusExCharacters.GM_Trench' || P.Mesh == LodMesh'DeusExCharacters.GM_Trench_F' || string(P.Mesh) == "Augmentique.AMTGM_Trench")
     {
-        Log(P $ " Mesh: " $ string(P.Mesh));
+        //Log(P $ " Mesh: " $ string(P.Mesh));
         P.multiSkins[6] = GetStyleTexture(P.Style);
         P.multiSkins[7] = GetStyleTexture(P.Style);
-        Log(P $ " Multiskins[6]: " $ P.multiskins[6]);
+        //Log(P $ " Multiskins[6]: " $ P.multiskins[6]);
     }
     else if (P.Mesh == LodMesh'RSDCrap.Fixed_Jumpsuit' || P.Mesh == LodMesh'DeusExCharacters.GM_Jumpsuit')
     {
         P.multiSkins[5] = GetStyleTexture(P.Style);
+    }
+    else if (P.Mesh == LodMesh'DeusExCharacters.GFM_TShirtPants')
+    {
+        P.multiSkins[3] = GetStyleTexture(P.Style);
+        P.multiSkins[4] = GetStyleTexture(P.Style);
+    }
+    else if (P.Mesh == LodMesh'DeusExCharacters.GM_Suit')
+    {
+        P.multiSkins[5] = GetStyleTexture(P.Style);
+        P.multiSkins[6] = GetStyleTexture(P.Style);
     }
 }

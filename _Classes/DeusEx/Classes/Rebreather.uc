@@ -3,6 +3,19 @@
 //=============================================================================
 class Rebreather extends ChargedPickup;
 
+function PostBeginPlay()
+{
+    local DeusExPlayer P;
+    P = DeusExPlayer(GetPlayerPawn());
+
+    super.PostBeginPlay();
+
+    if (P != None && P.bExperimentalRebreathers)
+    {
+        bDisposable = true;
+    }
+}
+
 function ChargedPickupUpdate(DeusExPlayer Player)
 {
 	Super.ChargedPickupUpdate(Player);

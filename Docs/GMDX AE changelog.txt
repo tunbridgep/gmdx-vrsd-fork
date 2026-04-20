@@ -5,6 +5,9 @@ New Features:
     - Weapon skins are available throughout the world.
     - Once unlocked, they can be applied to any weapon of the same type.
     - Weapon skin unlocks are kept between playthroughs.
+- Medical and Repair bots recharge timer is now reduced on higher difficulties because they have limited uses.
+- The installer now installs DXVK. Use `dxvk_enable.cmd` in the System folder to use it.
+- Added a visual red section to the energy bar to show energy reserve.
 - Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
     - Unconscious bodies are relatively vulnerable and can't fall very far without dying!
     - This can be disabled in the Gameplay menu.
@@ -95,7 +98,12 @@ New Features:
 - The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
+- Fixed crash to desktop when being killed by hacking timeouts.
+- Fixed reserved energy going into the negative sometimes when installing Synthetic Heart.
 - Fixed transparent background for the Stealth Skill in the Skills menu.
+- Fixed extra hacking text being added to the Computers skill description when not using the hacking changes.
+- Fixed "Qty 0/0" labels on some items when using the option to make more inventory items show quantities.
+- Various fixes for the Keypad/Computer notes screen.
 - Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
     - It now also shows all addons correctly when zooming.
 - Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
@@ -109,6 +117,7 @@ Bugfixes:
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
+- Fixed a crash when scrolling up or down through weapon slots when improsoned by MJ12 and having all items taken.
 - Fixed typo in Synth Heart description.
 - Fixed attempting to select melee weapons with Left Frob when unable to use them due to the Weapon Requirements Matter modifier.
 - Fixed a bug where interacting with empty datacubes would cause the crosshair and selection brackets to disappear.
@@ -120,6 +129,7 @@ Bugfixes:
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 - Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
 - Fixed the light on the Flamethrower continuing to show after dropping the weapon.
+- Fixed an issue where weapon firing sounds would become silent under certain circumstances.
 - Fixed a crash when changing ammo types from the inventory screen.
 - The Pedometer heartrate display will is no longer unreadable and won't update every frame
     - Now it trends towards target values slowly, like a real heart.
@@ -127,6 +137,8 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Sleight of Hand and Doorsman have been swapped in the Lockpicking perk tree.
+- Flamethrower enemies now drop 11-35 rounds of ammunition, rather than 5-25
 - Added a scope animation for the Plasma Rifle to match the other weapons.
 - The GMDX v9 feature to move weapons back when you're up next to a wall is now optional and can be toggled in the QoL settings as I know some people don't like it.
 - Significantly improved weapon rendering efficiency including removing up to 4 additional `Trace()`'s per frame (!!!) caused by a previous developer's bad coding habits.
@@ -228,7 +240,6 @@ Bugfixes:
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
 - Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
 - Fixed the information display not updating correctly when attaching/detatching addons for unequipped weapons.
-- Fixed an issue where weapon firing sounds would become silent under certain circumstances.
 - Fixed some typos.
 
 Map Changes:
@@ -407,6 +418,7 @@ Map Changes:
   - Made the UC enemy respawners spawn more reliably.
 
 Bug Fixes:
+- Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
 - Complete overhaul of the Unknown Codes system, now it should be much more robust and a lot less error-prone.
 - Fixed GMDX:AE issue where pain and death sounds were not randomising accurately.
 - Fixed several "Accessed None" and "Array index out of bounds" errors.
@@ -463,6 +475,7 @@ Bug Fixes:
 - Ammo counter for current bullets in clip now scales properly when determining whether to use green or red text when max ammo is an odd number.
 
 Misc Changes:
+- Added engine fix DLL to allow playing at high framerates.
 - Removed the 1-2 second recharge time on most augmentations.
 - The QoL Menu has now been reduced to only the most impactful and important options. Turn on Advanced Mode to see all of the options.
 - The mod now includes RenderExt by Hanfling, which should prevent rendering errors and crashes.

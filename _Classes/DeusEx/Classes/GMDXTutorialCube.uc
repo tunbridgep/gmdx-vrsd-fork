@@ -75,6 +75,7 @@ function UpdateTextTag()
             str = str $ int(HackText);
 
             textTag = player.flagBase.StringToName(str);
+            itemTitle = GetItemTitle();
         }
     }
 }
@@ -91,7 +92,7 @@ function Tick(float deltaTime)
 
 defaultproperties
 {
-    //datacubeTitles(0)=(textTag="GMDXText.Datacube00",replacement="Important Information")
+    datacubeTitles(0)=(textTag="GMDXText.Datacube00",replacement="Excellent")
     datacubeTitles(1)=(textTag="GMDXText.Datacube01",replacement="Swimming Tips")
     datacubeTitles(2)=(textTag="GMDXText.Datacube02",replacement="Ladder Jumping")
     datacubeTitles(3)=(textTag="GMDXText.Datacube03",replacement="Accuracy Breakdown")

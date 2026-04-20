@@ -70645,15 +70645,15 @@ Begin Actor Class=Brush Name=Brush499
     Brush=Model'MyLevel.Model523'
     Name=Brush499
 End Actor
-Begin Actor Class=AugmentationUpgradeCannisterOverdrive Name=AugmentationUpgradeCannisterOverdrive0
+Begin Actor Class=AugmentationUpgradeCannister Name=AugmentationUpgradeCannister0
     Physics=PHYS_None
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=AugmentationUpgradeCannisterOverdrive
+    Tag=AugmentationUpgradeCannister
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-5848.572754,Y=-1040.255127,Z=94.812950)
     OldLocation=(X=-5849.483398,Y=-1032.709839,Z=29.279774)
-    Name=AugmentationUpgradeCannisterOverdrive0
+    Name=AugmentationUpgradeCannister0
 End Actor
 Begin Actor Class=Light Name=Light215
     LastRenderTime=0.317498

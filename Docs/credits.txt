@@ -8,7 +8,7 @@ GMDX vRSD was created by RoSoDude (https://rosodudemods.wordpress.com/)
 This fork is possible thanks to the following awesome people:
 
 - Sarge - Programmer, Project Lead.
-- Lady Trash - Programmer.
+- Lord Trashcan - Programmer.
 - Solomon Ichi - Programmer.
 - RoSoDude - Game Design advice and some programming help.
 - Xriborg - Sound Design, all LDDP content.
@@ -24,6 +24,7 @@ This fork is possible thanks to the following awesome people:
 - TheAstropath - for the new more readable HUD Fonts.
 - The Scummiest of them All - for the GMDX AE logos, splash screens, and other promotional artwork.
 - Popmechanics - Augmentique weapon skins
+- NG+ - Discord server organization and community management.
 
 This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe, Made In China,
@@ -31,6 +32,7 @@ RoSoDude, Solomon Ichi, ShadowDancer, BennyTheFearless, Tony Swan, Corbent, NG+ 
 
 A Very Special Thanks to my Patrons, without whom development would be a miserable experience:
 - BorderlineSilence
+- Woomzy
 
 Special thanks to the Revision Framerowk team for some small code snippets
 which were used as inspiration for fixing the HUD aspect ratio for cinematics,

@@ -282,9 +282,9 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 	//Ygll: adding the hit visual effect for flesh hit
 	if (IsA('DartPoison') || IsA('DartTaser') )
 	{
-		spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
-		spurt.LifeSpan *= 0.7;
-		spurt.DrawScale *= 1.0;
+		//spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
+		//spurt.LifeSpan *= 0.7;
+		//spurt.DrawScale *= 1.0;
 
 		CreateDartHitBaseEffect(false);
 	}

@@ -11,6 +11,7 @@
 # MessageBox MB_OK "Hello world 2!"
 
 # Install DX9 and DX10 renderers
+# Also installs DXVK
 !include .\include\renderers.nsi
 
 SectionGroup "Extras"
