@@ -10656,6 +10656,7 @@ function Inventory GetWeaponOrAmmo(Inventory queryItem)
 function CheckBob(float DeltaTime, float Speed2D, vector Y)
 {
 	local float OldBobTime;
+    local float roll;
     
     bob = 0.016; //SARGE: default.bob doesn't work. Thanks Bob!
     if (iModdedHeadBob == 0) //Disabled
@@ -10692,7 +10693,11 @@ function CheckBob(float DeltaTime, float Speed2D, vector Y)
 		WalkBob.Z = AppliedBob + Bob * Speed2D * sin(12 * BobTime);
 
     WalkBob = WalkBob * 0.55;
-	ViewRotation.Roll = WalkBob.Y*25;
+        
+    roll = AppliedBob + Bob * Speed2D * sin(5 * BobTime) * 25;
+    //Log("roll: " $ roll);
+
+    ViewRotation.Roll = roll;
 }
 
 //SARGE: This is a jerky mess. Let's replace it...
