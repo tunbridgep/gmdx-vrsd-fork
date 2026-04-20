@@ -9,6 +9,6 @@ defaultproperties
     PerkDescription="An agent is able to pick locks and perform acts of theft without arousing suspicion from onlookers."
     PerkSkill=Class'DeusEx.SkillLockpicking'
     PerkCost=100
-    PerkLevelRequirement=1
+    PerkLevelRequirement=2
     PerkValue=1
 }
