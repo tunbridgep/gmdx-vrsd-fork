@@ -24,6 +24,8 @@ var localized String PickupInfo2;
 var localized String PickupInfo5;                                               //RSD: Added to make system generic
 var float chargeMult;                                                           //RSD: Mult for how much of total charge you get back from biocells
 
+var /*const*/ travel bool bDisposable;                                                     //SARGE: If set, this item will be removed once used, and is not rechargable.
+
 //SARGE: Allow keeping this equipped when drained.
 //This is only used for items that don't constantly drain.
 //This means we don't keep constantly unequipping armour etc when it runs out.
@@ -226,22 +228,30 @@ function UsedUp()
 	}
 	if (NumCopies<=0)
 	{
-		//Destroy();  //GMDX                                                    //RSD: Bottom one left at 0% mostly so new repair bot features aren't hell
-		NumCopies=1;                                                            //RSD: Stuff
-		Charge = 0;                                                             //RSD: To ensure we don't have slightly negative charges
-        bDrained = true;
-		UpdateBeltText();
-        if (bUnequipWhenDrained)												//SARGE: No longer unequip. Now we allow wearing drained items.
+        if (bDisposable)
         {
-            GotoState('DeActivated');
-            bActivatable = false;
+            Destroy();
         }
-		DimIcon();
+        else
+        {
+            //Destroy();  //GMDX                                                    //RSD: Bottom one left at 0% mostly so new repair bot features aren't hell
+            NumCopies=1;                                                            //RSD: Stuff
+            Charge = 0;                                                             //RSD: To ensure we don't have slightly negative charges
+            bDrained = true;
+            UpdateBeltText();
+            if (bUnequipWhenDrained)												//SARGE: No longer unequip. Now we allow wearing drained items.
+            {
+                GotoState('DeActivated');
+                bActivatable = false;
+            }
+            DimIcon();
+        }
 	}
 	else
 	{
-        bDrained = true;
-        if (bUnequipWhenDrained)												//SARGE: No longer unequip. Now we allow wearing drained items.
+        if (!bDisposable)
+            bDrained = true;
+        if (bDisposable || bUnequipWhenDrained)						   			//SARGE: No longer unequip. Now we allow wearing drained items.
             GotoState('DeActivated');
 		//GotoState('Activated');                                                 //RSD: Automatically activate the next one in the stack
 		Charge=default.Charge;  //give back charge and make activatable
