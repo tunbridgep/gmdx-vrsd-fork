@@ -122,6 +122,7 @@ Bugfixes:
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 - Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
 - Fixed the light on the Flamethrower continuing to show after dropping the weapon.
+- Fixed an issue where weapon firing sounds would become silent under certain circumstances.
 - Fixed a crash when changing ammo types from the inventory screen.
 - The Pedometer heartrate display will is no longer unreadable and won't update every frame
     - Now it trends towards target values slowly, like a real heart.
@@ -231,7 +232,6 @@ Bugfixes:
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
 - Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
 - Fixed the information display not updating correctly when attaching/detatching addons for unequipped weapons.
-- Fixed an issue where weapon firing sounds would become silent under certain circumstances.
 - Fixed some typos.
 
 Map Changes:
