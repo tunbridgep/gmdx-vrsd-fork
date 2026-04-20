@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Medical and Repair bots recharge timer is now reduced on higher difficulties because they have limited uses.
 - The installer now installs DXVK. Use `dxvk_enable.cmd` in the System folder to use it.
 - Added a visual red section to the energy bar to show energy reserve.
 - Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
