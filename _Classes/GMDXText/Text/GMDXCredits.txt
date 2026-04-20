@@ -22,6 +22,7 @@
 <P>Diva - for the masked models (except GM_Trench)
 <P>TheAstropath - for the new more readable HUD Fonts
 <P>Popmechanics - Augmentique weapon skins
+<P>NG+ - Discord server organization and community management.
 <P>
 <B>Testing and QA
 <P>Julian, Georg, the1truepickaxe, Xriborg, domitomi,
