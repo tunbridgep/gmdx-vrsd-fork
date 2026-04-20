@@ -94,6 +94,7 @@ New Features:
 - The Dragon's Tooth Sword can now be recharged using Repair bots
 
 Bugfixes:
+- Fixed crash to desktop when being killed by hacking timeouts.
 - Fixed reserved energy going into the negative sometimes when installing Synthetic Heart.
 - Fixed transparent background for the Stealth Skill in the Skills menu.
 - Fixed extra hacking text being added to the Computers skill description when not using the hacking changes.

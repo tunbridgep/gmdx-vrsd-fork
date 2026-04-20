@@ -821,8 +821,8 @@ function HackDetected(optional bool bDamageOnly)
    // DEUS_EX AMSD In multiplayer, don't damage.
    if (Player.Level.NetMode == NM_Standalone)
    {
-      player.TakeDamage(10, None, Player.Location + vect(0,0,46), vect(0,0,0), 'Shocked');
-      player.TakeDamage(24, None, Player.Location + vect(0,0,46), vect(0,0,0), 'EMP');
+      //SARGE: No longer deals damage directly. Should stop crashes.
+      player.DoHackDamage();
       PlaySound(sound'ProdFire');
    }
    else

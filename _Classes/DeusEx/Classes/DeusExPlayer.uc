@@ -1005,6 +1005,8 @@ var const localized string ShortFuseDisabled;
 
 var travel bool bShortFuseEnabled;          //SARGE: Allow manually activating/deactivating short fuse with the reload key.
 
+var private bool bHackDamage;               //SARGE: Make the player take damage next tick, from hacking failure.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1117,6 +1119,12 @@ function int GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
 
     //DebugMessage("Re: " $ re);
     return re;
+}
+
+//SARGE: Do hack damage. Now moved to a function to prevent crashing
+function DoHackDamage()
+{
+    bHackDamage = true;
 }
 
 //SARGE: Check the aug hum
@@ -19458,6 +19466,15 @@ function MultiplayerTick(float DeltaTime)
     {
         killswitchTimer = 1;
         TakeDamage(1,None,Location,vect(0,0,0),'Poison');
+    }
+
+    //Take hacking damage.
+    //Now done in tick to prevent crashes
+    if (bHackDamage)
+    {
+        TakeDamage(10, None, Location + vect(0,0,46), vect(0,0,0), 'Shocked');
+        TakeDamage(24, None, Location + vect(0,0,46), vect(0,0,0), 'EMP');
+        bHackDamage = false;       
     }
 }
 
