@@ -932,6 +932,7 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
 var travel bool bWoundSystem;                                //SARGE: Enable Traumas when taking damage.
 var travel bool bShippingAndReceiving;                       //SARGE: Enable Shipping and Receiving addon.
+var travel bool bGEPUsesWPByDefault;                         //SARGE: GEP Gun uses WP Rockets by default
 
 var globalconfig bool bDoneGMDXOnboarding;                   //SARGE: If we've done GMDX Onboarding. If not, we will show a messagebox asking if we want to do it.
 
@@ -20499,4 +20500,5 @@ defaultproperties
      iDropStacks=1
      iSecondaryMode=1
      bUnconsciousFallDamage=true
+     bGEPUsesWPByDefault=true
 }

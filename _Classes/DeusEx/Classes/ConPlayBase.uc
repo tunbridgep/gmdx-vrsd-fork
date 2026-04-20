@@ -797,8 +797,9 @@ log("  event.toActor    = " $ event.toActor );
         }
         else if (invItemFrom.IsA('WeaponGEPGun'))
         {
-            //Now that GEP uses WP ammo by default, we should give the player some regular rockets too.
-            TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoRocket',1);
+            //When the GEP uses WP ammo by default, we should give the player some regular rockets too.
+            if (class'DeusExPlayer'.default.bGEPUsesWPByDefault)
+                TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoRocket',1);
         }
     }
     else if (invokeActor != none && invokeActor.IsA('Male2'))           //RSD: accessed none?

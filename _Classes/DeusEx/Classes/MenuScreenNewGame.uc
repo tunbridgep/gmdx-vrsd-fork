@@ -91,6 +91,7 @@ var bool bImprisonmentTakesAmmo;
 var bool bSkillsSetAtStart;
 var bool bUNATCOCleanup;
 var bool bShippingAndReceiving;
+var bool bGEPUsesWPByDefault;
 
 //SARGE: Save our true player name for future playthroughs
 //SARGE: And now the player skin too!
@@ -225,6 +226,7 @@ event InitWindow()
     default.bSkillsSetAtStart=false;                                            //Sarge
     default.bUNATCOCleanup=false;                                               //Sarge
     default.bShippingAndReceiving=false;                                        //Sarge
+    bGEPUsesWPByDefault=default.bGEPUsesWPByDefault;
 	StyleChanged();
 }
 
@@ -900,6 +902,7 @@ function SaveSettings()
     player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
     player.bUNATCOCleanup=bUNATCOCleanup;                                       //Sarge
     player.bShippingAndReceiving=bShippingAndReceiving;                         //Sarge
+    player.bGEPUsesWPByDefault=bGEPUsesWPByDefault;
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 
@@ -1170,6 +1173,7 @@ defaultproperties
      clientTextures(5)=Texture'DeusExUI.UserInterface.MenuNewGameBackground_6'
      bUsesHelpWindow=False
      bEscapeSavesSettings=False
+     bGEPUsesWPByDefault=true
      
      //LDDP Settings
      MorpheusCheckboxPos=(X=3,Y=342)

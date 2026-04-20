@@ -1869,9 +1869,6 @@ function int CalculateTrueDamage()
 
     trueDamage = int(hit * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage));
 
-    if (ammoType != None && ammoType.Class == class'AmmoRocketWP')
-        trueDamage *= 0.25 * 0.25;
-
     //P.ClientMessage("Damage: " $ hit $ " - " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")" $ ", AmmoType is " $ ammoType.Class);
 	return trueDamage;
 }

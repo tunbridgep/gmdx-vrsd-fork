@@ -25,6 +25,7 @@ function BuildModifierList()
         RemoveItem("bRestrictedSaving");
         RemoveItem("bHardcoreFilterOption");
         RemoveItem("bImprisonmentTakesAmmo");
+        RemoveItem("bGEPUsesWPByDefault");
         //RemoveItem("bRestrictedMetabolism");
     }
 
@@ -70,7 +71,8 @@ defaultproperties
      items(22)=(HelpText="When completing missions, UNATCO will clean up corpses and confiscate unopened crates.",actionText="Competent Cleaning Crews",variable="bUNATCOCleanup");
      items(23)=(HelpText="Taking damage will add traumas, which need to be removed using medical kits.",actionText="Trauma System",variable="bWoundSystem");
      items(24)=(HelpText="Adds the Shipping and Receiving map, originally released as a GMDX v9 addon. It's accessible as part of the NYC Dockyard mission.",actionText="Shipping and Receiving",variable="bShippingAndReceiving");
-     items(25)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(25)=(HelpText="The GEP Gun will use WP Rockets by default. All GEP Gun pickups will contain WP rockets. Recommended. Always enabled in Hardcore Mode",actionText="GEP Gun defaults to WP Rockets",variable="bGEPUsesWPByDefault");
+     items(26)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true
