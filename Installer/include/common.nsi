@@ -43,7 +43,7 @@ Quit
 afterFileCheck:
 
 SetOutPath $INSTDIR\Mods\GMDX_AE
-File /r /x DeusEx.u /x RSDCrap.u /x GMDXText.u /x DeusEx.int game\GMDXvSARGE\*
+File /r /x DeusEx.u /x RSDCrap.u /x GMDXText.u /x *.pcx /x DeusEx.int game\GMDXvSARGE\*
 SetOutPath $INSTDIR\Mods\GMDX_AE\System
 File "${SARGE_U_FILES}\DeusEx.u"
 File "${SARGE_U_FILES}\RSDCrap.u"
