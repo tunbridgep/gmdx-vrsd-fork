@@ -615,9 +615,6 @@ function Inventory SpawnItemAtFeet(class<Inventory> itemtype, Actor source, opti
     local Inventory spawnedItem;                            //SARGE: The item spawned at our feet.
     local Vector loc;                                       //SARGE: Stores the position of spawned items
 
-    if (!class'DeusExPlayer'.default.bExperimentalAmmoSpawning)
-        return None;
-
     //SARGE: DIRTY HACK TIME!!!
     //We sometimes need to spawn the relevant weapons instead of ammo!
     switch itemType
