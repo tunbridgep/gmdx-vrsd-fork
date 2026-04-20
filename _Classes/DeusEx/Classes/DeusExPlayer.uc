@@ -20597,4 +20597,5 @@ defaultproperties
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
+     bViewmodelInertia=true
 }
