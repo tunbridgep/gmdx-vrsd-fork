@@ -3,16 +3,6 @@
 //=============================================================================
 class WeaponStealthPistol extends DeusExWeapon;
 
-var vector axesX;//fucking weapon rotation fix
-var vector axesY;
-var vector axesZ;
-var DeusExPlayer player;
-var bool bFlipFlopCanvas;
-var bool bGEPjit;
-var float GEPinout;
-var bool bGEPout;
-var vector MountedViewOffset;
-var float scopeTime;
 var int lerpClamp;
 
 simulated function PreBeginPlay()
@@ -29,57 +19,6 @@ simulated function PreBeginPlay()
 		MaxRange = mpMaxRange;
 		ReloadCount = mpReloadCount;
 	}
-}
-
-simulated function DrawScopeAnimation()
-{
-    local rotator rfs;
-	local vector dx;
-	local vector dy;
-	local vector dz;
-	local vector unX,unY,unZ;
-
-	if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-
-	rfs.Yaw=2912*Fmin(1.0,GEPinout);
-	rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
-    
-    player = DeusExPlayer(Owner);
-
-	dx=axesX>>player.ViewRotation;
-	dy=axesY>>player.ViewRotation;
-	dz=axesZ>>player.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-
-	SetRotation(rfs);
-
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-	SetHand(player.Handedness); //meh meh
-
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-
-	SetLocation(player.Location+ CalcDrawOffset());
-	scopeTime+=1;
-
-    if (scopeTime>=18)
-    {
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
 }
 
 function DisplayWeaponBlood(bool overlay)
@@ -400,23 +339,24 @@ defaultproperties
 {
      weaponOffsets=(X=17.000000,Y=-10.000000,Z=-15.000000)
      MountedViewOffset=(X=4.000000,Y=3.500000,Z=-45.500000)
+     MountedViewOffset3=(X=4.000000,Y=-13.500000,Z=-105.500000)
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'
      EnviroEffective=ENVEFF_Air
      Concealability=CONC_All
-     ShotTime=0.300000
+     ShotTime=0.380000
      NoiseLevel=0.050000
      reloadTime=4.000000
      HitDamage=9
-     maxRange=2560
-     AccurateRange=1280
-     BaseAccuracy=0.750000
+     maxRange=3600
+     AccurateRange=1800
+     BaseAccuracy=0.650000
      bCanHaveScope=True
      ScopeFOV=30
      bCanHaveLaser=True
      AmmoNames(0)=Class'DeusEx.Ammo10mm'
      AmmoNames(1)=Class'DeusEx.Ammo10mmAP'
      bHasMuzzleFlash=False
-     recoilStrength=0.290000
+     recoilStrength=0.625
      mpReloadTime=1.500000
      mpHitDamage=12
      mpBaseAccuracy=0.200000
@@ -476,4 +416,5 @@ defaultproperties
      CollisionHeight=0.800000
      minSkillRequirement=2;
      bFancyScopeAnimation=true
+     totalScopeTime=0.25 //Slightly faster
 }
