@@ -2091,17 +2091,52 @@ function int GetInventoryCount(Name item)
 
 function SetupExperimentals()
 {
-    local WeaponPistol P;
-    local WeaponStealthPistol SP;
     local Rebreather R;
 
     //Set Experimental Rebreathers setting
     class'Rebreather'.default.bDisposable = bExperimentalRebreathers;
+    foreach AllActors(class'Rebreather', R)
+        R.bDisposable = bExperimentalRebreathers;
 }
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
 // ----------------------------------------------------------------------
+
+//SARGE: Make the GEP Gun use HE Rockets
+function SetupGEPAmmo()
+{
+    local WeaponGEPGun GEP;
+        
+    if (bGEPUsesWPByDefault)
+    {
+        class'WeaponGEPGun'.default.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
+        class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
+        class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.RocketWP';
+        class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.Rocket';
+        foreach AllActors(class'WeaponGEPGun', GEP)
+        {
+            GEP.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
+            GEP.AmmoNames[1]=Class'DeusEx.AmmoRocket';
+            GEP.ProjectileNames[0]=Class'DeusEx.RocketWP';
+            GEP.ProjectileNames[1]=Class'DeusEx.Rocket';
+        }
+    }
+    else
+    {
+        class'WeaponGEPGun'.default.AmmoNames[0]=Class'DeusEx.AmmoRocket';
+        class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
+        class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.Rocket';
+        class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        foreach AllActors(class'WeaponGEPGun', GEP)
+        {
+            GEP.AmmoNames[0]=Class'DeusEx.AmmoRocket';
+            GEP.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
+            GEP.ProjectileNames[0]=Class'DeusEx.Rocket';
+            GEP.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        }
+    }
+}
 
 function PostPostBeginPlay()
 {
@@ -2134,6 +2169,12 @@ function PostPostBeginPlay()
     
     //Display or hide any Exits as necessary based on settings.
     ShowExits();
+
+    //Make GEP use WP ammo
+    SetupGEPAmmo();
+
+    //Set up experimental gameplay mods
+    SetupExperimentals();
     
     UpdatePrecipitation(Region.Zone);
 }
@@ -2229,9 +2270,6 @@ event TravelPostAccept()
 
     //Reset Crosshair
     UpdateCrosshair();
-
-    //Set up experimental gameplay mods
-    SetupExperimentals();
 
     //Destroy any unlinked markers
     UpdateMarkerValidity();
