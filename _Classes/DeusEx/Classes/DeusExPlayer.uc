@@ -904,9 +904,6 @@ var globalconfig bool bQuickReflexes;                           //SARGE: Enemies
 
 var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow dropping items by dragging them off the inventory grid
 
-var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
-var /*globalconfig*/ const bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
-
 var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
 
 var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
@@ -923,6 +920,17 @@ var const localized string MsgSecondaryAdded;
 var const localized string MsgSecondaryRemoved;
 
 var globalconfig bool bRandomizeCrap;                          //Sarge: Randomize the crap around the level, like couch skins, etc. //NO LONGER A MODIFIER
+
+////EXPERIMENTAL FEATURES
+//These will either become "real" gameplay features and be permanent,
+//Or get shitcanned
+//See the "Experimental" gameplay menu in the New Game screen to toggle these.
+///////////////////////////////
+
+var travel bool bExperimentalSkillRebalance;                //SARGE: Reduce skill point gain on higher difficulties to make specialising more important
+var travel bool bExperimentalRebreathers;                //SARGE: Rebreathers can only be used once and not recharged.
+
+
 
 /////////Version 1.2 Additions
 /////////January 2026
@@ -2067,6 +2075,21 @@ function int GetInventoryCount(Name item)
 }
 
 // ----------------------------------------------------------------------
+// SetupExperimentals()
+// SARGE: Set experimental values for some things
+// ----------------------------------------------------------------------
+
+function SetupExperimentals()
+{
+    local WeaponPistol P;
+    local WeaponStealthPistol SP;
+    local Rebreather R;
+
+    //Set Experimental Rebreathers setting
+    class'Rebreather'.default.bDisposable = bExperimentalRebreathers;
+}
+
+// ----------------------------------------------------------------------
 // PostPostBeginPlay()
 // ----------------------------------------------------------------------
 
@@ -2196,6 +2219,9 @@ event TravelPostAccept()
 
     //Reset Crosshair
     UpdateCrosshair();
+
+    //Set up experimental gameplay mods
+    SetupExperimentals();
 
     //Destroy any unlinked markers
     UpdateMarkerValidity();
@@ -17538,16 +17564,38 @@ function PlayDeathHit(float Damage, vector HitLocation, name damageType, vector 
 // SkillPointsAdd()
 // ----------------------------------------------------------------------
 
+function int FloorTo(int value, int nearest)
+{
+    local int mod;
+    mod = value % nearest;
+    return value - mod;
+}
+
 function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 {
-	local int i;                                                                //RSD: For loop later
+	local int i;
+	local DeusExLevelInfo info;
     local int actualPoints;
-
+	
     if (numPoints > 0)
 	{
+        actualPoints = numPoints;
+    
+        info = GetLevelInfo();
+
+        //SARGE: Hardcore Mode significantly reduces skill gain later in the game.
+        //SARGE: And realistic!
+        if (info != None && bExperimentalSkillRebalance && !bAlwaysAllow)
+        {
+            if (bHardcoreMode)
+                actualPoints *= 0.75;
+            else if (CombatDifficulty >= 3)
+                actualPoints *= 0.85;
+
+            actualPoints = FloorTo(actualPoints,5);
+        }
         
         //SARGE: Give almost no skill points if modifier is on.
-        actualPoints = numPoints;
         if (bSkillsSetAtStart && !bAlwaysAllow && numPoints > 5)
             actualPoints = 5;
 
