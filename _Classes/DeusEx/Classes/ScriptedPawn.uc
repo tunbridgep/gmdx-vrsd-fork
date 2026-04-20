@@ -8903,10 +8903,14 @@ function Tick(float deltaTime)
         {
             bNoSmooth=false;
             CloakManager.UpdateSkin(self);
+            if (Weapon != None)
+                CloakManager.UpdateSkin(Weapon);
             ScaleGlow = CloakManager.GetScaleGlow();
         }
         else
         {
+            if (DeusExWeapon(Weapon) != None && Style != default.Style)
+                DeusExWeapon(Weapon).UpdateHDTPSettings();
             ScaleGlow = default.ScaleGlow;
             Style = default.Style;
             bNoSmooth=default.bNoSmooth;
