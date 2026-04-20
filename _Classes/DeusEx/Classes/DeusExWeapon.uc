@@ -394,11 +394,11 @@ struct BloodTex
 var travel BloodTex BloodTextures[8];
 
 //SARGE: Augmentique Skin system
-var(GMDX) travel string currentWeaponSkin;
-var Texture skinTextures[9]; //SARGE: Holds the textures for our current weapon skin.
-var Texture skinTextures3rd[9]; //SARGE: Holds the textures for our current weapon skin (on the floor).
-var Texture skinBeltIconTex;        //SARGE: If we have any updated belt texture
-var Texture skinLargeIconTex;        //SARGE: If we have any updated belt texture
+var(Augmentique) travel string currentWeaponSkin;
+var transient Texture skinTextures[9]; //SARGE: Holds the textures for our current weapon skin.
+var transient Texture skinTextures3rd[9]; //SARGE: Holds the textures for our current weapon skin (on the floor).
+var transient Texture skinBeltIconTex;        //SARGE: If we have any updated belt texture
+var transient Texture skinLargeIconTex;        //SARGE: If we have any updated belt texture
 
 //SARGE: No more checking for specific grenade types, now we just set this instead.
 var const bool bIsPlaceableOnWall;
@@ -686,7 +686,7 @@ function string GetFrobString(DeusExPlayer player)
         {
             skinName = pl.WeaponSkinManager.GetSkinName(self);
             if (skinName != "")
-                return skinName $ str;
+                return itemName @ "[" $ skinName $ "]" $ str;
         }
     }
     
@@ -3471,32 +3471,7 @@ function DisplayWeapon(bool overlay)
 //Shouldn't need overriding in most cases
 function DisplayWeaponSkin(bool overlay)
 {
-    local int i;
-
-    for(i = 0;i < 8;i++)
-    {
-        if (overlay)
-        {
-            if (multiSkins[i] != Texture'PinkMaskTex' && skinTextures[i] != None)
-                multiSkins[i] = skinTextures[i];
-        }
-        else
-        {
-            if (multiSkins[i] != Texture'PinkMaskTex' && skinTextures3rd[i] != None)
-                multiSkins[i] = skinTextures3rd[i];
-        }
-    }
-
-    if (overlay)
-    {
-        if (Texture != Texture'PinkMaskTex' && skinTextures[8] != None)
-            Texture = skinTextures[8];
-    }
-    else
-    {
-        if (Texture != Texture'PinkMaskTex' && skinTextures3rd[8] != None)
-            Texture = skinTextures3rd[8];
-    }
+    class'WeaponSkinManagerBase'.static.ApplyWeaponSkin(self,overlay);
 }
 
 //SARGE: Override this for custom behaviour while cloaking or radar trans'd

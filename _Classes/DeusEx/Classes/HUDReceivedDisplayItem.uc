@@ -94,7 +94,7 @@ function Update()
     local string label;
 
     label = itemLabel;
-    if (itemQuantity > 1)
+    if (itemQuantity > 1 && string(itemIcon) != "Augmentique.WeaponSkins.WeaponSkinIcon") //SARGE: Dirty hack!
         label = label @ "(" $ itemQuantity $ ")";
 
 	winLabel.SetText(label);

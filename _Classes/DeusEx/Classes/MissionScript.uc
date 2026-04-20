@@ -1144,6 +1144,10 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     first.WeaponSwap(second);
     second.WeaponSwap(first);
 
+    //AUGMENTIQUE: Update weapon skins
+    class'WeaponSkinManagerBase'.static.UpdateWeaponSkinsForPawn(first);
+    class'WeaponSkinManagerBase'.static.UpdateWeaponSkinsForPawn(second);
+
     first.SetupWeapon(false);
     second.SetupWeapon(false);
 }

@@ -550,6 +550,10 @@ enum EAllianceCheckType
     AL_True,
 };
 
+// ----------------------------------------------------------------------
+// Augmentique
+// ----------------------------------------------------------------------
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
@@ -594,6 +598,9 @@ function _ApplyCurrentOutfit()
     if (augmentiqueData.textures[8] != None)
         Texture = augmentiqueData.textures[8];
 }
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 native(2102) final function ConBindEvents();
 
@@ -845,6 +852,8 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 
 function PostPostBeginPlay()
 {
+    local DeusExPlayer P;
+
 	Super.PostPostBeginPlay();
 
 	// Bind any conversation events to this ScriptedPawn
@@ -912,6 +921,9 @@ function InitializePawn()
 		// hack!
 		animTimer[1] = 20.0;
 		PlayTurnHead(LOOK_Forward, 1.0, 0.0001);
+
+        //AUGMENTIQUE: Update weapon skins
+        class'WeaponSkinManagerBase'.static.UpdateWeaponSkinsForPawn(Self);
 
 		bInitialized = true;
 	}
@@ -17425,6 +17437,8 @@ function WeaponSwap(ScriptedPawn SwappedFrom)
 //SARGE: Set up the Shenanigans gameplay modifier for this entity
 function Shenanigans(bool bEnabled)
 {
+    //AUGMENTIQUE: Update weapon skins
+    class'WeaponSkinManagerBase'.static.UpdateWeaponSkinsForPawn(Self);
 }
 
 // ----------------------------------------------------------------------

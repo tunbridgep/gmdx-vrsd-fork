@@ -91,6 +91,49 @@ var localized String WeaponModEffectsLabel;
 var string strDash;
 var PersonaButtonBarWindow winActionButtonRemove;
 
+//AUGMENTIQUE - Weapon Skin Selection
+var localized string msgSkinNext;
+var localized string msgSkinPrev;
+var localized string msgSkinName;
+var PersonaNormalLargeTextWindow winSkinName;
+var PersonaActionButtonWindow buttonNextSkin;
+var PersonaActionButtonWindow buttonPrevSkin;
+var Inventory skinWeapon;
+
+// ----------------------------------------------------------------------
+// AUGMENTIQUE: AddSkinsButtons()
+// ----------------------------------------------------------------------
+
+function AddSkinsButtons(DeusExWeapon wep)
+{
+    local PersonaButtonBarWindow skinBtnWin;
+	if (wep != None)
+	{
+        winSkinName = SetText(sprintf(msgSkinName,player.WeaponSkinManager.GetSkinName(wep)));
+		skinBtnWin = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
+		skinBtnWin.SetWidth(32);
+		skinBtnWin.FillAllSpace(false);
+		
+        buttonNextSkin = PersonaActionButtonWindow(skinBtnWin.NewChild(class'PersonaActionButtonWindow'));
+        buttonNextSkin.SetButtonText(msgSkinNext);
+
+		buttonPrevSkin = PersonaActionButtonWindow(skinBtnWin.NewChild(class'PersonaActionButtonWindow'));
+        buttonPrevSkin.SetButtonText(msgSkinPrev);
+
+		skinWeapon = wep;
+		AddLine();
+	}
+}
+
+function UpdateSkinName()
+{
+    local DeusExWeapon wep;
+    wep = DeusExWeapon(skinWeapon);
+
+    if (winSkinName != None && wep != None)
+        winSkinName.SetText(sprintf(msgSkinName,player.WeaponSkinManager.GetSkinName(wep)));
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -402,12 +445,13 @@ function bool ButtonActivated( Window buttonPressed )
                 UpdateDeclineButtonG(declineThis);
 			}
 			break;		
+        //Augmentique Additions
 		case buttonPrevSkin:
-            DeusExWeapon(assignThis).SelectPreviousSkin();
+            DeusExWeapon(skinWeapon).SelectPreviousSkin();
             UpdateSkinName();
             break;
 		case buttonNextSkin:
-            DeusExWeapon(assignThis).SelectNextSkin();
+            DeusExWeapon(skinWeapon).SelectNextSkin();
             UpdateSkinName();
             break;
 		default:

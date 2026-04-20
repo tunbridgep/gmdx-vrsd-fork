@@ -220,6 +220,9 @@ function CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov)
 }
 
 // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
 // ----------------------------------------------------------------------
@@ -1296,6 +1299,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 				if (item != None)
 				{
+                    //AUGMENTIQUE: Apply weapon skins for weapons we didn't pick up.
+                    if (DeusExPlayer(P) != None && DeusExPlayer(P).WeaponSkinManager != None)
+                        DeusExPlayer(P).WeaponSkinManager.GetSkinFromCarcass(DeusExPlayer(P),DeusExWeapon(item),self);
+
                     //log("Found Something");
 					if (item.IsA('NanoKey'))
 					{

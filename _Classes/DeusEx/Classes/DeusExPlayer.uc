@@ -9374,7 +9374,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     if (frobTarget.bDeleteMe)
         return false;
 
-    //SARGE: Handle weapon skin changes.
+    //AUGMENTIQUE: Handle weapon skin changes.
     if (DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
     {
         WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget).currentWeaponSkin);

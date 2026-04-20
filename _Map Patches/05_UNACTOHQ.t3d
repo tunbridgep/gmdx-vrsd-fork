@@ -33545,6 +33545,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop3
     Name=UNATCOTroop3
 End Actor
 Begin Actor Class=WeaponStealthPistol Name=WeaponStealthPistol0
+    currentWeaponSkin="black"
     LastRenderTime=192.888687
     DistanceFromPlayer=1556.304810
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -94165,6 +94166,7 @@ Begin Actor Class=WeaponLAM Name=WeaponLAM1
     Name=WeaponLAM1
 End Actor
 Begin Actor Class=WeaponPistol Name=WeaponPistol0
+    currentWeaponSkin="goldengun"
     LastRenderTime=192.888687
     DistanceFromPlayer=2001.677490
     Level=LevelInfo'MyLevel.LevelInfo0'
