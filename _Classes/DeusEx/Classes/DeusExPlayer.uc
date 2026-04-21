@@ -2639,13 +2639,13 @@ function ShowExits()
     foreach AllObjects(class'Teleporter',T)
         if (T.URL != "")
         {
-            T.bHidden = !bShowExits;
+            T.bHidden = !bShowExits && !bGMDXDebug;
             T.bNoSmooth = true;
         }
     foreach AllObjects(class'MapExit',E)
         if (E.bCollideActors == true)
         {
-            E.bHidden = !bShowExits;
+            E.bHidden = !bShowExits && !bGMDXDebug;
             E.bNoSmooth = true;
         }
 }
@@ -2843,7 +2843,7 @@ function bool CanSave(optional bool allowHardcore, optional bool bDontStopInfoli
     // 7) SARGE: We're in a conversation
     // 8) SARGE: We're currently recreating decals
 
-    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
+    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore && !bGMDXDebug) //Hardcore Mode
         return false;
 
 	if ((info != None) && (info.MissionNumber < 0)) //Logo Screen
