@@ -263,8 +263,8 @@ class All expands Object
 ////QoL and OBM Menu images
 
 //QoL Menu
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FreeCursor1.pcx"	            NAME="QoL_FreeCursor1"		    	GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FreeCursor2.pcx"	            NAME="QoL_FreeCursor2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel1.pcx"	            NAME="QoL_FreeCursor1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel2.pcx"	            NAME="QoL_FreeCursor2"		    	GROUP="UserInterface"    FLAGS=2
 
 //Onboarding Menu
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries1.pcx"	            NAME="OBM_Secondaries1"		    	GROUP="UserInterface"    FLAGS=2
