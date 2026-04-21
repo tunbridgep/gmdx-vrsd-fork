@@ -188,8 +188,7 @@ simulated function bool NearWallCheck()
 	local Vector StartTrace, EndTrace, HitLocation, HitNormal;
 	local Actor HitActor;
 
-	// Scripted pawns can't place LAMs
-	if (ScriptedPawn(Owner) != None || Owner == None)
+	if (DeusExPlayer(Owner) == None || DeusExPlayer(Owner).inHand != Self)
 		return False;
 
 	// trace out one foot in front of the pawn
