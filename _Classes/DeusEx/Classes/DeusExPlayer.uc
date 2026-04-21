@@ -9377,7 +9377,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //AUGMENTIQUE: Handle weapon skin changes.
     if (DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
     {
-        WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget).currentWeaponSkin);
+        WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget));
         WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
     }
 

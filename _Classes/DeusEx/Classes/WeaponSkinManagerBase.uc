@@ -4,7 +4,8 @@
 class WeaponSkinManagerBase extends Object;
 
 function Init(DeusExPlayer newPlayer) {}
-function bool UnlockSkin(string id, optional bool bNoMessage) {}
+function bool UnlockSkinByID(string id, optional bool bNoMessage, optional string messageExtra) {}
+function bool UnlockSkin(DeusExWeapon weapon, optional bool bNoMessage) {}
 function UpdateWeaponSkinTextures(DeusExWeapon wep) {}
 function SelectPreviousSkin(DeusExWeapon wep) {}
 function SelectNextSkin(DeusExWeapon wep) {}
