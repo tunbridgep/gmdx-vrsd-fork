@@ -1,5 +1,5 @@
 <P>
-<P><B>GIVE ME DEUS EX: AUGMENTED EDITION 1.1
+<P><B>GIVE ME DEUS EX: AUGMENTED EDITION
 <P>
 <B>Lead Developer
 <P>Paul "Sarge945" Tunbridge
@@ -13,19 +13,26 @@
 <B>Notable Contributions
 <P>Joe Wintergreen for the Blink and Lip Sync Fix mod
 <P>Made in China and Georg for various icons and other art
+<P>Made in China for Confix work
 <P>GEPGUN for custom HUD colour schemes
-<P>WCCC, cappucciNO for models and textures
+<P>WCCC, cappucciNO and Popmechanics for models and textures
 <P>Hanfling for the amazing RenderExt and Editor Patch
+<P>TheScummisestOfThemAll for Hero art and mod page icons
+<P>WCCC for the masked GM_Trench model, left-hand models, and other help/support
+<P>Diva - for the masked models (except GM_Trench)
+<P>TheAstropath - for the new more readable HUD Fonts
+<P>Popmechanics - Augmentique weapon skins
+<P>NG+ - Discord server organization and community management.
 <P>
 <B>Testing and QA
 <P>Julian, Georg, the1truepickaxe, Xriborg, domitomi,
 <P>Made in China, RoSoDude, Ygll, ShadowDancer,
 <P>BennyTheFearless, Tony Swan, Augmented, NG+,
 <P>Patrick (http://rspodcast.net), Hydra Spectre, Melissa,
-<P>Luscious Carrot, Solomon Ichi, BootsandCats, Irascible
+<P>Luscious Carrot, Solomon Ichi, BootsandCats, Irascible,
+<P>BorderlineSilence, Corbent, Dr.Schaum, eggman
 <P>
 <B>Special Thanks
-<P>Totalitarian for making the original Give Me Deus Ex
-<P>RoSoDude for his amazing GMDXv9 fork, which this mod is based on
+<P>Totalitarian for making the original Give Me Deus Ex mod,
+<P>RoSoDude for his amazing GMDXvRSD fork, which this mod is based on
 <P>This version would not have been possible without either of them!
-<P>

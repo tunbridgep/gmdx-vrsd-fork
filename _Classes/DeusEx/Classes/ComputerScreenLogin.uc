@@ -282,4 +282,5 @@ defaultproperties
      textureCols=2
      statusPosY=131
      ComputerNodeFunctionLabel="Login"
+     bShowNotesWindow=true
 }

@@ -193,6 +193,22 @@ function Timer()
 	}
 	else if (localURL == "00_TRAININGFINAL")
 	{
+        //SARGE: Hack for finishing the map without any inventory
+		if (flags.GetBool('MunitionsTrooperReady'))
+        {
+			RemoveAllInventory();
+            flags.SetBool('MunitionsTrooperReady', False);
+        }
+
+        //SARGE: Reset Demo Skill
+        if (Player.SkillSystem != None && flags.GetBool('MS_DemoSkillIncreased'))
+        {
+            aSkill = Player.SkillSystem.GetSkillFromClass(class'SkillDemolition');
+            if (aSkill != None)
+                aSkill.CurrentLevel = 0;
+            flags.SetBool('MS_DemoSkillIncreased', False);
+        }
+
 		// unhide holo-Jaime
 		if (flags.GetBool('JaimeAppears') &&
 			!flags.GetBool('MS_ReyesUnhidden'))

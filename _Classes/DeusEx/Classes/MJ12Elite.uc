@@ -15,18 +15,23 @@ function SetupSkin()
         || MultiSkins[6]==Texture'GMDXSFX.Skins.hMJ12TroopTex4'
         || MultiSkins[6]==Texture'GMDXSFX.Skins.MJ12TroopTex9';
 
-    if (BaseAccuracy == 0.000000) //Shotgunners and xbow dudes look different.
+    if (!bCloakOn)
     {
-        MultiSkins[5]=Texture'DeusExItems.Skins.GrayMaskTex';
-        MultiSkins[6]=Texture'GMDXSFX.Skins.MJ12TroopTex9';
-        CarcassType=Class'DeusEx.MJ12TroopCarcassElite2';
+        if (BaseAccuracy == 0.000000) //Shotgunners and xbow dudes look different.
+        {
+            MultiSkins[5]=Texture'DeusExItems.Skins.GrayMaskTex';
+            MultiSkins[6]=Texture'GMDXSFX.Skins.MJ12TroopTex9';
+            CarcassType=Class'DeusEx.MJ12TroopCarcassElite2';
+        }
+        else
+        {
+            MultiSkins[5]=default.MultiSkins[5];
+            MultiSkins[6]=default.MultiSkins[6];
+            CarcassType=default.CarcassType;
+        }
     }
-    else
-    {
-        MultiSkins[5]=default.MultiSkins[5];
-        MultiSkins[6]=default.MultiSkins[6];
-        CarcassType=default.CarcassType;
-    }
+    
+    class'SkinUtils'.static.GlassesFix(Self);
 }
 
 function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, name damageType)
@@ -184,7 +189,7 @@ defaultproperties
      HearingThreshold=0.120000
      VisibilityThreshold=0.001000
      Texture=Texture'DeusExItems.Skins.PinkMaskTex'
-     Mesh=LodMesh'DeusExCharacters.GM_Jumpsuit'
+     Mesh=LodMesh'RSDCrap.Fixed_Jumpsuit'
      MultiSkins(0)=Texture'DeusExCharacters.Skins.MJ12TroopTex0'
      MultiSkins(1)=Texture'DeusExCharacters.Skins.MJ12TroopTex1'
      MultiSkins(2)=Texture'DeusExCharacters.Skins.MJ12TroopTex2'

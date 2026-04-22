@@ -34,6 +34,7 @@ var Float lastRefresh;
 var Float refreshInterval;
 
 var ProgressBarWindow winBioBar;
+var ProgressBarWindow winBioReserved;
 var TextWindow winBioBarText;
 var PersonaNormalTextWindow winBioInfoText;
 
@@ -58,20 +59,21 @@ var Localized String OfflineLabel;
 var Localized String RepairBotOfflineLabel;
 
 //RSD: For equipment recharging system
-var ProgressBarWindow winEquipBar[5];
-var TextWindow winEquipBarText[5];
-var PersonaNormalTextWindow winEquipInfoText[5], winEquipRechargeText[5];
+var ProgressBarWindow winEquipBar[6];
+var TextWindow winEquipBarText[6];
+var PersonaNormalTextWindow winEquipInfoText[6], winEquipRechargeText[6];
 var int addedSize;                                                              //RSD: size of added window so I don't go insane
 var Color colIcon;
-var class<ChargedPickup> possibleEquipment[5];
-var Inventory equipmentList[5];
-var PersonaActionButtonWindow btnEquip[5];
+var class<Inventory> possibleEquipment[6];
+var Inventory equipmentList[6];
+var PersonaActionButtonWindow btnEquip[6];
 var Localized String NoEquipLabel, NoEquipInfoText;
 var Localized String EquipRechargeLabel1, EquipRechargeLabel2, EquipRechargeLabel3;
 var Localized String EquipButtonLabel1, EquipButtonLabel2, EquipButtonLabel3;
 
 var Color    colBlue; //SARGE: Added
 var Color    colWhite; //SARGE: Added
+var Color colReserved; //SARGE: Added
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -85,6 +87,9 @@ event InitWindow()
 
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+    
+    if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+        addedSize+=36;
 
 	SetSize(265, 153+addedSize+4);                                                          //RSD: Was 265, 153
 
@@ -151,8 +156,16 @@ function DrawBackground(GC gc)
 	//RSD: New background textures
 	gc.DrawTexture(0,   0, 256, height, 0, 0, texBackground[0]);
 	gc.DrawTexture(256, 0, 9,   height, 0, 0, texBackground[1]);
-	gc.DrawTexture(0, 256, 256, 128,    0, 0, texBackground[2]);
-	gc.DrawTexture(256, 256, 9, 128,    0, 0, texBackground[3]);
+
+    //Bigger window if we can charge the DTS
+    if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+    {
+        texBackground[2]=Texture'RSDCrap.UserInterface.HUDRepairBotBackground_3edit_Big';
+        texBackground[3]=Texture'RSDCrap.UserInterface.HUDRepairBotBackground_4edit_Big';
+    }
+    
+    gc.DrawTexture(0, 256, 256, 128,    0, 0, texBackground[2]);
+    gc.DrawTexture(256, 256, 9, 128,    0, 0, texBackground[3]);
 
 }
 
@@ -173,6 +186,13 @@ function DrawBorder(GC gc)
 
 		//gc.DrawTexture(0,   0, 256, height, 0, 0, texBorder[0]);
 		//gc.DrawTexture(256, 0, 9,   height, 0, 0, texBorder[1]);
+    
+        //Bigger window if we can charge the DTS
+        if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+        {
+            texBorder[2]=Texture'RSDCrap.UserInterface.HUDRepairBotBorder_3edit_Big';
+            texBorder[3]=Texture'RSDCrap.UserInterface.HUDRepairBotBorder_4edit_Big';
+        }
 
 		//RSD: New border textures
 		gc.DrawTexture(0,   0, 256,   height, 0, 0, texBorder[0]);
@@ -263,6 +283,18 @@ function CreateBioWindows()
 	winBioBar.SetVertical(False);
 	winBioBar.SetScaleColorModifier(0.5);
 	winBioBar.SetDrawBackground(False);
+	
+    winBioReserved = ProgressBarWindow(NewChild(Class'ProgressBarWindow'));
+
+	winBioReserved.SetPos(114, 91+addedSize);                                                  //RSD: was 114, 91
+	winBioReserved.SetSize(140, 12);
+	winBioReserved.SetValues(0, 100);
+    winBioReserved.SetColors(colReserved,colReserved);
+	if (player.bAnimBar1)
+	    winBioReserved.bSpecialFX = True;
+	winBioReserved.SetVertical(False);
+	winBioReserved.SetScaleColorModifier(0.5);
+	winBioReserved.SetDrawBackground(False);
 
 	winBioBarText = TextWindow(NewChild(Class'TextWindow'));
 	winBioBarText.SetPos(114, 93+addedSize);                                              //RSD: was 114, 93
@@ -349,7 +381,11 @@ function UpdateBioWindows()
 	
     energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 
-	winBioBar.SetCurrentValue(energyPercent);
+    if (player.bEnergyBarShowsReserve)
+        winBioBar.SetCurrentValue(energyPercent + player.AugmentationSystem.CalcEnergyReserve());
+    else
+        winBioBar.SetCurrentValue(energyPercent);
+
     maxEnergy = player.GetMaxEnergy();
 	actualMaxEnergy = player.GetMaxEnergy(true);
 	
@@ -363,6 +399,16 @@ function UpdateBioWindows()
     winBioBarText.SetText(text);
 
 	winBioInfoText.SetText(BioStatusLabel);
+    
+    if (winBioReserved != None && player.bEnergyBarShowsReserve)
+    {
+        winBioReserved.SetCurrentValue(player.AugmentationSystem.CalcEnergyReserve());
+        winBioReserved.Show();
+	}
+    else
+    {
+        winBioReserved.Hide();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -418,10 +464,11 @@ function UpdateRepairBotWindows()
 function CreateButtons()
 {
 	local PersonaButtonBarWindow winActionButtons;
-	local PersonaButtonBarWindow winEquipButtons[5];                            //RSD: Added
+	local PersonaButtonBarWindow winEquipButtons[6];                            //RSD: Added
     local int i, offset;                                                        //RSD: Added
     local ChargedPickup armor;                                                  //RSD: Added
     local String btnEquipText;                                                  //RSD: Added
+    local int amount;
 
     offset = 38;                                                                //RSD
 
@@ -435,8 +482,14 @@ function CreateButtons()
 
 	btnRecharge = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnRecharge.SetButtonText(RechargeButtonLabel);
+    
+    //SARGE: Hack to ignore the nanosword
+    if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+        amount = 6;
+    else
+        amount = 5;
 
-	for (i=0; i<5; i++)                                                         //RSD: for equipment recharging system
+	for (i=0; i<amount; i++)                                                         //RSD: for equipment recharging system
 	{
         winEquipButtons[i] = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
     	winEquipButtons[i].SetPos(186, 109+i*offset);
@@ -491,7 +544,7 @@ function bool ButtonActivated( Window buttonPressed )
         case btnEquip[0]:                                                       //RSD: For equipment recharging system
         	if (repairBot != None)
         	{
-        		repairBot.ChargeEquipment(ChargedPickup(EquipmentList[0]), player);
+        		repairBot.ChargeEquipment(EquipmentList[0], player);
         		UpdateEquipmentWindows();
                 UpdateRepairBotWindows();
 				UpdateInfoText();
@@ -501,7 +554,7 @@ function bool ButtonActivated( Window buttonPressed )
         case btnEquip[1]:                                                       //RSD: For equipment recharging system
         	if (repairBot != None)
         	{
-        		repairBot.ChargeEquipment(ChargedPickup(EquipmentList[1]), player);
+        		repairBot.ChargeEquipment(EquipmentList[1], player);
         		UpdateEquipmentWindows();
                 UpdateRepairBotWindows();
 				UpdateInfoText();
@@ -511,7 +564,7 @@ function bool ButtonActivated( Window buttonPressed )
         case btnEquip[2]:                                                       //RSD: For equipment recharging system
         	if (repairBot != None)
         	{
-        		repairBot.ChargeEquipment(ChargedPickup(EquipmentList[2]), player);
+        		repairBot.ChargeEquipment(EquipmentList[2], player);
         		UpdateEquipmentWindows();
                 UpdateRepairBotWindows();
 				UpdateInfoText();
@@ -521,7 +574,7 @@ function bool ButtonActivated( Window buttonPressed )
         case btnEquip[3]:                                                       //RSD: For equipment recharging system
         	if (repairBot != None)
         	{
-        		repairBot.ChargeEquipment(ChargedPickup(EquipmentList[3]), player);
+        		repairBot.ChargeEquipment(EquipmentList[3], player);
         		UpdateEquipmentWindows();
                 UpdateRepairBotWindows();
 				UpdateInfoText();
@@ -531,7 +584,17 @@ function bool ButtonActivated( Window buttonPressed )
         case btnEquip[4]:                                                       //RSD: For equipment recharging system
         	if (repairBot != None)
         	{
-        		repairBot.ChargeEquipment(ChargedPickup(EquipmentList[4]), player);
+        		repairBot.ChargeEquipment(EquipmentList[4], player);
+        		UpdateEquipmentWindows();
+                UpdateRepairBotWindows();
+				UpdateInfoText();
+				EnableButtons();
+        	}
+        	break;
+        case btnEquip[5]:                                                       //RSD: For equipment recharging system
+        	if (repairBot != None)
+        	{
+        		repairBot.ChargeEquipment(EquipmentList[5], player);
         		UpdateEquipmentWindows();
                 UpdateRepairBotWindows();
 				UpdateInfoText();
@@ -560,12 +623,12 @@ function EnableButtons()
 			btnRecharge.EnableWindow(False);
 		else
 			btnRecharge.EnableWindow(repairBot.CanCharge());
-		for (i=0; i<5; i++)                                                     //RSD: for equipment recharging system
+		for (i=0; i<6; i++)                                                     //RSD: for equipment recharging system
 		{
         	if(equipmentList[i] != none)
     		{
     			if (equipmentList[i].Charge >= equipmentList[i].default.Charge)
-    				btnEquip[i].EnableWindow(False);
+    				btnEquip[i].EnableWindow(CanRechargeButton(equipmentList[i]));
                 else
                 	btnEquip[i].EnableWindow(repairBot.CanCharge());
    			}
@@ -575,6 +638,22 @@ function EnableButtons()
    			}
 		}
 	}
+}
+// ----------------------------------------------------------------------
+// CanRecharge()
+// ----------------------------------------------------------------------
+
+function bool CanRechargeButton(Inventory equipment)
+{
+    if (!repairBot.CanCharge())
+        return false;
+
+    if (equipment.IsA('ChargedPickup') && equipment.Charge < equipment.default.Charge)
+        return true;
+    if (equipment.IsA('WeaponNanoSword') && WeaponNanoSword(equipment) != None && WeaponNanoSword(equipment).ChargeManager != None && !WeaponNanoSword(equipment).ChargeManager.IsFull())
+        return true;
+
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -627,7 +706,7 @@ function CreateEquipmentWindows()
 
     offset = 38;
 
-    for (i=0; i<5; i++)
+    for (i=0; i<6; i++)
     {
    		winEquipInfoText[i] = PersonaNormalTextWindow(NewChild(Class'PersonaNormalTextWindow'));
 		winEquipInfoText[i].SetPos(62, 102+i*offset);
@@ -677,11 +756,20 @@ function UpdateEquipmentWindows()
     local int i;
     local float energyPercent;
     local ChargedPickup armor;
+    local WeaponNanoSword nanosword;
+    local int amount;
+    
+    //SARGE: Hack to ignore the nanosword
+    if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+        amount = 6;
+    else
+        amount = 5;
 
-    for (i=0; i<5; i++)
+    for (i=0; i<amount; i++)
     {
     	if(equipmentList[i] != none)
     	{
+            nanoSword = WeaponNanoSword(equipmentList[i]);
     		armor = ChargedPickup(equipmentList[i]);
     		if (armor != none)                                                  //RSD: accessed none?
     		{
@@ -711,6 +799,23 @@ function UpdateEquipmentWindows()
            	if (winEquipRechargeText[i] != none)                                //RSD: accessed none?
     		winEquipRechargeText[i].SetText(outText);
             }
+            else if (nanoSword != None && nanoSword.ChargeManager != None)
+            {
+                infoText=nanoSword.beltDescription;
+                energyPercent = nanoSword.ChargeManager.GetCurrentCharge();
+                if (winEquipBar[i] != none)                                         //RSD: accessed none?
+                    winEquipBar[i].SetCurrentValue(energyPercent);
+
+                percentText = string(int(energyPercent)) $ "%";
+            
+                if (winEquipBarText[i] != none)                                     //RSD: accessed none?
+                    winEquipBarText[i].SetText(percentText);
+           		
+                outText = EquipRechargeLabel3 @ int(100*nanoSword.ChargeManager.GetRechargeAmount())$"%";
+           	
+                if (winEquipRechargeText[i] != none)                                //RSD: accessed none?
+                    winEquipRechargeText[i].SetText(outText);
+            }
    		}
    		else
    		{
@@ -733,6 +838,7 @@ function DrawEquipmentIcons(GC gc)
 {
 	local int i;
     local int offset, startX, startY, sizeX, sizeY;
+    local int amount;
 
 	offset = 38;
 	startX = 15;
@@ -743,8 +849,14 @@ function DrawEquipmentIcons(GC gc)
 
     gc.SetStyle(DSTY_Masked);
 	gc.SetTileColor(colIcon);
+    
+    //SARGE: Hack to ignore the nanosword
+    if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+        amount = 6;
+    else
+        amount = 5;
 
-    for (i=0; i<5; i++)
+    for (i=0; i<amount; i++)
     {
     	if(equipmentList[i] != none)
     		gc.DrawTexture(startX,startY+i*offset, sizeX, sizeY, 0, 0, equipmentList[i].Icon);
@@ -760,9 +872,16 @@ function getEquipmentList()
 {
     local int i, currentIndex;
     local Inventory inv;
+    local int amount;
+
+    //SARGE: Hack to ignore the nanosword
+    if (player.bNanoswordEnergyUse || player.bHardcoreMode)
+        amount = 6;
+    else
+        amount = 5;
 
     currentIndex = 0;
-    for (i=0; i<5; i++)
+    for (i=0; i<amount; i++)
     {
         inv = player.FindInventoryType(possibleEquipment[i]);
         if (inv != none)
@@ -808,6 +927,7 @@ defaultproperties
      possibleEquipment(2)=Class'DeusEx.AdaptiveArmor'
      possibleEquipment(3)=Class'DeusEx.TechGoggles'
      possibleEquipment(4)=Class'DeusEx.Rebreather'
+     possibleEquipment(5)=Class'DeusEx.WeaponNanoSword'
      NoEquipLabel="No item to repair"
      NoEquipInfoText="N/A"
      EquipRechargeLabel1="Repairs"
@@ -819,4 +939,5 @@ defaultproperties
      ScreenType=ST_Popup
      colBlue=(R=20,G=20,B=255)
      colWhite=(R=255,G=255,B=255)
+     colReserved=(R=255,G=10,B=10)
 }

@@ -38,9 +38,10 @@ function DoHDTP()
     super.DoHDTP();
     switch (bloodTex)
     {
-        case 1: Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex3","DeusExItems.Skins.FlatFXTex3",IsHDTP()); break;
-		case 2: Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex5","DeusExItems.Skins.FlatFXTex5",IsHDTP()); break;
-		case 3: Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex6","DeusExItems.Skins.FlatFXTex6",IsHDTP()); break;
+        case 0: Texture = class'HDTPLoader'.static.GetTexture3("HDTPItems.Skins.HDTPFlatFXtex2","RSDCrap.Blood.FlatFXTex2","DeusExItems.Skins.FlatFXTex2",IsHDTP(),IsNewBlood()); break;
+        case 1: Texture = class'HDTPLoader'.static.GetTexture3("HDTPItems.Skins.HDTPFlatFXtex3","RSDCrap.Blood.FlatFXTex3","DeusExItems.Skins.FlatFXTex3",IsHDTP(),IsNewBlood()); break;
+		case 2: Texture = class'HDTPLoader'.static.GetTexture3("HDTPItems.Skins.HDTPFlatFXtex5","RSDCrap.Blood.FlatFXTex5","DeusExItems.Skins.FlatFXTex5",IsHDTP(),IsNewBlood()); break;
+		case 3: Texture = class'HDTPLoader'.static.GetTexture3("HDTPItems.Skins.HDTPFlatFXtex6","RSDCrap.Blood.FlatFXTex6","DeusExItems.Skins.FlatFXTex6",IsHDTP(),IsNewBlood()); break;
     }
 
     DrawScale += randomScale;  //better textures can cope with greater size variation -DDL

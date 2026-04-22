@@ -5,6 +5,52 @@ class WeaponPlasmaRifle extends DeusExWeapon;
 
 var int lerpClamp;
 
+var travel int breedCount;
+
+//SARGE: Generate breeder ammo
+function OnProjectileFired(Projectile firedProjectile)
+{
+    local DeusExPlayer P;
+    local Ammo AmmoType;
+    local PerkPlasmaBreeder PK;
+
+    P = DeusExPlayer(Owner);
+
+    if (P != None && P.PerkManager != None)
+    {
+        //Log("Plasma Check");
+        PK = PerkPlasmaBreeder(P.PerkManager.GetPerkWithClass(class'PerkPlasmaBreeder'));
+        if (PK != None)
+        {
+            if (PK.bPerkObtained)
+                breedCount++;
+
+            //Log("Perk Exists: " $ PK.bPerkObtained @ breedCount @ PK.PerkValue);
+
+            if (breedCount >= PK.PerkValue)
+            {
+                AmmoType = Ammo(P.FindInventoryType(class'AmmoPlasma'));
+                //Log("AmmoType: " $ AmmoType);
+
+                if (AmmoType == None)
+                {
+                    //Log("AmmoType 1: " $ AmmoType);
+                    AmmoType = spawn(class'AmmoPlasma');
+                    AmmoType.AmmoAmount = 1;
+                    AmmoType.Frob(P,None);
+                } 
+                else
+                {
+                    //Log("AmmoType 2: " $ AmmoType);
+                    AmmoType.AmmoAmount += 1;
+                }
+
+                breedCount = 0;
+            }
+        }
+    }
+}
+
 /*
 //SARGE: Resize if we have the Mobile Ordnance perk
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
@@ -13,6 +59,40 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return super.DoRightFrob(Frobber,objectInHand);
 }
 */
+
+//Hide the green firing streaks
+function DisplayCloaking(bool overlay, float ScaleGlow, bool bCloak, bool bRadar)
+{
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[1] = texture'PinkMaskTex';
+    else
+        multiskins[2] = texture'PinkMaskTex';
+}
+
+//SARGE: Don't make the green bit bloody
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+    {
+        multiskins[1] = Texture'PinkMaskTex'; //Green energy burst when firing
+        multiskins[3] = Texture'PinkMaskTex';
+        multiskins[5] = Texture'PinkMaskTex';
+    }
+    else
+    {
+        multiskins[1] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'PinkMaskTex'; //Green energy burst when firing
+        multiskins[4] = Texture'PinkMaskTex';
+    }
+}
 
 function DisplayWeapon(bool overlay)
 {
@@ -53,10 +133,12 @@ function DisplayWeapon(bool overlay)
 
     //If we're unloaded, get rid of the green plasma effect.
     if (overlay && clipcount == 0)
+    {
         if (IsHDTP())
             multiskins[3] = Texture'BlackMaskTex';
         else
             multiskins[1] = Texture'BlackMaskTex';
+    }
 }
 
 state Reload
@@ -107,6 +189,8 @@ state Reload
 defaultproperties
 {
      weaponOffsets=(X=10.000000,Z=-7.000000)
+     MountedViewOffset=(X=4.000000,Y=3.500000,Z=-65.500000)
+     MountedViewOffset2=(X=-1.500000,Y=3.500000,Z=-77.500000)
      LowAmmoWaterMark=12
      GoverningSkill=Class'DeusEx.SkillWeaponHeavy'
      NoiseLevel=5.000000
@@ -186,4 +270,6 @@ defaultproperties
      CollisionHeight=5.200000
      Mass=40.000000
      minSkillRequirement=1;
+     bFancyScopeAnimation=true
+     totalScopeTime=0.51 //Heavy boy!
 }

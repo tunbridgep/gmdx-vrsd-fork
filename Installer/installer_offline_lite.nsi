@@ -1,6 +1,6 @@
 !define INSTALLER_NAME "GMDX: Augmented Edition"
 !define INSTALLER_EXE_NAME "GMDX-AE"
-!define INSTALLER_VERSION "1.11"
+!define INSTALLER_VERSION "1.2"
 !define INSTALLER_SUFFIX "Lite"
 
 #include the common parts of the installer
@@ -11,6 +11,7 @@
 # MessageBox MB_OK "Hello world 2!"
 
 # Install DX9 and DX10 renderers
+# Also installs DXVK
 !include .\include\renderers.nsi
 
 SectionGroup "Extras"

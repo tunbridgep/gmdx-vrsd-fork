@@ -6,19 +6,12 @@ class WeaponGEPGun extends DeusExWeapon;
 var localized String shortName;
 
 //GMDX:vars for(&from) gep mounted
-var DeusExPlayer player;
 var GMDXFlickerLight lightFlicker;
-var vector axesX;//fucking weapon rotation fix
-var vector axesY;
-var vector axesZ;
 var bool bFlipFlopCanvas;
 var texture GEPVid;
 var texture GEPNoise;
 var texture GEPAtlas;
 var bool bGEPjit;
-var float GEPinout;
-var bool bGEPout;
-var vector MountedViewOffset;
 
 var rotator SAVErotation;
 var vector SAVElocation;
@@ -81,13 +74,11 @@ function SetMount(DeusExPlayer dxp)
 {
 //	local vector ofs;
 
-	bGEPout=dxp==none;
-
-	if (!bGEPout)
-	  player=dxp;
+	//if (bGEPout && dxp != None)
+	//  player=dxp;
 
 
-	if ((!bGEPout)&&(GEPinout==0)) GEPinout=0.001;
+	//if ((!cachedbGEPout)&&(cachedGEPinout==0)) GEPinout=0.001;
 
 //	SetCollision(false,false,false);
 //	bCollideWorld=false;
@@ -135,105 +126,41 @@ function LaserOff(bool forced)
    LockTime=default.LockTime;
 }
 
-function RenderME(Canvas canvas,bool bSetWire,optional bool bClearZ)
-{
-	local rotator rfs;
-	local vector dx;
-	local vector dy;
-	local vector dz;
-	local vector		DrawOffset, WeaponBob;
-	local vector unX,unY,unZ;
-
-	if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-
-	rfs.Yaw=2912*Fmin(1.0,GEPinout);
-	rfs.Pitch=-2912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
-/*
-	if(!bStaticFreeze)
-	{
-*/
-	dx=axesX>>player.ViewRotation;
-	dy=axesY>>player.ViewRotation;
-	dz=axesZ>>player.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-
-	SetRotation(rfs);
-
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-	SetHand(PlayerPawn(Owner).Handedness); //meh meh
-
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-
-	FireOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.X,-MountedViewOffset.X);
-	FireOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Y,-MountedViewOffset.Y);
-	FireOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Z,-cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z);
-
-	SetLocation(player.Location+ CalcDrawOffset());// layer.BaseEyeHeight*vect(0,0,1)+(PlayerViewOffset>>player.ViewRotation));
-/*
-	if (player.bStaticFreeze)
-	{
-		SAVElocation=player.SAVElocation+CalcDrawOffset();
-		SAVErotation=rfs;
-		bStaticFreeze=true;
-	}
-	} else
-	{
-		if (player.bStaticFreeze)
-		{
-			DrawOffset = ((0.9/player.Default.FOVAngle * PlayerViewOffset) >> SAVERotation);
-			DrawOffset += (player.EyeHeight * vect(0,0,1));
-		 / *  WeaponBob = BobDamping * player.WalkBob;
-			WeaponBob.Z = (0.45 + 0.55 * BobDamping) * player.WalkBob.Z;
-			DrawOffset += WeaponBob;* /
-			SetRotation(SAVErotation);
-
-		   if (VSize(player.RecoilShake)>0.0)
-		   {
-			GetAxes(SAVErotation,unX,unY,unZ);
-			unX*=DeusExPlayer(Owner).RecoilShake.X*0.75;
-			unY*=DeusExPlayer(Owner).RecoilShake.Y*0.75;
-			unZ*=DeusExPlayer(Owner).RecoilShake.Z*0.75;
-			DrawOffset+=(unX+unY+unZ);
-		   }
-
-			SetLocation(SAVElocation+unX+unY+unZ);
-		} else
-			bStaticFreeze=false;
-	}
-*/
-//  PlayerViewOffset=default.PlayerViewOffset*100;
-//   SetHand(PlayerPawn(Owner).Handedness); //meh meh
-	Canvas.DrawActor(self, bSetWire,bClearZ);
-
-	if (lightFlicker!=none) lightFlicker.UpdateLocation(player);
-}
 
 simulated function renderoverlays(Canvas canvas)
 {
-    super.renderoverlays(canvas);
-	if(GEPinout==0.0)
-	{
-		PlayerViewOffset=Default.PlayerViewOffset*100;
-		FireOffset=Default.FireOffset;
-		SetHand(PlayerPawn(Owner).Handedness);
-		if (player!=none)
-		{
-			player.GEPmounted=none;
-			player=none;
-		}
-	} else
-	     RenderMe(canvas,false);
+    local DeusExPlayer player;
 
-	if (GEPinout>=1) RenderPortal(canvas);
+    player = DeusExPlayer(Owner);
+    super.renderoverlays(canvas);
+        
+    if (lightFlicker!=none && player != None)
+        lightFlicker.UpdateLocation(player);
+
+	if(GEPinout==0.0 && (player!=none))
+	{
+        player.GEPmounted=none;
+        player=none;
+    }
+
+	if (bGEPOut && GEPinout>=1)
+        RenderPortal(canvas);
 
 }
+
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[3] = Texture'PinkMaskTex';
+    else
+        multiskins[3] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);
@@ -292,10 +219,12 @@ function DisplayWeapon(bool overlay)
 
 function BecomePickup()
 {
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(Owner);
 	if (player!=none)
 	{
 		player.GEPmounted=none;
-		GEPinout=0;
 		bFlipFlopCanvas=false;
 	}
 	super.BecomePickup();
@@ -308,28 +237,33 @@ function RenderPortal(canvas Canvas)
 	local float ofy2;
 	local rotator rdif;
 	local vector rloc;
+    local float offset;
+    local DeusExPlayer player;
+    
+    const offsetY=-330;
+    const height=900;
 
-	if (!bFlipFlopCanvas)//stop self sustain
+    player = DeusExPlayer(Owner);
+
+    if (player == None)
+        return;
+	
+    //SARGE: Horrible, awful, terrible, dirty, disgusting hack!
+    player.DesiredFOV = player.default.DesiredFOV;
+
+    if (!bFlipFlopCanvas)//stop self sustain
 	{
 		bFlipFlopCanvas=true;
-		if(!bGEPout)
-		{
-			GEPinout=Fmin(2.0,GEPinout+0.15);
-			if(FRand()<0.01) GEPinout*=(FRand()*0.05+0.95);
-		} else
-			GEPinout=GEPinout-0.2;//do Fmax(0,n) @ >0<=1
+		
+        offset=1.15;
+        if(FRand()<0.01)
+            offset*=(FRand()*0.05+0.95);
 
-		ofy=Canvas.ClipY/Lerp(GEPinout-1.0,2,8);
-		ofy2=(Canvas.ClipY*0.75)*(GEPinout-1.0);
+		ofy=Canvas.ClipY/Lerp(offset-1.0,2,8);
+		ofy2=(Canvas.ClipY*0.75)*(offset-1.0);
 
 		if (player.bGEPprojectileInflight)
 		{
-        /* rdif=player.aGEPProjectile.Rotation-OldRotation;
-         rdif.Roll=rdif.Roll+(Frand()*2)-1;
-         rdif.Roll=FMin(300,rdif.Roll);
-         rdif.Roll=FMax(-300,rdif.Roll);
-         OldRotation=player.aGEPProjectile.Rotation;*/
-
          rdif=player.aGEPProjectile.Rotation;
          rloc=player.aGEPProjectile.Location+(Rocket(player.aGEPProjectile).PortalOffset>>rdif);
          actnul=player.aGEPProjectile;
@@ -341,18 +275,26 @@ function RenderPortal(canvas Canvas)
          actnul=player;
       }
 		PlayerViewOffset=MountedViewOffset*100;
-		//if(FRand()>0.01) //(0.95-GEPinout))
-	   Canvas.DrawPortal(Canvas.ClipX/8,ofy,Canvas.ClipX*0.75,ofy2,actnul, rloc, rdif,10+90*(GEPinout-1.0));
+		//if(FRand()>0.01) //(0.95-offset))
+        if (player.FastTrace(rloc)) //SARGE: Stop GEP Scope wallhacks! Disable the screen if we would be going through a wall.
+        {
+            Canvas.DrawPortal(Canvas.ClipX/8,ofy+offsetY,Canvas.ClipX*0.75,height,actnul, rloc, rdif,110);
+        }
+        else
+        {
+            Canvas.SetPos(Canvas.ClipX*0.875-112,Canvas.ClipY*0.875-40);
+            Canvas.DrawTile(GEPAtlas,64,32,128,64,64,32);
+        }
 		PlayerViewOffset=Default.PlayerViewOffset*100;
 		SetHand(PlayerPawn(Owner).Handedness);
 
 //Render Screen
 		if(bGEPjit)
-			Canvas.SetPos(Canvas.ClipX/8,ofy+5);
-			else
-				Canvas.SetPos(Canvas.ClipX/8,ofy);
+			Canvas.SetPos(Canvas.ClipX/8,ofy+5+offsetY);
+        else
+            Canvas.SetPos(Canvas.ClipX/8,ofy+offsetY);
 		Canvas.Style=4;
-		Canvas.DrawRect(GEPVid,Canvas.ClipX*0.75,ofy2);
+		Canvas.DrawRect(GEPVid,Canvas.ClipX*0.75,height);
 
 		Canvas.Style=3;//none,normal,masked,translucent,modulated
 //Render "Fuel Bar" -bottom line right
@@ -447,6 +389,7 @@ function RenderPortal(canvas Canvas)
 
 simulated function ScopeToggle()
 {
+    
 	//log("Start: ScopeToggle()InState="@GetStateName());
 	super.ScopeToggle();
 
@@ -492,6 +435,10 @@ state Reload
    {
         Super.Tick(deltaTime);
 
+    //SARGE: This is a horrible hack because I'm too lazy to fix this garbage
+    //if (GEPinout >= 1)
+    //    bGEPOut=true;
+
     if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
     {
      if (AnimSequence == 'Reload')
@@ -525,12 +472,11 @@ state Reload
 defaultproperties
 {
      weaponOffsets=(X=34.000000,Y=-22.000000,Z=-10.000000)
+     MountedViewOffset=(X=18.000000,Y=-7.200000,Z=0.500000)
      ShortName="GEP Gun"
      GEPvid=Texture'GMDXUI.Skins.GEPOverlayDiamond'
      GEPnoise=Texture'GMDXUI.Skins.GEPnoise'
      GEPAtlas=Texture'GMDXUI.UserInterface.GEPatlesA'
-     bGEPout=True
-     MountedViewOffset=(X=24.000000,Y=7.200000,Z=-4.500000)
      LowAmmoWaterMark=2
      GoverningSkill=Class'DeusEx.SkillWeaponHeavy'
      NoiseLevel=9.000000
@@ -544,10 +490,10 @@ defaultproperties
      LockTime=3.000000
      LockedSound=Sound'DeusExSounds.Weapons.GEPGunLock'
      TrackingSound=Sound'DeusExSounds.Weapons.GEPGunTrack'
-     AmmoNames(0)=Class'DeusEx.AmmoRocket'
-     AmmoNames(1)=Class'DeusEx.AmmoRocketWP'
-     ProjectileNames(0)=Class'DeusEx.Rocket'
-     ProjectileNames(1)=Class'DeusEx.RocketWP'
+     AmmoNames(0)=Class'DeusEx.AmmoRocketWP'
+     AmmoNames(1)=Class'DeusEx.AmmoRocket'
+     ProjectileNames(0)=Class'DeusEx.RocketWP'
+     ProjectileNames(1)=Class'DeusEx.Rocket'
      bHasMuzzleFlash=False
      recoilStrength=1.100000
      bUseWhileCrouched=False
@@ -575,7 +521,7 @@ defaultproperties
      largeIconRot=Texture'GMDXSFX.Icons.LargeIconRotGEP'
      invSlotsXtravel=3
      invSlotsYtravel=2
-     AmmoName=Class'DeusEx.AmmoRocket'
+     AmmoName=Class'DeusEx.AmmoRocketWP'
      ReloadCount=1
      PickupAmmoCount=2
      FireOffset=(X=-52.000000,Y=16.000000,Z=6.000000)
@@ -595,6 +541,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.GEPgun'
      PickupViewMesh=LodMesh'DeusExItems.GEPgunPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.GEPgun3rd'
+     Mesh=LodMesh'DeusExItems.GEPgunPickup'
      VanillaAddonPlayerViewMesh="VisibleAttachments.GEPGun_Mod"
      VanillaAddonPickupViewMesh="VisibleAttachments.GEPGunPickup_Mod"
      VanillaAddonThirdPersonMesh="VisibleAttachments.GEPGun3rd_Mod"
@@ -611,4 +558,7 @@ defaultproperties
      CollisionHeight=6.600000
      Mass=50.000000
      minSkillRequirement=2;
+     bFancyScopeAnimation=true
+     bShowWeaponWhenZoomed=true
+     totalScopeTime=0.51 //Heavy boy!
 }

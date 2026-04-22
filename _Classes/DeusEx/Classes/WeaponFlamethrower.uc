@@ -36,13 +36,26 @@ function PostBeginPlay()
     FireOffset=vect(30,9,4);
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[2] = Texture'PinkMaskTex';
+    else
+        multiskins[1] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
 	if (overlay)
 		multiskins[0] = handsTex;
 
-    if (clipcount == 0 || Owner == None)
+    if (clipcount == 0 || Pawn(Owner) == None || Pawn(Owner).HeadRegion.Zone.bWaterZone)
     {
         if (IsHDTP())
             multiskins[2] = texture'PinkMaskTex';
@@ -200,6 +213,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPFlamethrower"
      HDTPPickupViewMesh="HDTPItems.HDTPflamethrowerPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPflamethrower3rd"
+     Mesh=LodMesh'DeusExItems.FlamethrowerPickup'
      PlayerViewMesh=LodMesh'DeusExItems.Flamethrower'
      PickupViewMesh=LodMesh'DeusExItems.FlamethrowerPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Flamethrower3rd'

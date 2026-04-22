@@ -400,7 +400,7 @@ var      bool     bSeatHackUsed;
 var      bool     bBurnedToDeath;
 
 var      bool     bHasCloak;
-var      bool     bCloakOn;
+var      bool     bCloakOn; //SARGE: Now set by the CloakManager.
 var      int      CloakThreshold;
 var      float    CloakEMPTimer;
 
@@ -486,7 +486,6 @@ var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
-var travel bool bSetupHDTP;
 
 //SARGE: Force cloak on always. Used by Tiffany.
 var bool bForcedCloak;
@@ -534,6 +533,15 @@ var(GMDX) const bool bRandomHeightAdjust;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
+//SARGE: Only allow receiving one extra weapon in certain circumstances
+//See DistributeItem() in MissionScript for more info
+var bool bAlreadyDistributedWeapon;
+
+//SARGE: Cloak manager
+var travel CloakManager CloakManager;
+
+var const localized string msgDance;            //SARGE: Shenanigans dance string
+
 //SARGE: Enum used for the swoocy bullshit that we have to do for our IsValidEnemy override.
 enum EAllianceCheckType
 {
@@ -553,15 +561,22 @@ struct AugmentiqueOutfitData
 var travel AugmentiqueOutfitData augmentiqueData;
 
 //Augmentique: Update our textures to our Augmentique outfit
-function ApplyCurrentOutfit()
+//SARGE: This is the default Augmentique ApplyCurrentOutfit function, but we're
+//not using it, since we need to instead do the HDTP stuff and things
+function _ApplyCurrentOutfit()
 {
     local int i;
+    
+    if (bCloakOn)
+        return;
     
     //GMDX Exclusive code
     if (IsHDTP())
         return;
 
-    //Reset Skin
+    //Reset Skin. We can't use ResetSkinStyle,
+    //because we're respecting non-augmentique skin changes,
+    //So we wrote our own version here
 	for (i=0; i<8; i++)
     {
         if (augmentiqueData.textures[i] != None)
@@ -612,6 +627,21 @@ function bool IsActuallyValidEnemy(Pawn TestEnemy, optional EAllianceCheckType c
         return IsValidEnemy(TestEnemy);
 
     return IsValidEnemy(TestEnemy,checkAlliance == AL_True);
+}
+// ----------------------------------------------------------------------
+// SetupCloakManager()
+// Gives the pawn a Cloak Manager.
+// ----------------------------------------------------------------------
+
+function SetupCloakManager()
+{
+    if (!bHasCloak)
+        return;
+
+	// install the Perk Manager if not found
+	if (CloakManager == None)
+	    CloakManager = new(Self) class'CloakManager';
+    CloakManager.Init(Self);
 }
 
 // ----------------------------------------------------------------------
@@ -703,53 +733,50 @@ exec function UpdateHDTPsettings()
 {
     local int i;
     local bool hdtp;
-
+    
+    class'SkinUtils'.static.ResetSkinStyle(self);
+    
     hdtp = IsHDTP();
     
-    SetupSkin();
-
     //Bail out if we have no need to continue
-    if ((hdtp && !bSetupHDTP) || (!hdtp && bSetupHDTP))
+    if (HDTPMesh != "")
     {
-        if (HDTPMesh != "")
-        {
-            Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
-            //We have to be careful here, or we will break holo-projectors
-            for(i = 0; i < 8;i++)
-                MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
-        }
-        if (HDTPSkin != "")
-            Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
-        if (HDTPTexture != "")
-            Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
-        bSetupHDTP = hdtp;
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
+        //We have to be careful here, or we will break holo-projectors
+        for(i = 0; i < 8;i++)
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),hdtp);
     }
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
 
-    //Fix things not appearing cloaked
-    if (bCloakOn)
-        SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
-
-    //Also fix glasses on holograms
-    else if (style == STY_Translucent)
-        GlassesFix();
-
+    SetupSkin();
 }
 
+/*
 function bool _GlassesFixTest(coerce string tex)
 {
+    Log("Glasses Fix: " $ tex @ Left(tex,9));
     return Left(tex,9) == "FramesTex" || Left(tex,9) == "LensesTex";
 }
+*/
 
-//SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
-function GlassesFix()
+//Based on if we're masked, swap out pink/black/gray mask textures
+//These otherwise look fine with filtering on, but horrible with it off.
+/*
+function FixAllTextureMasks()
 {
+    local Texture tex;
     local int i;
-    for (i = 0;i < 8;i++)
+
+    for (i = 0; i < 8; i++)
     {
-        if (_GlassesFixTest(default.multiskins[i].name) || _GlassesFixTest(augmentiqueData.textures[i].name))
-            multiSkins[i] = Texture'PinkMaskTex';
+        if (multiskins[i] == Texture'GrayMaskTex' || multiskins[i] == Texture'PinkMaskTex' || multiskins[i] == Texture'BlackMaskTex')
+            multiskins[i] = GetMaskedTexture();
     }
 }
+*/
 
 //SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
 function SmartWeaponDraw(DeusExPlayer player)
@@ -782,7 +809,7 @@ function PostBeginPlay()
 	// Handle holograms
 	if ((Style != STY_Masked) && (Style != STY_Normal))
 	{
-		SetSkinStyle(Style, None);
+		class'SkinUtils'.static.SetSkinStyle(Self, Style, None);
 		if (!IsA('Terrorist'))
 		    SetCollision(false, false, false);
 		else
@@ -790,11 +817,27 @@ function PostBeginPlay()
 		KillShadow();
 		bHasShadow = False;
 		bCanBleed = False;
+        bHasCloak = False;
 	}
         
     SetupSkin();
 }
 
+// ----------------------------------------------------------------------
+// SetSkinStyle() and ResetSkinStyle()
+// SARGE: These are only here because DXRando uses them.
+// They literally just call off to the static versions
+// ----------------------------------------------------------------------
+    
+function ResetSkinStyle()
+{
+    class'SkinUtils'.static.ResetSkinStyle(self);
+}
+
+function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional float newScaleGlow)
+{
+    class'SkinUtils'.static.SetSkinStyle(Self, newStyle, newTex, newScaleGlow, false);
+}
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
@@ -806,6 +849,8 @@ function PostPostBeginPlay()
 
 	// Bind any conversation events to this ScriptedPawn
 	ConBindEvents();
+
+    SetupCloakManager();
 
 	//bCloakOn = True;                                                            //RSD: Failsafe
 	//EnableCloak(False);
@@ -828,6 +873,9 @@ simulated function Destroyed()
 
 	if ((player != None) && (player.conPlay != None))
 		player.conPlay.ActorDestroyed(Self);
+
+    CriticalDelete(CloakManager);
+    CloakManager = None;
 
 	Super.Destroyed();
 }
@@ -1474,7 +1522,7 @@ function EnableShadow(bool bEnable)
 
 function CreateShadow()
 {
-	if (bHasShadow && bInWorld)
+	if (bHasShadow && bInWorld && !bCloakOn)
 		if (Shadow == None)
 			Shadow = Spawn(class'Shadow', Self,, Location-vect(0,0,1)*CollisionHeight, rot(16384,0,0));
 }
@@ -3838,6 +3886,7 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
     {
         Multiskins[6]=None;
         bHasHelmet=False;
+        AugmentiqueData.textures[6] = None;
         if (IsA('UNATCOTroop'))
             CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
         else if (IsA('Soldier'))
@@ -4091,7 +4140,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	local EHitLocation hitPos;
 	local float        shieldMult;
 	local DeusExPlayer player;   //CyberP: for screenflash if near gibs
-    local float dist;            //CyberP: for screenflash if near gibs
     local GMDXImpactSpark AST;
     local FleshFragmentSmall ffs;
     local int i;
@@ -4119,6 +4167,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	// Block certain damage types; perform special ops on others
 	if (!FilterDamageType(instigatedBy, hitLocation, offset, damageType))
 		return;
+        
+    player = DeusExPlayer(GetPlayerPawn());
 
 	// Impart momentum
 	ImpartMomentum(momentum, instigatedBy);
@@ -4215,6 +4265,10 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
              AST.SoundPitch=64;
 		  }
     }
+    
+    //Cover the players weapon in blood
+    if (bCanBleed && player != None)
+        player.DoBloodEffect(actualDamage,damageType,Location,false);
 
 	if (Health <= 0)
 	{
@@ -4231,8 +4285,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     }
     if (!bSitting && bFlyer && !IsA('Robot') && !IsA('Animal'))
     {
-    player = DeusExPlayer(GetPlayerPawn());
-    if (DamageType == 'Shot' && (Damage >= 25 || (player.inHand != None && player.inHand.IsA('WeaponAssaultShotgun')) ||
+    if (player != None && DamageType == 'Shot' && (Damage >= 25 || (player.inHand != None && player.inHand.IsA('WeaponAssaultShotgun')) ||
      (player.inHand != None && player.inHand.IsA('WeaponSawedOffShotgun')))) //CyberP: meh
     {
     PlaySound(Sound'GMDXSFX.Generic.BloodSpray',SLOT_None,1.5,,1024);
@@ -4264,12 +4317,9 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             PopHead();
             if (player!=none)
             {
-                dist = Abs(VSize(player.Location - Location));
-                if (dist < 160)
-                {
-                    player.ClientFlash(14, vect(160,0,0));
-                    player.bloodTime = 4.000000;
-                }
+                //Cover the players weapon in blood
+                if (bCanBleed && player != None)
+                    player.DoBloodEffect(actualDamage,damageType,Location,true);
             }
             for(i=0;i<18;i++)
             {
@@ -4303,12 +4353,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             player = DeusExPlayer(GetPlayerPawn()); //CyberP: for screenflash if near gibs
             if (player != none && CollisionHeight > 10)
             {
-   		    dist = Abs(VSize(player.Location - Location));
-   		    if (dist < 192)
-   		     {
-                player.ClientFlash(14, vect(180,0,0));
-                player.bloodTime = 5.000000;
-             }
+                //Cover the players weapon in blood
+                player.DoBloodEffect(Damage,damageType,Location,true);
             }
             }
 		else
@@ -4675,145 +4721,48 @@ function Bool HasTwoHandedWeapon()
 		return False;
 }
 
-
-// ----------------------------------------------------------------------
-// GetStyleTexture()
-// ----------------------------------------------------------------------
-
-function Texture GetStyleTexture(ERenderStyle newStyle, texture oldTex, optional texture newTex)
-{
-	local texture defaultTex;
-
-	if      (newStyle == STY_Translucent)
-		defaultTex = Texture'BlackMaskTex';
-	else if (newStyle == STY_Modulated)
-		defaultTex = Texture'GrayMaskTex';
-	else if (newStyle == STY_Masked)
-		defaultTex = Texture'PinkMaskTex';
-	else
-		defaultTex = Texture'BlackMaskTex';
-
-	if (oldTex == None)
-		return defaultTex;
-	else if (oldTex == Texture'BlackMaskTex')
-		return Texture'BlackMaskTex';  // hack
-	else if (oldTex == Texture'GrayMaskTex')
-		return defaultTex;
-	else if (oldTex == Texture'PinkMaskTex')
-		return defaultTex;
-	else if (newTex != None)
-		return newTex;
-	else
-		return oldTex;
-
-}
-
-
-// ----------------------------------------------------------------------
-// SetSkinStyle()
-// ----------------------------------------------------------------------
-
-function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional float newScaleGlow)
-{
-	local int     i;
-	local texture curSkin;
-	local texture oldSkin;
-
-	if (newScaleGlow == 0)
-		newScaleGlow = ScaleGlow;
-
-    if (newStyle == STY_Translucent)
-        GlassesFix(); //SARGE: Added
-
-	oldSkin = Skin;
-	for (i=0; i<8; i++)
-	{
-		curSkin = GetMeshTexture(i);
-        if (curSkin != None && curSkin.Name != 'PinkMaskTex')
-            MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
-	}
-	Skin      = GetStyleTexture(newStyle, Skin, newTex);
-	ScaleGlow = newScaleGlow;
-	Style     = newStyle;
-}
-
-
-// ----------------------------------------------------------------------
-// ResetSkinStyle()
-// ----------------------------------------------------------------------
-
-function ResetSkinStyle()
-{
-	local int i;
-
-	for (i=0; i<8; i++)
-		MultiSkins[i] = Default.MultiSkins[i];
-	Skin      = Default.Skin;
-	ScaleGlow = Default.ScaleGlow;
-	Style     = Default.Style;
-    SetupSkin();
-}
-
-
 // ----------------------------------------------------------------------
 // EnableCloak()
 // ----------------------------------------------------------------------
 
 function EnableCloak(bool bEnable)  // beware! called from C++
 {
-local bool bCloaked;
-local SpoofedCorona cor;
 	if (!bHasCloak || (CloakEMPTimer > 0) || (Health <= 0) || bOnFire)
 		bEnable = false;
 
-	if (bEnable && !bCloakOn && !bCloaked)
+	if (bEnable && !bCloakOn)
 	{
-        SetSkinStyle(STY_Translucent, class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.Skins.AlarmLightTex6",IsHDTP()), 0.4);
-        SetTimer(0.4,False);
-        cor = Spawn(class'SpoofedCorona');
-        if (cor != none)
-        cor.SetBase(self);
-        PlaySound(Sound'CloakUp', SLOT_Pain, 0.85, ,768,1.0);
-        AmbientGlow = 255;
-        LightType = LT_Strobe;
-        LightBrightness = 64;
-        LightHue = 160;
-        LightSaturation = 96;
-        LightRadius = 6;
-		KillShadow();
+        CloakManager.SetCloaked(true,true);
 		bCloakOn = bEnable;
-		bCloaked = True;
 	}
 	else if (!bEnable && bCloakOn && !bForcedCloak)
 	{
-		ResetSkinStyle();
-		CreateShadow();
-		LightRadius = 0;
-        AmbientGlow = 0;
+        CloakManager.SetCloaked(false,true);
 		bCloakOn = bEnable;
-		bCloaked = False;
-		if (Health > 0)
-		PlaySound(Sound'CloakDown', SLOT_Pain, 0.85, ,768,1.0);
-        SetupSkin();
 	}
+}
+
+function ApplyCurrentOutfit()
+{
+    SetupSkin();
 }
 
 //SARGE: Added to let us fix up skins when disabling cloak or swapping weapons
 //By default, does nothing, but can be used for things like custom skins for shotgunners
 function SetupSkin()
 {
-    if (!bCloakOn)
-        ApplyCurrentOutfit();
+    if (!IsHDTP() && !bCloakOn)
+        _ApplyCurrentOutfit();
+
+    //Also fix glasses on holograms
+    class'SkinUtils'.static.GlassesFix(Self);
+    //FixAllTextureMasks();
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
 {
-		ResetSkinStyle();
-		CreateShadow();
-		LightRadius = 0;
-        AmbientGlow = 0;
-		bCloakOn = False;
-        SetupSkin();
+    if (!bForcedCloak)
+        CloakManager.ForceOff(true);
 }
 
 // ----------------------------------------------------------------------
@@ -5190,33 +5139,6 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
     }
 }
 
-
-// ----------------------------------------------------------------------
-// GetFloorMaterial()
-//
-// Gets the name of the texture group that we are standing on
-// ----------------------------------------------------------------------
-
-function name GetFloorMaterial()
-{
-	local vector EndTrace, HitLocation, HitNormal;
-	local actor target;
-	local int texFlags;
-	local name texName, texGroup;
-
-	// trace down to our feet
-	EndTrace = Location - CollisionHeight * 2 * vect(0,0,1);
-
-	foreach TraceTexture(class'Actor', target, texName, texGroup, texFlags, HitLocation, HitNormal, EndTrace)
-	{
-		if ((target == Level) || target.IsA('Mover'))
-			break;
-	}
-    SpecTexNPC = texName;
-	return texGroup;
-}
-
-
 // ----------------------------------------------------------------------
 // PlayFootStep()
 //
@@ -5227,8 +5149,6 @@ function name GetFloorMaterial()
 function PlayFootStep()
 {
 	local Sound stepSound;
-	local float rnd;
-	local name mat;
 	local float speedFactor, massFactor;
 	local float volume, pitch, range;
 	local float radius, maxRadius;
@@ -5237,219 +5157,19 @@ function PlayFootStep()
 	local DeusExPlayer dxPlayer;
 	local float shakeRadius, shakeMagnitude;
 	local float playerDist;
+    
+    //SARGE: Precipitation Stuff
+    local float RainstepVolMod;
+    local PrecipitationInfoBase PI;
+    local int bRainStep;
 
-	rnd = FRand();
-	mat = GetFloorMaterial();
-
-	volumeMultiplier = 1.0;
-	if (WalkSound == None)
-	{
-		if (FootRegion.Zone.bWaterZone)
-		{
-			if (rnd < 0.33)
-				stepSound = Sound'WaterStep1';
-			else if (rnd < 0.66)
-				stepSound = Sound'WaterStep2';
-			else
-				stepSound = Sound'WaterStep3';
-		}
-		else
-		{
-			switch(mat)
-			{
-				case 'Textile':
-				case 'Paper':
-					volumeMultiplier = 0.6;
-					if (rnd < 0.25)
-						stepSound = Sound'CarpetStep1';
-					else if (rnd < 0.5)
-						stepSound = Sound'CarpetStep2';
-					else if (rnd < 0.75)
-						stepSound = Sound'CarpetStep3';
-					else
-						stepSound = Sound'CarpetStep4';
-					break;
-
-                case 'Earth':
-                volumeMultiplier = 0.8;
-				if (rnd < 0.25)
-					stepSound = Sound'DIRT1';
-				else if (rnd < 0.5)
-					stepSound = Sound'DIRT2';
-				else if (rnd < 0.75)
-					stepSound = Sound'DIRT3';
-				else
-					stepSound = Sound'DIRT4';
-				break;
-
-				case 'Foliage':
-					volumeMultiplier = 0.7;
-					if (rnd < 0.25)
-						stepSound = Sound'GrassStep1';
-					else if (rnd < 0.5)
-						stepSound = Sound'GrassStep2';
-					else if (rnd < 0.75)
-						stepSound = Sound'GrassStep3';
-					else
-						stepSound = Sound'GrassStep4';
-					break;
-
-				case 'Metal':
-					volumeMultiplier = 0.9;
-                if (SpecTexNPC == 'A51_Floor_01')
-			    {
-			    if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-			    }
-			    else if (SpecTexNPC == 'metalgrate_a')
-			    {
-                if (rnd < 0.2)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_01';
-                else if (rnd < 0.4)
-			   		stepSound = Sound'GMDXSFX.Player.metal_grate_02';
-			    else if (rnd < 0.6)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_03';
-		  	    else if (rnd < 0.8)
-			     	stepSound = Sound'GMDXSFX.Player.metal_grate_04';
-		  	    else
-				   	stepSound = Sound'GMDXSFX.Player.metal_grate_05';
-			    }
-			    else
-			    {
-            	if (rnd < 0.25)
-					stepSound = Sound'MetalStep1';
-				else if (rnd < 0.5)
-					stepSound = Sound'MetalStep2';
-				else if (rnd < 0.75)
-					stepSound = Sound'MetalStep3';
-				else
-					stepSound = Sound'MetalStep4';
-			    }
-					break;
-
-				case 'Ladder':
-				volumeMultiplier = 1.0;
-                if (rnd < 0.25)
-					stepSound = Sound'GRATE1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GRATE2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GRATE3';
-				else
-					stepSound = Sound'GRATE4';
-                 break;
-
-                case 'Glass':
-                volumeMultiplier = 0.7;
-				if (rnd < 0.25)
-					stepSound = Sound'GLASS1';
-				else if (rnd < 0.5)
-					stepSound = Sound'GLASS2';
-				else if (rnd < 0.75)
-					stepSound = Sound'GLASS3';
-				else
-					stepSound = Sound'GLASS4';
-				break;
-
-				case 'Ceramic':
-				case 'Tiles':
-					volumeMultiplier = 0.75;
-					if (rnd < 0.25)
-						stepSound = Sound'TileStep1';
-					else if (rnd < 0.5)
-						stepSound = Sound'TileStep2';
-					else if (rnd < 0.75)
-						stepSound = Sound'TileStep3';
-					else
-						stepSound = Sound'TileStep4';
-					break;
-
-				case 'Wood':
-					 volumeMultiplier = 0.825;
-			    	if (SpecTexNPC == 'OldeOakPlank_A')
-				    {
-				    if (rnd < 0.2)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_01';
-				    else if (rnd < 0.4)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_02';
-				    else if (rnd < 0.6)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_03';
-			     	else if (rnd < 0.8)
-			     		stepSound = Sound'GMDXSFX.Player.Wood_04';
-			    	else
-				    	stepSound = Sound'GMDXSFX.Player.Wood_05';
-			    	}
-			    	else
-				    {
-					     if (rnd < 0.25)
-						stepSound = Sound'WoodStep1';
-					    else if (rnd < 0.5)
-						stepSound = Sound'WoodStep2';
-					    else if (rnd < 0.75)
-						stepSound = Sound'WoodStep3';
-					    else
-						stepSound = Sound'WoodStep4';
-				    }
-					break;
-
-                case 'Stucco':
-                     volumeMultiplier = 0.7;
-				     if (rnd < 0.25)
-					 stepSound = Sound'CARDB1';
-				     else if (rnd < 0.5)
-					 stepSound = Sound'CARDB2';
-				     else if (rnd < 0.75)
-					 stepSound = Sound'CARDB3';
-				     else
-					 stepSound = Sound'CARDB4';
-				     break;
-
-				case 'Brick':
-				case 'Concrete':
-				volumeMultiplier = 0.9;
-					if (rnd < 0.25)
-						stepSound = Sound'STEP1';
-					else if (rnd < 0.5)
-						stepSound = Sound'STEP2';
-					else if (rnd < 0.75)
-						stepSound = Sound'STEP3';
-					else
-						stepSound = Sound'STEP4';
-					break;
-
-                /*case 'Stone':
-					volumeMultiplier = 0.8;
-					if (rnd < 0.25)
-			    		stepSound = Sound'GMDXSFX.Player.concrete_ct_01';
-				    else if (rnd < 0.5)
-			     		stepSound = Sound'GMDXSFX.Player.concrete_ct_02';
-			    	else if (rnd < 0.75)
-			     		stepSound = Sound'GMDXSFX.Player.concrete_ct_03';
-			    	else
-			     		stepSound = Sound'GMDXSFX.Player.concrete_ct_04';
-					break;
-                */
-				default:
-                    volumeMultiplier = 0.8;
-					if (rnd < 0.25)
-			    		stepSound = Sound'StoneStep1';
-				    else if (rnd < 0.5)
-			     		stepSound = Sound'StoneStep2';
-			    	else if (rnd < 0.75)
-			     		stepSound = Sound'StoneStep3';
-			    	else
-			     		stepSound = Sound'StoneStep4';
-					break;
-			}
-		}
-	}
-	else
+    local name FloorMaterial, FloorTexture;
+    class'PawnUtils'.static.GetFloorMaterial(self,FloorMaterial,FloorTexture);
+	
+    volumeMultiplier = 1.0;
+    if (walkSound == None)
+        stepSound = class'PawnUtils'.static.GetFootstepSound(self,FloorMaterial,FloorTexture,volumeMultiplier,bRainStep);
+    else
 		stepSound = WalkSound;
 
 	// compute sound volume, range and pitch, based on mass and speed
@@ -5467,8 +5187,17 @@ function PlayFootStep()
 	pitch       = FClamp(pitch, 1.0, 1.5);
     if (IsA('GuntherHermann'))
         pitch*=1.2;
+    
+    // PRECIPITATION
+	// check for running in the rain, then multiply the sound volume by the return value below
+	// (only for the sound effect, not the AI sound event)
+    if (bRainStep == 1)
+        RainstepVolMod = class'PrecipitationInfoBase'.static.RainStep( self, FloorMaterial, volume, range, pitch );
+    else
+        RainStepVolMod = 1.0;
+
 	// play the sound and send an AI event
-	PlaySound(stepSound, SLOT_Interact, volume, , range, pitch);
+	PlaySound(stepSound, SLOT_Interact, volume*RainStepVolMod, , range, pitch);
 	AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier, range*volumeMultiplier);
 
 	// Shake the camera when heavy things tread
@@ -9166,6 +8895,29 @@ function Tick(float deltaTime)
 
     //SARGE: Handle Blinking
     HandleBlink(deltaTime);
+    
+    //SARGE: Tick Cloaking
+    if (CloakManager != None)
+    {
+        CloakManager.TickCloaking(deltaTime);
+        bCloakOn = CloakManager.IsInAnyState();
+        if (bCloakOn)
+        {
+            bNoSmooth=false;
+            CloakManager.UpdateSkin(self);
+            if (Weapon != None)
+                CloakManager.UpdateSkin(Weapon);
+            ScaleGlow = CloakManager.GetScaleGlow();
+        }
+        else
+        {
+            if (DeusExWeapon(Weapon) != None && Style != default.Style)
+                DeusExWeapon(Weapon).UpdateHDTPSettings();
+            ScaleGlow = default.ScaleGlow;
+            Style = default.Style;
+            bNoSmooth=default.bNoSmooth;
+        }
+    }
 
     bFirstTickDone = true;
 }
@@ -9200,21 +8952,8 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 function Timer()
 {
-	//SARGE: Was previously using 'HDTPWeaponCrowbarTex2', vanilla used 'WhiteStatic'
-	//Imported the high-quality one from HDTP, since WhiteStatic is WAY too visible!
-	if (bCloakOn)           //CyberP: for new cloaking effect.
-	{
-			 if (IsA('SecurityBot4'))
-				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
-			 else
-				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.15);
-			 LightRadius = 0;
-			 AmbientGlow = 0;
-	}
-	else
-	{
-	UpdateFire();
-	}
+	if (!bCloakOn)
+        UpdateFire();
 }
 
 
@@ -9553,10 +9292,20 @@ function bool SwitchToBestWeapon()
 				if (bBlockSpecial && (curWeapon.AITimeLimit > 0) && (SpecialTimer <= 0))
 					curFallbackLevel = 0;
 
+                //SARGE: Hackity hackity hack!
+                //Give the GEP, Flamethrower and Plasma a better score.
+                //Also the PS20, so it gets used a little more.
+                if (curWeapon.IsA('WeaponFlamethrower')
+                    || curWeapon.IsA('WeaponPlasmaRifle')
+                    || curWeapon.IsA('WeaponGEPGun')
+                    || curWeapon.IsA('WeaponHideAGun')
+                    || curWeapon.IsA('WeaponLAW'))
+                    score -= 15;
+
+
 				// Adjust score based on opponent and damage type.
 				// All damage types are listed here, even the ones that aren't used by weapons... :)
 				// (hacky...)
-
 				switch (curWeapon.WeaponDamageType())
 				{
 					case 'Exploded':
@@ -9697,6 +9446,8 @@ function bool SwitchToBestWeapon()
 						fallbackLevel = curFallbackLevel;
 					}
 				}
+
+                //DeusExPlayer(GetPlayerPawn()).DebugMessage("SwitchToBestWeapon: " $ inv.itemName $ " has a score of " $ score @ "bwinner?" $ bWinner);
 			}
 		}
 		inv = inv.Inventory;
@@ -17003,7 +16754,15 @@ state Stunned
 
 Begin:
 	Acceleration = vect(0, 0, 0);
-	PlayStunned();
+
+    //SARGE: Shenanigans Dancing
+    if (DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bShenanigans && HasAnim('Dance'))
+    {
+        PlayDancing();
+        DeusExPlayer(GetPlayerPawn()).ClientMessage(msgDance);
+    }
+    else
+        PlayStunned();
 	/*if (enemy != None && enemy.IsA('DeusExPlayer'))                           //RSD: Reworked stun duration mechanics
 	{
 	    if (DeusExPlayer(enemy).inHand != None && DeusExPlayer(enemy).inHand.IsA('WeaponRiotProd')) //CyberP: flawless hack! :/
@@ -17553,7 +17312,12 @@ function Sound GetDeathSound()
 
     //If we're using our original sound, or not valid, use the default
     else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
-        return default.Die;
+    {
+        //SARGE: But only if we actually have a meaningful one set...
+        //Otherwise we need to defer to the vanilla code below (to fix chicks)
+        if (default.Die != Sound'DeusExSounds.Player.MaleDeath')
+            return default.Die;
+    }
 
     //Otherwise do vanilla sounds, if set
     else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
@@ -17809,4 +17573,5 @@ defaultproperties
      randomPainSoundsM(17)=Sound'DeusExSounds.Player.MaleGrunt'
      bCanBlink=true
      fHighAlertChance=0.2
+     msgDance="Get electric on the dance floor!"
 }

@@ -3,68 +3,7 @@
 //=============================================================================
 class WeaponMiniCrossbow extends DeusExWeapon;
 
-var vector axesX;//fucking weapon rotation fix
-var vector axesY;
-var vector axesZ;
-var DeusExPlayer player;
-var bool bFlipFlopCanvas;
-var bool bGEPjit;
-var float GEPinout;
-var bool bGEPout;
-var vector MountedViewOffset;
-var float scopeTime;
 var int lerpClamp;
-
-simulated function DrawScopeAnimation()
-{
-    local rotator rfs;
-	local vector dx;
-	local vector dy;
-	local vector dz;
-	local vector unX,unY,unZ;
-
-    if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-
-	rfs.Yaw=2912*Fmin(1.0,GEPinout);
-	rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
-    
-    player = DeusExPlayer(Owner);
-
-	dx=axesX>>player.ViewRotation;
-	dy=axesY>>player.ViewRotation;
-	dz=axesZ>>player.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-
-	SetRotation(rfs);
-
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-	SetHand(player.Handedness); //meh meh
-
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-
-	SetLocation(player.Location+ CalcDrawOffset());
-	scopeTime+=1;
-
-    if (scopeTime>=18)
-    {
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
-}
 
 //SARGE: This overwrites the one in DeusExWeapon.uc, we need a special one here with a strap
 function SetWeaponHandTex()
@@ -115,6 +54,21 @@ function SetWeaponHandTex()
     //p.ClientMessage("Skin Tex: " $ handsTex);
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[5] = Texture'PinkMaskTex';
+    else
+    {
+        Multiskins[2] = Texture'PinkMaskTex'; //Don't texture screws
+        multiskins[5] = Texture'PinkMaskTex';
+    }
+}
 
 function DisplayWeapon(bool overlay)
 {
@@ -122,7 +76,7 @@ function DisplayWeapon(bool overlay)
 	super.DisplayWeapon(overlay);
     
     //Display Ammo Type
-    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
+    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0)) //RSD: Overhauled cloak/radar routines
     {
         if(AmmoType.isA('AmmoDartPoison'))
             ammotex = class'HDTPLoader'.static.GetTexture2("HDTPItems.skins.HDTPminicrossbowtex2","RSDCrap.Skins.MiniCrossbowTex2Dart2",IsHDTP());
@@ -370,4 +324,5 @@ defaultproperties
      CollisionHeight=1.000000
      Mass=15.000000
      bFancyScopeAnimation=true
+     totalScopeTime=0.31 //Slightly faster
 }

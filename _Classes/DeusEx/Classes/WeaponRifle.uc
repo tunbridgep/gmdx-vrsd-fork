@@ -4,91 +4,25 @@
 class WeaponRifle extends DeusExWeapon;
 
 var float	mpNoScopeMult;
-var DeusExPlayer player;
-var vector axesX;//fucking weapon rotation fix
-var vector axesY;
-var vector axesZ;
-var bool bFlipFlopCanvas;
-var bool bGEPjit;
-var float GEPinout;
-var bool bGEPout;
-var vector MountedViewOffset;
-var float scopeTime;
 var int lerpClamp;
 
-simulated function DrawScopeAnimation()
+function DisplayWeaponBlood(bool overlay)
 {
-    local rotator rfs;
-	local vector dx;
-	local vector dy;
-	local vector dz;
-	local vector unX,unY,unZ;
-
-    if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-
-	rfs.Yaw=6912*Fmin(1.0,GEPinout);
-	rfs.Pitch=2912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
+    super.DisplayWeaponBlood(overlay);
     
-    player = DeusExPlayer(Owner);
+    if (!overlay)
+        return;
 
-	dx=axesX>>player.ViewRotation;
-	dy=axesY>>player.ViewRotation;
-	dz=axesZ>>player.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-
-	SetRotation(rfs);
-
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-	SetHand(player.Handedness); //meh meh
-
-    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    if (IsHDTP() && iHDTPModelToggle == 2) //Clyzm Model
+        multiskins[2] = Texture'PinkMaskTex';
+    if (IsHDTP())
     {
-        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	}
-	else
-	{
-        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	}
-
-	SetLocation(player.Location+ CalcDrawOffset());
-	scopeTime+=1;
-
-
-    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
-    {
-        if (scopeTime>=17)
-        {
-            activateAn = False;
-            scopeTime = 0;
-            ScopeToggle();
-            GEPinout = 0;
-            axesX = vect(0,0,0);
-            axesY = vect(0,0,0);
-            axesZ = vect(0,0,0);
-            PlayerViewOffset=Default.PlayerViewOffset*100;
-            SetHand(player.Handedness);
-        }
     }
-    else if (scopeTime>=25)
+    else
     {
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
+        ShowWeaponAddon(3,!bHasSilencer); //Muzzle Break, hidden when we have silencer
+        multiskins[6] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'PinkMaskTex';
     }
 }
 
@@ -233,27 +167,6 @@ function PostBeginPlay()   //CyberP: do I need to revise this shit?
     }
 }
 
-state DownWeapon
-{
-	function EndState()
-	{
-	    Super.EndState();
-	    activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        //RSD: Begin block from v9 beta
-	    BobDamping=default.BobDamping;
-        bAimingDown=False;
-        //RSD: End block from v9 beta
-        if (Owner != none && Owner.IsA('DeusExPlayer'))                         //RSD: accessed none?
-            SetHand(DeusExPlayer(Owner).Handedness);
-	}
-}
-
 state Reload
 {
 ignores Fire, AltFire;                                                          //RSD: Added from v9 beta (and also in base DeusExWeapon.uc?)
@@ -362,7 +275,9 @@ defaultproperties
 {
      weaponOffsets=(X=13.000000,Y=-2.000000,Z=-29.000000)
      mpNoScopeMult=0.350000
-     MountedViewOffset=(X=7.000000,Y=-6.800000,Z=-2.500000)
+     MountedViewOffset=(X=7.000000,Y=-8.800000,Z=-32.500000)
+     MountedViewOffset2=(X=9.000000,Y=-6.800000,Z=-2.500000)
+     MountedViewOffset3=(X=0.000000,Y=-17.800000,Z=-42.500000)
      LowAmmoWaterMark=3
      GoverningSkill=Class'DeusEx.SkillWeaponRifle'
      NoiseLevel=10.000000

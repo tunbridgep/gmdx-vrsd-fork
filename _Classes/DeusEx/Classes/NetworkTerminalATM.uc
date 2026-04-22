@@ -27,6 +27,10 @@ function CloseScreen(String action)
 	else if (action == "ATMDISABLED")
 	{
 		ShowScreen(Class'ComputerScreenATMDisabled');
+        
+        Log("Kill me...." $ winNotes);
+        if (winNotes != None)
+            winNotes.Hide();
 	}
 }
 

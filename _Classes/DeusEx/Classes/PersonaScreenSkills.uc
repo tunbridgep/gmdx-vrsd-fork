@@ -431,6 +431,12 @@ function UpgradeSkill()
     else if (displayType == Perks)                                                       //RSD: Also make sure to update perk buttons (doh!)
     	selectedSkill.UpdatePerksInfo(winInfo);
 
+    if (player.bMultiplayerSkillSounds)
+    {
+        selectedSkillButton.PlaySound(None);
+        player.BuySkillSound(selectedSkill.CurrentLevel);
+    }
+
 	// Send status message
 	winStatus.AddText(Sprintf(SkillUpgradedLevelLabel, selectedSkill.SkillName));
 

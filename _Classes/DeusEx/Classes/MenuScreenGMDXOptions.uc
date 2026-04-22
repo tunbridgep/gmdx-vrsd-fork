@@ -69,7 +69,8 @@ function ProcessAction(String actionKey)
 {
 	if (actionKey == "TIPS")
 	{
-        CreateTips();
+        //CreateTips();
+        root.InvokeMenuScreen(class'MenuScreenGMDXOnboarding'); //SARGE: Now we show the onboarding menu instead
     }
     Super.ProcessAction(actionKey);
 }
@@ -143,7 +144,7 @@ defaultproperties
      actionButtons(2)=(Action=AB_Reset)
      //actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Video Setup",Key="VIDEO")
      //actionButtons(4)=(Align=HALIGN_Right,Action=AB_Other,Text="Show Tips",Key="TIPS")
-     actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Show Tips",Key="TIPS")
+     actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Show Help Menu",Key="TIPS")
      Title="GMDX Options"
      ClientWidth=537
      ClientHeight=228

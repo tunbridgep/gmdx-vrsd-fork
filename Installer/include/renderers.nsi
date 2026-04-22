@@ -15,5 +15,12 @@ Section "Direct3D10 Renderer"
     SetOutPath $INSTDIR
 
 SectionEnd
+Section "DXVK Wrapper"
+    
+    SetOutPath $INSTDIR\System
+    File extras\dxvk\*.*
+    SetOutPath $INSTDIR
+
+SectionEnd
 SectionGroupEnd
 

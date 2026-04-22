@@ -77,6 +77,7 @@ var localized string ComputerNodeFunctionLabel;
 
 //SARGE: Add the ability to have a notes window
 var HUDKeypadNotesWindow winNotes;
+var const bool bShowNotesWindow;         //SARGE: Whether this UI should show the notes window
 
 var bool bNotFirstTick;             //SARGE: Added
 
@@ -91,7 +92,6 @@ function SetNotesPos()
 
     winNotes.SetPos(x + winClient.x + winClient.width,y + winClient.y - 8);
 	winNotes.Resize(640/2, winClient.height + winStatus.Height);
-    //winNotes.Show();
 }
 
 //SARGE: This sucks, but I can't make it work any other way...
@@ -702,7 +702,7 @@ function ProcessDeusExText(Name textName, optional TextWindow winText)
 		parser = new(None) Class'DeusExTextParser';
 		parser.SetPlayerName(player.TruePlayerName);
 
-		if (CompOwner.IsA('Computers'))
+		if (CompOwner != None && CompOwner.IsA('Computers'))
 			TextPackage = Computers(CompOwner).TextPackage;
 		else
 			TextPackage = "DeusExText";
@@ -737,6 +737,8 @@ function ProcessDeusExTextTag(DeusExTextParser parser, optional TextWindow winTe
 	local byte tag;
 	local Name fontName;
 	local String textPart;
+    local int i;
+    local Computers C;
 
 	tag  = parser.GetTag();
 
@@ -746,6 +748,15 @@ function ProcessDeusExTextTag(DeusExTextParser parser, optional TextWindow winTe
 		case 9:				// TT_PlayerName:
 		case 10:			// TT_PlayerFirstName:
 			text = parser.GetText();
+
+            //SARGE: Allow Replacing email text dynamically
+            //Used for the 9905 code in Mission 5, but can be used for anything.
+            C = Computers(compOwner);
+            if (C != None)
+            {
+                for(i = 0; i < ArrayCount(C.textReplacements);i++)
+                    text = class'DeusExPlayer'.static.StrRepl(text,C.textReplacements[i].original,C.textReplacements[i].replacement);
+            }
 
 			// Add the text
 			if (winText != None)

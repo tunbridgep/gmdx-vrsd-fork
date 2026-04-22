@@ -10,10 +10,25 @@ var localized String msgDeducted;
 var localized String msgNotEnough;
 var localized String msgSaveName;
 
+var() Name requiredFlag;
+
 #exec OBJ LOAD FILE=Extras
 
+//SARGE: Hide save points when we're far away
+simulated function Tick(float deltaTime)
+{
+    if (class'DeusExPlayer'.default.bFadeOutSavePoints && !IsInState('QuickSaver'))
+    {
+        ScaleGlow = default.ScaleGlow - (DistanceFromPlayer / 500.0);
+        ScaleGlow = FMAX(0.1,ScaleGlow);
+    }
+    else
+    {
+        ScaleGlow = default.ScaleGlow;
+    }
+}
+
 //SARGE: Allow save points to activate themselves based on flags
-var() Name requiredFlag;
 
 function Timer()
 {
@@ -54,14 +69,14 @@ State QuickSaver
         bUsedSavePoint=true;
         bHighlight=false;
         player.DoSaveGame(0,sprintf(msgSaveName,player.retInfo(),player.TruePlayerName));
-        //player.QuickSave2(sprintf(msgSaveName,player.retInfo(),player.TruePlayerName),true);
+        //player.QuickSave2(sprintf(msgSaveName,player.retInfo(),player.TruePlayerName),true); //SARGE: This needs fixing
         PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
         GotoState('');
         Global.SetTimer(0.02,true);
    }
 
 Begin:
-   SetTimer(0.1,false);
+    SetTimer(0.1,false);
 }
 
 defaultproperties
@@ -95,4 +110,6 @@ defaultproperties
      bHighlight=True
      //bSkipLOSFrobCheck=True //SARGE: Otherwise they get a little weird.
      ItemName="Save Point"
+     bTickEnabled=true
+     ScaleGlow=0.85 //SARGE: Make them a bit more subtle
 }

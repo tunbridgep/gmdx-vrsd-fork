@@ -17,8 +17,8 @@ var localized String InvLabel;
 var int clipsRemaining;
 var int ammoRemaining;
 var int ammoInClip;
-var DeusExWeapon weapon;
-var DeusExPickup item;                                                             //RSD: Added
+var transient DeusExWeapon weapon;
+var transient DeusExPickup item;                                                             //RSD: Added
 
 // Defaults
 var Texture texBackground;

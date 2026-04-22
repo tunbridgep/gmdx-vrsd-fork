@@ -26,8 +26,8 @@ var int ammoRemaining;
 var int ammoInClip;
 
 //Stores a reference to our currently relevant weapon
-var Inventory curr;
-var DeusExWeapon weapon;
+var transient Inventory curr;
+var transient DeusExWeapon weapon;
 
 // Defaults
 var Texture texBackground;

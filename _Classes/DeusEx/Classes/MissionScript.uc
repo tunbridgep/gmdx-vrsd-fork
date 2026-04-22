@@ -542,11 +542,28 @@ function FirstFrame()
         if (dxInfo.MissionNumber > 0)
         {
             //Distribute PS20's and Flares
-            DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,1,class'AmmoHideAGun');
-            DistributeItem('ScriptedPawn',class'Flare',1,3);
+            if (dxInfo.bDistributePS20)
+                DistributeItem('ScriptedPawn',class'WeaponHideAGun',true,0,1,class'AmmoHideAGun');
+            DistributeItem('ScriptedPawn',class'Flare',true,1,3);
 
             //SARGE: Give Shurikens to Elites
-            DistributeItem('MJ12Elite',class'WeaponShuriken',1,3);
+            DistributeItem('MJ12Elite',class'WeaponShuriken',true,1,3);
+        }
+
+        //On Hardcore mode, distribute extra heavy weapons
+        if (player.bHardCoreMode)
+        {
+            if (dxInfo.MissionNumber >= 4 && dxInfo.bDistributeFlamethrower) //After Lebedevs Airfield
+                DistributeItem('HumanMilitary',class'WeaponFlamethrower',false,0,1,class'AmmoNapalm');
+            
+            //if (dxInfo.MissionNumber >= 9 && dxInfo.bDistributeLAW) //Shipyard and Later
+            //    DistributeItem('HumanMilitary',class'WeaponLAW',false,0,1,class'AmmoLAW');
+                
+            if (dxInfo.MissionNumber >= 9 && dxInfo.bDistributePlasma) //Shipyard and Later
+                DistributeItem('HumanMilitary',class'WeaponPlasmaRifle',false,0,1,class'AmmoPlasma');
+            
+            if (dxInfo.MissionNumber >= 10 && dxInfo.bDistributeGEP) //Paris and Later
+                DistributeItem('HumanMilitary',class'WeaponGEPGun',false,0,1,class'AmmoRocket');
         }
 
 		flags.SetBool(flagName, True);
@@ -752,18 +769,19 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 }
 
 //Gives the specified item to 0-X random enemies in the map.
-function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
+function DistributeItem(name actorClass, class<Inventory> itemClass, bool bAllowMultipleDistributions, /*bool bForceSwitch, bool bReplaceWeapons,*/ int minAmount, int maxAmount, optional class<Ammo> ammoClass)
 {
     local int i, j, swapTo, items;
     local ScriptedPawn actors[50], temp, SP;
     local int actorCount, toGive, index;
     local Inventory inv, inv2;
+    local bool bContinue;
     
     player.DebugMessage("Distributing "$itemClass$"...");
 
     foreach AllActors(class'ScriptedPawn', SP)
     {
-        if (/*!SP.bImportant && */SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA(actorClass))
+        if (/*!SP.bImportant && */ !SP.IsA('WIB') && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.bAlreadyDistributedWeapon && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA(actorClass))
             actors[actorCount++] = SP;
     }
     
@@ -772,7 +790,7 @@ function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmou
     toGive = MIN(toGive,actorCount);
     player.DebugMessage("  To Give (capped): "$toGive);
 
-    if (toGive == 0)
+    if (toGive == 0 || maxAmount == 0)
         return;
     
     player.DebugMessage("  Before Shuffle...");
@@ -806,6 +824,9 @@ function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmou
         if (toGive == 0 || i > actorCount)
             break;
 
+        bContinue = false;
+        items = 0;
+
         //First, make sure they don't have one.
         //Need to restrict this to a max of 10, otherwise some maps crash for no reason
         inv = actors[i].Inventory;
@@ -813,10 +834,37 @@ function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmou
         {
             items++;
             if (inv.Class == itemClass)
-                continue;
+                bContinue = true;
             inv = inv.Inventory;
         }
-    
+
+        if (bContinue)
+            continue;
+
+        /*
+        //Remove their previous weapons, if they have them, except combat knives.
+        if (bReplaceWeapons)
+        {
+            items = 0;
+            inv = actors[i].Inventory;
+            while (inv != None && items < 10)
+            {
+                items++;
+                if (inv.IsA('DeusExWeapon') && !inv.IsA('WeaponCombatKnife'))
+                {
+                    player.DebugMessage("       Removing Weapon: " $ inv.Class.Name $ " from " $ actors[i]);
+                    inv2 = inv.Inventory;
+                    DeleteInventory(actors[i],inv);
+                    inv = inv2;
+                }
+                else
+                {
+                    inv = inv.Inventory;
+                }
+            }
+        }
+        */
+
         //Spawn the item and some ammo
         inv = spawn(itemClass, actors[i]);
         if (inv != None)
@@ -844,9 +892,33 @@ function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmou
             }
         }
         Player.DebugMessage("  Give " $ actors[i].UnfamiliarName $ " (" $ actors[i] $ " ) a " $ itemClass);
+
         actors[i].SwitchToBestWeapon();
+
+        if (!bAllowMultipleDistributions)
+            actors[i].bAlreadyDistributedWeapon = true;
+
         toGive--;
     }
+}
+
+//Stolen from DeusExCarcass.uc
+//SARGE TODO: Make a new itemUtils class
+function bool DeleteInventory(Actor source, inventory Item )
+{
+	// If this item is in our inventory chain, unlink it.
+	local actor Link;
+
+	for( Link = source; Link!=None; Link=Link.Inventory )
+	{
+		if( Link.Inventory == Item )
+		{
+			Link.Inventory = Item.Inventory;
+			break;
+		}
+	}
+	Item.SetOwner(None);
+	Item.Destroy();
 }
 
 function InitializeRandomAmmoCounts()                                           //RSD: Initializes random ammo drop counts on first map load so they can't be savescummed

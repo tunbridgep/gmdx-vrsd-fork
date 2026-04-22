@@ -27,6 +27,7 @@ var Color    col02;
 var Color    colRed;
 var Color    colBlue; //SARGE: Added
 var Color    colWhite; //SARGE: Added
+var Color    colReserved; //SARGE: Added
 
 var float    damageFlash;
 var float    healFlash;
@@ -41,6 +42,7 @@ var float	breathPercent;
 
 // Energy bar
 var ProgressBarWindow winEnergy;
+var ProgressBarWindow winEnergyReserve;
 var float	energyPercent;
 
 // Used by DrawWindow
@@ -93,6 +95,17 @@ event InitWindow()
 	CreateBodyPart(armRight, Texture'HUDHitDisplay_ArmRight', 26, 27, 10,  23);
 	CreateBodyPart(legLeft,  Texture'HUDHitDisplay_LegLeft',  41, 44,  8,  36);
 	CreateBodyPart(legRight, Texture'HUDHitDisplay_LegRight', 33, 44,  8,  36);
+		
+    //SARGE: Pre-fill it.
+	if ((player != None))
+    {
+        SetHitColor(head,     9999, false, player.HealthHead, player.default.HealthHead+player.GetHeadHealthAdjustment());
+        SetHitColor(torso,    9999, false, player.HealthTorso, player.default.HealthTorso+player.GetTorsoHealthAdjustment());
+        SetHitColor(armLeft,  9999, false, player.HealthArmLeft, player.default.HealthArmLeft);
+        SetHitColor(armRight, 9999, false, player.HealthArmRight, player.default.HealthArmRight);
+        SetHitColor(legLeft,  9999, false, player.HealthLegLeft, player.default.HealthLegLeft);
+        SetHitColor(legRight, 9999, false, player.HealthLegRight, player.default.HealthLegRight);
+    }
 
 	bodyWin = NewChild(Class'Window');
 	bodyWin.SetBackground(Texture'HUDHitDisplay_Body');
@@ -106,6 +119,10 @@ event InitWindow()
 	
     winEnergy = CreateProgressBar(15, 20);
 	winEnergy.UseScaledColor(False);
+    
+    winEnergyReserve = CreateProgressBar(15, 20);
+	winEnergyReserve.UseScaledColor(False);
+
 	winBreath = CreateProgressBar(61, 20);
 
     UpdateBars();
@@ -117,7 +134,16 @@ function UpdateBars()
         winEnergy.SetColors(colWhite,colWhite);
     else
         winEnergy.SetColors(colBlue,colBlue);
+        
+    winEnergyReserve.SetColors(colReserved,colReserved);
+
+    if (player.bEnergyBarShowsReserve)
+        winEnergyReserve.Show();
+    else
+        winEnergyReserve.Hide();
+
     winEnergy.bSpecialFX = player.bAnimBar1;
+    winEnergyReserve.bSpecialFX = player.bAnimBar1;
     winBreath.bSpecialFX2 = player.bAnimBar2;
 }
 
@@ -168,7 +194,8 @@ function CreateBodyPart(out BodyPart part, texture tx, float newX, float newY,
 // SetHitColor()
 // ----------------------------------------------------------------------
 
-function SetHitColor(out BodyPart part, float deltaSeconds, bool bHide, int hitValue)
+//SARGE: Added maxHitValue
+function SetHitColor(out BodyPart part, float deltaSeconds, bool bHide, int hitValue, float maxHitValue)
 {
 	local Color col;
 	local float mult;
@@ -211,7 +238,13 @@ function SetHitColor(out BodyPart part, float deltaSeconds, bool bHide, int hitV
 	}
 
 	hitValue = part.displayedHealth;
-	col = winEnergy.GetColorScaled(hitValue/100.0);
+    
+    //SARGE: Cap the hit value to the max
+    if (hitValue > maxHitValue)
+        hitValue = maxHitValue;
+
+    if (winEnergy != None)
+        col = winEnergy.GetColorScaled(hitValue/maxHitValue);
 
 	if (part.damageCounter > 0)
 	{
@@ -320,7 +353,7 @@ event DrawWindow(GC gc)
         gc.DrawText(13, 74, 8, 8, int(player.Energy));
 
 	// If we're underwater draw the breathometer
-	if ((bUnderwater && !Player.bStaminaSystem) || Player.bStaminaSystem || Player.bHardCoreMode)
+	if (bUnderwater || Player.iStaminaSystem > 0 || Player.bHardCoreMode)
 	{
 	    breathPercent = 100.0 * player.swimTimer / player.swimDuration;
 	    breathPercent = FClamp(breathPercent, 0.0, 100.0);
@@ -427,17 +460,27 @@ event Tick(float deltaSeconds)
 
 	if ((player != None) && ( bVisible ))
 	{
-		SetHitColor(head,     deltaSeconds, false, player.HealthHead);
-		SetHitColor(torso,    deltaSeconds, false, player.HealthTorso);
-		SetHitColor(armLeft,  deltaSeconds, false, player.HealthArmLeft);
-		SetHitColor(armRight, deltaSeconds, false, player.HealthArmRight);
-		SetHitColor(legLeft,  deltaSeconds, false, player.HealthLegLeft);
-		SetHitColor(legRight, deltaSeconds, false, player.HealthLegRight);
+		SetHitColor(head,     deltaSeconds, false, player.HealthHead, player.default.HealthHead+player.GetHeadHealthAdjustment());
+		SetHitColor(torso,    deltaSeconds, false, player.HealthTorso, player.default.HealthTorso+player.GetTorsoHealthAdjustment());
+		SetHitColor(armLeft,  deltaSeconds, false, player.HealthArmLeft, player.default.HealthArmLeft);
+		SetHitColor(armRight, deltaSeconds, false, player.HealthArmRight, player.default.HealthArmRight);
+		SetHitColor(legLeft,  deltaSeconds, false, player.HealthLegLeft, player.default.HealthLegLeft);
+		SetHitColor(legRight, deltaSeconds, false, player.HealthLegRight, player.default.HealthLegRight);
         //if (!winBreath.IsVisible())
 		//		winBreath.Show();
 		// Calculate the energy bar percentage
-		energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
-		winEnergy.SetCurrentValue(energyPercent);
+        if (player.bEnergyBarShowsReserve)
+        {
+            energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy(true));
+            winEnergy.SetCurrentValue(energyPercent + player.AugmentationSystem.CalcEnergyReserve());
+        }
+        else
+        {
+            energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
+            winEnergy.SetCurrentValue(energyPercent);
+        }
+
+        winEnergyReserve.SetCurrentValue(player.AugmentationSystem.CalcEnergyReserve());
 
         breathPercent = 100.0 * player.swimTimer / player.swimDuration;
 	    breathPercent = FClamp(breathPercent, 0.0, 100.0);
@@ -467,7 +510,7 @@ event Tick(float deltaSeconds)
 		}
 
 		// Now show or hide the breath meter
-		if (!Player.bStaminaSystem && !Player.bHardCoreMode)
+		if (Player.iStaminaSystem == 0 && !Player.bHardCoreMode)
 		{
 		if (bUnderwater)
 		{
@@ -569,4 +612,5 @@ defaultproperties
 	 swimming="Swimming";
 	 tiptoes="Tiptoes";
 	 mantling="Mantling";
+     colReserved=(R=255,G=10,B=10)
 }

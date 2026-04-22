@@ -333,6 +333,10 @@ function InitFor(Actor Other)
         //SARGE: Set us to the exact size of our corresponding actor.
         SetCollisionSize(Other.CollisionRadius, default.CollisionHeight);
 
+        //SARGE: If we were cloaked, play the uncloaking sound
+        if (ScriptedPawn(Other) != None && ScriptedPawn(Other).bCloakOn)
+            Other.PlaySound(Sound'CloakDown', SLOT_Pain, 0.85, ,768,1.0);
+
         UpdateName();
 
 		Mass           = Other.Mass;
@@ -753,7 +757,6 @@ function ChunkUp(int Damage)
 	local BloodSpurt spur;
 	local FleshFragment chunk;
     local DeusExPlayer player;   //CyberP: for screenflash if near gibs
-    local float dist;            //CyberP: for screenflash if near gibs
 
     bDontRemovePool = true;
 
@@ -783,12 +786,8 @@ function ChunkUp(int Damage)
         //spawn(class'BoneSkullBloody');
 		if (player!=none)
         {
-   		dist = Abs(VSize(player.Location - Location));
-   		if (dist < 128)
-   		     {
-                player.ClientFlash(dist*4, vect(170,0,0));
-                player.bloodTime = 5.000000;
-             }
+            //Cover the players weapon in blood
+            player.DoBloodEffect(Damage,'Exploded',Location,true);
         }
 		for (i=0; i<size/1.4; i++) //CyberP: was 2.0
 		{
@@ -833,6 +832,12 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 
 	if (bInvincible)
 		return;
+		
+    player = DeusExPlayer(GetPlayerPawn());
+        
+    //Cover the players weapon in blood
+    if (player != None)
+        player.DoBloodEffect(Damage,damageType,Location,false);
 
 	// only take "gib" damage from these damage types
 	if ((damageType == 'Shot') || (damageType == 'Sabot') || (damageType == 'Exploded') || (damageType == 'Munch') ||
@@ -900,7 +905,6 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 			spawn(class'FleshFragmentSmoking');
 			spawn(class'FleshFragmentSmoking');
 			}
-		player = DeusExPlayer(GetPlayerPawn());
 		if ((player.bRealisticCarc || player.bHardCoreMode) && !bAnimalCarcass)  //CyberP: with this option enabled carcasses can only be damaged by explosions, plasma rifle and being eaten
         {
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
@@ -1136,6 +1140,8 @@ function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optio
 {
     if (item == None || P == None)
         return;
+
+    //P.DebugMessage("Adding display for item: " $ item @ bShowReceived);
 
     if (count > 1)
         P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ "(" $ count $ ")", 'Pickup');
@@ -1422,6 +1428,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                     if (!bPickedItemUp && item != None)
 					{
+
 						// Special case if this is a DeusExPickup(), it can have multiple copies
 						// and the player already has it.
 
@@ -1518,6 +1525,19 @@ function Frob(Actor Frobber, Inventory frobWith)
 										startcopies++;
 									}
 								}
+
+                                //SARGE: Stupid fix for empty chargedpickups
+                                if (invItem.Charge == 0 && ChargedPickup(item) != None)
+                                {
+                                    ChargedPickup(invItem).bActivatable=true;//RSD: Since now you can hold one at 0%
+                                    ChargedPickup(invItem).bDrained = false;
+                                    ChargedPickup(invItem).unDimIcon();
+                                    ChargedPickup(invItem).Charge = ChargedPickup(invItem).default.Charge;
+                                    invItem.numCopies -= 1;
+                    
+                                    if (player.bItemRechargeSound) //SARGE: Rosodude asked for this to be an option.
+                                        LootPickupSound = sound'BioElectricHiss';
+                                }
 
 								DeleteInventory(item);
                                 ShowFixedPickupMessage(player,invItem,itemCount,true);
@@ -1994,7 +2014,7 @@ function Landed(vector HitNormal)
         TakeDamage(1000, player, Location, Velocity, 'Exploded');
     else if (Velocity.Z < -1000)
         TakeDamage(20, player, Location, Velocity, 'Shot');
-    else if (Velocity.Z < -600 && player.bHardCoreMode) //SARGE: Extra check, even a low fall will kill you, you just won't bleed everywhere. Only on hardcore mode. Be careful when lugging around corpses!
+    else if (Velocity.Z < -600 && (player.bHardCoreMode || player.bUnconsciousFallDamage)) //SARGE: Extra check, even a low fall will kill you, you just won't bleed everywhere. Only on hardcore mode. Be careful when lugging around corpses!
         TakeDamage(5, player, Location, Velocity, 'Throw'); //Sarge: Changed from Shot to Throw
 }
 // ----------------------------------------------------------------------

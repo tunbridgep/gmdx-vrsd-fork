@@ -348,5 +348,6 @@ defaultproperties
      EggFoundSounds(2)=Sound'DeusExSounds.Generic.Foghorn'
      ScrollMusicString="Credits_Music.Credits_Music"
      textNames(0)=(packageName=GMDXText,textName=GMDXCredits)
-     textNames(1)=(packageName=DeusExText,textName=DeusExCredits)
+     textNames(1)=(packageName=GMDXText,textName=GMDXPatrons)
+     textNames(2)=(packageName=DeusExText,textName=DeusExCredits)
 }

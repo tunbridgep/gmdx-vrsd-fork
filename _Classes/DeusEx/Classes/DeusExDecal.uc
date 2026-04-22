@@ -42,7 +42,10 @@ simulated function Timer()
 		RemoteRole = ROLE_None;
 		bStartedLife = true;
         if (class'DeusExPlayer'.default.iPersistentDebris >= 2) //SARGE: Stick around forever, if we've enabled the setting.
+        {
+            bStasis=true;
             return;
+        }
 		if ( Level.bDropDetail )
 			SetTimer(5.0 + 2 * FRand(), false);
 		else
@@ -80,6 +83,11 @@ function ReattachDecal(optional vector newrot)
 static function bool IsHDTP()
 {
     return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
+}
+
+static function bool IsNewBlood()
+{
+    return class'DeusExPlayer'.default.bNewBlood;
 }
 
 //Need a new function so we can override while still doing the Reattach last;

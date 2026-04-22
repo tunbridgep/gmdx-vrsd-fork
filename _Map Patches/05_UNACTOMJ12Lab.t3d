@@ -105460,7 +105460,7 @@ Begin Actor Class=Brush Name=Brush426
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-960.000000,Y=664.000000,Z=-256.000000)
+    Location=(X=-960.000000,Y=608.000000,Z=-256.000000)
     Begin Brush Name=Model1641
        Begin PolyList
           Begin Polygon Texture=WindOpacStrek_A Flags=75497737 Link=0

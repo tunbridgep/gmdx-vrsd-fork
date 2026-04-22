@@ -14,8 +14,6 @@ var int lowerThreshold;                                                         
 var localized string msgCharging;
 var localized string msgDepleted;
 
-var int chargeRefreshTimeShort; //SARGE: Have a much shorter charge time if we have charges.
-
 // ----------------------------------------------------------------------
 // Network replication
 // ----------------------------------------------------------------------
@@ -122,8 +120,7 @@ simulated function ActivateRepairBotScreens(DeusExPlayer PlayerToDisplay)
    if (root != None)
    {
       //SARGE: Shorten charge time if we're on higher difficulties, since we have limited charges to stop abuse already.
-      if (playerToDisplay.CombatDifficulty > 1.0)
-          chargeRefreshTime = chargeRefreshTimeShort;
+      chargeRefreshTime = default.chargeRefreshTime / (lowerThreshold + 1);
       winCharge = HUDRechargeWindow(root.InvokeUIScreen(Class'HUDRechargeWindow', True));
       root.MaskBackground( True );
       winCharge.SetRepairBot( Self );
@@ -186,23 +183,41 @@ simulated function Int GetAvailableCharge()
 		return 0;
 }
 
-function ChargeEquipment(ChargedPickup EquipToCharge, DeusExPlayer EquipOwner) //RSD: Can now recharge wearable equipment
+function ChargeEquipment(inventory EquipToCharge, DeusExPlayer EquipOwner) //RSD: Can now recharge wearable equipment
 {
+    local ChargedPickup C;
+    local WeaponNanoSword N;
 	if ( CanCharge() )
 	{
-	    if (EquipOwner.CombatDifficulty > 1.0)                                  //RSD: Changed from 2.5 to 1.0, now affects Medium and Hard as well as Realistic/Hardcore
-	        chargeMaxTimes--;
-        if (EquipOwner != none && EquipOwner.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)           //RSD: Misfeature Exploit perk
-            EquipToCharge.Charge += 4.5*EquipToCharge.default.Charge*EquipToCharge.default.chargeMult;
+        N = WeaponNanoSword(EquipToCharge);
+        C = ChargedPickup(EquipToCharge);
+
+        if (C != None)
+        {
+
+            if (EquipOwner != none && EquipOwner.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)           //RSD: Misfeature Exploit perk
+                C.Charge += 4.5*C.default.Charge*C.default.chargeMult;
+            else
+                C.Charge += 3*C.default.Charge*C.default.chargeMult;
+            if (C.Charge > C.default.Charge)
+                C.Charge = C.default.Charge;
+
+            C.bDrained=false;                                           //SARGE: Since you can now equip empty equipment.
+            C.bActivatable=true;                                        //RSD: Since you can now hold one at 0%
+            C.unDimIcon();                                              //RSD
+        }
+        else if (N != None)
+        {
+            if (N.ChargeManager != None)
+                N.ChargeManager.Recharge();
+        }
         else
-            EquipToCharge.Charge += 3*EquipToCharge.default.Charge*EquipToCharge.default.chargeMult;
-		if (EquipToCharge.Charge > EquipToCharge.default.Charge)
-		    EquipToCharge.Charge = EquipToCharge.default.Charge;
+            return;
+            
+        if (EquipOwner.CombatDifficulty > 1.0)                                  //RSD: Changed from 2.5 to 1.0, now affects Medium and Hard as well as Realistic/Hardcore
+            chargeMaxTimes--;
 
         EquipOwner.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-        EquipToCharge.bDrained=false;                                           //SARGE: Since you can now equip empty equipment.
-        EquipToCharge.bActivatable=true;                                        //RSD: Since you can now hold one at 0%
-        EquipToCharge.unDimIcon();                                              //RSD
 		lastChargeTime = Level.TimeSeconds;
 	}
 }
@@ -213,7 +228,6 @@ defaultproperties
 {
      chargeAmount=60
      chargeRefreshTime=30
-     chargeRefreshTimeShort=15
      mpChargeRefreshTime=30
      mpChargeAmount=100
      chargeMaxTimes=3

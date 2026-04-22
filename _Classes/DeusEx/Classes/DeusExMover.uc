@@ -536,10 +536,6 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 	if ((DamageType == 'EMP') || (DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
 		return;
-   
-    //SARGE: 25% damage from WP rockets
-    if ((DamageType == 'Flamed'))
-       damage *= 0.25;
 
     if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
        damage *= 2;
@@ -769,7 +765,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	// Let any non-player pawn open any door for now
     // SARGE: Unless we manually locked it
 	// SARGE: Or the actor has no door interactions set
-	if (Player == None && !bPlayerLocked && (!P.IsA('ScriptedPawn') || !ScriptedPawn(P).bNoDoorInteractions || !bLocked))
+	if (Player == None && !bPlayerLocked && ((ScriptedPawn(P) != None && !ScriptedPawn(P).bNoDoorInteractions) || !bLocked))
 	{
 		bOpenIt = True;
 		msg = "";

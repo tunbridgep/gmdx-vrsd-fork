@@ -13,6 +13,16 @@ function DisplayWeapon(bool overlay)
 	}
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    multiskins[2] = Texture'PinkMaskTex';
+}
+
 defaultproperties
 {
      weaponOffsets=(X=12.000000,Y=-10.000000,Z=-16.000000)

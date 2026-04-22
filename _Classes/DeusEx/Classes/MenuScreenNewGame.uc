@@ -86,9 +86,16 @@ var bool bCollectibles;
 var bool bHardcoreFilterOption;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
+var bool bWoundSystem;
 var bool bImprisonmentTakesAmmo;
 var bool bSkillsSetAtStart;
 var bool bUNATCOCleanup;
+var bool bShippingAndReceiving;
+var bool bGEPUsesWPByDefault;
+
+//SARGE: Experimental Balance Menu
+var bool bExperimentalSkillRebalance;
+var bool bExperimentalRebreathers;
 
 //SARGE: Save our true player name for future playthroughs
 //SARGE: And now the player skin too!
@@ -170,55 +177,34 @@ event InitWindow()
 	editName.SetSelectedArea(0, Len(editName.GetText()));
 	combatDifficulty = player.Default.CombatDifficulty;
 	bHardCoreMode=false;
-    bRandomizeCrates=false;                                                     //RSD
-    bRandomizeMods=false;                                                       //RSD
-    bRandomizeAugs=false;                                                       //RSD
-    bAddictionSystem=false;                                                     //RSD
-    bRestrictedSaving=false;                                                    //Sarge
-    iNoKeypadCheese=0;      	                                                //Sarge
-    bRandomizeEnemies=false;                                                    //Sarge
-    bExtraHardcore=false;                                                       //Sarge
-    bMoreLDDPNPCs=false;                                                        //Sarge
-    bDisableConsoleAccess=false;                                                //Sarge
-    bWeaponRequirementsMatter=false;                                            //Sarge
-    bRealKillswitch=false;                                                      //Sarge
-  	bCameraDetectUnconscious=false;
-    bShenanigans=false;                                                         //Sarge
-    bCutInteractions=false;                                                     //Sarge
-    bA51Camera=false;                                                           //Sarge
-    bCollectibles=false;                                                        //Sarge
-    bHardcoreFilterOption=false;                                                //Sarge
-    bPermaCloak=false;                                                          //Sarge
-    bNoStartingWeaponChoices=false;                                             //Sarge
-    bImprisonmentTakesAmmo=false;                                               //Sarge
-    bSkillsSetAtStart=false;                                                    //Sarge
-    bUNATCOCleanup=false;                                                       //Sarge
-    //bRestrictedMetabolism=false;                                              //Sarge
-    default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
-    default.bRandomizeMods=false;                                               //RSD
-    default.bRandomizeAugs=false;                                               //RSD
-    default.bAddictionSystem=false;                                             //RSD
-    default.bRestrictedSaving=false;                                            //Sarge
-    default.iNoKeypadCheese=0;                                                  //Sarge
-    default.bRandomizeEnemies=false;                                            //Sarge
-    default.bExtraHardcore=false;                                               //Sarge
-    default.bMoreLDDPNPCs=false;                                                //Sarge
-    //default.bRestrictedMetabolism=false;                                      //Sarge
-    default.bPrisonStart=false;                                                 //Sarge
-    default.bDisableConsoleAccess=false;                                        //Sarge
-    default.bWeaponRequirementsMatter=false;                                    //Sarge
-    default.bRealKillswitch=false;                                              //Sarge
-	default.bCameraDetectUnconscious=false;
-    default.bShenanigans=false;                                                 //Sarge
-    default.bCutInteractions=false;                                             //Sarge
-    default.bA51Camera=false;                                                   //Sarge
-    default.bCollectibles=false;                                                //Sarge
-    default.bHardcoreFilterOption=false;                                        //Sarge
-    default.bPermaCloak=false;                                                  //Sarge
-    default.bNoStartingWeaponChoices=false;                                     //Sarge
-    default.bImprisonmentTakesAmmo=false;                                       //Sarge
-    default.bSkillsSetAtStart=false;                                            //Sarge
-    default.bUNATCOCleanup=false;                                               //Sarge
+    bRandomizeCrates=default.bRandomizeCrates;                                                     //RSD
+    bRandomizeMods=default.bRandomizeMods;                                                       //RSD
+    bRandomizeAugs=default.bRandomizeAugs;                                                       //RSD
+    bAddictionSystem=default.bAddictionSystem;                                                     //RSD
+    bRestrictedSaving=default.bRestrictedSaving;                                                    //Sarge
+    iNoKeypadCheese=default.iNoKeypadCheese;      	                                                //Sarge
+    bRandomizeEnemies=default.bRandomizeEnemies;                                                    //Sarge
+    bExtraHardcore=default.bExtraHardcore;                                                       //Sarge
+    bMoreLDDPNPCs=default.bMoreLDDPNPCs;                                                        //Sarge
+    bDisableConsoleAccess=default.bDisableConsoleAccess;                                                //Sarge
+    bWeaponRequirementsMatter=default.bWeaponRequirementsMatter;                                            //Sarge
+    bRealKillswitch=default.bRealKillswitch;                                                      //Sarge
+  	bCameraDetectUnconscious=default.bCameraDetectUnconscious;
+    bShenanigans=default.bShenanigans;                                                         //Sarge
+    bCutInteractions=default.bCutInteractions;                                                     //Sarge
+    bA51Camera=default.bA51Camera;                                                           //Sarge
+    bCollectibles=default.bCollectibles;                                                        //Sarge
+    bHardcoreFilterOption=default.bHardcoreFilterOption;                                                //Sarge
+    bPermaCloak=default.bPermaCloak;                                                          //Sarge
+    bNoStartingWeaponChoices=default.bNoStartingWeaponChoices;                                             //Sarge
+    bWoundSystem=default.bWoundSystem;                                                         //Sarge
+    bImprisonmentTakesAmmo=default.bImprisonmentTakesAmmo;                                               //Sarge
+    bSkillsSetAtStart=default.bSkillsSetAtStart;                                                    //Sarge
+    bUNATCOCleanup=default.bUNATCOCleanup;                                                       //Sarge
+    bShippingAndReceiving=default.bShippingAndReceiving;
+    bGEPUsesWPByDefault=default.bGEPUsesWPByDefault;
+    bExperimentalSkillRebalance=default.bExperimentalSkillRebalance;
+    bExperimentalRebreathers=default.bExperimentalRebreathers;
 	StyleChanged();
 }
 
@@ -855,6 +841,10 @@ function ProcessAction(String actionKey)
     {
         InvokePlaythroughModifiersMenu();
     }
+	else if (actionKey == "TESTING")
+    {
+        root.InvokeMenuScreen(Class'MenuScreenExperimental');
+    }
     else if (actionKey == "HELP")
     {
         //LDDP, 10/28/21: Optimized parsing. Also invoking new help window here.
@@ -889,9 +879,14 @@ function SaveSettings()
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
+    player.bWoundSystem=bWoundSystem;                                           //Sarge
     player.bImprisonmentTakesAmmo=bImprisonmentTakesAmmo;                       //Sarge
     player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
     player.bUNATCOCleanup=bUNATCOCleanup;                                       //Sarge
+    player.bShippingAndReceiving=bShippingAndReceiving;                         //Sarge
+    player.bGEPUsesWPByDefault=bGEPUsesWPByDefault;
+    player.bExperimentalSkillRebalance=bExperimentalSkillRebalance;
+    player.bExperimentalRebreathers=bExperimentalRebreathers;
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 
@@ -1150,7 +1145,8 @@ defaultproperties
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_Other,Text="|&Start Game",Key="START")
      actionButtons(2)=(Action=AB_Reset)
      actionButtons(3)=(Action=AB_Other,Text="Modifiers",Key="MODIFIERS")
-     actionButtons(4)=(Action=AB_Other,Text="LDDP Help",Key="HELP")
+     actionButtons(4)=(Action=AB_Other,Text="Testing",Key="TESTING")
+     //actionButtons(5)=(Action=AB_Other,Text="LDDP Help",Key="HELP")
      Title="Start New Game"
      ClientWidth=580
      ClientHeight=389
@@ -1162,6 +1158,14 @@ defaultproperties
      clientTextures(5)=Texture'DeusExUI.UserInterface.MenuNewGameBackground_6'
      bUsesHelpWindow=False
      bEscapeSavesSettings=False
+
+     //Playthrough Mods
+     bCutInteractions=true
+     bImprisonmentTakesAmmo=true
+     bRealKillswitch=true
+     bAddictionSystem=true
+     bCollectibles=true
+     bGEPUsesWPByDefault=true
      
      //LDDP Settings
      MorpheusCheckboxPos=(X=3,Y=342)

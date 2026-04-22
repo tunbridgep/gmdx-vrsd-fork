@@ -16,7 +16,6 @@ var bool bFlipFlopCanvas;
 var vector PortalOffset;
 var float PortalX,PortalY,PortalW,PortalH;
 var bool bGEPInFlight;
-var bool bGEPjit;
 var texture GEPVid;
 var float GEProll;
 var rotator OldRotation;
@@ -32,7 +31,7 @@ function PostBeginPlay()
 	if (Level.NetMode == NM_DedicatedServer)
 	  return;
 
-    if (default.ItemName=="GEP Rocket")
+    if (default.ItemName=="GEP Rocket" || default.ItemName=="WP Rocket") //SARGE: Now it applies to WP Rockets too
         if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHERocket').bPerkObtained == true)
             blastRadius=576.000000;
 
@@ -101,12 +100,8 @@ function RenderPortal(canvas Canvas)
 
 		OldRotation=Rotation;
 
-	   Canvas.DrawPortal(Canvas.ClipX/4,Canvas.ClipY/4,Canvas.ClipX/2,Canvas.ClipY/2,self, Location+(PortalOffset>>(Rotation+rdif)), (Rotation+rdif), 100);
-	   if(bGEPjit)
-		 Canvas.SetPos(Canvas.ClipX/4,Canvas.ClipY/4+7);
-			else
+	   Canvas.DrawPortal(Canvas.ClipX/4,Canvas.ClipY/4,Canvas.ClipX/2,Canvas.ClipY/2,self, Location+(PortalOffset>>(Rotation+rdif)), (Rotation+rdif), 110);
 				Canvas.SetPos(Canvas.ClipX/4,Canvas.ClipY/4);
-		bGEPjit=!bGEPjit;
 		Canvas.Style=4;
 		Canvas.DrawRect(GEPVid,Canvas.ClipX/2,Canvas.ClipY/2);
 		Canvas.Style=1;

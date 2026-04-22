@@ -59,6 +59,24 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\InventoryBorder_4_big.pcx"			    NAME="InventoryBorder_4_big"	           	GROUP="UserInterface"
 
+//New Health/Traumas screen
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HealthBackground_4.pcx"			        NAME="HealthBackground_4"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HealthBackground_5.pcx"			        NAME="HealthBackground_5"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_1.pcx"			        NAME="TraumaBackground_1"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_2.pcx"			        NAME="TraumaBackground_2"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_4.pcx"			        NAME="TraumaBackground_4"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\TraumaBackground_5.pcx"			        NAME="TraumaBackground_5"			        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_1.pcx"			NAME="HUDMedBotTraumaBackground_1"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_2.pcx"			NAME="HUDMedBotTraumaBackground_2"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_4.pcx"			NAME="HUDMedBotTraumaBackground_4"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDMedBotTraumaBackground_5.pcx"			NAME="HUDMedBotTraumaBackground_5"		    GROUP="UserInterface"
+
+  //Bigger repair bot interface
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBackground_3edit_big.pcx"			NAME="HUDRepairBotBackground_3edit_big"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBackground_4edit_big.pcx"			NAME="HUDRepairBotBackground_4edit_big"		    GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBorder_3edit_big.pcx"		    	NAME="HUDRepairBotBorder_3edit_big"		        GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDRepairBotBorder_4edit_big.pcx"		    	NAME="HUDRepairBotBorder_4edit_big"		        GROUP="UserInterface"
+
 //"Mods Copied" icon
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\modscopied.pcx"		            	    NAME="ModsCopied"	                       	GROUP="UserInterface"
 
@@ -231,6 +249,31 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_3.pcx"			NAME="MenuQoLBackground_3"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_4.pcx"			NAME="MenuQoLBackground_4"			GROUP="UserInterface"
 
+//New QoL Menu
+//Based off WCCC's Specialisations menu from VMD.
+//Used with permission.
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG01.bmp"			NAME="PictureMenuBG01"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG02.bmp"			NAME="PictureMenuBG02"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG03.bmp"			NAME="PictureMenuBG03"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG04.bmp"			NAME="PictureMenuBG04"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG05.bmp"			NAME="PictureMenuBG05"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\PictureMenuBG06.bmp"			NAME="PictureMenuBG06"			GROUP="UserInterface"
+//#exec TEXTURE IMPORT FILE="Textures\UserInterface\SpecializationsComputersLarge.pcx"	NAME="SpecializationsComputersLarge"			GROUP="UserInterface" FLAGS=2
+
+////QoL and OBM Menu images
+
+//QoL Menu
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel1.pcx"	            NAME="QoL_FreeCursor1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel2.pcx"	            NAME="QoL_FreeCursor2"		    	GROUP="UserInterface"    FLAGS=2
+
+//Onboarding Menu
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries1.pcx"	            NAME="OBM_Secondaries1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries2.pcx"	            NAME="OBM_Secondaries2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel1.pcx"	            NAME="OBM_AugWheel1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel2.pcx"	            NAME="OBM_AugWheel2"		    	GROUP="UserInterface"    FLAGS=2
+//#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline01.pcx"	            NAME="OBM_Decline01"		    	GROUP="UserInterface"    FLAGS=2
+//#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline02.pcx"	            NAME="OBM_Decline02"		    	GROUP="UserInterface"    FLAGS=2
+
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorderSecondaryF.pcx"	NAME="HudAmmoDisplayBorderSecondaryF"	GROUP="UserInterface"
@@ -308,6 +351,13 @@ class All expands Object
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke010.pcx" NAME="ef_PoisonSmoke010" GROUP="Skins"
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke011.pcx" NAME="ef_PoisonSmoke011" GROUP="Skins"
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke012.pcx" NAME="ef_PoisonSmoke012" GROUP="Skins"
+
+//New blood textures
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex1.pcx" NAME="FlatFXTex1" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex2.pcx" NAME="FlatFXTex2" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex3.pcx" NAME="FlatFXTex3" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex5.pcx" NAME="FlatFXTex5" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex6.pcx" NAME="FlatFXTex6" GROUP="Blood"
 
 defaultproperties
 {

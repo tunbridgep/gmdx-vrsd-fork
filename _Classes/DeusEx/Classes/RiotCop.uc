@@ -40,7 +40,7 @@ defaultproperties
      HealthArmLeft=150
      HealthArmRight=150
      Texture=Texture'DeusExCharacters.Skins.VisorTex1'
-     Mesh=LodMesh'DeusExCharacters.GM_Jumpsuit'
+     Mesh=LodMesh'RSDCrap.Fixed_Jumpsuit'
      MultiSkins(0)=Texture'DeusExCharacters.Skins.MiscTex1'
      MultiSkins(1)=Texture'DeusExCharacters.Skins.RiotCopTex1'
      MultiSkins(2)=Texture'DeusExCharacters.Skins.RiotCopTex2'

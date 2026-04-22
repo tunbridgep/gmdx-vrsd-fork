@@ -43,19 +43,28 @@ Quit
 afterFileCheck:
 
 SetOutPath $INSTDIR\Mods\GMDX_AE
-File /r /x DeusEx.u /x RSDCrap.u /x GMDXText.u /x DeusEx.int game\GMDXvSARGE\*
+File /r /x DeusEx.u /x RSDCrap.u /x GMDXText.u /x *.pcx /x DeusEx.int game\GMDXvSARGE\*
 SetOutPath $INSTDIR\Mods\GMDX_AE\System
 File "${SARGE_U_FILES}\DeusEx.u"
 File "${SARGE_U_FILES}\RSDCrap.u"
 File "${SARGE_U_FILES}\GMDXText.u"
+File "${SARGE_U_FILES}\Precipitation.u"
 
 ;Copy int file
 File "..\System\DeusEx.int"
 
 ;Install RenderExt
 SetOutPath $INSTDIR\System
-File "game\System\RenderExt.dll"
-File "game\System\RenderExt.int"
+File "${SARGE_U_FILES}\RenderExt.dll"
+File "${SARGE_U_FILES}\RenderExt.int"
+
+;Install Engine Fix
+SetOutPath $INSTDIR\System
+File extras\enginefix\*.dll
+
+;Install DXGNative
+File "${SARGE_U_FILES}\DXGNative.u"
+File "${SARGE_U_FILES}\DXGNative.dll"
 
 ;Install docs
 SetOutPath $INSTDIR\Mods\GMDX_AE\Docs
