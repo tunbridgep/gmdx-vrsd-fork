@@ -1160,10 +1160,10 @@ defaultproperties
      bEscapeSavesSettings=False
 
      //Playthrough Mods
-     bCutInteractions=true
+     //bCutInteractions=true
      bImprisonmentTakesAmmo=true
-     bRealKillswitch=true
-     bAddictionSystem=true
+     //bRealKillswitch=true
+     //bAddictionSystem=true
      bCollectibles=true
      bGEPUsesWPByDefault=true
      
