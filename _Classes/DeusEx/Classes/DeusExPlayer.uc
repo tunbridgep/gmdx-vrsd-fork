@@ -985,6 +985,8 @@ var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our re
 
 var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points will fade out at distance.
 
+var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
