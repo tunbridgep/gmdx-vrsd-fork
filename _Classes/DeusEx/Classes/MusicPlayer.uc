@@ -60,7 +60,7 @@ function SetNewSong(Music song, optional byte section)
         musicChangeTimer = 0.0;
         fMusicHackTimer = 10;
         
-        Log("SetNewSong Changing Song: " $ currentSong @ section);
+        //Log("SetNewSong Changing Song: " $ currentSong @ section);
 
         //If changing to none, or if new section is 255, slow transition.
         if (bFade)
@@ -155,7 +155,7 @@ function SetNewSection(byte section, optional bool bInstant)
 function PlayerLogin(PlayerPawn P)
 {
 	local DeusExLevelInfo info;
-    Log("PlayerLogin" @ p.Level.Song @ p.Level.SongSection);
+    //Log("PlayerLogin" @ p.Level.Song @ p.Level.SongSection);
     
     //Fix up song ambient section if it's not set.
     info = GetLevelInfo();
