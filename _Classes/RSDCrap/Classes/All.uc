@@ -271,8 +271,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries2.pcx"	            NAME="OBM_Secondaries2"		    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel1.pcx"	            NAME="OBM_AugWheel1"		    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel2.pcx"	            NAME="OBM_AugWheel2"		    	GROUP="UserInterface"    FLAGS=2
-//#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline01.pcx"	            NAME="OBM_Decline01"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline01.pcx"	            NAME="OBM_Decline01"		    	GROUP="UserInterface"    FLAGS=2
 //#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline02.pcx"	            NAME="OBM_Decline02"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_HelpMenu1.pcx"	            NAME="OBM_HelpMenu1"		    	GROUP="UserInterface"    FLAGS=2
 
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"
