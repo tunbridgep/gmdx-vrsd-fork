@@ -2101,16 +2101,13 @@ function SetupExperimentals()
         R.bDisposable = bExperimentalRebreathers;
 }
 
-// ----------------------------------------------------------------------
-// PostPostBeginPlay()
-// ----------------------------------------------------------------------
-
 //SARGE: Make the GEP Gun use HE Rockets
 function SetupGEPAmmo()
 {
     local WeaponGEPGun GEP;
+    //Log("Setting up GEP: " $ bGEPUsesWPByDefault);
         
-    if (bGEPUsesWPByDefault)
+    if (bGEPUsesWPByDefault || bHardCoreMode)
     {
         class'WeaponGEPGun'.default.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
@@ -2139,6 +2136,10 @@ function SetupGEPAmmo()
         }
     }
 }
+
+// ----------------------------------------------------------------------
+// PostPostBeginPlay()
+// ----------------------------------------------------------------------
 
 function PostPostBeginPlay()
 {
@@ -2171,12 +2172,6 @@ function PostPostBeginPlay()
     
     //Display or hide any Exits as necessary based on settings.
     ShowExits();
-
-    //Make GEP use WP ammo
-    SetupGEPAmmo();
-
-    //Set up experimental gameplay mods
-    SetupExperimentals();
     
     UpdatePrecipitation(Region.Zone);
 }
@@ -2410,6 +2405,12 @@ event TravelPostAccept()
 	   RocketTarget=spawn(class'DeusEx.GEPDummyTarget');
 
 	SetRocketWireControl();
+
+    //Make GEP use WP ammo
+    SetupGEPAmmo();
+
+    //Set up experimental gameplay mods
+    SetupExperimentals();
     
     bDelayInventoryFix = false;
     
