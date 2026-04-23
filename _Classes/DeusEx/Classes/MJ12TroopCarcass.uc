@@ -3,6 +3,25 @@
 //=============================================================================
 class MJ12TroopCarcass extends DeusExCarcass;
 
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPSettings();
+    
+    if (!IsHDTP())
+    {
+        if (class'DeusExPlayer'.default.bClassicMJ12Skin)
+        {
+            MultiSkins[5]=Texture'DeusExCharacters.Skins.MJ12TroopTex3';
+            MultiSkins[6]=Texture'DeusExCharacters.Skins.MJ12TroopTex4';
+        }
+        else
+        {
+            MultiSkins[5]=default.MultiSkins[5];
+            MultiSkins[6]=default.MultiSkins[6];
+        }
+    }
+}
+
 defaultproperties
 {
 	 nameReference=class'DeusEx.MJ12Troop'

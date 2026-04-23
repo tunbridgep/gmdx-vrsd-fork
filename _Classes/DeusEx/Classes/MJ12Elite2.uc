@@ -6,6 +6,25 @@
 //=============================================================================
 class MJ12Elite2 extends MJ12Elite;
 
+function SetupSkin()
+{
+    Super.SetupSkin();
+
+    if (!IsHDTP())
+    {
+        if (class'DeusExPlayer'.default.bClassicMJ12Skin)
+        {
+            MultiSkins[5]=Texture'DeusExCharacters.Skins.MJ12TroopTex3';
+            MultiSkins[6]=Texture'DeusExCharacters.Skins.MJ12TroopTex4';
+        }
+        else
+        {
+            MultiSkins[5]=default.MultiSkins[5];
+            MultiSkins[6]=default.MultiSkins[6];
+        }
+    }
+}
+
 function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
 {
     Super.DifficultyMod(CombatDifficulty, bHardCoreMode, bExtraHardcore, bFirstLevelLoad);

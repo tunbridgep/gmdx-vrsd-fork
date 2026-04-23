@@ -5,6 +5,7 @@ New Features:
 - The installer now installs DXVK. Use `dxvk_enable.cmd` in the System folder to use it.
 - Added a visual red section to the energy bar to show energy reserve.
 - Added a new feature to make Save Points fade out at distance, which is good for immersion but not visibility. Disabled by default.
+- Added a setting to revert MJ12 Troops to using the vanilla "full-face" helmet, rather than the regular helmet. Disabled by default.
 - Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
     - Unconscious bodies are relatively vulnerable and can't fall very far without dying!
     - This can be disabled in the Gameplay menu.
