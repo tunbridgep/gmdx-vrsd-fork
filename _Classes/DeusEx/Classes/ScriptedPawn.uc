@@ -2595,6 +2595,10 @@ function bool CheckCarcassPresence(float deltaSeconds)
 			lastCycle         = BodyIndex;
 			foreach CycleActors(Class'DeusExCarcass', body, BodyIndex)
 			{
+                //SARGE: Horrible hack to make NPCs not become hostile 
+                if (body.IsA('RatCarcass'))
+                    continue;
+
 				if (body.Physics != PHYS_Falling)
 				{
 					if (VSize(body.Location-Location) < maxCarcassDist)
