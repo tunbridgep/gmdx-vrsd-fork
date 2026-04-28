@@ -110,6 +110,5 @@ defaultproperties
      bHighlight=True
      //bSkipLOSFrobCheck=True //SARGE: Otherwise they get a little weird.
      ItemName="Save Point"
-     bTickEnabled=true
      ScaleGlow=0.85 //SARGE: Make them a bit more subtle
 }
