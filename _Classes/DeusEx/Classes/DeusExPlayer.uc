@@ -989,6 +989,8 @@ var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the
 
 var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn their heads to look at the player
 
+var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't have enough space" message will show the inventory size of objects.
+
 var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
 
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
@@ -9396,6 +9398,24 @@ function PlayItemTransferSound()
 }
 
 // ----------------------------------------------------------------------
+// GetInventoryFullMsg()
+// SARGE: Gets the "You don't have enough space" message, with the inventory sizes appended.
+// The idea was stolen from Transcended, but was coded from scratch by me.
+// ----------------------------------------------------------------------
+function string GetInventoryFullMsg(Inventory inv)
+{
+    if (inv == None)
+        return "";
+
+    if (bFullInventoryMsgShowsSize)
+    {
+        return Sprintf(InventoryFull, inv.itemName @ "[" $ inv.default.invSlotsX $ "x" $ inv.default.invSlotsY $ "]");
+    }
+    
+    return Sprintf(InventoryFull, inv.itemName);
+}
+
+// ----------------------------------------------------------------------
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
@@ -9583,10 +9603,8 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
             
-            if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && !bLootedAmmo)
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
-            else if (frobTarget != None)
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
+            if (frobTarget != None)
+                ClientMessage(GetInventoryFullMsg(Inventory(FrobTarget)));
 		}
 	}
 
@@ -20641,5 +20659,6 @@ defaultproperties
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
      bTurnHeads=true
+     bFullInventoryMsgShowsSize=true
      bCameraHum=true
 }

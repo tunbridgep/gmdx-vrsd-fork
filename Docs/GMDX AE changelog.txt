@@ -137,6 +137,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- The message shown when unable to pickup items due to inventory limitations will now show the size of the item you're trying to pick up.
 - Restored the "Beep" sound when Turrets acquire a new target.
 - NPCs will now turn their heads to look at the player character at short range.
 - Buttons now glow slightly to make them more visible in the dark.

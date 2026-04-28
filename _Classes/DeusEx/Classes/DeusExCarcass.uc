@@ -1388,7 +1388,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                             {
                                 bFoundSomething = True;
                                 bSuppressEmptyMessage = True;
-								//P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+								//P.ClientMessage(Player.GetInventoryFullMsg(item));
                             }
 
                             //Ignore weapons we cannot take.
@@ -1405,7 +1405,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 else if (item != None)
                                 {
                                     bSuppressEmptyMessage = True;
-                                    P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+                                    P.ClientMessage(Player.GetInventoryFullMsg(item));
                                 }
 
                                 bFoundInvalid = true;
