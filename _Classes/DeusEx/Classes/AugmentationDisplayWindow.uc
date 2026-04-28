@@ -1667,7 +1667,7 @@ function DrawTargetAugmentation(GC gc)
 					str = target.GetItemName(String(target.Class));
 
 				// print disabled robot info
-				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
+				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0 || Robot(target).Orders == 'Idle'))
 					str = str $ " (" $ msgDisabled $ ")";
 				
                 // print disabled camera info
@@ -1823,7 +1823,7 @@ function DrawTargetAugmentation(GC gc)
 			else
 			{
 				// display disabled robots
-				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
+				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0 || Robot(target).Orders == 'Idle'))
 					str = msgDisabled;
 				
                 // print disabled wall mine info

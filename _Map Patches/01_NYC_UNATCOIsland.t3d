@@ -194206,6 +194206,7 @@ Begin Actor Class=Brush Name=Brush1554
     Name=Brush1554
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot0
+    bHardcoreRemove=True
     Orders=Standing
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=5161,ZoneNumber=2)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=5161,ZoneNumber=2)
@@ -267866,6 +267867,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal489
     Name=PlaceableDecal489
 End Actor
 Begin Actor Class=WeaponPistol Name=WeaponPistol1
+    currentWeaponSkin="unatco"
     LastRenderTime=32.119930
     DistanceFromPlayer=6247.935059
     Level=LevelInfo'MyLevel.LevelInfo0'

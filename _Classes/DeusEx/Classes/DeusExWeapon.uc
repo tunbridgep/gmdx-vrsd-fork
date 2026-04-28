@@ -4915,7 +4915,7 @@ function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
 
     //SARGE: Wake up the AI
     if (wakeUp)
-        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.5);
+        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.5,true);
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled

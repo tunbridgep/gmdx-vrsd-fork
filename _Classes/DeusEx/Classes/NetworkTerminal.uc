@@ -98,20 +98,25 @@ function GetNextAutofillUsername(DeusExNote note, out string code1, out string c
 
     //Now go through the usernames list and find if we have one that matches our typed username.
     //If so, select the NEXT one
-    for (i = 0;i < 8;i++)
+    if (typedUsername != "")
     {
-        if (bNext)
+        for (i = 0;i < 8;i++)
         {
-            code1 = validUsernames[i];
-            code2 = validPasswords[i];
-            return;
-        }
+            Log("U:" @ validUsernames[i] @ "P:" @ validPasswords[i] @ bNext);
+            if (bNext)
+            {
+                code1 = validUsernames[i];
+                code2 = validPasswords[i];
+                return;
+            }
 
-        if (caps(typedUsername) == caps(validUsernames[i]))
-            bNext = true;
+            if (caps(typedUsername) == caps(validUsernames[i]))
+                bNext = true;
+        }
     }
     
     //If we needed to wrap around, or none were valid, just get the first one.
+    Log("valid:" @ valid @ "U:" @ validUsernames[0] @ "P:" @ validPasswords[0]);
     if (valid > 0)
     {
         code1 = validUsernames[0];
@@ -399,7 +404,10 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
     if (winNotes != None)
     {
         if (newScreen.default.bShowNotesWindow)
+		{
             winNotes.Show();
+			winNotes.ResetNotePosition();
+		}
         else
             winNotes.Hide();
     }

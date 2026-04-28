@@ -263,16 +263,68 @@ class All expands Object
 ////QoL and OBM Menu images
 
 //QoL Menu
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FreeCursor1.pcx"	            NAME="QoL_FreeCursor1"		    	GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FreeCursor2.pcx"	            NAME="QoL_FreeCursor2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AudioCombatMusic1.pcx"	        NAME="QoL_AudioCombatMusic1"    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AudioCombatMusic2.pcx"	        NAME="QoL_AudioCombatMusic2"    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugmentiqueRandomOutfits1.pcx"	NAME="QoL_AugmentiqueRandomOutfits1"    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugmentiqueRandomOutfits2.pcx"	NAME="QoL_AugmentiqueRandomOutfits2"    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_AutoAddAugs1.pcx"	    NAME="QoL_AugWheel_AutoAddAugs1"   	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_AutoAddAugs2.pcx"	    NAME="QoL_AugWheel_AutoAddAugs2"   	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_AutoAddAugs2_2.pcx"	    NAME="QoL_AugWheel_AutoAddAugs2_2" 	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_DisableButton1.pcx"	    NAME="QoL_AugWheel_DisableButton2" 	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_DisableButton2.pcx"	    NAME="QoL_AugWheel_DisableButton1" 	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_PresetPositions1.pcx"   NAME="QoL_AugWheel_PresetPositions1"    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_PresetPositions2.pcx"   NAME="QoL_AugWheel_PresetPositions2"    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_QuickSelect1.pcx"       NAME="QoL_AugWheel_QuickSelect1"        GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_QuickSelect2.pcx"       NAME="QoL_AugWheel_QuickSelect2"        GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel1.pcx"	                NAME="QoL_FreeCursor1"		    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel2.pcx"	                NAME="QoL_FreeCursor2"		    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_GameBloodyWeapons1.pcx"	        NAME="QoL_GameBloodyWeapons1"    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_GameBloodyWeapons2.pcx"	        NAME="QoL_GameBloodyWeapons2"    	    GROUP="UserInterface"    FLAGS=2
 
 //Onboarding Menu
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries1.pcx"	            NAME="OBM_Secondaries1"		    	GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries2.pcx"	            NAME="OBM_Secondaries2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Addiction1.pcx"	            NAME="OBM_Addiction1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Addiction2.pcx"	            NAME="OBM_Addiction2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Attachment1.pcx"	            NAME="OBM_Attachment1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Attachment2.pcx"	            NAME="OBM_Attachment2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Augment1.pcx"	            NAME="OBM_Augment1"	    	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Augment2.pcx"	            NAME="OBM_Augment2"	    	    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel1.pcx"	            NAME="OBM_AugWheel1"		    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_AugWheel2.pcx"	            NAME="OBM_AugWheel2"		    	GROUP="UserInterface"    FLAGS=2
-//#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline01.pcx"	            NAME="OBM_Decline01"		    	GROUP="UserInterface"    FLAGS=2
-//#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline02.pcx"	            NAME="OBM_Decline02"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Carcass1.pcx"	            NAME="OBM_Carcass1"		    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Carcass2.pcx"	            NAME="OBM_Carcass2"		    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_CrossDart1.pcx"	            NAME="OBM_CrossDart1"	    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_CrossDart2.pcx"	            NAME="OBM_CrossDart2"	    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_CrossHeadshot1.pcx"	        NAME="OBM_CrossHeadshot1"	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_CrossHeadshot2.pcx"	        NAME="OBM_CrossHeadshot2"	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline1.pcx"	            NAME="OBM_Decline1"		        	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Decline2.pcx"	            NAME="OBM_Decline2"	    	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_DragonTooth1.pcx"	        NAME="OBM_DragonTooth1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_DragonTooth2.pcx"	        NAME="OBM_DragonTooth2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GepGun1.pcx"	                NAME="OBM_GepGun1"     		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GepGun2.pcx"	                NAME="OBM_GepGun2"     		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Grenade1.pcx"	            NAME="OBM_Grenade1"	     	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Grenade2.pcx"	            NAME="OBM_Grenade2"	     	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_HelpMenu1.pcx"	            NAME="OBM_HelpMenu1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Hunger1.pcx"	                NAME="OBM_Hunger1"                  GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Hunger2.pcx"	                NAME="OBM_Hunger2"                  GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Inventory1.pcx"	            NAME="OBM_Inventory1"               GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Inventory2.pcx"	            NAME="OBM_Inventory2"               GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_KeyRing1.pcx"	            NAME="OBM_KeyRing1"                 GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_KeyRing2.pcx"	            NAME="OBM_KeyRing2"                 GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_LeftInteract1.pcx"	        NAME="OBM_LeftInteract1"            GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_LeftInteract2.pcx"	        NAME="OBM_LeftInteract2"            GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Perk1.pcx"	                NAME="OBM_Perk1"                    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Perk2.pcx"	                NAME="OBM_Perk2"                    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_PlayModifier1.pcx"	        NAME="OBM_PlayModifier1"            GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_PlayModifier2.pcx"	        NAME="OBM_PlayModifier2"            GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Reboot1.pcx"	                NAME="OBM_Reboot1"                  GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Reboot2.pcx"	                NAME="OBM_Reboot2"                  GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries1.pcx"	        NAME="OBM_Secondaries1"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Secondaries2.pcx"	        NAME="OBM_Secondaries2"		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Stamina1.pcx"	            NAME="OBM_Stamina1"                 GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Stamina2.pcx"	            NAME="OBM_Stamina2"                 GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Stealth1.pcx"	            NAME="OBM_Stealth1"                 GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Stealth2.pcx"	            NAME="OBM_Stealth2"                 GROUP="UserInterface"    FLAGS=2
 
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"

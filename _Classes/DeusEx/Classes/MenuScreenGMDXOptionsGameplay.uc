@@ -79,7 +79,6 @@ defaultproperties
      //items(20)=(HelpText="When taking damage, the player will be temporarily slowed for a short duration.",actionText="Hit Flinching",variable="bHitFlinch",defaultValue=0)
      items(20)=(HelpText="Lockpicking and Electronics skills will use Hardcore Mode values",actionText="Harder Lockpicking and Electronics",variable="bHarderLockpicking",defaultValue=0)
      items(21)=(HelpText="Throwing unconscious carcasses around will kill them. Unconscious carcasses are particularly vulnerable and will die from short falls.",actionText="Unconscious Fall Damage",variable="bUnconsciousFallDamage",defaultValue=1)
-     items(22)=(HelpText="The GEP Gun will use WP Rockets by default. All GEP Gun pickups will contain WP rockets.",actionText="GEP Gun uses WP by Default",variable="bGEPUsesWPByDefault",defaultValue=1)
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"

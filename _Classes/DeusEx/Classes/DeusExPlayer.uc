@@ -500,7 +500,7 @@ var travel bool bStunted; //CyberP: for slowing player under various conditions
 var travel float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
-var float doubleClickCheck; //CyberP: to return from double clicking.
+var transient float doubleClickCheck; //CyberP: to return from double clicking.
 var travel BeltInfo assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
 var travel Inventory primaryWeapon;
 var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
@@ -986,6 +986,16 @@ var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our re
 var globalconfig bool bViewmodelInertia;                       //SARGE: Add inertia to weapon and item viewmodels.
 
 var globalconfig bool bPickupsUseFOV;                       //SARGE: Pickups, Lockpicks, etc, will use the players FOV properly, rather than always being as big as possible.
+
+var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points will fade out at distance.
+
+var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
+
+var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn their heads to look at the player
+
+var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't have enough space" message will show the inventory size of objects.
+
+var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
 
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
@@ -2095,12 +2105,48 @@ function int GetInventoryCount(Name item)
 
 function SetupExperimentals()
 {
-    local WeaponPistol P;
-    local WeaponStealthPistol SP;
     local Rebreather R;
 
     //Set Experimental Rebreathers setting
     class'Rebreather'.default.bDisposable = bExperimentalRebreathers;
+    foreach AllActors(class'Rebreather', R)
+        R.bDisposable = bExperimentalRebreathers;
+}
+
+//SARGE: Make the GEP Gun use HE Rockets
+function SetupGEPAmmo()
+{
+    local WeaponGEPGun GEP;
+    //Log("Setting up GEP: " $ bGEPUsesWPByDefault);
+        
+    if (bGEPUsesWPByDefault || bHardCoreMode)
+    {
+        class'WeaponGEPGun'.default.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
+        class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
+        class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.RocketWP';
+        class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.Rocket';
+        foreach AllActors(class'WeaponGEPGun', GEP)
+        {
+            GEP.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
+            GEP.AmmoNames[1]=Class'DeusEx.AmmoRocket';
+            GEP.ProjectileNames[0]=Class'DeusEx.RocketWP';
+            GEP.ProjectileNames[1]=Class'DeusEx.Rocket';
+        }
+    }
+    else
+    {
+        class'WeaponGEPGun'.default.AmmoNames[0]=Class'DeusEx.AmmoRocket';
+        class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
+        class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.Rocket';
+        class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        foreach AllActors(class'WeaponGEPGun', GEP)
+        {
+            GEP.AmmoNames[0]=Class'DeusEx.AmmoRocket';
+            GEP.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
+            GEP.ProjectileNames[0]=Class'DeusEx.Rocket';
+            GEP.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -2233,9 +2279,6 @@ event TravelPostAccept()
 
     //Reset Crosshair
     UpdateCrosshair();
-
-    //Set up experimental gameplay mods
-    SetupExperimentals();
 
     //Destroy any unlinked markers
     UpdateMarkerValidity();
@@ -2374,6 +2417,12 @@ event TravelPostAccept()
 	   RocketTarget=spawn(class'DeusEx.GEPDummyTarget');
 
 	SetRocketWireControl();
+
+    //Make GEP use WP ammo
+    SetupGEPAmmo();
+
+    //Set up experimental gameplay mods
+    SetupExperimentals();
     
     bDelayInventoryFix = false;
     
@@ -2603,13 +2652,13 @@ function ShowExits()
     foreach AllObjects(class'Teleporter',T)
         if (T.URL != "")
         {
-            T.bHidden = !bShowExits;
+            T.bHidden = !bShowExits && !bGMDXDebug;
             T.bNoSmooth = true;
         }
     foreach AllObjects(class'MapExit',E)
         if (E.bCollideActors == true)
         {
-            E.bHidden = !bShowExits;
+            E.bHidden = !bShowExits && !bGMDXDebug;
             E.bNoSmooth = true;
         }
 }
@@ -2807,7 +2856,7 @@ function bool CanSave(optional bool allowHardcore, optional bool bDontStopInfoli
     // 7) SARGE: We're in a conversation
     // 8) SARGE: We're currently recreating decals
 
-    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
+    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore && !bGMDXDebug) //Hardcore Mode
         return false;
 
 	if ((info != None) && (info.MissionNumber < 0)) //Logo Screen
@@ -4625,7 +4674,7 @@ function bool DoShifterWeaponSwitch(bool bSelectWeapon, bool bPlaceholderMode, c
     local int placeholder;
 
     //If it's not enabled, bail
-    if (iShifterWeaponSwitch == 0)
+    if (iShifterWeaponSwitch == 0 && !bPlaceholderMode)
         return false;
 
     //First, find the starting item index
@@ -5338,8 +5387,8 @@ simulated function PlayFootStep()
 
     if (volume > 0)
     {
-        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls
-        //class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
+        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls //SARGE: Actually yes, but ignore zone boundaries
+        class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier,true);
         AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
 
         //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.
@@ -9353,6 +9402,24 @@ function PlayItemTransferSound()
 }
 
 // ----------------------------------------------------------------------
+// GetInventoryFullMsg()
+// SARGE: Gets the "You don't have enough space" message, with the inventory sizes appended.
+// The idea was stolen from Transcended, but was coded from scratch by me.
+// ----------------------------------------------------------------------
+function string GetInventoryFullMsg(Inventory inv)
+{
+    if (inv == None)
+        return "";
+
+    if (bFullInventoryMsgShowsSize)
+    {
+        return Sprintf(InventoryFull, inv.itemName @ "[" $ inv.default.invSlotsX $ "x" $ inv.default.invSlotsY $ "]");
+    }
+    
+    return Sprintf(InventoryFull, inv.itemName);
+}
+
+// ----------------------------------------------------------------------
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
@@ -9540,10 +9607,8 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
             
-            if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && !bLootedAmmo)
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
-            else if (frobTarget != None)
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
+            if (frobTarget != None)
+                ClientMessage(GetInventoryFullMsg(Inventory(FrobTarget)));
 		}
 	}
 
@@ -9627,7 +9692,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
     
     //SARGE: Swap to a new belt item
-    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2)
+    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2 && FromCorpse == None)
         ShifterSwitchAll(Inventory(frobTarget),false,true);
 
 	return bCanPickup && !bDeclined;
@@ -14241,7 +14306,8 @@ Begin:
 
 	Acceleration = Velocity;
 
-	PlayRising();
+    if (IsCrouching())
+        PlayRising();
 
 	// Make sure the player isn't on fire!
 	if (bOnFire)
@@ -19903,6 +19969,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     local class associatedSkill;
     local class<DeusExAmmo> DXammotype;
     local Perk lawfare;
+    local AugAmmoCap cap;
 
     mult = 1.0;
 
@@ -19926,7 +19993,10 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     //4 base, + 1 per heavy level, + 1 per ammo capacity level
     if (ammoType == class'AmmoRocket' && DXammoType != None && SkillSystem != None && AugmentationSystem != None)
     {
-        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + AugmentationSystem.GetAug(class'AugAmmoCap').CurrentLevel;
+        cap = AugAmmoCap(AugmentationSystem.GetAug(class'AugAmmoCap'));
+        if (cap != None)
+            return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + cap.CurrentLevel;
+        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy');
     }
 
 
@@ -20598,4 +20668,7 @@ defaultproperties
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
      bViewmodelInertia=true
+     bTurnHeads=true
+     bFullInventoryMsgShowsSize=true
+     bCameraHum=true
 }

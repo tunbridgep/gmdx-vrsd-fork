@@ -46,6 +46,9 @@ var float disableTimeBase;                //Sarge: Our hacking skill is multipli
 var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the turret is hacked, to control rebooting
 
+//SARGE: Only allow beeping after 2 seconds of "no target" time
+var float beepTimer;
+
 //SARGE: Store the default state of the turret
 var travel bool bSetupDefaults;
 var travel bool bDefaultDisabled;
@@ -450,8 +453,11 @@ function Tick(float deltaTime)
 	if (bActive && !bDisabled)
 	{
 		// play an alert sound and light up
-		//if ((curTarget != None) && (curTarget != LastTarget))
-		//	PlaySound(Sound'TurretSwitch', SLOT_Interact, 1.0,, 2048); //CyberP: added new sound
+		if ((curTarget != None) && (curTarget != LastTarget) && beepTimer >= 2.0)
+        {
+            beepTimer = 0;
+			PlaySound(Sound'TurretSwitch', SLOT_Interact, 1.0,, 2048); //CyberP: added new sound
+        }
 
 		// if we're aiming close enough to our target
 		if (curTarget != None)
@@ -481,6 +487,7 @@ function Tick(float deltaTime)
 				gun.MultiSkins[1] = Texture'GreenLightTex';
 		}
 
+        beepTimer += deltaTime;
 		fireTimer += deltaTime;
 		LastTarget = curTarget;
 	}

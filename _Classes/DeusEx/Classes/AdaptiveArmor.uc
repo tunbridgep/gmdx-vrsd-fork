@@ -9,9 +9,9 @@ class AdaptiveArmor extends ChargedPickup;
 //     Charge=500
 
 //SARGE: Change skin based on it's charge level
-simulated function Tick(float deltaTime)
+function SetSkin()
 {
-    super.Tick(deltaTime);
+    super.SetSkin();
     if (!bActive)
     {
         if (Charge == 0)

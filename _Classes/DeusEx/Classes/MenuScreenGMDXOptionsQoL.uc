@@ -182,6 +182,10 @@ defaultproperties
      items(137)=(HelpText="If enabled, the bioenergy bar will show the reserved energy amount in red.",actionText="HUD: Show Reserved Energy",variable="bEnergyBarShowsReserve",defaultValue=1)
      items(138)=(HelpText="If enabled, weapons will have inertia when turning and moving.",actionText="HUD: Weapon Inertia",variable="bViewmodelInertia",defaultValue=1)
      items(139)=(HelpText="If enabled, lockpicks and other pickups will appear smaller on the screen based on FOV. Otherwise they will appear larger, which some players may prefer.",actionText="HUD: Pickups respect FOV.",variable="bPickupsUseFOV")
+     items(140)=(HelpText="With Restricted Saving enabled, save points will fade out when far away from the player. Increases immersion at the cost of visibility.",actionText="Game: Fade Out Save Points",variable="bFadeOutSavePoints")
+     items(141)=(HelpText="If enabled, MJ12 will use the classic full-face helmet from vanilla.",actionText="NPCs: Classic MJ12 Troops",variable="bClassicMJ12Skin")
+     items(143)=(HelpText="If enabled, NPCs will turn their heads to face the player when nearby",actionText="NPCs: Look at Player",variable="bTurnHeads")
+     items(146)=(HelpText="Disable the Camera Hum sound effect as it may be annoying for some people. Requires a map load/reload to take effect.",actionText="Game: Security Camera Hum",variable="bCameraHum",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

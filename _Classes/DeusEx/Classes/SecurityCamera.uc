@@ -74,11 +74,26 @@ function bool DisplayHackText()
     return super.DisplayHackText() && (bActive || bRebooting);
 }
 
+//SARGE: Dirty Hack to make ambient sounds fix themselves on reload
+function PostPostBeginPlay()
+{
+    super.PostPostBeginPlay();
+    if (class'DeusExPlayer'.default.bCameraHum && AmbientSound == None)
+        AmbientSound = default.AmbientSound;
+    else if (!class'DeusExPlayer'.default.bCameraHum && AmbientSound == default.AmbientSound)
+        AmbientSound = None;
+}
+
 function EnableCamera()
 {
     bActive = true;
     MultiSkins[2] = GetCameraLightTex(1);
-    AmbientSound = None;
+    if (class'DeusExPlayer'.default.bCameraHum)
+        AmbientSound = default.AmbientSound;
+    else
+        AmbientSound = None;
+    SoundVolume = default.SoundVolume;
+    SoundRadius = default.SoundRadius;
     bRebooting = false;
 }
 
@@ -278,7 +293,7 @@ function TriggerEvent(bool bTrigger)
 		SoundRadius = 150;
         SoundPitch = 64; //CyberP: set back to default pitch
         MultiSkins[2] = GetCameraLightTex(2);
-        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+4));
+        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+4),false);
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+4));
 		// make sure we can't go into stasis while we're alarming
 		bStasis = false;
@@ -322,7 +337,7 @@ function TriggerCarcassEvent(bool bTrigger)
 		SoundRadius = 150;
         SoundPitch = 32; //CyberP: Different pitch for carcasses
         MultiSkins[2] = GetCameraLightTex(4);
-        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+4));
+        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+4),false);
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
 		// make sure we can't go into stasis while we're alarming
 		bStasis = false;
@@ -338,10 +353,7 @@ function TriggerCarcassEvent(bool bTrigger)
 	}
 	else
 	{
-		AmbientSound = None;
-		SoundRadius = 48;
-		SoundVolume = 32;
-        MultiSkins[2] = GetCameraLightTex(1);
+        EnableCamera();
 		AIEndEvent('Alarm', EAITYPE_Audio);
 		// reset our stasis info
 		bStasis = Default.bStasis;
@@ -672,12 +684,12 @@ function Tick(float deltaTime)
 			   
 				if ((bPlayerSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
 				{
-                    class'PawnUtils'.static.WakeUpAI(curplayer,1024);
+                    class'PawnUtils'.static.WakeUpAI(curplayer,1024,false);
 					curplayer.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
 				}
 				else if ((bCarcassSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )
 				{
-                    class'PawnUtils'.static.WakeUpAI(carcass,1024);
+                    class'PawnUtils'.static.WakeUpAI(carcass,1024,false);
 					carcass.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
 				}
 			}
@@ -881,8 +893,6 @@ defaultproperties
      Physics=PHYS_Rotating
      Texture=Texture'DeusExDeco.Skins.SecurityCameraTex2'
      Mesh=LodMesh'DeusExDeco.SecurityCamera'
-     SoundRadius=96
-     SoundVolume=32
      CollisionRadius=10.720000
      CollisionHeight=11.000000
      LightType=LT_Steady
@@ -897,4 +907,7 @@ defaultproperties
      disableTimeBase=120.0
      disableTimeMult=60.0
 	 lastSeenTimer=0.000000
+     SoundVolume=72 //SARGE: Vanilla was 192
+     SoundRadius=48
+     AmbientSound=sound'CameraHum'
 }

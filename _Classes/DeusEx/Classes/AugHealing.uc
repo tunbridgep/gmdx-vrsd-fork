@@ -7,6 +7,7 @@ var float mpAugValue;
 var float mpEnergyDrain;
 var Skill sk_med;
 var float adj_med;
+var transient int max;
 
 state Active
 {
@@ -29,10 +30,14 @@ state Active
 		if (player.DrugsWithdrawalArray[2] == 1)                                    //RSD: 10 health penalty for zyme withdrawal
 			adj_med -= 10.0/2.0;
 		if (Player.Health < adj_med)  //GMDX + current med skill*/
-		if (Player.Health < Player.GenerateTotalMaxHealth())                        //RSD: New formula, needed to properly account for additive health bonuses/penalties (don't function properly over averaging)
+        //player.GenerateTotalHealth(); //SARGE: Added so we take into account health changes (like from alcohol, traumas, etc).
+
+        max = Player.GenerateTotalMaxHealth(); //RSD: New formula, needed to properly account for additive health bonuses/penalties (don't function properly over averaging)
+		if (Player.Health < max)                        
 			Player.HealPlayer(Int(LevelValues[CurrentLevel]), False);
-		else
-			Deactivate();
+			
+		if (Player.Health >= max)                        //SARGE: Added a second check so that it deactivates instantly.
+            Deactivate();
 		
 		Player.HealScreenEffect(0.2, true);
 		
