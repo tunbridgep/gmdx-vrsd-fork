@@ -34,6 +34,10 @@ function BuildModifierList()
         RemoveItem("bEquipNPCs");
         RemoveItem("noDescriptions");
     }
+    
+    //Remove LDDP Options
+    if (!player.FemaleEnabled())
+        RemoveItem("bFemaleHandsAlways");
 }
 	
 
@@ -183,6 +187,7 @@ defaultproperties
      items(140)=(HelpText="With Restricted Saving enabled, save points will fade out when far away from the player. Increases immersion at the cost of visibility.",actionText="Game: Fade Out Save Points",variable="bFadeOutSavePoints")
      items(141)=(HelpText="If enabled, MJ12 will use the classic full-face helmet from vanilla.",actionText="NPCs: Classic MJ12 Troops",variable="bClassicMJ12Skin")
      items(143)=(HelpText="If enabled, NPCs will turn their heads to face the player when nearby",actionText="NPCs: Look at Player",variable="bTurnHeads")
+     items(145)=(HelpText="When attempting to pick up an item for which you don't have inventory space, the pickup message will show the size of the item in grid squares.",actionText="HUD: Pickup Message Shows Size",variable="bFullInventoryMsgShowsSize",defaultValue=1)
      items(146)=(HelpText="Disable the Camera Hum sound effect as it may be annoying for some people. Requires a map load/reload to take effect.",actionText="Game: Security Camera Hum",variable="bCameraHum",defaultValue=1)
 
      Title="GMDX Advanced Options"

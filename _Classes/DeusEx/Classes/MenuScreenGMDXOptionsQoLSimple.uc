@@ -16,6 +16,10 @@ function SaveSettings()
     
     //Show/Hide exits based on settings
     player.ShowExits();
+    
+    //Reset HDTP
+    //Now needed for blood textures
+    player.HDTP();
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
@@ -30,6 +34,10 @@ function BuildModifierList()
         RemoveItem("bEquipNPCs");
         RemoveItem("noDescriptions");
     }
+    
+    //Remove LDDP Options
+    if (!player.FemaleEnabled())
+        RemoveItem("bFemaleHandsAlways");
 }
 	
 // ----------------------------------------------------------------------
