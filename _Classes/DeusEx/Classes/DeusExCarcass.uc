@@ -1936,14 +1936,14 @@ function SetupCarcass(bool bAlert)
             {
                 PlaySound(sound'PaperHit2', SLOT_None,,,1024);
                 //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,512);
+                class'PawnUtils'.static.WakeUpAI(self,512,false);
                 AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
             }
             else
             {
                 //SARGE TODO: Don't bother fixing sound propagation here as it's so short???
                 //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,96);
+                class'PawnUtils'.static.WakeUpAI(self,96,false);
                 AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
             }
         }

@@ -663,7 +663,7 @@ auto simulated state Flying
 		if ( AISoundLevel > 0.0 )
         {
             //SARGE: Fix the broken sound propagation
-            class'PawnUtils'.static.WakeUpAI(self,blastRadius*10);
+            class'PawnUtils'.static.WakeUpAI(self,blastRadius*10,false);
 			AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, AISoundLevel*blastRadius*10);
         }
 
@@ -691,7 +691,7 @@ auto simulated state Flying
 			// not alert AIs unless they are really really close - CNN
 			if (AISoundLevel > 0.0)
             {
-                class'PawnUtils'.static.WakeUpAI(self, AISoundLevel*256);
+                class'PawnUtils'.static.WakeUpAI(self, AISoundLevel*256,false);
 				AISendEvent('LoudNoise', EAITYPE_Audio, volume, AISoundLevel*256);
             }
 			SetPhysics(PHYS_None, HitWall);
