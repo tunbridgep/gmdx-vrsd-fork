@@ -690,6 +690,7 @@ function UpdateStatusText()                                                     
 
     //PEDOMETER
     winInfo.SetText(winInfo.CR());
+    winInfo.SetText(winInfo.CR());
     winInfo.bStylization2 = False;
     winInfo.bStylization = True;
 
@@ -756,6 +757,8 @@ function UpdateStatusText()                                                     
      conc = conc $ winInfo.CR() $ "     " $ timeStr $ BuildElapsedPlayTimeString(Int(player.saveTime));
      conc = conc $ winInfo.CR() $ winInfo.CR() $ winInfo.CR() $ winInfo.CR() $ winInfo.CR();
      winInfo.SetText(conc);
+    winInfo.bStylization = False;
+    winInfo.bStylization2 = True;
 }
 
 function String TwoDigit(int number)
@@ -1164,6 +1167,7 @@ function RemoveTraumaMedkits(Wound selectedTrauma)
 
     if (medKit != None)
     {
+        player.PlaySound(sound'medicalhiss',SLOT_None);
         if (medKit.numCopies > num)
             medKit.numCopies -= num;
         else
@@ -1174,9 +1178,10 @@ function RemoveTraumaMedkits(Wound selectedTrauma)
 
 function CureTrauma()
 {
-    selectedTrauma.RemoveWound();
 	RemoveTraumaMedkits(selectedTrauma);
-    CreateTraumasList();
+    selectedTrauma.RemoveWound();
+    selectedTraumaButton.RefreshWoundInfo();
+    //CreateTraumasList();
     UpdateMedKits();
 	EnableButtons();
 }

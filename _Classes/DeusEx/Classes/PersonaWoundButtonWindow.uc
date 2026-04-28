@@ -124,13 +124,18 @@ function Wound GetWound()
 
 function RefreshWoundInfo()
 {
+    local int kits;
     if (wound != None)
     {
         winIcon.SetBackground(wound.WoundIcon);
         winName.SetText(wound.WoundName);
         winLevel.SetText(wound.GetSeverity());
         //winPointsNeeded.SetText(NotAvailableLabel);
-        winPointsNeeded.SetText(wound.GetRequiredMedkits());
+        kits = wound.GetRequiredMedkits();
+        if (kits > 0)
+            winPointsNeeded.SetText(kits);
+        else
+            winPointsNeeded.SetText(NotAvailableLabel);
     }
 }
 
