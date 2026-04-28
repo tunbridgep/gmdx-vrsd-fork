@@ -1180,6 +1180,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
     local bool bShowReceived;                                                   //SARGE: Show the Received Items Window for new pickups
     local bool bAddBad;                                                         //SARGE: Prevent adding the same items to the bad list more than once.
+    local Inventory newItem;                                                    //SARGE: An item that was spawned in the players inventory.
 	
     badItemCount = 0;
 
@@ -1574,7 +1575,11 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
-                                        item.SpawnCopy(P);
+                                        newItem = item.SpawnCopy(P);
+                                        
+                                        //SARGE: Swap to a new belt item
+                                        if (DeusExPlayer(P) != None && DeusExPlayer(P).iBeltMemory >= 2)
+                                            DeusExPlayer(P).ShifterSwitchAll(newItem,false,true);
                                     }
                                     else
                                     {

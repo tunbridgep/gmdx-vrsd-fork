@@ -4670,7 +4670,7 @@ function bool DoShifterWeaponSwitch(bool bSelectWeapon, bool bPlaceholderMode, c
     local int placeholder;
 
     //If it's not enabled, bail
-    if (iShifterWeaponSwitch == 0)
+    if (iShifterWeaponSwitch == 0 && !bPlaceholderMode)
         return false;
 
     //First, find the starting item index
@@ -9688,7 +9688,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
     
     //SARGE: Swap to a new belt item
-    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2)
+    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2 && FromCorpse == None)
         ShifterSwitchAll(Inventory(frobTarget),false,true);
 
 	return bCanPickup && !bDeclined;
