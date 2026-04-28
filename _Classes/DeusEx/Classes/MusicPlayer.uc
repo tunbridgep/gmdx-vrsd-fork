@@ -58,7 +58,7 @@ function SetNewSong(Music song, optional byte section)
         musicMode = MUS_Ambient;
         savedSection = section;
         musicChangeTimer = 0.0;
-        fMusicHackTimer = 10;
+        SetHackTimer(false);
         
         //Log("SetNewSong Changing Song: " $ currentSong @ section);
 
@@ -104,9 +104,12 @@ function private ReplaceMusicEvents()
     }
 }
 
-function private SetHackTimer()
+function private SetHackTimer(bool bCombat)
 {
-    fMusicHackTimer = 10;
+    if (bCombat)
+        fMusicHackTimer = 10;
+    else
+        fMusicHackTimer = 4;
 }
 
 function SetDefaultLevelMusic(DeusExLevelInfo info)
@@ -147,7 +150,7 @@ function SetNewSection(byte section, optional bool bInstant)
     //if (fMusicHackTimer > 0 && DeusExPlayer(player) != None)
     //    DeusExPlayer(player).SoundVolumeHackFix();
     
-    SetHackTimer();
+    SetHackTimer(false);
 
     Log("SetNewSong Changed Section: " $ section @ player.SongSection);
 }
@@ -182,9 +185,26 @@ function DeusExLevelInfo GetLevelInfo()
 	return info;
 }
 
-function bool CanSetAsSavedSection(int section)
+//SARGE: This is a tad complex...
+function bool CanSetAsSavedSection(int section, DeusExLevelInfo info)
 {
-    return fMusicHackTimer == 0 && section != 255 && section != 1 && section != 3 && section != 4 && (section != 5 || string(currentSong) == "NYCStreets_Music.NYCStreets_Music");
+    if (fMusicHackTimer > 0)
+        return false;
+
+    if (section == 255)
+        return false;
+    
+    if (info.MusicType == MT_Normal)
+        return section != 1 && section != info.SongConversationSection && section != info.SongCombatSection && (section != 5 || string(currentSong) == "NYCStreets_Music.NYCStreets_Music");
+
+    if (info.MusicType == MT_SingleTrack)
+        return true;
+    
+    if (info.MusicType == MT_ConversationOnly)
+        return section != info.SongConversationSection;
+    
+    if (info.MusicType == MT_CombatOnly)
+        return section != info.SongCombatSection;
 }
 
 //Update music state every frame
@@ -229,6 +249,7 @@ function Tick(float deltaTime)
 		// don't mess with the music on any of the intro maps
 		if ((info != None) && (info.MissionNumber < 0))
 		{
+            savedSection = info.SongAmbientSection;
 			musicMode = MUS_Outro;
 			return;
 		}
@@ -239,7 +260,7 @@ function Tick(float deltaTime)
             savedSection = info.SongAmbientSection;
 			player.ClientSetMusic(currentSong, 5, 255, MTRAN_FastFade);
 			musicMode = MUS_Outro;
-            SetHackTimer();
+            SetHackTimer(false);
 		}
 	}
 	else if (player.IsInState('Conversation') && bAllowConverse)
@@ -247,11 +268,11 @@ function Tick(float deltaTime)
 		if (musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
-			if (musicMode == MUS_Ambient && CanSetAsSavedSection(player.SongSection))
+			if (musicMode == MUS_Ambient && CanSetAsSavedSection(player.SongSection,info))
                 savedSection = player.SongSection;
 
 			player.ClientSetMusic(currentSong, info.SongConversationSection, 255, MTRAN_Fade);
-            SetHackTimer();
+            SetHackTimer(false);
 			musicMode = MUS_Conversation;
 		}
 	}
@@ -260,12 +281,12 @@ function Tick(float deltaTime)
 		if (musicMode != MUS_Dying)
 		{
             // save our place in the ambient track
-            if (musicMode == MUS_Ambient && CanSetAsSavedSection(player.SongSection))
+            if (musicMode == MUS_Ambient && CanSetAsSavedSection(player.SongSection,info))
                 savedSection = player.SongSection;
 
 			musicMode = MUS_Dying;
 			player.ClientSetMusic(currentSong, 1, 255, MTRAN_Fade);
-            SetHackTimer();
+            SetHackTimer(false);
 		}
 	}
 	else
@@ -291,12 +312,12 @@ function Tick(float deltaTime)
 				if (musicMode != MUS_Combat)
 				{
 					// save our place in the ambient track
-					if (musicMode == MUS_Ambient && CanSetAsSavedSection(player.SongSection))
+					if (musicMode == MUS_Ambient && CanSetAsSavedSection(player.SongSection,info))
 						savedSection = player.SongSection;
 
 					musicMode = MUS_Combat;
 					player.ClientSetMusic(currentSong, info.SongCombatSection, 255, MTRAN_FastFade);
-                    SetHackTimer();
+                    SetHackTimer(true);
 				}
 			}
 			else if (musicMode != MUS_Ambient)
@@ -314,7 +335,7 @@ function Tick(float deltaTime)
                     
                     musicMode = MUS_Ambient;
 					musicChangeTimer = 0.0;
-                    SetHackTimer();
+                    SetHackTimer(false);
 				}
 			}
 		}
