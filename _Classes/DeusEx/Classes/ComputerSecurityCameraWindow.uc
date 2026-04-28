@@ -179,15 +179,16 @@ function UpdateCameraStatus()
 	{
 		winCamera.EnableViewport(False);
 		winCamera.Lower();
-		btnCamera.SetStatic();
+		btnCamera.SetStatic(true);
 		SetTitle(NoSignalLabel);
 		winCameraStatus.Hide();
 		HideCameraLabels();
 	}
 	else
 	{
+        btnCamera.SetStatic(!camera.bActive);
 		winCamera.SetViewportActor(camera);
-		winCamera.EnableViewport(True);
+		winCamera.EnableViewport(camera.bActive);
 		winCamera.SetDefaultTexture(None);
 		winCamera.Lower();
 		SetTitle(CameraLabel @ "|&" $ String(viewIndex + 1) @ ":" @ ComputerSecurity(compOwner).Views[viewIndex].titleString);

@@ -136,6 +136,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Disabled cameras now show static in the Security Computer window, similar to Transcended.
 - Restored the vanilla security camera "hum". This can be disabled in the Advanced options menu.
 - Added engine fix DLL to allow playing at high framerates.
 - A number of Repair Bots have been removed on Hardcore difficulty in order to better balance Energy availability.
