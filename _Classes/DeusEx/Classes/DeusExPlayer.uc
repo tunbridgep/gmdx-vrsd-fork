@@ -19964,6 +19964,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     local class associatedSkill;
     local class<DeusExAmmo> DXammotype;
     local Perk lawfare;
+    local AugAmmoCap cap;
 
     mult = 1.0;
 
@@ -19987,7 +19988,10 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     //4 base, + 1 per heavy level, + 1 per ammo capacity level
     if (ammoType == class'AmmoRocket' && DXammoType != None && SkillSystem != None && AugmentationSystem != None)
     {
-        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + AugmentationSystem.GetAug(class'AugAmmoCap').CurrentLevel;
+        cap = AugAmmoCap(AugmentationSystem.GetAug(class'AugAmmoCap'));
+        if (cap != None)
+            return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + cap.CurrentLevel;
+        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy');
     }
 
 
