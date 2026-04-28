@@ -14302,7 +14302,8 @@ Begin:
 
 	Acceleration = Velocity;
 
-	PlayRising();
+    if (IsCrouching())
+        PlayRising();
 
 	// Make sure the player isn't on fire!
 	if (bOnFire)

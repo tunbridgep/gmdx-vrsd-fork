@@ -134,6 +134,7 @@ Bugfixes:
     - Now it trends towards target values slowly, like a real heart.
     - For example, if we're at 90 bpm and want to reach 120 bpm due to stress, our heart will slowly rise to 120 bpm over a few seconds.
 - Fixed characters becoming hostile when killing rats.
+- Fixed JC "standing up" at the start of conversations when the player was already standing.
 - Other minor bugfixes
 
 Misc Changes:
