@@ -1017,6 +1017,12 @@ var travel bool bShortFuseEnabled;          //SARGE: Allow manually activating/d
 
 var private bool bHackDamage;               //SARGE: Make the player take damage next tick, from hacking failure.
 
+//SARGE: Precipitation Variables for Weather Control
+var travel float precipDensity;    //Current precipitation density
+var travel int nextPrecipChange;   //How many Timer()'s until next change
+var travel float desiredPrecip;    //Our desired precipitation value.
+
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -20664,6 +20670,9 @@ defaultproperties
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
      bTurnHeads=true
+     precipDensity=-1
+     nextPrecipChange=-50
+     desiredPrecip=-1
      bFullInventoryMsgShowsSize=true
      bCameraHum=true
 }
