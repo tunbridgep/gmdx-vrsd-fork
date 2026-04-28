@@ -23,6 +23,9 @@ function SaveSettings()
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
+    
+    if (player.weaponSkinManager != None)
+        player.weaponSkinManager.SaveConfig();
 }
 
 //We need to change options depending on Augmentique
@@ -180,6 +183,7 @@ defaultproperties
      items(135)=(HelpText="When enabled, Holding Shift in the inventory screen will drop stacks of items. In Inverted mode, stacks will drop by default, and Shift will drop single items.",actionText="HUD: Allow Dropping Item Stacks",variable="iDropStacks",defaultValue=1,valueText2="Inverted")
      items(136)=(HelpText="Use Secondary will automatically select your secondary item when pressed.",helpText1="If set to Always Activate, it will also use secondary items immediately.",helpText2="In Simle Dynamic Mode, items will always be selected normally and always used immediately if the Run/Walk key is held.",helpText3="In Simple Dynamic Inverted moide, items will always be used immediately by default, and always selected if the Run/Walk key is held.",helpText4="In Smart Dynamic mode, non-disposable weapons will be selected always, while disposable weapons and items will be used instantly. The Run/Walk key inverts the behaviour.",actionText="Game: Secondary Mode",variable="iSecondaryMode",valueText0="Select Only",valueText1="Always Activate",valueText2="Simple Dynamic",valueText3="Simple Dynamic Inverted",valueText4="Smart Dynamic",defaultValue=1)
      items(137)=(HelpText="If enabled, the bioenergy bar will show the reserved energy amount in red.",actionText="HUD: Show Reserved Energy",variable="bEnergyBarShowsReserve",defaultValue=1)
+     items(144)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

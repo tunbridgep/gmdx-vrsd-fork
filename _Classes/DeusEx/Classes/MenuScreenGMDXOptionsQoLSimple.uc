@@ -19,6 +19,9 @@ function SaveSettings()
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
+    
+    if (player.weaponSkinManager != None)
+        player.weaponSkinManager.SaveConfig();
 }
 
 //We need to change options depending on Augmentique
@@ -89,6 +92,7 @@ defaultproperties
      items(34)=(HelpText="Belt Memory preserves the position of depleted items on the belt by showing darkened placeholder icons.|n|nIf 'Autofill Belt' is also enabled, placeholders will not be shown when dropping items from the belt with the 'Drop Item' key.|n|nAdditionally, if set to 'Auto Swap Placeholders', placeholders will be automatically replaced when picking up similar items. For instance, when picking up a LAM, it will replace a darkened Gas Grenade on the belt.",actionText="Belt: Belt Memory",variable="iBeltMemory",valueText2="Auto-Swap Placeholders",defaultValue=1)
      items(35)=(HelpText="The Use Secondary key will select your secondary item when pressed. Some items such as food items are activated immediately, rather than selected.",helpText1="If set to Always Activate, secondary items will always be used immediately.",helpText2="In Simle Dynamic Mode, secondary items will always be selected normally and always used immediately if the Run/Walk key is held.",helpText3="In Simple Dynamic Inverted moide, secondary items will always be used immediately by default and always selected if the Run/Walk key is held.",helpText4="In Smart Dynamic mode, non-disposable weapons will be selected always, while disposable weapons and items will be used instantly. The Run/Walk key inverts the behaviour for disposable weapons.",actionText="Game: Secondary Mode",variable="iSecondaryMode",valueText0="Select Only",valueText1="Always Activate",valueText2="Simple Dynamic",valueText3="Simple Dynamic Inverted",valueText4="Smart Dynamic",defaultValue=1)
      items(36)=(HelpText="If enabled, the bioenergy bar will show the reserved energy amount in red.",actionText="HUD: Show Reserved Energy",variable="bEnergyBarShowsReserve",defaultValue=1)
+     items(40)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1)
 
      Title="GMDX Quality of Life Options"
      actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Advanced Settings",Key="ADVANCED")
