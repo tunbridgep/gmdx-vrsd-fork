@@ -53,8 +53,9 @@ var transient float inertiaDelta;                        //SARGE: deltaTime for 
 var const float inertiaSpeed;                            //SARGE: How fast weapons move.
 
 //SARGE: Use proper FOV scaling
-var const bool bUseFOV;
+var bool bUseFOV;
 
+//SARGE: Skin Stuff
 var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
 var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
 
@@ -1188,6 +1189,7 @@ function DestroyMe()
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
+    //Reset weapon inertia
     cachedDrawOffset = Vect(0,0,0);
     SetWeaponHandTex();
 }

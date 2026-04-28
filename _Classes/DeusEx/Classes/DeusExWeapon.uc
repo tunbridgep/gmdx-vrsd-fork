@@ -803,6 +803,9 @@ function Draw(DeusExPlayer frobber)
     ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
+            
+    //Reset weapon inertia
+    cachedDrawOffset = Vect(0,0,0);
 
     DoWeaponOffset(frobber);
 }
@@ -4833,7 +4836,7 @@ simulated function vector CalcDrawOffset()
 
         newOffset = drawOffset;
 
-        if (VSize(cachedDrawOffset) == 0)
+        if (VSize(cachedDrawOffset) == 0 || VSize(cachedDrawOffset - drawOffset) > 40)
             cachedDrawOffset = drawOffset;
 
         //SARGE: Handle Weapon Inertia
