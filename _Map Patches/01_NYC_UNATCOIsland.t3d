@@ -267867,6 +267867,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal489
     Name=PlaceableDecal489
 End Actor
 Begin Actor Class=WeaponPistol Name=WeaponPistol1
+    currentWeaponSkin="unatco"
     LastRenderTime=32.119930
     DistanceFromPlayer=6247.935059
     Level=LevelInfo'MyLevel.LevelInfo0'
