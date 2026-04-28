@@ -500,7 +500,7 @@ var travel bool bStunted; //CyberP: for slowing player under various conditions
 var travel float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
-var float doubleClickCheck; //CyberP: to return from double clicking.
+var transient float doubleClickCheck; //CyberP: to return from double clicking.
 var travel BeltInfo assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
 var travel Inventory primaryWeapon;
 var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
