@@ -987,6 +987,8 @@ var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points 
 
 var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
 
+var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
@@ -20636,4 +20638,5 @@ defaultproperties
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
+     bCameraHum=true
 }

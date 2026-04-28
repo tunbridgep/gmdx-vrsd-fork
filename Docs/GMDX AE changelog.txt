@@ -136,6 +136,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Restored the vanilla security camera "hum". This can be disabled in the Advanced options menu.
 - Added engine fix DLL to allow playing at high framerates.
 - A number of Repair Bots have been removed on Hardcore difficulty in order to better balance Energy availability.
 - Sleight of Hand and Doorsman have been swapped in the Lockpicking perk tree.

@@ -74,11 +74,26 @@ function bool DisplayHackText()
     return super.DisplayHackText() && (bActive || bRebooting);
 }
 
+//SARGE: Dirty Hack to make ambient sounds fix themselves on reload
+function PostPostBeginPlay()
+{
+    super.PostPostBeginPlay();
+    if (class'DeusExPlayer'.default.bCameraHum && AmbientSound == None)
+        AmbientSound = default.AmbientSound;
+    else if (!class'DeusExPlayer'.default.bCameraHum && AmbientSound == default.AmbientSound)
+        AmbientSound = None;
+}
+
 function EnableCamera()
 {
     bActive = true;
     MultiSkins[2] = GetCameraLightTex(1);
-    AmbientSound = None;
+    if (class'DeusExPlayer'.default.bCameraHum)
+        AmbientSound = default.AmbientSound;
+    else
+        AmbientSound = None;
+    SoundVolume = default.SoundVolume;
+    SoundRadius = default.SoundRadius;
     bRebooting = false;
 }
 
@@ -338,10 +353,7 @@ function TriggerCarcassEvent(bool bTrigger)
 	}
 	else
 	{
-		AmbientSound = None;
-		SoundRadius = 48;
-		SoundVolume = 32;
-        MultiSkins[2] = GetCameraLightTex(1);
+        EnableCamera();
 		AIEndEvent('Alarm', EAITYPE_Audio);
 		// reset our stasis info
 		bStasis = Default.bStasis;
@@ -881,8 +893,6 @@ defaultproperties
      Physics=PHYS_Rotating
      Texture=Texture'DeusExDeco.Skins.SecurityCameraTex2'
      Mesh=LodMesh'DeusExDeco.SecurityCamera'
-     SoundRadius=96
-     SoundVolume=32
      CollisionRadius=10.720000
      CollisionHeight=11.000000
      LightType=LT_Steady
@@ -897,4 +907,7 @@ defaultproperties
      disableTimeBase=120.0
      disableTimeMult=60.0
 	 lastSeenTimer=0.000000
+     SoundVolume=72 //SARGE: Vanilla was 192
+     SoundRadius=48
+     AmbientSound=sound'CameraHum'
 }
