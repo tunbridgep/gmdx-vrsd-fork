@@ -137,6 +137,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Restored the "Beep" sound when Turrets acquire a new target.
 - Buttons now glow slightly to make them more visible in the dark.
 - Disabled cameras now show static in the Security Computer window, similar to Transcended.
 - The Regeneration Aug will now disable immediately upon completely refilling your health, rather than after a short delay.
