@@ -552,6 +552,8 @@ enum EAllianceCheckType
     AL_True,
 };
 
+var bool bTurnedHeadToPlayer;                   //SARGE: Did we turn out head to the player? Allows resetting turning heads.
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
@@ -8688,6 +8690,21 @@ function Tick(float deltaTime)
 		if ((DistanceFromPlayer > 600) && (LastRendered() >= 5.0))
 			bCheckOther = false;
 	}
+
+    //SARGE: Allow head-turning towards the player if we're idle
+    if (bCanTurnHead && player != None && player.CloakManager != None && !player.CloakManager.IsInAnyState() && player.bTurnHeads && Enemy == None && (IsInState('Idle') || IsInState('Standing') || IsInState('Sitting')))
+    {
+        if (DistanceFromPlayer < 700)
+        {
+            LookAtActor(player,false,true,true);
+            bTurnedHeadToPlayer = true;
+        }
+        else if (bTurnedHeadToPlayer)
+        {
+            PlayTurnHead(LOOK_Forward, 1.0, 1.0);
+            bTurnedHeadToPlayer = false;
+        }
+    }
 
 /*
 	if (bDisappear && (InStasis() || (LastRendered() > 5.0)))

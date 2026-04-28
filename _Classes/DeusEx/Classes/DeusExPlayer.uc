@@ -987,6 +987,8 @@ var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points 
 
 var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
 
+var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn their heads to look at the player
+
 var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
 
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
@@ -20638,5 +20640,6 @@ defaultproperties
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
+     bTurnHeads=true
      bCameraHum=true
 }
