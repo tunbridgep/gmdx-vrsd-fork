@@ -927,20 +927,22 @@ var globalconfig bool bRandomizeCrap;                          //Sarge: Randomiz
 //See the "Experimental" gameplay menu in the New Game screen to toggle these.
 ///////////////////////////////
 
-var travel bool bExperimentalSkillRebalance;                //SARGE: Reduce skill point gain on higher difficulties to make specialising more important
-var travel bool bExperimentalRebreathers;                //SARGE: Rebreathers can only be used once and not recharged.
-
+//Nothing
 
 
 /////////Version 1.2 Additions
 /////////January 2026
 
+//Playthrough Mods
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
 var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
 var travel bool bWoundSystem;                                //SARGE: Enable Traumas when taking damage.
 var travel bool bShippingAndReceiving;                       //SARGE: Enable Shipping and Receiving addon.
 var travel bool bGEPUsesWPByDefault;                         //SARGE: GEP Gun uses WP Rockets by default
+var travel bool bHarderSkillRebalance;                      //SARGE: Reduce skill point gain on higher difficulties to make specialising more important
+var travel bool bHarderChargedPickups;                      //SARGE: Rebreathers/etc can only be used once and not recharged.
+
 
 var globalconfig bool bDoneGMDXOnboarding;                   //SARGE: If we've done GMDX Onboarding. If not, we will show a messagebox asking if we want to do it.
 
@@ -2099,12 +2101,6 @@ function int GetInventoryCount(Name item)
 
 function SetupExperimentals()
 {
-    local Rebreather R;
-
-    //Set Experimental Rebreathers setting
-    class'Rebreather'.default.bDisposable = bExperimentalRebreathers;
-    foreach AllActors(class'Rebreather', R)
-        R.bDisposable = bExperimentalRebreathers;
 }
 
 //SARGE: Make the GEP Gun use HE Rockets
@@ -17656,22 +17652,18 @@ function int FloorTo(int value, int nearest)
 function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 {
 	local int i;
-	local DeusExLevelInfo info;
     local int actualPoints;
 	
     if (numPoints > 0)
 	{
         actualPoints = numPoints;
     
-        info = GetLevelInfo();
-
-        //SARGE: Hardcore Mode significantly reduces skill gain later in the game.
-        //SARGE: And realistic!
-        if (info != None && bExperimentalSkillRebalance && !bAlwaysAllow)
+        //SARGE: Hardcore Mode significantly reduces skill gain later.
+        if (!bAlwaysAllow)
         {
             if (bHardcoreMode)
                 actualPoints *= 0.75;
-            else if (CombatDifficulty >= 3)
+            else if (bHarderSkillRebalance)
                 actualPoints *= 0.85;
 
             actualPoints = FloorTo(actualPoints,5);

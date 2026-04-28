@@ -36,8 +36,6 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 defaultproperties
 {
      strHeaderSettingLabel="Feature"
-     items(0)=(HelpText="Skill point gains are reduced by 10% in Realistic and 20% in Hardcore mode. Designed to make skill choices more meaningful and create less 'jack of all trades' characters with everything at Advanced",actionText="Skill Rebalance",variable="bExperimentalSkillRebalance");
-     items(1)=(HelpText="To ensure the Athletics is not made obsolete, Rebreathers will be removed upon use, similar to GMDX v9",actionText="Disposable Rebreathers",variable="bExperimentalRebreathers");
      Title="Experimental Balance"
      consoleTarget="MenuScreenNewGame"
      msgTitle="Experimental Gameplay Options"

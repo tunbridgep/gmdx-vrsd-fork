@@ -94,6 +94,10 @@ New Features:
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
 - The Dragon's Tooth Sword can now be recharged using Repair bots
+- Added a new Playthrough Modifier to make Thermoptic Camo and Rebreathers disposable and non-rechargable, similar to GMDX v9
+    - Always enabled in Hardcore mode
+- Added a new Playthrough Modifier to reduce skill gains by 15% (rounded to the nearest 5 skill points)
+    - Always enabled in Hardcore mode
 
 Bugfixes:
 - Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.

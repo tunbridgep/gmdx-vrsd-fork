@@ -17,14 +17,13 @@ var travel bool bIsActive;
 var localized String ChargeRemainingLabel;
 var localized String ChargeRemainingLabelSmall;
 var localized String BiocellRechargeAmountLabel;
+var localized String BiocellRechargeAmountLabel2;
 var localized String EquipWhenEmptyLabel;                                       //SARGE: Added.
 var localized String CanOnlyBeOne;
 var localized String PickupInfo1;
 var localized String PickupInfo2;
 var localized String PickupInfo5;                                               //RSD: Added to make system generic
 var float chargeMult;                                                           //RSD: Mult for how much of total charge you get back from biocells
-
-var /*const*/ travel bool bDisposable;                                                     //SARGE: If set, this item will be removed once used, and is not rechargable.
 
 //SARGE: Allow keeping this equipped when drained.
 //This is only used for items that don't constantly drain.
@@ -35,6 +34,8 @@ var /*const*/ travel bool bDisposable;                                          
 //any other items in the stack by default.
 var const bool bUnequipWhenDrained;
 var travel bool bDrained;                                                              //SARGE: Stores if it was drained without a new one being equipped, even if the next one in the stack is at 100%. This means we no longer have to unequip
+
+var const bool bCanBeDisposable;                                                       //SARGE: If set, this charged pickup can be made disposable with the harder charged pickups setting.
 
 //Sarge: Update frob display to show charge and item count
 function string GetFrobString(DeusExPlayer player)
@@ -53,7 +54,10 @@ function string GetDescription2(DeusExPlayer player)
     str = AddLine(str,sprintf(ChargeRemainingLabel,int(GetCurrentCharge())));
 
     //Add Biocell Recharge Amount
-    str = AddLine(str,sprintf(BiocellRechargeAmountLabel,GetRechargeAmount()));
+    if (IsDisposable())
+        str = AddLine(str,BiocellRechargeAmountLabel2);
+    else
+        str = AddLine(str,sprintf(BiocellRechargeAmountLabel,GetRechargeAmount()));
     
     str = AddLine(str, super.GetDescription2(player));
 
@@ -185,6 +189,19 @@ simulated function int CalcChargeDrain(DeusExPlayer Player)
 }
 
 // ----------------------------------------------------------------------
+// IsDisposable()
+//
+// SARGE: Determines if an item should be deleted upon being used up, or simply
+// become unusable.
+// ----------------------------------------------------------------------
+function bool IsDisposable()
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(Owner);
+    return player != None && bCanBeDisposable && (player.bHarderChargedPickups || player.bHardCoreMode);
+}
+
+// ----------------------------------------------------------------------
 // function UsedUp()
 //
 // copied from Pickup, but modified to keep items from
@@ -213,7 +230,7 @@ function UsedUp()
 	{
 	    //bActivatable = false;
 		Pawn(Owner).ClientMessage(sprintf(ExpireMessage,ItemName));
-        Owner.PlaySound(UsedUpSound);
+        PlaySound(UsedUpSound); //SARGE: Changed from Owner.PlaySound to PlaySound
 	}
 	Player = DeusExPlayer(Owner);
 
@@ -228,7 +245,7 @@ function UsedUp()
 	}
 	if (NumCopies<=0)
 	{
-        if (bDisposable)
+        if (IsDisposable())
         {
             Destroy();
         }
@@ -249,9 +266,9 @@ function UsedUp()
 	}
 	else
 	{
-        if (!bDisposable)
+        if (!IsDisposable())
             bDrained = true;
-        if (bDisposable || bUnequipWhenDrained)						   			//SARGE: No longer unequip. Now we allow wearing drained items.
+        if (IsDisposable() || bUnequipWhenDrained)						   			//SARGE: No longer unequip. Now we allow wearing drained items.
             GotoState('DeActivated');
 		//GotoState('Activated');                                                 //RSD: Automatically activate the next one in the stack
 		Charge=default.Charge;  //give back charge and make activatable
@@ -612,6 +629,7 @@ defaultproperties
      //PickupInfo1="Environmental Protection: 60%"
      //PickupInfo2="Ballistic Protection: 35%"
      BiocellRechargeAmountLabel="Biocell Recharge Amount: %d%%"
+     BiocellRechargeAmountLabel2="Disposable: Not Rechargable"
      chargeMult=0.200000
      CountLabel="Uses:"
      bCanHaveMultipleCopies=True

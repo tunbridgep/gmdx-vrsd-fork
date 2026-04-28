@@ -48,4 +48,5 @@ defaultproperties
      Mass=30.000000
      Buoyancy=20.000000
      PickupSound=sound'objpickup'
+     bCanBeDisposable=true
 }
