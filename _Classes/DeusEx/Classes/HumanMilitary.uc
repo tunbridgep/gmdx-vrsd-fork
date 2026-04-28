@@ -122,4 +122,6 @@ defaultproperties
      Buoyancy=155.000000
      BindName="HumanMilitary"
      bRandomHeightAdjust=true
+     fRandomHeightBaseMult=0.95
+     fRandomHeightMult=0.1
 }

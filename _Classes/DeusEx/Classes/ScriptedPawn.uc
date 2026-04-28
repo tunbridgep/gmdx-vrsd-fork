@@ -530,6 +530,8 @@ var(GMDX) bool bReactGunPointed;
 //SARGE: Variable height NPCs
 //NPCs will be slightly taller or shorter (+-5%) for variance and to make headshots a bit harder
 var(GMDX) const bool bRandomHeightAdjust;
+var(GMDX) const float fRandomHeightBaseMult;
+var(GMDX) const float fRandomHeightMult;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
@@ -651,14 +653,14 @@ function SetupCloakManager()
 
 function SetupRandomHeight(float fNewHeightMod)
 {
-    //Log("SetupRandomHeight" $ fNewHeightMod @ class.Name);
-
-    if (!bRandomHeightAdjust || bSetupVariableHeightActor || fNewHeightMod < - 0.9 || fNewHeightMod > 1.1)
+    if (!bRandomHeightAdjust || bSetupVariableHeightActor)
         return;
 
     //Don't allow special characters to be height adjusted
     if (BindName != string(class.Name) || bImportant)
         return;
+    
+    //Log("SetupRandomHeight" $ fNewHeightMod @ class.Name);
 
     fHeightMod = fNewHeightMod;
     bSetupVariableHeightActor = true;
@@ -849,6 +851,9 @@ function PostPostBeginPlay()
 
 	// Bind any conversation events to this ScriptedPawn
 	ConBindEvents();
+        
+    //SARGE: Make Pawns have random heights
+    SetupRandomHeight(FRandomHeightBaseMult + FRand()*fRandomHeightMult);
 
     SetupCloakManager();
 
@@ -17574,4 +17579,6 @@ defaultproperties
      bCanBlink=true
      fHighAlertChance=0.2
      msgDance="Get electric on the dance floor!"
+     fRandomHeightBaseMult=0.9
+     fRandomHeightMult=0.2
 }
