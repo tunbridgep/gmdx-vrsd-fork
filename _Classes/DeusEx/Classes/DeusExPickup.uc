@@ -50,7 +50,7 @@ var bool bCachedNearWall; //CyberP: emulating the weapon movement if player near
 //SARGE: Weapon inertia
 var transient Vector cachedDrawOffset;
 var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
-var const float inertiaSpeed;                            //SARGE: How fast weapons move.
+var float inertiaSpeed;                            //SARGE: How fast weapons move.
 
 //SARGE: Use proper FOV scaling
 var bool bUseFOV;
