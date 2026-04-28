@@ -137,6 +137,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Buttons now glow slightly to make them more visible in the dark.
 - Disabled cameras now show static in the Security Computer window, similar to Transcended.
 - The Regeneration Aug will now disable immediately upon completely refilling your health, rather than after a short delay.
 - Restored the vanilla security camera "hum". This can be disabled in the Advanced options menu.
