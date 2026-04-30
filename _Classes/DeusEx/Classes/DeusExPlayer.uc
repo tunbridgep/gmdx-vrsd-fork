@@ -5696,6 +5696,9 @@ function HighlightCenterObject()
 
 		// reset our frob timer
 		FrobTime = 0;
+
+        //Update our brackets state
+        UpdateCrosshair();
 	}
 }
 
