@@ -989,6 +989,8 @@ var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points 
 
 var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
 
+var globalconfig bool bFirstPersonConversation;           //SARGE: Allow the player to remain in first-person when in a conversation.
+
 var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn their heads to look at the player
 
 var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't have enough space" message will show the inventory size of objects.
@@ -14116,7 +14118,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 
-	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) )
+	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) || bFirstPersonConversation )
 	{
 		// First-person view.
 		ViewActor = Self;
@@ -14179,6 +14181,10 @@ ignores SeePlayer, HearNoise, Bump;
 	{
 		local rotator tempRot;
 		local float   yawDelta;
+        local float diff;
+        local Rotator lookAngle;
+        local Vector lookTo, lookFrom;
+        local Actor speak;
 
 		UpdateInHand();
 
@@ -14204,20 +14210,81 @@ ignores SeePlayer, HearNoise, Bump;
 		// Keep turning towards the person we're speaking to
 		if (ConversationActor != None)
 		{
-			LookAtActor(ConversationActor, true, true, true, 0, 0.5);
+            LookAtActor(ConversationActor, true, true, true, 0, 0.5);
 
-			// Hacky way to force the player to turn...
-			tempRot = rot(0,0,0);
-			tempRot.Yaw = (DesiredRotation.Yaw - Rotation.Yaw) & 65535;
-			if (tempRot.Yaw > 32767)
-				tempRot.Yaw -= 65536;
-			yawDelta = RotationRate.Yaw * deltaTime;
-			if (tempRot.Yaw > yawDelta)
-				tempRot.Yaw = yawDelta;
-			else if (tempRot.Yaw < -yawDelta)
-				tempRot.Yaw = -yawDelta;
-			SetRotation(Rotation + tempRot);
+            // Hacky way to force the player to turn...
+            tempRot = rot(0,0,0);
+            tempRot.Yaw = (DesiredRotation.Yaw - Rotation.Yaw) & 65535;
+            if (tempRot.Yaw > 32767)
+                tempRot.Yaw -= 65536;
+            yawDelta = RotationRate.Yaw * deltaTime;
+            if (tempRot.Yaw > yawDelta)
+                tempRot.Yaw = yawDelta;
+            else if (tempRot.Yaw < -yawDelta)
+                tempRot.Yaw = -yawDelta;
+            SetRotation(Rotation + tempRot);
 		}
+
+        //SARGE: This is an awful hack...
+        //Look towards our target.
+        if (bFirstPersonConversation && conPlay != None)
+        {
+            speak = conPlay.currentSpeaker;
+
+            //Failsafe for when we start talking first.
+            if (speak == None || speak.IsA('PlayerPawn'))
+                speak = ConversationActor;
+
+            if (speak != None && !speak.IsA('PlayerPawn'))
+            {
+
+                // Determine our angle to the target
+                lookTo = speak.Location + (vect(0,0,1)*speak.CollisionHeight*0.9);
+                lookFrom  = Location + (vect(0,0,1)*CollisionHeight*0.9);
+                lookAngle = Rotator(lookTo-lookFrom);
+
+                //SARGE: Fix wrapping past 360 degrees...
+                ViewRotation.Yaw = ViewRotation.Yaw % 65535;
+                ViewRotation.Pitch = ViewRotation.Pitch % 65535;
+               
+                //Fix pitch rolling over itself
+                if (ViewRotation.Pitch >= 32767)
+                    ViewRotation.Pitch -= 65536;
+                
+                //Move everything to the + only space.
+                if (ViewRotation.Yaw < 0)
+                    ViewRotation.Yaw += 65536;
+                
+                if (lookAngle.Yaw < 0)
+                    lookAngle.Yaw += 65536;
+                
+                //SARGE: This code fucking sucks, I should probably just replace it with a modulo
+                //Fix yawing in the wrong direction
+                //If angle is > 180 degrees, subtract 360 degreees
+                //Log("LookAngle Diff:" $ abs(lookAngle.Yaw - ViewRotation.Yaw));
+                if (abs(lookAngle.Yaw - ViewRotation.Yaw) > 32767)
+                {
+                    if (lookAngle.Yaw > 32767)
+                    {
+                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "->" $ lookAngle.Yaw - 65536);
+                        lookAngle.Yaw -= 65536;
+                    }
+                    else
+                    {
+                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "+>" $ lookAngle.Yaw + 65536);
+                        lookAngle.Yaw += 65536;
+                    }
+                }
+                //Log("Speaker: " $ speak);
+                //Log("ViewRotation.Yaw: " $ viewRotation.Yaw);
+                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
+                //Log("Smerpy: " $ smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch));
+                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
+
+                ViewRotation.Yaw = smerp(deltaTime * 16,ViewRotation.Yaw,lookAngle.Yaw);
+                ViewRotation.Pitch = smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch);
+            }
+        }
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
@@ -14273,6 +14340,8 @@ ignores SeePlayer, HearNoise, Bump;
     //I'm really getting sick of having to clean this damn codebase...
     function bool KeepWeaponOut()
     {
+        if (bFirstPersonConversation)
+            return false;
         if (bConversationKeepWeaponDrawn)
             return true;
         return inHand != None && inHand.IsA('DeusExWeapon') && !conPlay.startActor.IsA('NicoletteDuClare') && (retLevelInfo() == 5 || retLevelInfo() >= 12 || conPlay.startActor.IsA('HumanThug') ||
@@ -14313,9 +14382,11 @@ Begin:
 	// Make sure the PC can't be attacked while in conversation
 	MakePlayerIgnored(true);
 
-	LookAtActor(conPlay.startActor, true, false, true, 0, 0.5);
-
-	SetRotation(DesiredRotation);
+    if (!bFirstPersonConversation)
+    {
+        LookAtActor(conPlay.startActor, true, false, true, 0, 0.5);
+        SetRotation(DesiredRotation);
+    }
 
 	PlayTurning();
 //	TurnToward(conPlay.startActor);
@@ -14340,7 +14411,7 @@ Begin:
         if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
             BaseEyeHeight = default.BaseEyeHeight;
 
-		if ( conPlay.GetDisplayMode() == DM_ThirdPerson )
+		if ( conPlay.GetDisplayMode() == DM_ThirdPerson && !bFirstPersonConversation )
 			bBehindView = true;
 	}
 }
