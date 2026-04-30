@@ -993,6 +993,8 @@ var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't
 
 var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
 
+var globalconfig bool bCameraStatic;                //SARGE: Blank out the screen when using cameras
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
