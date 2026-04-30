@@ -40,6 +40,7 @@ defaultproperties
      bHasHeaderButtons=false
      bHasImages=true
      bShowValueInHelp=true
+     bAltDefaultLocation=true
      ClientWidth=639
      ClientHeight=432
      textureRows=2
@@ -54,4 +55,5 @@ defaultproperties
      clientTextures(3)=Texture'RSDCrap.UserInterface.PictureMenuBG04'
      clientTextures(4)=Texture'RSDCrap.UserInterface.PictureMenuBG05'
      clientTextures(5)=Texture'RSDCrap.UserInterface.PictureMenuBG06'
+     DefaultValueString="Default Value: %s"
 }

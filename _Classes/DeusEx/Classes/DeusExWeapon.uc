@@ -2600,6 +2600,7 @@ simulated function Tick(float deltaTime)
 	local Pawn pawn;
     local float perkMod, ADSmod, rnd;
     local float mult;
+    local int wallDist;
 
 	player = DeusExPlayer(Owner);
 	pawn = Pawn(Owner);
@@ -2641,11 +2642,12 @@ simulated function Tick(float deltaTime)
     //The actual view offset is adjusted in CalcDrawOffset.
     if (PlayerPawn(Owner) != None && activateAn == False /*&& !IsA('WeaponGEPGun')*/ && !bIsPlaceableOnWall)
     {
-        if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && DeusExPlayer(Owner).bWeaponWallDetection && (bCachedNearWall || bMantlingEffect))
+        wallDist = DeusExPlayer(Owner).iWeaponWallDistance;
+        if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && wallDist > 0 && (bCachedNearWall || bMantlingEffect))
         {
             lerpAid -= lerpAidSpeed*deltaTime;
-            if (lerpAid < -1000)
-                lerpAid = -1000;
+            if (lerpAid < -wallDist)
+                lerpAid = -wallDist;
         }
         else
         {

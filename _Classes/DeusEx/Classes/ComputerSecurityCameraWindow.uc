@@ -186,9 +186,9 @@ function UpdateCameraStatus()
 	}
 	else
 	{
-        btnCamera.SetStatic(!camera.bActive);
+        btnCamera.SetStatic(!camera.bActive && (player.bHardCoreMode || player.bCameraStatic));
 		winCamera.SetViewportActor(camera);
-		winCamera.EnableViewport(camera.bActive);
+		winCamera.EnableViewport(camera.bActive || (!player.bHardCoreMode && !player.bCameraStatic));
 		winCamera.SetDefaultTexture(None);
 		winCamera.Lower();
 		SetTitle(CameraLabel @ "|&" $ String(viewIndex + 1) @ ":" @ ComputerSecurity(compOwner).Views[viewIndex].titleString);
