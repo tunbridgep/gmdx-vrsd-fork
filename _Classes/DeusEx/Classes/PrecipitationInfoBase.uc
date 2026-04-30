@@ -92,4 +92,4 @@ event ActorLeaving( Actor Other )
 {
 }
 
-function UpdatePrecipitationSettings() { } //SARGE: Update the precipitation settings instantly, no zone changing.
+function UpdatePrecipitationSettings(bool bUpdateNodes) { } //SARGE: Update the precipitation settings instantly, no zone changing.
