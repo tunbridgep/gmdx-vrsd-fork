@@ -52,6 +52,7 @@ function InitWindow()
    // setup the timer for refreshing the screen in multiplayer
    if (networkTimerID == -1)
       networkTimerID = AddTimer(0.25, True, 0, 'NetworkRefreshTimer');
+	 
 }
 
 // ----------------------------------------------------------------------
@@ -179,6 +180,10 @@ function CreatePanSlider()
 	winPanSlider = ComputerSecuritySliderWindow(winClient.NewChild(Class'ComputerSecuritySliderWindow'));
 	winPanSlider.SetPos(309, 146);
 	winPanSlider.SetTicks(numPanTicks, lowPanValue, highPanValue);
+
+	//SARGE: Set the slider value
+	panMod = highPanValue;
+    winPanSlider.winSlider.SetValue(panMod);
 
 	// Create a label as well
 

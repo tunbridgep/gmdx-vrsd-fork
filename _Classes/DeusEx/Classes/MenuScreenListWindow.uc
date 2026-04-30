@@ -56,6 +56,8 @@ var const ObjectPos SearchSize;
 var const bool bHasHeaderButtons;
 var const bool bHasImages;
 var const bool bShowValueInHelp;
+var const bool bShowNameInHelp;
+var const bool bAltDefaultLocation; //Show the defaults right at the end, after the current value, on a new line, rather than at the end of the description text. Used by big list windows.
 
 var int numItems;             //Recalculated every time we do a Refreshchoices
 var bool bFocusedOnItemsList;   //Is our current focus on the list?
@@ -102,6 +104,14 @@ struct S_ListItem
     var string sortCategory;  //Will be prepended to the name in the third col, for sorting
     var string image1;         //Will be displayed in the first image box
     var string image2;         //Will be displayed in the second image box
+    
+    //The actual values that will be written to and from the config file.
+    var float realValue0;
+    var float realValue1;
+    var float realValue2;
+    var float realValue3;
+    var float realValue4;
+    var float realValue5;
 };
 
 var S_ListItem items[255];
@@ -257,6 +267,16 @@ function CreateChoices()
             //set to use the global help text if one is not set
             if (items[i].helpText == "")
                 items[i].helpText = helpText;
+
+            //If the real values are all zero, then set them to the proper values
+            if (items[i].realvalue0 == 0 && items[i].realValue1 == 0 && items[i].realValue2 == 0  && items[i].realValue3 == 0 && items[i].realValue4 == 0 && items[i].realValue5 == 0)
+            {
+                items[i].realValue1 = 1;
+                items[i].realValue2 = 2;
+                items[i].realValue3 = 3;
+                items[i].realValue4 = 4;
+                items[i].realValue5 = 5;
+            }
             
             //lstItems.AddRow(items[i].actionText @ items[i].variable $ ";" $ GetValueString(i) $ ", " $ items[i].value);
         }
@@ -333,6 +353,7 @@ function LoadSettings()
 function int GetConsoleValue(int index)
 {
     local string command;
+    local int re;
 
     if (items[index].consoleTarget == "")
         return 0;
@@ -341,17 +362,44 @@ function int GetConsoleValue(int index)
 
     //Sometimes it can return True and False, convert it to numeric
     if (command == "True")
-        return 1;
+        re =  1;
     else if (command == "False")
-        return 0;
-    //player.clientMessage(command);
-    return int(command);
+        re = 0;
+    else
+        re = int(command);
+    
+
+    //Now turn it into an actual value
+    if (re == items[index].realValue0)
+        re = 0;
+    else if (re == items[index].realValue1)
+        re = 1;
+    else if (re == items[index].realValue2)
+        re = 2;
+    else if (re == items[index].realValue3)
+        re = 3;
+    else if (re == items[index].realValue4)
+        re = 4;
+    else if (re == items[index].realValue5)
+        re = 5;
+
+    return re;
 }
 
 function SetConsoleValue(int index, int value)
 {
     if (items[index].consoleTarget == "")
         return;
+
+    switch (value)
+    {
+        case 0: value = items[index].realValue0; break;
+        case 1: value = items[index].realValue1; break;
+        case 2: value = items[index].realValue2; break;
+        case 3: value = items[index].realValue3; break;
+        case 4: value = items[index].realValue4; break;
+        case 5: value = items[index].realValue5; break;
+    }
 
     player.ConsoleCommand("set " $ items[index].consoleTarget @ items[index].variable @ value);
 }
@@ -512,7 +560,8 @@ function ShowHelpString(int id)
     //This is a bit of a hack
     help1 = items[id].helpText;
     help2 = GetHelpString(id);
-    help3 = GetDefaultString(id);
+    if (!bAltDefaultLocation)
+        help3 = GetDefaultString(id);
     
     if (help1 != "" && (help2 != "" || help3 != ""))
         help2 = " " $ help2;
@@ -521,10 +570,12 @@ function ShowHelpString(int id)
 
     h = (help1 $ help2 $ help3);
 
+    if (bShowNameInHelp)
+        h = items[id].actionText $ "|n|n" $ h;
     if (bShowValueInHelp)
-    {
         h = h $ "|n|n" $ "Current Value: " $ GetValueString(id);
-    }
+    if (bShowDefaults && bAltDefaultLocation) //SARGE: Bit of a hack...
+        h = h $ "|n" $ GetDefaultString(id);
 
     ShowDescription(h);
 }

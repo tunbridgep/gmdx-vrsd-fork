@@ -40853,7 +40853,7 @@ Begin Actor Class=Brush Name=Brush1052
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=2694.209473
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -40861,7 +40861,7 @@ Begin Actor Class=Brush Name=Brush1052
     Location=(X=1321.000000,Y=18.000000,Z=-1660.000000)
     Begin Brush Name=Model1049
        Begin PolyList
-          Begin Polygon Texture=bulltprftrans_a Flags=8388876 Link=0
+          Begin Polygon Texture=bulltprftrans_a Flags=8388874 Link=0
              Origin   +00000.000000,-00064.000000,-00064.000000
              Normal   -00000.894427,+00000.447214,+00000.000000
              TextureU +00000.000000,+00002.000000,+00000.000000
@@ -40881,7 +40881,7 @@ Begin Actor Class=Brush Name=Brush1060
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=3150.034912
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -40890,7 +40890,7 @@ Begin Actor Class=Brush Name=Brush1060
     OldLocation=(X=1353.000000,Y=50.000000,Z=-1660.000000)
     Begin Brush Name=Model1057
        Begin PolyList
-          Begin Polygon Texture=bulltprftrans_a Flags=8388876 Link=0
+          Begin Polygon Texture=bulltprftrans_a Flags=8388874 Link=0
              Origin   +00000.000000,-00064.000000,-00064.000000
              Normal   -00000.894427,-00000.447214,+00000.000000
              TextureU -00000.894427,+00001.788854,+00000.000000
@@ -41375,7 +41375,7 @@ Begin Actor Class=Brush Name=Brush1070
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=2850.120117
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -41383,7 +41383,7 @@ Begin Actor Class=Brush Name=Brush1070
     Location=(X=1448.000000,Y=88.000000,Z=-1744.000000)
     Begin Brush Name=Model1067
        Begin PolyList
-          Begin Polygon Texture=bulltprftrans_a Flags=8388876 Link=0
+          Begin Polygon Texture=bulltprftrans_a Flags=8388874 Link=0
              Origin   -00052.000000,+00000.000000,-00044.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00002.000000,+00000.000000,+00000.000000
@@ -41402,7 +41402,7 @@ Begin Actor Class=Brush Name=Brush1071
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=3065.939453
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -41410,7 +41410,7 @@ Begin Actor Class=Brush Name=Brush1071
     Location=(X=1752.000000,Y=88.000000,Z=-1744.000000)
     Begin Brush Name=Model1068
        Begin PolyList
-          Begin Polygon Texture=bulltprftrans_a Flags=8388876 Link=0
+          Begin Polygon Texture=bulltprftrans_a Flags=8388874 Link=0
              Origin   -00052.000000,+00000.000000,-00044.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00002.000000,+00000.000000,+00000.000000

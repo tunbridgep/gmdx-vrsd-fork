@@ -78,7 +78,7 @@ function bool DisplayHackText()
 function PostPostBeginPlay()
 {
     super.PostPostBeginPlay();
-    if (class'DeusExPlayer'.default.bCameraHum && AmbientSound == None)
+    if (class'DeusExPlayer'.default.bCameraHum && AmbientSound == None && bActive && !bConfused && !bRebooting)
         AmbientSound = default.AmbientSound;
     else if (!class'DeusExPlayer'.default.bCameraHum && AmbientSound == default.AmbientSound)
         AmbientSound = None;
@@ -94,6 +94,7 @@ function EnableCamera()
         AmbientSound = None;
     SoundVolume = default.SoundVolume;
     SoundRadius = default.SoundRadius;
+    SoundPitch = default.SoundPitch;
     bRebooting = false;
 }
 
@@ -291,7 +292,7 @@ function TriggerEvent(bool bTrigger)
 		AmbientSound = Sound'alarms';
 		SoundVolume = 80;  //lowered volume, increased radius
 		SoundRadius = 150;
-        SoundPitch = 64; //CyberP: set back to default pitch
+        SoundPitch = default.soundPitch; //CyberP: set back to default pitch
         MultiSkins[2] = GetCameraLightTex(2);
         class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+4),false);
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+4));
@@ -309,10 +310,7 @@ function TriggerEvent(bool bTrigger)
 	}
 	else
 	{
-		AmbientSound = None;
-		SoundRadius = 48;
-		SoundVolume = 32;
-        MultiSkins[2] = GetCameraLightTex(1);
+        EnableCamera();
 		AIEndEvent('Alarm', EAITYPE_Audio);
 		// reset our stasis info
 		bStasis = Default.bStasis;
@@ -593,11 +591,21 @@ function Tick(float deltaTime)
 			confusionTimer = 0;
 			confusionDuration = Default.confusionDuration;
             if (!bRebooting)
+            {
                 MultiSkins[2] = GetCameraLightTex(1);
+            }
             else
+            {
                 MultiSkins[2] = GetCameraLightTex(0);
-			SoundPitch = 64;
+            }
+            if (bActive && !bRebooting)
+                AmbientSound = default.AmbientSound;
+
+			SoundPitch = default.SoundPitch;
 			DesiredRotation = origRot;
+            //SARGE: Fix trigger timers not resetting
+            carcassTriggerTimer = 0;
+            triggerTimer = 0;
 		}
 
 		return;
@@ -671,16 +679,16 @@ function Tick(float deltaTime)
 				triggerTimer += deltaTime;
 			
 			if (bCarcassSeen)
-			{
 				carcassTriggerTimer += deltaTime;
-				SoundPitch = 96;
-			}
 			
 			if (triggerTimer % 0.5 > 0.4 || carcassTriggerTimer % 0.5 > 0.4)
 			{
-                MultiSkins[2] = GetCameraLightTex(2);
+                if (bCarcassSeen)
+                    MultiSkins[2] = GetCameraLightTex(4);
+                else
+                    MultiSkins[2] = GetCameraLightTex(2);
                 if (minDamageThreshold < 70)
-				   PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
+                    PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
 			   
 				if ((bPlayerSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
 				{
@@ -775,6 +783,7 @@ auto state Active
 				bConfused = true;
                 MultiSkins[2] = GetCameraLightTex(3);
 				SoundPitch = 128;
+                AmbientSound = None;
 				PlaySound(sound'EMPZap', SLOT_None,,, 1280);
 			}
 			return;
@@ -907,7 +916,7 @@ defaultproperties
      disableTimeBase=120.0
      disableTimeMult=60.0
 	 lastSeenTimer=0.000000
-     SoundVolume=72 //SARGE: Vanilla was 192
+     SoundVolume=32 //SARGE: Vanilla was 192
      SoundRadius=48
      AmbientSound=sound'CameraHum'
 }
