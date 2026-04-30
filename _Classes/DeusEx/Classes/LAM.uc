@@ -8,6 +8,9 @@ var float	mpProxRadius;
 var float	mpLAMDamage;
 var float	mpFuselength;
 
+//AUGMENTIQUE: Stupid skin hack
+var transient Texture lightSkinTex;
+
 simulated function Tick(float deltaTime)
 {
 	local float blinkRate;
@@ -33,6 +36,9 @@ simulated function Tick(float deltaTime)
         {
                 if (Abs((fuseLength - time)) % blinkRate > blinkRate * 0.5)
                     tex = Texture'BlackMaskTex';
+                //AUGMENTIQUE:
+                else if (lightSkinTex != None)
+                    tex = lightSkinTex;
                 else
                     tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPLAMtex0","DeusExItems.LAM3rdTex1",IsHDTP());
         }
