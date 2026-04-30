@@ -795,7 +795,7 @@ log("  event.toActor    = " $ event.toActor );
         else if (invItemFrom.IsA('WeaponGEPGun'))
         {
             //When the GEP uses WP ammo by default, we should give the player some regular rockets too.
-            if (class'DeusExPlayer'.default.bGEPUsesWPByDefault)
+            if (DeusExPlayer(event.toActor) != None && (DeusExPlayer(event.toActor).bGEPUsesWPByDefault || DeusExPlayer(event.toActor).bHardcoreMode))
                 TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoRocket',1);
 
             if (DeusExPlayer(event.toActor) != None && DeusExPlayer(event.toActor).bShenanigans)

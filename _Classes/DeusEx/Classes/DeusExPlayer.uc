@@ -500,7 +500,7 @@ var travel bool bStunted; //CyberP: for slowing player under various conditions
 var travel float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
-var float doubleClickCheck; //CyberP: to return from double clicking.
+var transient float doubleClickCheck; //CyberP: to return from double clicking.
 var travel BeltInfo assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
 var travel Inventory primaryWeapon;
 var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
@@ -927,20 +927,22 @@ var globalconfig bool bRandomizeCrap;                          //Sarge: Randomiz
 //See the "Experimental" gameplay menu in the New Game screen to toggle these.
 ///////////////////////////////
 
-var travel bool bExperimentalSkillRebalance;                //SARGE: Reduce skill point gain on higher difficulties to make specialising more important
-var travel bool bExperimentalRebreathers;                //SARGE: Rebreathers can only be used once and not recharged.
-
+//Nothing
 
 
 /////////Version 1.2 Additions
 /////////January 2026
 
+//Playthrough Mods
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
 var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
 var travel bool bWoundSystem;                                //SARGE: Enable Traumas when taking damage.
 var travel bool bShippingAndReceiving;                       //SARGE: Enable Shipping and Receiving addon.
 var travel bool bGEPUsesWPByDefault;                         //SARGE: GEP Gun uses WP Rockets by default
+var travel bool bHarderSkillRebalance;                      //SARGE: Reduce skill point gain on higher difficulties to make specialising more important
+var travel bool bHarderChargedPickups;                      //SARGE: Rebreathers/etc can only be used once and not recharged.
+
 
 var globalconfig bool bDoneGMDXOnboarding;                   //SARGE: If we've done GMDX Onboarding. If not, we will show a messagebox asking if we want to do it.
 
@@ -963,7 +965,7 @@ var globalconfig bool bNewBlood;                            //SARGE: Use nicer l
 
 var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
 
-var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
+var globalconfig int iWeaponWallDistance;                  //SARGE: Move weapons back when up against a wall
 
 var globalconfig bool bAutofillPasswords;                   //SARGE: Allow auto-filling passwords
 
@@ -982,6 +984,24 @@ var globalconfig int iSecondaryMode;                       //SARGE: How will the
 var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscious Carcasses die when thrown some distance? Always enabled in Hardcore.
 
 var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our reserve energy on the bioenergy bar in the HUD
+
+var globalconfig bool bViewmodelInertia;                       //SARGE: Add inertia to weapon and item viewmodels.
+
+var globalconfig bool bPickupsUseFOV;                       //SARGE: Pickups, Lockpicks, etc, will use the players FOV properly, rather than always being as big as possible.
+
+var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points will fade out at distance.
+
+var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
+
+var globalconfig bool bFirstPersonConversation;           //SARGE: Allow the player to remain in first-person when in a conversation.
+
+var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn their heads to look at the player
+
+var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't have enough space" message will show the inventory size of objects.
+
+var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
+
+var globalconfig bool bCameraStatic;                //SARGE: Blank out the screen when using cameras
 
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
@@ -2092,12 +2112,42 @@ function int GetInventoryCount(Name item)
 
 function SetupExperimentals()
 {
-    local WeaponPistol P;
-    local WeaponStealthPistol SP;
-    local Rebreather R;
+}
 
-    //Set Experimental Rebreathers setting
-    class'Rebreather'.default.bDisposable = bExperimentalRebreathers;
+//SARGE: Make the GEP Gun use HE Rockets
+function SetupGEPAmmo()
+{
+    local WeaponGEPGun GEP;
+    //Log("Setting up GEP: " $ bGEPUsesWPByDefault);
+        
+    if (bGEPUsesWPByDefault || bHardCoreMode)
+    {
+        class'WeaponGEPGun'.default.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
+        class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
+        class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.RocketWP';
+        class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.Rocket';
+        foreach AllActors(class'WeaponGEPGun', GEP)
+        {
+            GEP.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
+            GEP.AmmoNames[1]=Class'DeusEx.AmmoRocket';
+            GEP.ProjectileNames[0]=Class'DeusEx.RocketWP';
+            GEP.ProjectileNames[1]=Class'DeusEx.Rocket';
+        }
+    }
+    else
+    {
+        class'WeaponGEPGun'.default.AmmoNames[0]=Class'DeusEx.AmmoRocket';
+        class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
+        class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.Rocket';
+        class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        foreach AllActors(class'WeaponGEPGun', GEP)
+        {
+            GEP.AmmoNames[0]=Class'DeusEx.AmmoRocket';
+            GEP.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
+            GEP.ProjectileNames[0]=Class'DeusEx.Rocket';
+            GEP.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -2230,9 +2280,6 @@ event TravelPostAccept()
 
     //Reset Crosshair
     UpdateCrosshair();
-
-    //Set up experimental gameplay mods
-    SetupExperimentals();
 
     //Destroy any unlinked markers
     UpdateMarkerValidity();
@@ -2371,6 +2418,12 @@ event TravelPostAccept()
 	   RocketTarget=spawn(class'DeusEx.GEPDummyTarget');
 
 	SetRocketWireControl();
+
+    //Make GEP use WP ammo
+    SetupGEPAmmo();
+
+    //Set up experimental gameplay mods
+    SetupExperimentals();
     
     bDelayInventoryFix = false;
     
@@ -2600,13 +2653,13 @@ function ShowExits()
     foreach AllObjects(class'Teleporter',T)
         if (T.URL != "")
         {
-            T.bHidden = !bShowExits;
+            T.bHidden = !bShowExits && !bGMDXDebug;
             T.bNoSmooth = true;
         }
     foreach AllObjects(class'MapExit',E)
         if (E.bCollideActors == true)
         {
-            E.bHidden = !bShowExits;
+            E.bHidden = !bShowExits && !bGMDXDebug;
             E.bNoSmooth = true;
         }
 }
@@ -2804,7 +2857,7 @@ function bool CanSave(optional bool allowHardcore, optional bool bDontStopInfoli
     // 7) SARGE: We're in a conversation
     // 8) SARGE: We're currently recreating decals
 
-    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
+    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore && !bGMDXDebug) //Hardcore Mode
         return false;
 
 	if ((info != None) && (info.MissionNumber < 0)) //Logo Screen
@@ -4622,7 +4675,7 @@ function bool DoShifterWeaponSwitch(bool bSelectWeapon, bool bPlaceholderMode, c
     local int placeholder;
 
     //If it's not enabled, bail
-    if (iShifterWeaponSwitch == 0)
+    if (iShifterWeaponSwitch == 0 && !bPlaceholderMode)
         return false;
 
     //First, find the starting item index
@@ -5335,8 +5388,8 @@ simulated function PlayFootStep()
 
     if (volume > 0)
     {
-        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls
-        //class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
+        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls //SARGE: Actually yes, but ignore zone boundaries
+        class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier,true);
         AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
 
         //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.
@@ -5646,6 +5699,9 @@ function HighlightCenterObject()
 
 		// reset our frob timer
 		FrobTime = 0;
+
+        //Update our brackets state
+        UpdateCrosshair();
 	}
 }
 
@@ -9350,6 +9406,24 @@ function PlayItemTransferSound()
 }
 
 // ----------------------------------------------------------------------
+// GetInventoryFullMsg()
+// SARGE: Gets the "You don't have enough space" message, with the inventory sizes appended.
+// The idea was stolen from Transcended, but was coded from scratch by me.
+// ----------------------------------------------------------------------
+function string GetInventoryFullMsg(Inventory inv)
+{
+    if (inv == None)
+        return "";
+
+    if (bFullInventoryMsgShowsSize)
+    {
+        return Sprintf(InventoryFull, inv.itemName @ "[" $ inv.default.invSlotsX $ "x" $ inv.default.invSlotsY $ "]");
+    }
+    
+    return Sprintf(InventoryFull, inv.itemName);
+}
+
+// ----------------------------------------------------------------------
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
@@ -9544,10 +9618,8 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
             
-            if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && !bLootedAmmo)
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
-            else if (frobTarget != None)
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
+            if (frobTarget != None)
+                ClientMessage(GetInventoryFullMsg(Inventory(FrobTarget)));
 		}
 	}
 
@@ -9631,7 +9703,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
     
     //SARGE: Swap to a new belt item
-    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2)
+    if (bCanPickup && bSlotSearchNeeded && iBeltMemory >= 2 && FromCorpse == None)
         ShifterSwitchAll(Inventory(frobTarget),false,true);
 
 	return bCanPickup && !bDeclined;
@@ -14058,7 +14130,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 
-	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) )
+	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) || bFirstPersonConversation )
 	{
 		// First-person view.
 		ViewActor = Self;
@@ -14121,6 +14193,10 @@ ignores SeePlayer, HearNoise, Bump;
 	{
 		local rotator tempRot;
 		local float   yawDelta;
+        local float diff;
+        local Rotator lookAngle;
+        local Vector lookTo, lookFrom;
+        local Actor speak;
 
 		UpdateInHand();
 
@@ -14146,20 +14222,81 @@ ignores SeePlayer, HearNoise, Bump;
 		// Keep turning towards the person we're speaking to
 		if (ConversationActor != None)
 		{
-			LookAtActor(ConversationActor, true, true, true, 0, 0.5);
+            LookAtActor(ConversationActor, true, true, true, 0, 0.5);
 
-			// Hacky way to force the player to turn...
-			tempRot = rot(0,0,0);
-			tempRot.Yaw = (DesiredRotation.Yaw - Rotation.Yaw) & 65535;
-			if (tempRot.Yaw > 32767)
-				tempRot.Yaw -= 65536;
-			yawDelta = RotationRate.Yaw * deltaTime;
-			if (tempRot.Yaw > yawDelta)
-				tempRot.Yaw = yawDelta;
-			else if (tempRot.Yaw < -yawDelta)
-				tempRot.Yaw = -yawDelta;
-			SetRotation(Rotation + tempRot);
+            // Hacky way to force the player to turn...
+            tempRot = rot(0,0,0);
+            tempRot.Yaw = (DesiredRotation.Yaw - Rotation.Yaw) & 65535;
+            if (tempRot.Yaw > 32767)
+                tempRot.Yaw -= 65536;
+            yawDelta = RotationRate.Yaw * deltaTime;
+            if (tempRot.Yaw > yawDelta)
+                tempRot.Yaw = yawDelta;
+            else if (tempRot.Yaw < -yawDelta)
+                tempRot.Yaw = -yawDelta;
+            SetRotation(Rotation + tempRot);
 		}
+
+        //SARGE: This is an awful hack...
+        //Look towards our target.
+        if (bFirstPersonConversation && conPlay != None)
+        {
+            speak = conPlay.currentSpeaker;
+
+            //Failsafe for when we start talking first.
+            if (speak == None || speak.IsA('PlayerPawn'))
+                speak = ConversationActor;
+
+            if (speak != None && !speak.IsA('PlayerPawn'))
+            {
+
+                // Determine our angle to the target
+                lookTo = speak.Location + (vect(0,0,1)*speak.CollisionHeight*0.9);
+                lookFrom  = Location + (vect(0,0,1)*CollisionHeight*0.9);
+                lookAngle = Rotator(lookTo-lookFrom);
+
+                //SARGE: Fix wrapping past 360 degrees...
+                ViewRotation.Yaw = ViewRotation.Yaw % 65535;
+                ViewRotation.Pitch = ViewRotation.Pitch % 65535;
+               
+                //Fix pitch rolling over itself
+                if (ViewRotation.Pitch >= 32767)
+                    ViewRotation.Pitch -= 65536;
+                
+                //Move everything to the + only space.
+                if (ViewRotation.Yaw < 0)
+                    ViewRotation.Yaw += 65536;
+                
+                if (lookAngle.Yaw < 0)
+                    lookAngle.Yaw += 65536;
+                
+                //SARGE: This code fucking sucks, I should probably just replace it with a modulo
+                //Fix yawing in the wrong direction
+                //If angle is > 180 degrees, subtract 360 degreees
+                //Log("LookAngle Diff:" $ abs(lookAngle.Yaw - ViewRotation.Yaw));
+                if (abs(lookAngle.Yaw - ViewRotation.Yaw) > 32767)
+                {
+                    if (lookAngle.Yaw > 32767)
+                    {
+                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "->" $ lookAngle.Yaw - 65536);
+                        lookAngle.Yaw -= 65536;
+                    }
+                    else
+                    {
+                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "+>" $ lookAngle.Yaw + 65536);
+                        lookAngle.Yaw += 65536;
+                    }
+                }
+                //Log("Speaker: " $ speak);
+                //Log("ViewRotation.Yaw: " $ viewRotation.Yaw);
+                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
+                //Log("Smerpy: " $ smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch));
+                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
+
+                ViewRotation.Yaw = smerp(deltaTime * 16,ViewRotation.Yaw,lookAngle.Yaw);
+                ViewRotation.Pitch = smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch);
+            }
+        }
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
@@ -14215,6 +14352,8 @@ ignores SeePlayer, HearNoise, Bump;
     //I'm really getting sick of having to clean this damn codebase...
     function bool KeepWeaponOut()
     {
+        if (bFirstPersonConversation)
+            return false;
         if (bConversationKeepWeaponDrawn)
             return true;
         return inHand != None && inHand.IsA('DeusExWeapon') && !conPlay.startActor.IsA('NicoletteDuClare') && (retLevelInfo() == 5 || retLevelInfo() >= 12 || conPlay.startActor.IsA('HumanThug') ||
@@ -14245,7 +14384,8 @@ Begin:
 
 	Acceleration = Velocity;
 
-	PlayRising();
+    if (IsCrouching())
+        PlayRising();
 
 	// Make sure the player isn't on fire!
 	if (bOnFire)
@@ -14254,9 +14394,11 @@ Begin:
 	// Make sure the PC can't be attacked while in conversation
 	MakePlayerIgnored(true);
 
-	LookAtActor(conPlay.startActor, true, false, true, 0, 0.5);
-
-	SetRotation(DesiredRotation);
+    if (!bFirstPersonConversation)
+    {
+        LookAtActor(conPlay.startActor, true, false, true, 0, 0.5);
+        SetRotation(DesiredRotation);
+    }
 
 	PlayTurning();
 //	TurnToward(conPlay.startActor);
@@ -14281,7 +14423,7 @@ Begin:
         if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
             BaseEyeHeight = default.BaseEyeHeight;
 
-		if ( conPlay.GetDisplayMode() == DM_ThirdPerson )
+		if ( conPlay.GetDisplayMode() == DM_ThirdPerson && !bFirstPersonConversation )
 			bBehindView = true;
 	}
 }
@@ -17617,22 +17759,18 @@ function int FloorTo(int value, int nearest)
 function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 {
 	local int i;
-	local DeusExLevelInfo info;
     local int actualPoints;
 	
     if (numPoints > 0)
 	{
         actualPoints = numPoints;
     
-        info = GetLevelInfo();
-
-        //SARGE: Hardcore Mode significantly reduces skill gain later in the game.
-        //SARGE: And realistic!
-        if (info != None && bExperimentalSkillRebalance && !bAlwaysAllow)
+        //SARGE: Hardcore Mode significantly reduces skill gain later.
+        if (!bAlwaysAllow)
         {
             if (bHardcoreMode)
                 actualPoints *= 0.75;
-            else if (CombatDifficulty >= 3)
+            else if (bHarderSkillRebalance)
                 actualPoints *= 0.85;
 
             actualPoints = FloorTo(actualPoints,5);
@@ -19907,6 +20045,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     local class associatedSkill;
     local class<DeusExAmmo> DXammotype;
     local Perk lawfare;
+    local AugAmmoCap cap;
 
     mult = 1.0;
 
@@ -19930,7 +20069,10 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     //4 base, + 1 per heavy level, + 1 per ammo capacity level
     if (ammoType == class'AmmoRocket' && DXammoType != None && SkillSystem != None && AugmentationSystem != None)
     {
-        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + AugmentationSystem.GetAug(class'AugAmmoCap').CurrentLevel;
+        cap = AugAmmoCap(AugmentationSystem.GetAug(class'AugAmmoCap'));
+        if (cap != None)
+            return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + cap.CurrentLevel;
+        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy');
     }
 
 
@@ -20589,7 +20731,7 @@ defaultproperties
      bItemRechargeSound=true
      bNewBlood=true
      iBloodyWeapons=1
-     bWeaponWallDetection=true
+     iWeaponWallDistance=504
      bAutofillPasswords=true
      iHackySaveIndex=1
      bShortFuseEnabled=true
@@ -20601,4 +20743,8 @@ defaultproperties
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
+     bViewmodelInertia=true
+     bTurnHeads=true
+     bFullInventoryMsgShowsSize=true
+     bCameraHum=true
 }

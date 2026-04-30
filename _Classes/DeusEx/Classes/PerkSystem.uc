@@ -78,9 +78,9 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkCombatMedicsBag');
 
 	// Enviro TrainPerks
-	AddPerk(Class'DeusEx.PerkFieldRepair');
-	AddPerk(Class'DeusEx.PerkFilterUpgrade');
 	AddPerk(Class'DeusEx.PerkHardened');
+	AddPerk(Class'DeusEx.PerkFilterUpgrade');
+	AddPerk(Class'DeusEx.PerkFieldRepair');
 	AddPerk(Class'DeusEx.PerkBlastPadding');
 	AddPerk(Class'DeusEx.PerkThermalImaging');
 	AddPerk(Class'DeusEx.PerkChameleon');

@@ -40,7 +40,7 @@ function RefreshTextureFiltering()
     local Actor A;
     local bool bFilterActor;
 
-    Log("Refreshing Textures");
+    //Log("Refreshing Textures");
 
     foreach AllObjects(class'Texture',T)
     {

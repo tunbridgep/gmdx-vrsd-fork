@@ -92,10 +92,8 @@ var bool bSkillsSetAtStart;
 var bool bUNATCOCleanup;
 var bool bShippingAndReceiving;
 var bool bGEPUsesWPByDefault;
-
-//SARGE: Experimental Balance Menu
-var bool bExperimentalSkillRebalance;
-var bool bExperimentalRebreathers;
+var bool bHarderSkillRebalance;
+var bool bHarderChargedPickups;
 
 //SARGE: Save our true player name for future playthroughs
 //SARGE: And now the player skin too!
@@ -203,8 +201,8 @@ event InitWindow()
     bUNATCOCleanup=default.bUNATCOCleanup;                                                       //Sarge
     bShippingAndReceiving=default.bShippingAndReceiving;
     bGEPUsesWPByDefault=default.bGEPUsesWPByDefault;
-    bExperimentalSkillRebalance=default.bExperimentalSkillRebalance;
-    bExperimentalRebreathers=default.bExperimentalRebreathers;
+    bHarderSkillRebalance=default.bHarderSkillRebalance;
+    bHarderChargedPickups=default.bHarderChargedPickups;
 	StyleChanged();
 }
 
@@ -885,8 +883,8 @@ function SaveSettings()
     player.bUNATCOCleanup=bUNATCOCleanup;                                       //Sarge
     player.bShippingAndReceiving=bShippingAndReceiving;                         //Sarge
     player.bGEPUsesWPByDefault=bGEPUsesWPByDefault;
-    player.bExperimentalSkillRebalance=bExperimentalSkillRebalance;
-    player.bExperimentalRebreathers=bExperimentalRebreathers;
+    player.bHarderSkillRebalance=bHarderSkillRebalance;
+    player.bHarderChargedPickups=bHarderChargedPickups;
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 
@@ -1145,8 +1143,8 @@ defaultproperties
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_Other,Text="|&Start Game",Key="START")
      actionButtons(2)=(Action=AB_Reset)
      actionButtons(3)=(Action=AB_Other,Text="Modifiers",Key="MODIFIERS")
-     actionButtons(4)=(Action=AB_Other,Text="Testing",Key="TESTING")
-     //actionButtons(5)=(Action=AB_Other,Text="LDDP Help",Key="HELP")
+     //actionButtons(4)=(Action=AB_Other,Text="Testing",Key="TESTING")
+     actionButtons(4)=(Action=AB_Other,Text="LDDP Help",Key="HELP")
      Title="Start New Game"
      ClientWidth=580
      ClientHeight=389
@@ -1160,10 +1158,10 @@ defaultproperties
      bEscapeSavesSettings=False
 
      //Playthrough Mods
-     bCutInteractions=true
+     //bCutInteractions=true
      bImprisonmentTakesAmmo=true
-     bRealKillswitch=true
-     bAddictionSystem=true
+     //bRealKillswitch=true
+     //bAddictionSystem=true
      bCollectibles=true
      bGEPUsesWPByDefault=true
      

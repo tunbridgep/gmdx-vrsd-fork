@@ -276020,6 +276020,8 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner4
 End Actor
 Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
     Id="jaimereyes"
+    requiredFlag="JaimeRecruited"
+    requiredFlagInverted=True
     LastRenderTime=60.980923
     DistanceFromPlayer=3527.456787
     Level=LevelInfo'MyLevel.LevelInfo0'

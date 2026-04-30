@@ -66330,6 +66330,7 @@ Begin Actor Class=Brush Name=Brush363
     Name=Brush363
 End Actor
 Begin Actor Class=ControlPanel Name=ControlPanel0
+    UnTriggerEvent(0)=auSec
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=ControlPanel
@@ -66342,8 +66343,7 @@ End Actor
 Begin Actor Class=BeamTrigger Name=BeamTrigger0
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=BeamTrigger
-    Event=auSec
+    Tag=auSec
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-6020.017090,Y=-259.337708,Z=167.787582)
     Rotation=(Yaw=16424)
@@ -66353,8 +66353,7 @@ End Actor
 Begin Actor Class=BeamTrigger Name=BeamTrigger1
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=BeamTrigger
-    Event=auSec
+    Tag=auSec
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-6020.082520,Y=-259.337463,Z=134.837524)
     Rotation=(Yaw=16424)
@@ -66367,8 +66366,7 @@ End Actor
 Begin Actor Class=BeamTrigger Name=BeamTrigger2
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=BeamTrigger
-    Event=auSec
+    Tag=auSec
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-6020.062988,Y=-259.387268,Z=102.837524)
     Rotation=(Yaw=16424)
@@ -66378,8 +66376,7 @@ End Actor
 Begin Actor Class=BeamTrigger Name=BeamTrigger3
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=BeamTrigger
-    Event=auSec
+    Tag=auSec
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-6020.059570,Y=-259.454956,Z=71.917137)
     Rotation=(Yaw=16424)
@@ -66392,8 +66389,7 @@ End Actor
 Begin Actor Class=BeamTrigger Name=BeamTrigger4
     LastRenderTime=0.317498
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=BeamTrigger
-    Event=auSec
+    Tag=auSec
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-6020.072754,Y=-259.426147,Z=38.848286)
     Rotation=(Yaw=16424)

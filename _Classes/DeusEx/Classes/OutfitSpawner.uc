@@ -10,6 +10,9 @@ var(Augmentique) const string LookupTexture;              //This lets us use tex
 
 var(Augmentique) const string LinkedObjects[5];           //If this object is removed for being invalid, all linked objects will also be removed
 
+var(Augmentique) const string requiredFlag;               //If required flag is set, then this flag must be true for the object to appear. Checked on a timer.
+var(Augmentique) const bool requiredFlagInverted;         //If required flag is set, then it must be FALSE instead of TRUE
+
 var OutfitManagerBase outfitManager;
 
 function Frob(Actor Frobber, Inventory frobWith)
@@ -17,8 +20,63 @@ function Frob(Actor Frobber, Inventory frobWith)
     outfitManager.spawnerPickup(self);
 }
 
+static function ShowObj(Actor obj)
+{
+    obj.DrawScale = obj.default.DrawScale;
+    obj.SetCollision(obj.default.bCollideActors, obj.default.bBlockActors, obj.default.bBlockPlayers);
+    obj.SetCollisionSize(obj.default.CollisionRadius,obj.default.CollisionHeight);
+    obj.LightType=obj.default.LightType;
+    obj.SetPhysics(obj.default.Physics);
+}
+
+static function HideObj(Actor obj)
+{
+    obj.DrawScale = 0.00001;
+    obj.SetCollision(false,false,false);
+    obj.SetCollisionSize(0,0);
+    obj.LightType=LT_None;
+    obj.SetPhysics(PHYS_None);
+}
+
+function ShowLinkedObjects(bool bShow)
+{
+    local Actor a;
+    local int i;
+
+    //Hide objects linked to spawner
+    foreach AllActors(class'Actor', a)
+    {
+        for(i = 0;i < ArrayCount(LinkedObjects);i++)
+        {
+            if (LinkedObjects[i] != "" && LinkedObjects[i] == string(a.Name))
+            {
+                if (bShow)
+                    ShowObj(a);
+                else
+                    HideObj(a);
+            }
+        }
+    }
+}
+
+//If the outfit is invalid, hide it.
+function ShowSpawner(bool bShow)
+{
+    if (bShow)
+    {
+        ShowLinkedObjects(true);
+        ShowObj(self);
+    }
+    else
+    {
+        ShowLinkedObjects(false);
+        HideObj(self);
+    }
+}
+
 defaultproperties
 {
+     bBlockPlayers=false;
      HitPoints=10
      bPushable=False
      FragType=Class'DeusEx.PaperFragment'

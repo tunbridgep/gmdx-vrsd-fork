@@ -664,5 +664,6 @@ defaultproperties
      bCanGlide=True
      Health=10
      VisibilityThreshold=0.006000
+     bRandomHeightAdjust=true
      BindName="Animal"
 }

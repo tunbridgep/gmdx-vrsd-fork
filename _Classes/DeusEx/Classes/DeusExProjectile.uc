@@ -518,7 +518,7 @@ state Exploding
         if (ImpactSound != None)
         {
             //SARGE: Fix the broken sound propagation
-            class'PawnUtils'.static.WakeUpAI(self,blastRadius*4);
+            class'PawnUtils'.static.WakeUpAI(self,blastRadius*4,false);
             AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, blastRadius*10);
             if (bExplodes)
                 AISendEvent('WeaponFire', EAITYPE_Audio, 2.0, blastRadius*2);
@@ -1029,7 +1029,7 @@ auto simulated state Flying
 			{
 				//log("EXPLODE:"@blastRadius);
                 //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,blastRadius*10);
+                class'PawnUtils'.static.WakeUpAI(self,blastRadius*10,false);
 				AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, blastRadius*10);
 				if (bExplodes)
 				   AISendEvent('WeaponFire', EAITYPE_Audio, 2.0, blastRadius*2);

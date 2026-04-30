@@ -530,6 +530,8 @@ var(GMDX) bool bReactGunPointed;
 //SARGE: Variable height NPCs
 //NPCs will be slightly taller or shorter (+-5%) for variance and to make headshots a bit harder
 var(GMDX) const bool bRandomHeightAdjust;
+var(GMDX) const float fRandomHeightBaseMult;
+var(GMDX) const float fRandomHeightMult;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
@@ -549,6 +551,8 @@ enum EAllianceCheckType
     AL_False,
     AL_True,
 };
+
+var bool bTurnedHeadToPlayer;                   //SARGE: Did we turn out head to the player? Allows resetting turning heads.
 
 // ----------------------------------------------------------------------
 // Augmentique
@@ -658,14 +662,14 @@ function SetupCloakManager()
 
 function SetupRandomHeight(float fNewHeightMod)
 {
-    //Log("SetupRandomHeight" $ fNewHeightMod @ class.Name);
-
-    if (!bRandomHeightAdjust || bSetupVariableHeightActor || fNewHeightMod < - 0.9 || fNewHeightMod > 1.1)
+    if (!bRandomHeightAdjust || bSetupVariableHeightActor)
         return;
 
     //Don't allow special characters to be height adjusted
     if (BindName != string(class.Name) || bImportant)
         return;
+    
+    //Log("SetupRandomHeight" $ fNewHeightMod @ class.Name);
 
     fHeightMod = fNewHeightMod;
     bSetupVariableHeightActor = true;
@@ -858,6 +862,9 @@ function PostPostBeginPlay()
 
 	// Bind any conversation events to this ScriptedPawn
 	ConBindEvents();
+        
+    //SARGE: Make Pawns have random heights
+    SetupRandomHeight(FRandomHeightBaseMult + FRand()*fRandomHeightMult);
 
     SetupCloakManager();
 
@@ -2605,6 +2612,10 @@ function bool CheckCarcassPresence(float deltaSeconds)
 			lastCycle         = BodyIndex;
 			foreach CycleActors(Class'DeusExCarcass', body, BodyIndex)
 			{
+                //SARGE: Horrible hack to make NPCs not become hostile 
+                if (body.IsA('RatCarcass'))
+                    continue;
+
 				if (body.Physics != PHYS_Falling)
 				{
 					if (VSize(body.Location-Location) < maxCarcassDist)
@@ -4827,7 +4838,7 @@ function PlayDyingSound()
 	SetDistressTimer();
 
     //SARGE: Fix the broken sound propagation
-    class'PawnUtils'.static.WakeUpAI(self,336);
+    class'PawnUtils'.static.WakeUpAI(self,336,true);
 	PlaySound(GetDeathSound(), SLOT_Pain,,,, RandomPitch());
 	if (bEmitDistress)
 		AISendEvent('Distress', EAITYPE_Audio,0.25,336); //CyberP: radius was 490 //RSD: psshh, only 224? We going to 336 baby
@@ -8694,6 +8705,21 @@ function Tick(float deltaTime)
 		if ((DistanceFromPlayer > 600) && (LastRendered() >= 5.0))
 			bCheckOther = false;
 	}
+
+    //SARGE: Allow head-turning towards the player if we're idle
+    if (bCanTurnHead && player != None && player.CloakManager != None && !player.CloakManager.IsInAnyState() && player.bTurnHeads && Enemy == None && (IsInState('Idle') || IsInState('Standing') || IsInState('Sitting')))
+    {
+        if (DistanceFromPlayer < 700)
+        {
+            LookAtActor(player,false,true,true);
+            bTurnedHeadToPlayer = true;
+        }
+        else if (bTurnedHeadToPlayer)
+        {
+            PlayTurnHead(LOOK_Forward, 1.0, 1.0);
+            bTurnedHeadToPlayer = false;
+        }
+    }
 
 /*
 	if (bDisappear && (InStasis() || (LastRendered() > 5.0)))
@@ -17589,4 +17615,6 @@ defaultproperties
      bCanBlink=true
      fHighAlertChance=0.2
      msgDance="Get electric on the dance floor!"
+     fRandomHeightBaseMult=0.9
+     fRandomHeightMult=0.2
 }

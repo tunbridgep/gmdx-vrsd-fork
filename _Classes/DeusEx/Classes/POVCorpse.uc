@@ -93,6 +93,14 @@ function Draw(DeusExPlayer frobber)
     SetWeaponHandTex();
 }
 
+function Display(bool overlay)
+{
+    super.Display(overlay);
+
+    if (overlay)
+        Multiskins[1] = handsTex;
+}
+
 function PreBeginPlay()
 {
 	Super.PreBeginPlay();

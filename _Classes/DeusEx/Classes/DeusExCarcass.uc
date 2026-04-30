@@ -1183,6 +1183,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
     local bool bShowReceived;                                                   //SARGE: Show the Received Items Window for new pickups
     local bool bAddBad;                                                         //SARGE: Prevent adding the same items to the bad list more than once.
+    local Inventory newItem;                                                    //SARGE: An item that was spawned in the players inventory.
 	
     badItemCount = 0;
 
@@ -1395,7 +1396,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                             {
                                 bFoundSomething = True;
                                 bSuppressEmptyMessage = True;
-								//P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+								//P.ClientMessage(Player.GetInventoryFullMsg(item));
                             }
 
                             //Ignore weapons we cannot take.
@@ -1412,7 +1413,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 else if (item != None)
                                 {
                                     bSuppressEmptyMessage = True;
-                                    P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+                                    P.ClientMessage(Player.GetInventoryFullMsg(item));
                                 }
 
                                 bFoundInvalid = true;
@@ -1581,7 +1582,11 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
-                                        item.SpawnCopy(P);
+                                        newItem = item.SpawnCopy(P);
+                                        
+                                        //SARGE: Swap to a new belt item
+                                        if (DeusExPlayer(P) != None && DeusExPlayer(P).iBeltMemory >= 2)
+                                            DeusExPlayer(P).ShifterSwitchAll(newItem,false,true);
                                     }
                                     else
                                     {
@@ -1943,14 +1948,14 @@ function SetupCarcass(bool bAlert)
             {
                 PlaySound(sound'PaperHit2', SLOT_None,,,1024);
                 //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,512);
+                class'PawnUtils'.static.WakeUpAI(self,512,false);
                 AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
             }
             else
             {
                 //SARGE TODO: Don't bother fixing sound propagation here as it's so short???
                 //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,96);
+                class'PawnUtils'.static.WakeUpAI(self,96,false);
                 AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
             }
         }

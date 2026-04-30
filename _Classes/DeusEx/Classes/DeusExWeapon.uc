@@ -407,6 +407,11 @@ var const bool bIsPlaceableOnWall;
 //SARGE: An annoying hack to fix GMDX's hacky GEP bullshit.
 var transient bool bDontActuallyRenderViewModel;
 
+//SARGE: Weapon inertia
+var transient Vector cachedDrawOffset;
+var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
+var const float inertiaSpeed;                            //SARGE: How fast weapons move.
+
 //END GMDX:
 
 //
@@ -823,6 +828,9 @@ function Draw(DeusExPlayer frobber)
     ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
+            
+    //Reset weapon inertia
+    cachedDrawOffset = Vect(0,0,0);
 
     DoWeaponOffset(frobber);
 }
@@ -2629,6 +2637,7 @@ simulated function Tick(float deltaTime)
 	local Pawn pawn;
     local float perkMod, ADSmod, rnd;
     local float mult;
+    local int wallDist;
 
 	player = DeusExPlayer(Owner);
 	pawn = Pawn(Owner);
@@ -2670,11 +2679,12 @@ simulated function Tick(float deltaTime)
     //The actual view offset is adjusted in CalcDrawOffset.
     if (PlayerPawn(Owner) != None && activateAn == False /*&& !IsA('WeaponGEPGun')*/ && !bIsPlaceableOnWall)
     {
-        if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && DeusExPlayer(Owner).bWeaponWallDetection && (bCachedNearWall || bMantlingEffect))
+        wallDist = DeusExPlayer(Owner).iWeaponWallDistance;
+        if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && wallDist > 0 && (bCachedNearWall || bMantlingEffect))
         {
             lerpAid -= lerpAidSpeed*deltaTime;
-            if (lerpAid < -1000)
-                lerpAid = -1000;
+            if (lerpAid < -wallDist)
+                lerpAid = -wallDist;
         }
         else
         {
@@ -2683,6 +2693,9 @@ simulated function Tick(float deltaTime)
                 lerpAid = 0;
         }
     }
+    
+    //SARGE: Weapon Inertia
+    inertiaDelta = deltaTime*inertiaSpeed;
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -4839,6 +4852,7 @@ simulated function vector CalcDrawOffset()
 	local Pawn			PawnOwner;
 	local vector unX,unY,unZ;
     local Rotator vr;                       //SARGE: Added viewrotation variable
+    local Vector newOffset;
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -4863,6 +4877,28 @@ simulated function vector CalcDrawOffset()
             vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
 
         DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+
+        newOffset = drawOffset;
+
+        if (VSize(cachedDrawOffset) == 0 || VSize(cachedDrawOffset - drawOffset) > 40)
+            cachedDrawOffset = drawOffset;
+
+        //SARGE: Handle Weapon Inertia
+        if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
+        {
+            //diff = VSize(cachedDrawOffset - drawOffset);
+            //Log("diff:" $ drawOffset @ cachedDrawOffset);
+            //diff = FMax(-8.0,FMin(8.0,diff));
+            //Log("diff:" $ diff);
+
+            newOffset.X = lerp(inertiaDelta,cachedDrawOffset.X,drawOffset.X);
+            newOffset.Y = lerp(inertiaDelta,cachedDrawOffset.Y,drawOffset.Y);
+            newOffset.Z = lerp(inertiaDelta,cachedDrawOffset.Z,drawOffset.Z);
+        }
+    
+        cachedDrawOffset = newOffset;
+
+        DrawOffset = newOffset;
         DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
@@ -4926,7 +4962,7 @@ function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
 
     //SARGE: Wake up the AI
     if (wakeUp)
-        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.5);
+        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.5,true);
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
@@ -7954,4 +7990,5 @@ defaultproperties
      addonPenalties(2)=0.075 //Laser
      currentWeaponSkin="default"
      totalScopeTime=0.41
+     inertiaSpeed=30
 }

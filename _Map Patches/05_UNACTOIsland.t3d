@@ -44182,6 +44182,7 @@ Begin Actor Class=ParticleGenerator Name=ParticleGenerator0
     Name=ParticleGenerator0
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot0
+    bHardcoreRemove=True
     bAlliancesChanged=False
     Orders=Standing
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1558,ZoneNumber=1)

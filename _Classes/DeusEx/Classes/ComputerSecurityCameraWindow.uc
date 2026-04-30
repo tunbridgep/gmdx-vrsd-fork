@@ -179,15 +179,16 @@ function UpdateCameraStatus()
 	{
 		winCamera.EnableViewport(False);
 		winCamera.Lower();
-		btnCamera.SetStatic();
+		btnCamera.SetStatic(true);
 		SetTitle(NoSignalLabel);
 		winCameraStatus.Hide();
 		HideCameraLabels();
 	}
 	else
 	{
+        btnCamera.SetStatic(!camera.bActive && (player.bHardCoreMode || player.bCameraStatic));
 		winCamera.SetViewportActor(camera);
-		winCamera.EnableViewport(True);
+		winCamera.EnableViewport(camera.bActive || (!player.bHardCoreMode && !player.bCameraStatic));
 		winCamera.SetDefaultTexture(None);
 		winCamera.Lower();
 		SetTitle(CameraLabel @ "|&" $ String(viewIndex + 1) @ ":" @ ComputerSecurity(compOwner).Views[viewIndex].titleString);

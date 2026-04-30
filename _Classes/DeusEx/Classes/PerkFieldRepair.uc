@@ -10,7 +10,7 @@ defaultproperties
     PerkSkill=Class'DeusEx.SkillEnviro'
     PerkIcon=Texture'RSDCrap.UserInterface.PerkFieldRepair'
     PerkCost=200
-    PerkLevelRequirement=1
+    PerkLevelRequirement=2
     PerkValueDisplay=Standard
     PerkValue=1.5
 }

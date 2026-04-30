@@ -26,7 +26,10 @@ var const bool bNoDisplay;              //SARGE: Don't display in the list. It's
 
 function int GetRequiredMedkits()
 {
-    return requiredMedkits;
+    if (bHasIt)
+        return requiredMedkits;
+    else
+        return 0;
 }
 
 function bool HasWound()

@@ -33844,6 +33844,7 @@ Begin Actor Class=Light Name=Light6
     Name=Light6
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot0
+    bHardcoreRemove=True
     Orders=Standing
     bHateInjury=False
     bReactAlarm=False
@@ -61391,6 +61392,7 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner1
 End Actor
 Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
     Id="gordonquick"
+    requiredFlag="Have_ROM"
     bDynamicLight=True
     LastRenderTime=0.348555
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -61412,5 +61414,19 @@ Begin Actor Class=SavePoint Name=SavePoint1
     OldLocation=(X=-37.556488,Y=352.996674,Z=50.099693)
     bSelected=True
     Name=SavePoint1
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner0
+    Id="jaimereyes"
+    requiredFlag="JaimeRecruited"
+    bDynamicLight=True
+    LastRenderTime=99.985359
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=688,ZoneNumber=1)
+    Location=(X=363.274994,Y=-95.012360,Z=-168.900208)
+    Rotation=(Yaw=14387)
+    OldLocation=(X=363.274994,Y=-95.012360,Z=-168.900208)
+    bSelected=True
+    Name=OutfitSpawner0
 End Actor
 End Map

@@ -29,6 +29,7 @@ defaultproperties
      ChargeRemainingLabel="Durability: %d%%"
      ActivateSound=Sound'RSDCrap.Pickup.BallisticVestEquip'
      DeactivateSound=Sound'RSDCrap.Pickup.BallisticVestUnequip'
+     //UsedUpSound=Sound'GMDXSFX.Weapons.WedgeKicked1'
      skillNeeded=Class'DeusEx.SkillEnviro'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconArmorBallistic'
      ItemName="Ballistic Armor"

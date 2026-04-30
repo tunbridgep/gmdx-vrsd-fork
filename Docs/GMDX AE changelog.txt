@@ -5,9 +5,12 @@ New Features:
     - Weapon skins are available throughout the world.
     - Once unlocked, they can be applied to any weapon of the same type.
     - Weapon skin unlocks are kept between playthroughs.
+- Added weapon inertia. All weapons and held tools (lockpicks etc) will move with inertia, giving a more natural feeling.
 - Medical and Repair bots recharge timer is now reduced on higher difficulties because they have limited uses.
 - The installer now installs DXVK. Use `dxvk_enable.cmd` in the System folder to use it.
 - Added a visual red section to the energy bar to show energy reserve.
+- Added a new feature to make Save Points fade out at distance, which is good for immersion but not visibility. Disabled by default.
+- Added a setting to revert MJ12 Troops to using the vanilla "full-face" helmet, rather than the regular helmet. Disabled by default.
 - Throwing unconscious bodies around will now kill them if they fall a reasonable distance.
     - Unconscious bodies are relatively vulnerable and can't fall very far without dying!
     - This can be disabled in the Gameplay menu.
@@ -82,6 +85,10 @@ New Features:
     - Additionally added a setting to invert this behaviour, which will drop stacks by default, and only drop 1 item when holding Run/Walk.
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
+- Improvements to Scripted Grenade traps
+    - Grenade traps can now triggered more than once
+    - Grenade traps can now use all types of grenades, not just Gas grenades
+    - Mover detection is much more robust, now grenade traps should be more reliable.
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 - Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
 - Added a new playthrough modifier to remove crates and loose items when UNATCO takes over various areas, such as the Statue of Liberty and Lebedev's Airfield.
@@ -95,9 +102,17 @@ New Features:
     - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
+- Added a new "First Person Conversations" setting, which allows JC to engage in dialog in first-person.
 - The Dragon's Tooth Sword can now be recharged using Repair bots
+- Added a new Playthrough Modifier to make Thermoptic Camo and Rebreathers disposable and non-rechargable, similar to GMDX v9
+    - Always enabled in Hardcore mode
+- Added a new Playthrough Modifier to reduce skill gains by 15% (rounded to the nearest 5 skill points)
+    - Always enabled in Hardcore mode
 
 Bugfixes:
+- Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
+    - The amount of pullback when near a wall can now also be adjusted in the QoL menu or disabled entirely.
+    - Grenades no longer pull back when near walls, to allow their placement preparing animations to appear smoother.
 - Fixed crash to desktop when being killed by hacking timeouts.
 - Fixed reserved energy going into the negative sometimes when installing Synthetic Heart.
 - Fixed transparent background for the Stealth Skill in the Skills menu.
@@ -134,9 +149,20 @@ Bugfixes:
 - The Pedometer heartrate display will is no longer unreadable and won't update every frame
     - Now it trends towards target values slowly, like a real heart.
     - For example, if we're at 90 bpm and want to reach 120 bpm due to stress, our heart will slowly rise to 120 bpm over a few seconds.
+- Fixed characters becoming hostile when killing rats.
+- Fixed JC "standing up" at the start of conversations when the player was already standing.
 - Other minor bugfixes
 
 Misc Changes:
+- The message shown when unable to pickup items due to inventory limitations will now show the size of the item you're trying to pick up.
+- Restored the "Beep" sound when Turrets acquire a new target.
+- NPCs will now turn their heads to look at the player character at short range.
+- Buttons now glow slightly to make them more visible in the dark.
+- Disabled cameras now show static in the Security Computer window, similar to Transcended.
+- The Regeneration Aug will now disable immediately upon completely refilling your health, rather than after a short delay.
+- Restored the vanilla security camera "hum". This can be disabled in the Advanced options menu.
+- Added engine fix DLL to allow playing at high framerates.
+- A number of Repair Bots have been removed on Hardcore difficulty in order to better balance Energy availability.
 - Sleight of Hand and Doorsman have been swapped in the Lockpicking perk tree.
 - Flamethrower enemies now drop 11-35 rounds of ammunition, rather than 5-25
 - Added a scope animation for the Plasma Rifle to match the other weapons.
@@ -149,6 +175,7 @@ Misc Changes:
 - With "Right-Click tool selection" enabled, you can now use Walk/Run to select tools while looking at keypads.
 - Synthetic Heart energy penalty reduced from 40%/30%/20%/10% to 35%/25%/15%/5%
 - The Short Fuse perk effect can now be toggled using the Reload key.
+- The Field Repair and Hardened perks have been swapped in the Environmental Training tree.
 - The Filter Upgrade perk now additionally prevents the "disabled regen" effect from poison, in addition to the stamina drain from the poison itself.
 - Added sounds when levelling up skills, originally used for the Multiplayer skill menu.
 - Minor performance optimisations for flesh fragments and other gore
@@ -418,7 +445,6 @@ Map Changes:
   - Made the UC enemy respawners spawn more reliably.
 
 Bug Fixes:
-- Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
 - Complete overhaul of the Unknown Codes system, now it should be much more robust and a lot less error-prone.
 - Fixed GMDX:AE issue where pain and death sounds were not randomising accurately.
 - Fixed several "Accessed None" and "Array index out of bounds" errors.
@@ -475,7 +501,6 @@ Bug Fixes:
 - Ammo counter for current bullets in clip now scales properly when determining whether to use green or red text when max ammo is an odd number.
 
 Misc Changes:
-- Added engine fix DLL to allow playing at high framerates.
 - Removed the 1-2 second recharge time on most augmentations.
 - The QoL Menu has now been reduced to only the most impactful and important options. Turn on Advanced Mode to see all of the options.
 - The mod now includes RenderExt by Hanfling, which should prevent rendering errors and crashes.

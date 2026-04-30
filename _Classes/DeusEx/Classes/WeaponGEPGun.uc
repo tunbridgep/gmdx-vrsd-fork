@@ -572,4 +572,5 @@ defaultproperties
      bFancyScopeAnimation=true
      bShowWeaponWhenZoomed=true
      totalScopeTime=0.51 //Heavy boy!
+     inertiaSpeed=0
 }

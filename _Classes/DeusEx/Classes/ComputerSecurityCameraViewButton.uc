@@ -61,10 +61,13 @@ event DrawWindow(GC gc)
 // SetStatic()
 // ----------------------------------------------------------------------
 
-function SetStatic()
+function SetStatic(bool bSet)
 {
 	winStatic.Raise();
-	winStatic.Show();
+    if (bSet)
+        winStatic.Show();
+    else
+        winStatic.Hide();
 }
 
 // ----------------------------------------------------------------------

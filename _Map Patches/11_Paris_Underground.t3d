@@ -79396,6 +79396,7 @@ Begin Actor Class=Cop Name=Cop4
 End Actor
 Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner0
     Id="toby"
+    requiredFlag="templar_upload"
     LastRenderTime=804.686951
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=OutfitSpawner2

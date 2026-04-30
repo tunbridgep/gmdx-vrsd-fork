@@ -11,11 +11,14 @@ function WoundAdded()
     
     //Cap health at the new value.
     player.HealthTorso = MIN(newTotal,player.HealthTorso);
+    
+    player.GenerateTotalHealth();
 }
 
 function WoundRemoved()
 {
     //player.HealthTorso += woundData[0];
+    player.GenerateTotalHealth();
 }
 
 defaultproperties

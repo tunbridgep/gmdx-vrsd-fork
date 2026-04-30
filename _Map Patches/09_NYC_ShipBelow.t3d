@@ -55155,6 +55155,7 @@ Begin Actor Class=HKMilitary Name=HKMilitary10
     Name=HKMilitary10
 End Actor
 Begin Actor Class=RepairBot Name=RepairBot0
+    bHardcoreRemove=true
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1709,ZoneNumber=2)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1709,ZoneNumber=2)
     Alliance=Bots
