@@ -963,7 +963,7 @@ var globalconfig bool bNewBlood;                            //SARGE: Use nicer l
 
 var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
 
-var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
+var globalconfig int iWeaponWallDistance;                  //SARGE: Move weapons back when up against a wall
 
 var globalconfig bool bAutofillPasswords;                   //SARGE: Allow auto-filling passwords
 
@@ -20651,7 +20651,7 @@ defaultproperties
      bItemRechargeSound=true
      bNewBlood=true
      iBloodyWeapons=1
-     bWeaponWallDetection=true
+     iWeaponWallDistance=504
      bAutofillPasswords=true
      iHackySaveIndex=1
      bShortFuseEnabled=true

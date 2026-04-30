@@ -101,4 +101,6 @@ defaultproperties
 
      Title="GMDX Quality of Life Options"
      actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Advanced Settings",Key="ADVANCED")
+     bShowNameInHelp=true
+     bShowDefaults=true
 }
