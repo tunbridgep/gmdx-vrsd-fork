@@ -208,6 +208,8 @@ simulated function bool NearWallCheck()
 
 simulated function Tick(float deltaTime)                                        //RSD: Relevant portion taken from DeusExWeapon.uc for overhauled cloak/radar routines
 {
+    local int wallDist;
+
     super.Tick(deltaTime);
     
     bCachedNearWall = NearWallCheck();
@@ -218,11 +220,12 @@ simulated function Tick(float deltaTime)                                        
     //The actual view offset is adjusted in CalcDrawOffset.
     if (DeusExPlayer(Owner) != None)
     {
-        if (DeusExPlayer(Owner).Physics != PHYS_Falling && bCachedNearWall)
+        wallDist = DeusExPlayer(Owner).iWeaponWallDistance;
+        if (DeusExPlayer(Owner).Physics != PHYS_Falling && bCachedNearWall && wallDist > 0)
         {
             lerpAid -= lerpAidSpeed*deltaTime;
-            if (lerpAid < -1000)
-                lerpAid = -1000;
+            if (lerpAid < -wallDist)
+                lerpAid = -wallDist;
         }
         else
         {
