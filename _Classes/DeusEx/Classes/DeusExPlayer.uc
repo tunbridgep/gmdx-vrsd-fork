@@ -963,7 +963,7 @@ var globalconfig bool bNewBlood;                            //SARGE: Use nicer l
 
 var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
 
-var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
+var globalconfig int iWeaponWallDistance;                  //SARGE: Move weapons back when up against a wall
 
 var globalconfig bool bAutofillPasswords;                   //SARGE: Allow auto-filling passwords
 
@@ -996,6 +996,8 @@ var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn
 var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't have enough space" message will show the inventory size of objects.
 
 var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
+
+var globalconfig bool bCameraStatic;                //SARGE: Blank out the screen when using cameras
 
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
@@ -5698,6 +5700,9 @@ function HighlightCenterObject()
 
 		// reset our frob timer
 		FrobTime = 0;
+
+        //Update our brackets state
+        UpdateCrosshair();
 	}
 }
 
@@ -20655,7 +20660,7 @@ defaultproperties
      bItemRechargeSound=true
      bNewBlood=true
      iBloodyWeapons=1
-     bWeaponWallDetection=true
+     iWeaponWallDistance=504
      bAutofillPasswords=true
      iHackySaveIndex=1
      bShortFuseEnabled=true

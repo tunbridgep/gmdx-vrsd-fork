@@ -1927,7 +1927,7 @@ MPInfo="When active, damage from projectiles and melee weapons is reduced by 40%
 
 [AugBallisticPassive]
 AugmentationName="Ballistic Protection"
-Description="A monomolecular wire lattice permanently reinforces the skin's epithelial membrane, reducing the damage an agent receives from ballistic weapons, blades, and blunt objects.|n|nThe strength of the lattice is proportional to the the agent's ambient bioelectric field, providing full protection (35%) only at a certain charge threshold.|n|nTECH ONE: The charge threshold for full protection is at a maximum (100%).|n|nTECH TWO: The charge threshold for full protection is reduced slightly (80%).|n|nTECH THREE: The charge threshold for full protection is reduced moderately (60%).|n|nTECH FOUR: The charge threshold for full protection is reduced significantly (40%)."
+Description="A monomolecular wire lattice permanently reinforces the skin's epithelial membrane, reducing the damage an agent receives from ballistic weapons, blades, and blunt objects.|n|nThe strength of the lattice is proportional to the agent's ambient bioelectric field, providing full protection (35%) only at a certain charge threshold.|n|nTECH ONE: The charge threshold for full protection is at a maximum (100%).|n|nTECH TWO: The charge threshold for full protection is reduced slightly (80%).|n|nTECH THREE: The charge threshold for full protection is reduced moderately (60%).|n|nTECH FOUR: The charge threshold for full protection is reduced significantly (40%)."
 
 [AugCloak]
 AugmentationName="Cloak"
