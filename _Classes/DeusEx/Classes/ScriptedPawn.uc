@@ -900,6 +900,7 @@ simulated function Destroyed()
 
 function InitializePawn()
 {
+    local WeaponSkinManagerBase W;
 	if (!bInitialized)
 	{
 		InitializeInventory();
@@ -923,7 +924,9 @@ function InitializePawn()
 		PlayTurnHead(LOOK_Forward, 1.0, 0.0001);
 
         //AUGMENTIQUE: Update weapon skins
-        class'WeaponSkinManagerBase'.static.UpdateWeaponSkinsForPawn(Self);
+        W = class'WeaponSkinManagerBase'.static.GetManager(self);
+        if (W != None)
+            W.UpdateWeaponSkinsForPawn(Self);
 
 		bInitialized = true;
 	}
@@ -17437,8 +17440,6 @@ function WeaponSwap(ScriptedPawn SwappedFrom)
 //SARGE: Set up the Shenanigans gameplay modifier for this entity
 function Shenanigans(bool bEnabled)
 {
-    //AUGMENTIQUE: Update weapon skins
-    class'WeaponSkinManagerBase'.static.UpdateWeaponSkinsForPawn(Self);
 }
 
 // ----------------------------------------------------------------------

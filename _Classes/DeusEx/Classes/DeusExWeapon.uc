@@ -393,12 +393,13 @@ struct BloodTex
 
 var travel BloodTex BloodTextures[8];
 
-//SARGE: Augmentique Skin system
+//AUGMENTIQUE: Weapon Skin system
 var(Augmentique) travel string currentWeaponSkin;
 var transient Texture skinTextures[9]; //SARGE: Holds the textures for our current weapon skin.
 var transient Texture skinTextures3rd[9]; //SARGE: Holds the textures for our current weapon skin (on the floor).
 var transient Texture skinBeltIconTex;        //SARGE: If we have any updated belt texture
 var transient Texture skinLargeIconTex;        //SARGE: If we have any updated belt texture
+var transient WeaponSkinManagerBase skinManager;
 
 //SARGE: No more checking for specific grenade types, now we just set this instead.
 var const bool bIsPlaceableOnWall;
@@ -2586,6 +2587,10 @@ function PlaceGrenade()
 	gren = ThrownProjectile(spawn(ProjectileClass, Owner,, placeLocation, Rotator(placeNormal)));
 	if (gren != None)
 	{
+        //AUGMENTIQUE: Give our fired projectile the right skin.
+        if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).weaponSkinManager != None)
+            DeusExPlayer(Owner).weaponSkinManager.ApplyProjectileSkinFrom(self,gren);
+
 		AmmoType.UseAmmo(1);
 		if ( AmmoType.AmmoAmount <= 0 )
 			bDestroyOnFinish = True;
@@ -3471,7 +3476,12 @@ function DisplayWeapon(bool overlay)
 //Shouldn't need overriding in most cases
 function DisplayWeaponSkin(bool overlay)
 {
-    class'WeaponSkinManagerBase'.static.ApplyWeaponSkin(self,overlay);
+    local DeusExPlayer player;
+    if (skinManager == None)
+        skinManager = class'WeaponSkinManagerBase'.static.GetManager(self);
+
+    if (skinManager != None)
+        skinManager.ApplyWeaponSkin(self,overlay);
 }
 
 //SARGE: Override this for custom behaviour while cloaking or radar trans'd
@@ -5278,6 +5288,10 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
     LaserPitch += (currentAccuracy*laserKick) * (Rand(4096) - 2048);
+
+    //AUGMENTIQUE: Give our fired projectile the right skin.
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).weaponSkinManager != None)
+        DeusExPlayer(Owner).weaponSkinManager.ApplyProjectileSkinFrom(self,proj);
 
 	return proj;
 }

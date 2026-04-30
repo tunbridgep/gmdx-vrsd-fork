@@ -797,6 +797,12 @@ log("  event.toActor    = " $ event.toActor );
             //When the GEP uses WP ammo by default, we should give the player some regular rockets too.
             if (class'DeusExPlayer'.default.bGEPUsesWPByDefault)
                 TransferSpecialAmmo(event.fromActor,DeusExPlayer(event.toActor),class'AmmoRocket',1);
+
+            if (DeusExPlayer(event.toActor) != None && DeusExPlayer(event.toActor).bShenanigans)
+            {
+                WeaponGEPGun(invItemFrom).currentWeaponSkin = "hotpink";
+                DeusExPlayer(event.toActor).WeaponSkinManager.UnlockSkin(DeusExWeapon(invItemFrom));
+            }
         }
     }
     else if (invokeActor != none && invokeActor.IsA('Male2'))           //RSD: accessed none?

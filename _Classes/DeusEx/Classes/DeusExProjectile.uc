@@ -57,6 +57,12 @@ var class<DeusExWeapon> hdtpReference;                                          
 //SARGE: Explode on destroy
 var bool bExplodeOnDestroy;
 
+//AUGMENTIQUE: The skin of the weapon that fired this projectile
+//By storing it, we allow things like wall grenades to persist skins over
+//game loads.
+var(Augmentique) travel string currentWeaponSkin;
+var transient Texture skinTextures[9];
+
 // network replication
 replication
 {
@@ -100,6 +106,13 @@ function UpdateHDTPSettings()
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
+    //SARGE: This is Augmentique code, but not needed in vanilla...
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).weaponSkinManager != None)
+    {
+        DeusExPlayer(Owner).weaponSkinManager.UpdateProjectileSkinTextures(self);
+        DeusExPlayer(Owner).weaponSkinManager.ApplyProjectileSkin(self);
+    }
 }
 
 //SARGE: Let the object explode on destroy
@@ -139,6 +152,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 function GrabProjectile(DeusExPlayer player)
 {
 	local Inventory item;
+    local WeaponSkinManagerBase M;
 
 	if (player != None)
 	{
@@ -147,6 +161,15 @@ function GrabProjectile(DeusExPlayer player)
 			item = Spawn(spawnWeaponClass);
 			if (item != None)
 			{
+                //AUGMENTIQUE: Give our created weapon the right skin.
+                if (DeusExWeapon(item) != None)
+                {
+                    DeusExWeapon(item).currentWeaponSkin = currentWeaponSkin;
+                    M = class'WeaponSkinManagerBase'.static.GetManager(self);
+                    if (M != None)
+                        M.UpdateWeaponSkinTextures(DeusExWeapon(item));
+                }
+
 				if ( (Level.NetMode != NM_Standalone ) && Self.IsA('Shuriken'))
 					DeusExWeapon(item).PickupAmmoCount = DeusExWeapon(item).PickupAmmoCount * 3;
 				else
