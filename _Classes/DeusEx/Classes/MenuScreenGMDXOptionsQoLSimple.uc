@@ -23,6 +23,9 @@ function SaveSettings()
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
+    
+    if (player.weaponSkinManager != None)
+        player.weaponSkinManager.SaveConfig();
 }
 
 //We need to change options depending on Augmentique

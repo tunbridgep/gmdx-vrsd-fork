@@ -130429,4 +130429,24 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner25
     bSelected=True
     Name=OutfitSpawner25
 End Actor
+Begin Actor Class=WeaponSword Name=WeaponSword0
+    currentWeaponSkin="hotpink"
+    LastRenderTime=95.230957
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponSword
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2230,ZoneNumber=10)
+    Location=(X=-1192.900024,Y=636.588867,Z=421.163757)
+    OldLocation=(X=-1229.900024,Y=1098.588867,Z=392.163757)
+    Name=WeaponSword0
+End Actor
+Begin Actor Class=WeaponEMPGrenade Name=WeaponEMPGrenade0
+    currentWeaponSkin="hotpink"
+    LastRenderTime=116.155319
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponEMPGrenade
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2077,ZoneNumber=10)
+    Location=(X=-816.862427,Y=532.181213,Z=370.530609)
+    OldLocation=(X=-816.862427,Y=532.181213,Z=370.530609)
+    Name=WeaponEMPGrenade0
+End Actor
 End Map

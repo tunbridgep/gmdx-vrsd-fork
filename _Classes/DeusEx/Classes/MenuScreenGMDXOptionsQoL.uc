@@ -23,6 +23,9 @@ function SaveSettings()
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
+    
+    if (player.weaponSkinManager != None)
+        player.weaponSkinManager.SaveConfig();
 }
 
 //We need to change options depending on Augmentique
@@ -190,6 +193,7 @@ defaultproperties
      items(141)=(HelpText="If enabled, MJ12 will use the classic full-face helmet from vanilla.",actionText="NPCs: Classic MJ12 Troops",variable="bClassicMJ12Skin")
      items(142)=(HelpText="If enabled, conversations will play in first-person rather than using a third-person camera",actionText="Player: First Person Conversations",variable="bFirstPersonConversation")
      items(143)=(HelpText="If enabled, NPCs will turn their heads to face the player when nearby",actionText="NPCs: Look at Player",variable="bTurnHeads")
+     items(144)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1)
      items(145)=(HelpText="When attempting to pick up an item for which you don't have inventory space, the pickup message will show the size of the item in grid squares.",actionText="HUD: Pickup Message Shows Size",variable="bFullInventoryMsgShowsSize",defaultValue=1)
      items(146)=(HelpText="Disable the Camera Hum sound effect as it may be annoying for some people. Requires a map load/reload to take effect.",actionText="Game: Security Camera Hum",variable="bCameraHum",defaultValue=1)
 

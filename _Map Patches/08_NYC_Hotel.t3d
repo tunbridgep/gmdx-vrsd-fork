@@ -71373,4 +71373,14 @@ Begin Actor Class=PrecipitationSound Name=PrecipitationSound8
     AmbientSound=Sound'Precipitation.Ambient.RainCity'
     Name=PrecipitationSound8
 End Actor
+Begin Actor Class=WeaponBaton Name=WeaponBaton0
+    currentWeaponSkin="riot"
+    LastRenderTime=29.644638
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponBaton
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1793,ZoneNumber=9)
+    Location=(X=-870.119324,Y=-1194.814453,Z=-76.899986)
+    OldLocation=(X=-870.119324,Y=-1194.814453,Z=-76.899986)
+    Name=WeaponBaton0
+End Actor
 End Map

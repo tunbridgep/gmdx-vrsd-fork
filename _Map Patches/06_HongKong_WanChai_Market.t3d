@@ -78164,6 +78164,7 @@ Begin Actor Class=WeaponGasGrenade Name=WeaponGasGrenade3
     Name=WeaponGasGrenade3
 End Actor
 Begin Actor Class=WeaponFlamethrower Name=WeaponFlamethrower0
+    currentWeaponSkin="hongkong"
     LastRenderTime=61.217697
     DistanceFromPlayer=660.742554
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -150910,5 +150911,15 @@ Begin Actor Class=Collectible6 Name=Collectible0
     Rotation=(Yaw=16000)
     OldLocation=(X=-198.438477,Y=1902.653320,Z=16.100027)
     Name=Collectible0
+End Actor
+Begin Actor Class=WeaponCombatKnife Name=WeaponCombatKnife1
+    currentWeaponSkin="hongkong"
+    LastRenderTime=322.021210
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponCombatKnife
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2127,ZoneNumber=1)
+    Location=(X=245.217499,Y=-612.217468,Z=136.900482)
+    OldLocation=(X=242.217499,Y=-618.217468,Z=136.900482)
+    Name=WeaponCombatKnife1
 End Actor
 End Map

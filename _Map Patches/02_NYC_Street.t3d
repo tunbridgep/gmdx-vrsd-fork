@@ -225114,4 +225114,16 @@ Begin Actor Class=PrecipitationNode Name=PrecipitationNode24
     bSelected=True
     Name=PrecipitationNode24
 End Actor
+Begin Actor Class=WeaponPepperGun Name=WeaponPepperGun0
+    currentWeaponSkin="riot"
+    PickupAmmoCount=0
+    LastRenderTime=162.482880
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponPepperGun
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1721,ZoneNumber=2)
+    Location=(X=-812.949829,Y=-2357.250000,Z=-558.400513)
+    Rotation=(Yaw=5000)
+    OldLocation=(X=-856.949829,Y=-2317.250000,Z=-558.400513)
+    Name=WeaponPepperGun0
+End Actor
 End Map

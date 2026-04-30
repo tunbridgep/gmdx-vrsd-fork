@@ -1142,6 +1142,13 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
 
     first.SetupWeapon(false);
     second.SetupWeapon(false);
+
+    //AUGMENTIQUE: Update weapon skins
+    if (player != None && player.weaponSkinManager != None)
+    {
+        player.weaponSkinManager.UpdateWeaponSkinsForPawn(first);
+        player.weaponSkinManager.UpdateWeaponSkinsForPawn(second);
+    }
 }
 
 function InitializeRandomCrateContents(bool bRandomCrates)                                        //RSD: Randomizes crate contents depdending on new loot table classes

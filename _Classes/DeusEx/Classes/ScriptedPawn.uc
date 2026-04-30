@@ -554,6 +554,10 @@ enum EAllianceCheckType
 
 var bool bTurnedHeadToPlayer;                   //SARGE: Did we turn out head to the player? Allows resetting turning heads.
 
+// ----------------------------------------------------------------------
+// Augmentique
+// ----------------------------------------------------------------------
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
@@ -598,6 +602,9 @@ function _ApplyCurrentOutfit()
     if (augmentiqueData.textures[8] != None)
         Texture = augmentiqueData.textures[8];
 }
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 native(2102) final function ConBindEvents();
 
@@ -849,6 +856,8 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 
 function PostPostBeginPlay()
 {
+    local DeusExPlayer P;
+
 	Super.PostPostBeginPlay();
 
 	// Bind any conversation events to this ScriptedPawn
@@ -898,6 +907,7 @@ simulated function Destroyed()
 
 function InitializePawn()
 {
+    local WeaponSkinManagerBase W;
 	if (!bInitialized)
 	{
 		InitializeInventory();
@@ -919,6 +929,11 @@ function InitializePawn()
 		// hack!
 		animTimer[1] = 20.0;
 		PlayTurnHead(LOOK_Forward, 1.0, 0.0001);
+
+        //AUGMENTIQUE: Update weapon skins
+        W = class'WeaponSkinManagerBase'.static.GetManager(self);
+        if (W != None)
+            W.UpdateWeaponSkinsForPawn(Self);
 
 		bInitialized = true;
 	}
