@@ -985,6 +985,10 @@ var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscio
 
 var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our reserve energy on the bioenergy bar in the HUD
 
+var globalconfig bool bViewmodelInertia;                       //SARGE: Add inertia to weapon and item viewmodels.
+
+var globalconfig bool bPickupsUseFOV;                       //SARGE: Pickups, Lockpicks, etc, will use the players FOV properly, rather than always being as big as possible.
+
 var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points will fade out at distance.
 
 var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
@@ -20731,6 +20735,7 @@ defaultproperties
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
+     bViewmodelInertia=true
      bTurnHeads=true
      bFullInventoryMsgShowsSize=true
      bCameraHum=true

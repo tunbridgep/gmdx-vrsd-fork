@@ -399,6 +399,11 @@ var const bool bIsPlaceableOnWall;
 //SARGE: An annoying hack to fix GMDX's hacky GEP bullshit.
 var transient bool bDontActuallyRenderViewModel;
 
+//SARGE: Weapon inertia
+var transient Vector cachedDrawOffset;
+var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
+var const float inertiaSpeed;                            //SARGE: How fast weapons move.
+
 //END GMDX:
 
 //
@@ -798,6 +803,9 @@ function Draw(DeusExPlayer frobber)
     ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
+            
+    //Reset weapon inertia
+    cachedDrawOffset = Vect(0,0,0);
 
     DoWeaponOffset(frobber);
 }
@@ -2656,6 +2664,9 @@ simulated function Tick(float deltaTime)
                 lerpAid = 0;
         }
     }
+    
+    //SARGE: Weapon Inertia
+    inertiaDelta = deltaTime*inertiaSpeed;
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -4799,6 +4810,7 @@ simulated function vector CalcDrawOffset()
 	local Pawn			PawnOwner;
 	local vector unX,unY,unZ;
     local Rotator vr;                       //SARGE: Added viewrotation variable
+    local Vector newOffset;
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -4823,6 +4835,28 @@ simulated function vector CalcDrawOffset()
             vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
 
         DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+
+        newOffset = drawOffset;
+
+        if (VSize(cachedDrawOffset) == 0 || VSize(cachedDrawOffset - drawOffset) > 40)
+            cachedDrawOffset = drawOffset;
+
+        //SARGE: Handle Weapon Inertia
+        if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
+        {
+            //diff = VSize(cachedDrawOffset - drawOffset);
+            //Log("diff:" $ drawOffset @ cachedDrawOffset);
+            //diff = FMax(-8.0,FMin(8.0,diff));
+            //Log("diff:" $ diff);
+
+            newOffset.X = lerp(inertiaDelta,cachedDrawOffset.X,drawOffset.X);
+            newOffset.Y = lerp(inertiaDelta,cachedDrawOffset.Y,drawOffset.Y);
+            newOffset.Z = lerp(inertiaDelta,cachedDrawOffset.Z,drawOffset.Z);
+        }
+    
+        cachedDrawOffset = newOffset;
+
+        DrawOffset = newOffset;
         DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
@@ -7879,4 +7913,5 @@ defaultproperties
      addonPenalties(1)=0.2 //Silencer
      addonPenalties(2)=0.075 //Laser
      totalScopeTime=0.41
+     inertiaSpeed=30
 }

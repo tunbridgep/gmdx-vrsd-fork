@@ -233,4 +233,6 @@ exec function UpdateHDTPsettings()
 defaultproperties
 {
      CountLabel="Uses:"
+     inertiaSpeed=30
+     bUseFOV=true
 }
