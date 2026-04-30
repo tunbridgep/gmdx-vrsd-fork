@@ -993,6 +993,11 @@ var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't
 
 var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
 
+//Weather Control
+var globalconfig int iWeatherControl;                    //SARGE: Use the Precipitation System. 0 = off, 1 = on (how it was before), 2 = dynamic.
+var globalconfig float precipMaxDensity;                 //SARGE: Max density allowed for precipitation
+var globalconfig float precipMinDensity;                 //SARGE: Min density allowed for precipitation
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
@@ -20675,4 +20680,7 @@ defaultproperties
      desiredPrecip=-1
      bFullInventoryMsgShowsSize=true
      bCameraHum=true
+     iWeatherControl=1
+     precipMaxDensity=14.0
+     precipMinDensity=0.0
 }
