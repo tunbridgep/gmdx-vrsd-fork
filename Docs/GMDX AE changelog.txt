@@ -98,6 +98,8 @@ New Features:
 
 Bugfixes:
 - Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
+    - The amount of pullback when near a wall can now also be adjusted in the QoL menu or disabled entirely.
+    - Grenades no longer pull back when near walls, to allow their placement preparing animations to appear smoother.
 - Fixed crash to desktop when being killed by hacking timeouts.
 - Fixed reserved energy going into the negative sometimes when installing Synthetic Heart.
 - Fixed transparent background for the Stealth Skill in the Skills menu.
