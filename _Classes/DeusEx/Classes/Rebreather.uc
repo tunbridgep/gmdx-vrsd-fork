@@ -3,19 +3,6 @@
 //=============================================================================
 class Rebreather extends ChargedPickup;
 
-function PostBeginPlay()
-{
-    local DeusExPlayer P;
-    P = DeusExPlayer(GetPlayerPawn());
-
-    super.PostBeginPlay();
-
-    if (P != None && P.bExperimentalRebreathers)
-    {
-        bDisposable = true;
-    }
-}
-
 function ChargedPickupUpdate(DeusExPlayer Player)
 {
 	Super.ChargedPickupUpdate(Player);
@@ -51,4 +38,5 @@ defaultproperties
      CollisionHeight=3.610000
      Mass=10.000000
      Buoyancy=8.000000
+     bCanBeDisposable=true
 }

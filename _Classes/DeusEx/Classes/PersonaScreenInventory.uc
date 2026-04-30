@@ -1685,7 +1685,7 @@ function UpdateDragMouse(float newX, float newY)
             //Check for biocell being dragged over charged items
             else if ((dragButton.GetClientObject().IsA('BioelectricCell')) && (findWin.GetClientObject().IsA('ChargedPickup')))
 			{
-				if (ChargedPickup(findWin.GetClientObject()).Charge < ChargedPickup(findWin.GetClientObject()).default.Charge)
+				if (ChargedPickup(findWin.GetClientObject()).Charge < ChargedPickup(findWin.GetClientObject()).default.Charge && !ChargedPickup(findWin.GetClientObject()).IsDisposable())
 				{
 					bValidDrop = True;
 					PersonaInventoryItemButton(findWin).SetDropFill(True);
@@ -2014,7 +2014,7 @@ function FinishButtonDrag()
 				SelectInventory(dragTarget);
             }
 		}
-        else if ( (dragInv.IsA('BioelectricCell')) && (dragTarget != None) && (dragTarget.GetClientObject().IsA('ChargedPickup')) )
+        else if ( (dragInv.IsA('BioelectricCell')) && (dragTarget != None) && (dragTarget.GetClientObject().IsA('ChargedPickup')) && !ChargedPickup(dragTarget.GetClientObject()).IsDisposable())
 		{
 			ChargedTarget = ChargedPickup(dragTarget.GetClientObject());        //RSD: Making a new var for it so there aren't a billion constructor calls
             //if (ChargedPickup(dragTarget.GetClientObject()).Charge < ChargedPickup(dragTarget.GetClientObject()).default.Charge)
@@ -2294,7 +2294,7 @@ function HighlightCellCharged(BioelectricCell biocell)
 			anItem = Inventory(itemButton.GetClientObject());
 			if ((anItem != None) && (anItem.IsA('ChargedPickup')))
 			{
-				if ((biocell != None) && (ChargedPickup(anItem).Charge < ChargedPickup(anItem).default.Charge))
+				if ((biocell != None) && (ChargedPickup(anItem).Charge < ChargedPickup(anItem).default.Charge) && !ChargedPickup(anItem).IsDisposable())
 				{
 					itemButton.HighlightWeapon(True);
 				}
