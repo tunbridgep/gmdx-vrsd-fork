@@ -56,6 +56,8 @@ var bool bRebooting;                      //This will be set when the camera is 
 
 var bool bAlarmedOnce;                    //SARGE: Don't re-activate movers after the first alarm
 
+var transient bool bFirstTickDone;            //SARGE: We need to update the camera sound on the first tick.
+
 // ------------------------------------------------------------------------------------
 // Network replication
 // ------------------------------------------------------------------------------------
@@ -74,24 +76,28 @@ function bool DisplayHackText()
     return super.DisplayHackText() && (bActive || bRebooting);
 }
 
-//SARGE: Dirty Hack to make ambient sounds fix themselves on reload
-function PostPostBeginPlay()
+//SARGE: Horrible mess of a function...
+function SetDefaultAmbientSound(bool bSoundCheck)
 {
-    super.PostPostBeginPlay();
-    if (class'DeusExPlayer'.default.bCameraHum && AmbientSound == None && bActive && !bConfused && !bRebooting)
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+    
+    if (player != None && !player.bRemoveCameraHum && !player.bHardcoreMode && (!bSoundCheck || AmbientSound == None) && bActive && !bConfused && !bRebooting)
         AmbientSound = default.AmbientSound;
-    else if (!class'DeusExPlayer'.default.bCameraHum && AmbientSound == default.AmbientSound)
+    else if ((player == None || player.bRemoveCameraHum || player.bHardcoreMode) && (!bSoundCheck || AmbientSound == default.AmbientSound))
         AmbientSound = None;
+
+    Log("Player is: " $ player);
 }
 
 function EnableCamera()
 {
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+
     bActive = true;
     MultiSkins[2] = GetCameraLightTex(1);
-    if (class'DeusExPlayer'.default.bCameraHum)
-        AmbientSound = default.AmbientSound;
-    else
-        AmbientSound = None;
+    SetDefaultAmbientSound(false);
     SoundVolume = default.SoundVolume;
     SoundRadius = default.SoundRadius;
     SoundPitch = default.SoundPitch;
@@ -528,6 +534,12 @@ function Tick(float deltaTime)
 
 	Super.Tick(deltaTime);
 
+    if (!bFirstTickDone)
+    {
+        SetDefaultAmbientSound(true);
+        bFirstTickDone = true;
+    }
+
 	curTarget = None;
 
     P = DeusExPlayer(GetPlayerPawn());
@@ -598,8 +610,7 @@ function Tick(float deltaTime)
             {
                 MultiSkins[2] = GetCameraLightTex(0);
             }
-            if (bActive && !bRebooting)
-                AmbientSound = default.AmbientSound;
+            SetDefaultAmbientSound(false);
 
 			SoundPitch = default.SoundPitch;
 			DesiredRotation = origRot;
@@ -916,7 +927,7 @@ defaultproperties
      disableTimeBase=120.0
      disableTimeMult=60.0
 	 lastSeenTimer=0.000000
-     SoundVolume=32 //SARGE: Vanilla was 192
+     SoundVolume=64 //SARGE: Vanilla was 192
      SoundRadius=48
      AmbientSound=sound'CameraHum'
 }

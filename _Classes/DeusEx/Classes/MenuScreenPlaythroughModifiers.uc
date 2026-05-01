@@ -26,6 +26,8 @@ function BuildModifierList()
         RemoveItem("bHardcoreFilterOption");
         RemoveItem("bImprisonmentTakesAmmo");
         RemoveItem("bGEPUsesWPByDefault");
+        RemoveItem("bHarderChargedPickups");
+        //RemoveItem("bHarderSkillRebalance");
         //RemoveItem("bRestrictedMetabolism");
     }
 
@@ -72,7 +74,9 @@ defaultproperties
      items(23)=(HelpText="Taking damage will add traumas, which need to be removed using medical kits.",actionText="Trauma System",variable="bWoundSystem");
      items(24)=(HelpText="Adds the Shipping and Receiving map, originally released as a GMDX v9 addon. It's accessible as part of the NYC Dockyard mission.",actionText="Shipping and Receiving",variable="bShippingAndReceiving");
      items(25)=(HelpText="The GEP Gun will use WP Rockets by default. All GEP Gun pickups will contain WP rockets. Recommended. Always enabled in Hardcore Mode",actionText="GEP Gun defaults to WP Rockets",variable="bGEPUsesWPByDefault");
-     items(26)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(26)=(HelpText="Skill point gains are reduced by 15% to make skill choices more meaningful and create less 'jack of all trades' characters with everything at Advanced",actionText="Skill Rebalance",variable="bHarderSkillRebalance");
+     items(27)=(HelpText="Rebreathers and Thermoptic Camo will be removed upon use, similar to GMDX v9, and can no longer be recharged.",actionText="Disposable Rebreathers and Camo",variable="bHarderChargedPickups");
+     items(28)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true

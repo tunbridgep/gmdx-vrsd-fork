@@ -237,6 +237,9 @@ function Timer()
 
     //Setup Outfit Manager
     SetupOutfitManager();
+    
+    //Setup Weapon Skin Manager
+    SetupWeaponSkinManager();
 
     //load HDTP Skin
     UpdateHDTPSettings();
@@ -249,6 +252,7 @@ function Timer()
 function ResetPlayerToDefaults()
 {
     outfitManager = None;
+    weaponSkinManager = None;
     Super.ResetPlayerToDefaults();
 }
 
@@ -317,6 +321,35 @@ function SetupOutfitManager()
 
         //Finish Outfit Setup
         outfitManager.CompleteSetup();
+    }
+}
+
+function SetupWeaponSkinManager()
+{
+    local class<WeaponSkinManagerBase> managerBaseClass;
+
+	// create the Weapon Skin Manager if not found
+	if (weaponSkinManager == None || !weaponSkinManager.IsA('WeaponSkinManager'))
+    {
+        managerBaseClass = class<WeaponSkinManagerBase>(DynamicLoadObject("Augmentique.WeaponSkinManager", class'Class'));
+        
+        if (managerBaseClass == None)
+        {
+            //clientmessage("Not Making Weapon Skin Manager");
+            weaponSkinManager = new(Self) class'WeaponSkinManagerBase';
+        }
+        else
+        {
+            //clientmessage("Making Weapon Skin Manager");
+            weaponSkinManager = new(Self) managerBaseClass;
+        }
+    }
+
+    if (weaponSkinManager != None)
+    {
+        //Call base setup code, required each map load
+        weaponSkinManager.Init(Self);
+        weaponSkinManager.RefreshAllWeapons();
     }
 }
 

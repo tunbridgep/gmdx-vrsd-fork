@@ -42,6 +42,20 @@ var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
 
+//Lerp Aid
+var float lerpAid;
+const lerpAidSpeed = 7500;                   //SARGE: How far to lerp per second
+var bool bCachedNearWall; //CyberP: emulating the weapon movement if player near wall //SARGE: Lets rename this because it's name is meaningless otherwise
+
+//SARGE: Weapon inertia
+var transient Vector cachedDrawOffset;
+var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
+var float inertiaSpeed;                            //SARGE: How fast weapons move.
+
+//SARGE: Use proper FOV scaling
+var bool bUseFOV;
+
+//SARGE: Skin Stuff
 var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
 var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
 
@@ -167,24 +181,62 @@ function DropFrom(vector StartLocation)
 	super.DropFrom(StartLocation);
 }
 
+//
+// Used to determine if we are near (and facing) a wall for placing LAMs, etc.
+//
+simulated function bool NearWallCheck()
+{
+	local Vector StartTrace, EndTrace, HitLocation, HitNormal;
+	local Actor HitActor;
+
+	if (DeusExPlayer(Owner) == None || DeusExPlayer(Owner).inHand != Self)
+		return False;
+
+	// trace out one foot in front of the pawn
+	StartTrace = Owner.Location;
+	EndTrace = StartTrace + Vector(Pawn(Owner).ViewRotation) * 32; //CyberP: was 32
+
+	StartTrace.Z += Pawn(Owner).BaseEyeHeight;
+	EndTrace.Z += Pawn(Owner).BaseEyeHeight;
+
+	HitActor = Trace(HitLocation, HitNormal, EndTrace, StartTrace);
+	if ((HitActor == Level) || ((HitActor != None) && HitActor.IsA('Mover')))
+		return True;
+
+	return False;
+}
+
 simulated function Tick(float deltaTime)                                        //RSD: Relevant portion taken from DeusExWeapon.uc for overhauled cloak/radar routines
 {
-    /*
-		if (bJustUncloaked && !bIsCloaked)
-		{
-		   ScaleGlow+=DeltaTime;
-		   if (ScaleGlow >= default.ScaleGlow)
-		   {
-		       if (bIsRadar)                                                    //RSD: Need this so we still get gradual uncloaking but don't mess up ScaleGlow when Radar+Cloak-Cloak
-		           ScaleGlow = 10.500001;
-		       else
-                   ScaleGlow = default.ScaleGlow;
-		       bJustUncloaked = False;
-		       Style = default.Style;
-		       AmbientGlow=default.AmbientGlow;
-		   }
-		}
-    */
+    local int wallDist;
+
+    super.Tick(deltaTime);
+    
+    bCachedNearWall = NearWallCheck();
+
+    //SARGE: Do near wall detection
+    //Moved from CalcDrawOffset so that it can be done in Tick
+    //This lets it be independent of framerate.
+    //The actual view offset is adjusted in CalcDrawOffset.
+    if (DeusExPlayer(Owner) != None)
+    {
+        wallDist = DeusExPlayer(Owner).iWeaponWallDistance;
+        if (DeusExPlayer(Owner).Physics != PHYS_Falling && bCachedNearWall && wallDist > 0)
+        {
+            lerpAid -= lerpAidSpeed*deltaTime;
+            if (lerpAid < -wallDist)
+                lerpAid = -wallDist;
+        }
+        else
+        {
+            lerpAid += lerpAidSpeed*deltaTime;
+            if (lerpAid > 0)
+                lerpAid = 0;
+        }
+    }
+    
+    //SARGE: Weapon Inertia
+    inertiaDelta = deltaTime*inertiaSpeed;
 }
 
 //=============================================================================
@@ -216,10 +268,12 @@ function PreDisplay(bool overlay)
         //else
             multiskins[i] = default.multiskins[i];
     }
+
     Skin = default.Skin;
     Texture = default.Texture;
     ScaleGlow = default.ScaleGlow;
     Style = default.Style;
+    SetSkin();
     
     Display(overlay);
 
@@ -232,12 +286,82 @@ function PreDisplay(bool overlay)
         ScaleGlow = OP.CloakManager.GetScaleGlow();
     }
     else
+    {
         bNoSmooth=default.bNoSmooth;
+    }
 }
 
 //Overwrite this for custom display functionality.
 function Display(bool overlay)
 {
+}
+
+//
+// Modified to work better with scripted pawns
+// SARGE: Copied wholesale from DeusExWeapon
+//
+simulated function vector CalcDrawOffset()
+{
+	local vector		DrawOffset, WeaponBob;
+	local ScriptedPawn	SPOwner;
+	local Pawn			PawnOwner;
+	local vector unX,unY,unZ;
+    local Rotator vr;                       //SARGE: Added viewrotation variable
+    local Vector newOffset;
+    local float diff;
+
+	SPOwner = ScriptedPawn(Owner);
+	if (SPOwner != None)
+	{
+		DrawOffset = ((0.9/SPOwner.FOVAngle * PlayerViewOffset) >> SPOwner.ViewRotation);
+		DrawOffset += (SPOwner.BaseEyeHeight * vect(0,0,1));
+	}
+	else
+	{
+        //Apply lerp-aid
+        PlayerViewOffset.X = default.PlayerViewOffset.X*100;
+        PlayerViewOffset.X += lerpAid;
+
+		PawnOwner = Pawn(Owner);
+
+        vr = PawnOwner.ViewRotation;
+        if (PawnOwner.isa('DeusExPlayer'))
+            vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
+
+        if (class'DeusExPlayer'.default.bPickupsUseFOV && bUseFOV)
+            DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+        else
+            DrawOffset = ((0.9/PawnOwner.FOVAngle * PlayerViewOffset) >> vr);
+
+        newOffset = drawOffset;
+
+        if (VSize(cachedDrawOffset) == 0)
+            cachedDrawOffset = drawOffset;
+
+        //SARGE: Handle Weapon Inertia
+        if (DeusExPlayer(PawnOwner) != none /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
+        {
+            //diff = VSize(cachedDrawOffset - drawOffset);
+            //Log("diff:" $ drawOffset @ cachedDrawOffset);
+            //diff = FMax(-8.0,FMin(8.0,diff));
+            //Log("diff:" $ diff);
+
+            newOffset.X = lerp(inertiaDelta,cachedDrawOffset.X,drawOffset.X);
+            newOffset.Y = lerp(inertiaDelta,cachedDrawOffset.Y,drawOffset.Y);
+            newOffset.Z = lerp(inertiaDelta,cachedDrawOffset.Z,drawOffset.Z);
+        }
+    
+        cachedDrawOffset = newOffset;
+
+        DrawOffset = newOffset;
+        DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
+
+		WeaponBob = BobDamping * PawnOwner.WalkBob;
+		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
+
+		DrawOffset += WeaponBob;
+	}
+	return DrawOffset;
 }
 
 function HandleMultipleSkins(inventory item, int startcopies)
@@ -1068,6 +1192,8 @@ function DestroyMe()
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
+    //Reset weapon inertia
+    cachedDrawOffset = Vect(0,0,0);
     SetWeaponHandTex();
 }
 
@@ -1147,4 +1273,6 @@ defaultproperties
      M_Activated=""
      M_Deactivated=""
      bVisionImportant=true
+     inertiaSpeed=0
+     bUseFOV=false
 }

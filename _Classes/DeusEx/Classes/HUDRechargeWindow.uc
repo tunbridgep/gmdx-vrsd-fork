@@ -69,7 +69,7 @@ var Inventory equipmentList[6];
 var PersonaActionButtonWindow btnEquip[6];
 var Localized String NoEquipLabel, NoEquipInfoText;
 var Localized String EquipRechargeLabel1, EquipRechargeLabel2, EquipRechargeLabel3;
-var Localized String EquipButtonLabel1, EquipButtonLabel2, EquipButtonLabel3;
+var Localized String EquipButtonLabel1, EquipButtonLabel2, EquipButtonLabel3, EquipButtonLabel4;
 
 var Color    colBlue; //SARGE: Added
 var Color    colWhite; //SARGE: Added
@@ -498,13 +498,15 @@ function CreateButtons()
         if(equipmentList[i] != none)
     	{
             armor = ChargedPickup(equipmentList[i]);
-    		if (armor.IsA('BallisticArmor') || armor.IsA('HazMatSuit'))
+            if (armor.IsDisposable())
+   				btnEquipText = EquipButtonLabel3;
+    		else if (armor.IsA('BallisticArmor') || armor.IsA('HazMatSuit'))
     			btnEquipText = EquipButtonLabel1;
    			else
    				btnEquipText = EquipButtonLabel2;
     	}
     	else
-    		btnEquipText = EquipButtonLabel3;
+    		btnEquipText = EquipButtonLabel4;
    		btnEquip[i] = PersonaActionButtonWindow(winEquipButtons[i].NewChild(Class'PersonaActionButtonWindow'));
    		btnEquip[i].SetButtonText(btnEquipText);
 	}
@@ -625,7 +627,7 @@ function EnableButtons()
 			btnRecharge.EnableWindow(repairBot.CanCharge());
 		for (i=0; i<6; i++)                                                     //RSD: for equipment recharging system
 		{
-        	if(equipmentList[i] != none)
+        	if(equipmentList[i] != none && (ChargedPickup(equipmentList[i]) == None || !ChargedPickup(equipmentList[i]).IsDisposable())) //SARGE: Add disposable support
     		{
     			if (equipmentList[i].Charge >= equipmentList[i].default.Charge)
     				btnEquip[i].EnableWindow(CanRechargeButton(equipmentList[i]));
@@ -935,7 +937,8 @@ defaultproperties
      EquipRechargeLabel3="Restores"
      EquipButtonLabel1="Repair"
      EquipButtonLabel2="Recharge"
-     EquipButtonLabel3="N/A"
+     EquipButtonLabel3="Disposable"
+     EquipButtonLabel4="N/A"
      ScreenType=ST_Popup
      colBlue=(R=20,G=20,B=255)
      colWhite=(R=255,G=255,B=255)

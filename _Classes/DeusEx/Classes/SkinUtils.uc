@@ -122,4 +122,9 @@ static function GlassesFix(Pawn P)
         P.multiSkins[5] = GetStyleTexture(P.Style);
         P.multiSkins[6] = GetStyleTexture(P.Style);
     }
+    else if (P.Mesh == LodMesh'DeusExCharacters.GFM_SuitSkirt')
+    {
+        P.multiSkins[6] = GetStyleTexture(P.Style);
+        P.multiSkins[7] = GetStyleTexture(P.Style);
+    }
 }

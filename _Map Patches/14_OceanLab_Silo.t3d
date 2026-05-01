@@ -211474,4 +211474,16 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner6
     OldLocation=(X=1323.670654,Y=-3420.725098,Z=422.095917)
     Name=OutfitSpawner6
 End Actor
+Begin Actor Class=WeaponPistol Name=WeaponPistol0
+    currentWeaponSkin="chrome"
+    PickupAmmoCount=0
+    LastRenderTime=263.832367
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponPistol
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1778,ZoneNumber=1)
+    Location=(X=-2034.925781,Y=-6594.093262,Z=1615.098999)
+    Rotation=(Yaw=8657)
+    OldLocation=(X=-2027.925781,Y=-6568.093262,Z=1615.098999)
+    Name=WeaponPistol0
+End Actor
 End Map

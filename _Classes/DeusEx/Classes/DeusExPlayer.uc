@@ -927,20 +927,22 @@ var globalconfig bool bRandomizeCrap;                          //Sarge: Randomiz
 //See the "Experimental" gameplay menu in the New Game screen to toggle these.
 ///////////////////////////////
 
-var travel bool bExperimentalSkillRebalance;                //SARGE: Reduce skill point gain on higher difficulties to make specialising more important
-var travel bool bExperimentalRebreathers;                //SARGE: Rebreathers can only be used once and not recharged.
-
+//Nothing
 
 
 /////////Version 1.2 Additions
 /////////January 2026
 
+//Playthrough Mods
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
 var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
 var travel bool bWoundSystem;                                //SARGE: Enable Traumas when taking damage.
 var travel bool bShippingAndReceiving;                       //SARGE: Enable Shipping and Receiving addon.
 var travel bool bGEPUsesWPByDefault;                         //SARGE: GEP Gun uses WP Rockets by default
+var travel bool bHarderSkillRebalance;                      //SARGE: Reduce skill point gain on higher difficulties to make specialising more important
+var travel bool bHarderChargedPickups;                      //SARGE: Rebreathers/etc can only be used once and not recharged.
+
 
 var globalconfig bool bDoneGMDXOnboarding;                   //SARGE: If we've done GMDX Onboarding. If not, we will show a messagebox asking if we want to do it.
 
@@ -983,15 +985,21 @@ var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscio
 
 var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our reserve energy on the bioenergy bar in the HUD
 
+var globalconfig bool bViewmodelInertia;                       //SARGE: Add inertia to weapon and item viewmodels.
+
+var globalconfig bool bPickupsUseFOV;                       //SARGE: Pickups, Lockpicks, etc, will use the players FOV properly, rather than always being as big as possible.
+
 var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points will fade out at distance.
 
 var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
+
+var globalconfig bool bFirstPersonConversation;           //SARGE: Allow the player to remain in first-person when in a conversation.
 
 var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn their heads to look at the player
 
 var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't have enough space" message will show the inventory size of objects.
 
-var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
+var globalconfig bool bRemoveCameraHum;                  //SARGE: Restore the Camera Hum from Vanilla
 
 var globalconfig bool bCameraStatic;                //SARGE: Blank out the screen when using cameras
 
@@ -1034,6 +1042,7 @@ var travel float desiredPrecip;    //Our desired precipitation value.
 
 // OUTFIT STUFF
 var travel OutfitManagerBase outfitManager;
+var travel WeaponSkinManagerBase weaponSkinManager;
 var globalconfig string unlockedOutfits[255];
 
 // native Functions
@@ -2114,12 +2123,6 @@ function int GetInventoryCount(Name item)
 
 function SetupExperimentals()
 {
-    local Rebreather R;
-
-    //Set Experimental Rebreathers setting
-    class'Rebreather'.default.bDisposable = bExperimentalRebreathers;
-    foreach AllActors(class'Rebreather', R)
-        R.bDisposable = bExperimentalRebreathers;
 }
 
 //SARGE: Make the GEP Gun use HE Rockets
@@ -9460,6 +9463,13 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     if (frobTarget.bDeleteMe)
         return false;
 
+    //AUGMENTIQUE: Handle weapon skin changes.
+    if (DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
+    {
+        WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget));
+        WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
+    }
+
     //SARGE: Set the source of the interaction (used by the HUD Display)
     if (FromCorpse != None)
         source = FromCorpse.carcassID;
@@ -14135,7 +14145,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 
-	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) )
+	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) || bFirstPersonConversation )
 	{
 		// First-person view.
 		ViewActor = Self;
@@ -14198,6 +14208,10 @@ ignores SeePlayer, HearNoise, Bump;
 	{
 		local rotator tempRot;
 		local float   yawDelta;
+        local float diff;
+        local Rotator lookAngle;
+        local Vector lookTo, lookFrom;
+        local Actor speak;
 
 		UpdateInHand();
 
@@ -14223,20 +14237,81 @@ ignores SeePlayer, HearNoise, Bump;
 		// Keep turning towards the person we're speaking to
 		if (ConversationActor != None)
 		{
-			LookAtActor(ConversationActor, true, true, true, 0, 0.5);
+            LookAtActor(ConversationActor, true, true, true, 0, 0.5);
 
-			// Hacky way to force the player to turn...
-			tempRot = rot(0,0,0);
-			tempRot.Yaw = (DesiredRotation.Yaw - Rotation.Yaw) & 65535;
-			if (tempRot.Yaw > 32767)
-				tempRot.Yaw -= 65536;
-			yawDelta = RotationRate.Yaw * deltaTime;
-			if (tempRot.Yaw > yawDelta)
-				tempRot.Yaw = yawDelta;
-			else if (tempRot.Yaw < -yawDelta)
-				tempRot.Yaw = -yawDelta;
-			SetRotation(Rotation + tempRot);
+            // Hacky way to force the player to turn...
+            tempRot = rot(0,0,0);
+            tempRot.Yaw = (DesiredRotation.Yaw - Rotation.Yaw) & 65535;
+            if (tempRot.Yaw > 32767)
+                tempRot.Yaw -= 65536;
+            yawDelta = RotationRate.Yaw * deltaTime;
+            if (tempRot.Yaw > yawDelta)
+                tempRot.Yaw = yawDelta;
+            else if (tempRot.Yaw < -yawDelta)
+                tempRot.Yaw = -yawDelta;
+            SetRotation(Rotation + tempRot);
 		}
+
+        //SARGE: This is an awful hack...
+        //Look towards our target.
+        if (bFirstPersonConversation && conPlay != None)
+        {
+            speak = conPlay.currentSpeaker;
+
+            //Failsafe for when we start talking first.
+            if (speak == None || speak.IsA('PlayerPawn'))
+                speak = ConversationActor;
+
+            if (speak != None && !speak.IsA('PlayerPawn'))
+            {
+
+                // Determine our angle to the target
+                lookTo = speak.Location + (vect(0,0,1)*speak.CollisionHeight*0.9);
+                lookFrom  = Location + (vect(0,0,1)*CollisionHeight*0.9);
+                lookAngle = Rotator(lookTo-lookFrom);
+
+                //SARGE: Fix wrapping past 360 degrees...
+                ViewRotation.Yaw = ViewRotation.Yaw % 65535;
+                ViewRotation.Pitch = ViewRotation.Pitch % 65535;
+               
+                //Fix pitch rolling over itself
+                if (ViewRotation.Pitch >= 32767)
+                    ViewRotation.Pitch -= 65536;
+                
+                //Move everything to the + only space.
+                if (ViewRotation.Yaw < 0)
+                    ViewRotation.Yaw += 65536;
+                
+                if (lookAngle.Yaw < 0)
+                    lookAngle.Yaw += 65536;
+                
+                //SARGE: This code fucking sucks, I should probably just replace it with a modulo
+                //Fix yawing in the wrong direction
+                //If angle is > 180 degrees, subtract 360 degreees
+                //Log("LookAngle Diff:" $ abs(lookAngle.Yaw - ViewRotation.Yaw));
+                if (abs(lookAngle.Yaw - ViewRotation.Yaw) > 32767)
+                {
+                    if (lookAngle.Yaw > 32767)
+                    {
+                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "->" $ lookAngle.Yaw - 65536);
+                        lookAngle.Yaw -= 65536;
+                    }
+                    else
+                    {
+                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "+>" $ lookAngle.Yaw + 65536);
+                        lookAngle.Yaw += 65536;
+                    }
+                }
+                //Log("Speaker: " $ speak);
+                //Log("ViewRotation.Yaw: " $ viewRotation.Yaw);
+                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
+                //Log("Smerpy: " $ smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch));
+                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
+
+                ViewRotation.Yaw = smerp(deltaTime * 16,ViewRotation.Yaw,lookAngle.Yaw);
+                ViewRotation.Pitch = smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch);
+            }
+        }
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
@@ -14292,6 +14367,8 @@ ignores SeePlayer, HearNoise, Bump;
     //I'm really getting sick of having to clean this damn codebase...
     function bool KeepWeaponOut()
     {
+        if (bFirstPersonConversation)
+            return false;
         if (bConversationKeepWeaponDrawn)
             return true;
         return inHand != None && inHand.IsA('DeusExWeapon') && !conPlay.startActor.IsA('NicoletteDuClare') && (retLevelInfo() == 5 || retLevelInfo() >= 12 || conPlay.startActor.IsA('HumanThug') ||
@@ -14332,9 +14409,11 @@ Begin:
 	// Make sure the PC can't be attacked while in conversation
 	MakePlayerIgnored(true);
 
-	LookAtActor(conPlay.startActor, true, false, true, 0, 0.5);
-
-	SetRotation(DesiredRotation);
+    if (!bFirstPersonConversation)
+    {
+        LookAtActor(conPlay.startActor, true, false, true, 0, 0.5);
+        SetRotation(DesiredRotation);
+    }
 
 	PlayTurning();
 //	TurnToward(conPlay.startActor);
@@ -14359,7 +14438,7 @@ Begin:
         if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
             BaseEyeHeight = default.BaseEyeHeight;
 
-		if ( conPlay.GetDisplayMode() == DM_ThirdPerson )
+		if ( conPlay.GetDisplayMode() == DM_ThirdPerson && !bFirstPersonConversation )
 			bBehindView = true;
 	}
 }
@@ -17695,22 +17774,18 @@ function int FloorTo(int value, int nearest)
 function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 {
 	local int i;
-	local DeusExLevelInfo info;
     local int actualPoints;
 	
     if (numPoints > 0)
 	{
         actualPoints = numPoints;
     
-        info = GetLevelInfo();
-
-        //SARGE: Hardcore Mode significantly reduces skill gain later in the game.
-        //SARGE: And realistic!
-        if (info != None && bExperimentalSkillRebalance && !bAlwaysAllow)
+        //SARGE: Hardcore Mode significantly reduces skill gain later.
+        if (!bAlwaysAllow)
         {
-            if (bHardcoreMode)
-                actualPoints *= 0.75;
-            else if (CombatDifficulty >= 3)
+            //if (bHardcoreMode)
+            //    actualPoints *= 0.75;
+            /*else*/ if (bHarderSkillRebalance)
                 actualPoints *= 0.85;
 
             actualPoints = FloorTo(actualPoints,5);
@@ -20683,12 +20758,12 @@ defaultproperties
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
+     bViewmodelInertia=true
      bTurnHeads=true
      precipDensity=-1
      nextPrecipChange=-50
      desiredPrecip=-1
      bFullInventoryMsgShowsSize=true
-     bCameraHum=true
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0

@@ -1,6 +1,11 @@
 1.2:
 
 New Features:
+- Added findable weapon skins.
+    - Weapon skins are available throughout the world.
+    - Once unlocked, they can be applied to any weapon of the same type.
+    - Weapon skin unlocks are kept between playthroughs.
+- Added weapon inertia. All weapons and held tools (lockpicks etc) will move with inertia, giving a more natural feeling.
 - Medical and Repair bots recharge timer is now reduced on higher difficulties because they have limited uses.
 - The installer now installs DXVK. Use `dxvk_enable.cmd` in the System folder to use it.
 - Added a visual red section to the energy bar to show energy reserve.
@@ -80,6 +85,10 @@ New Features:
     - Additionally added a setting to invert this behaviour, which will drop stacks by default, and only drop 1 item when holding Run/Walk.
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
+- Improvements to Scripted Grenade traps
+    - Grenade traps can now triggered more than once
+    - Grenade traps can now use all types of grenades, not just Gas grenades
+    - Mover detection is much more robust, now grenade traps should be more reliable.
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 - Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
 - Added a new playthrough modifier to remove crates and loose items when UNATCO takes over various areas, such as the Statue of Liberty and Lebedev's Airfield.
@@ -93,10 +102,17 @@ New Features:
     - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
+- Added a new "First Person Conversations" setting, which allows JC to engage in dialog in first-person.
 - The Dragon's Tooth Sword can now be recharged using Repair bots
+- Added a new Playthrough Modifier to make Thermoptic Camo and Rebreathers disposable and non-rechargable, similar to GMDX v9
+    - Always enabled in Hardcore mode
+- Added a new Playthrough Modifier to reduce skill gains by 15% (rounded to the nearest 5 skill points)
+    - Always enabled in Hardcore mode
 
 Bugfixes:
 - Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
+    - The amount of pullback when near a wall can now also be adjusted in the QoL menu or disabled entirely.
+    - Grenades no longer pull back when near walls, to allow their placement preparing animations to appear smoother.
 - Fixed crash to desktop when being killed by hacking timeouts.
 - Fixed reserved energy going into the negative sometimes when installing Synthetic Heart.
 - Fixed transparent background for the Stealth Skill in the Skills menu.

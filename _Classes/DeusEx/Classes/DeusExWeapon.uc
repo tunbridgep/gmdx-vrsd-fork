@@ -393,11 +393,24 @@ struct BloodTex
 
 var travel BloodTex BloodTextures[8];
 
+//AUGMENTIQUE: Weapon Skin system
+var(Augmentique) travel string currentWeaponSkin;
+var transient Texture skinTextures[9]; //SARGE: Holds the textures for our current weapon skin.
+var transient Texture skinTextures3rd[9]; //SARGE: Holds the textures for our current weapon skin (on the floor).
+var transient Texture skinBeltIconTex;        //SARGE: If we have any updated belt texture
+var transient Texture skinLargeIconTex;        //SARGE: If we have any updated belt texture
+var transient WeaponSkinManagerBase skinManager;
+
 //SARGE: No more checking for specific grenade types, now we just set this instead.
 var const bool bIsPlaceableOnWall;
 
 //SARGE: An annoying hack to fix GMDX's hacky GEP bullshit.
 var transient bool bDontActuallyRenderViewModel;
+
+//SARGE: Weapon inertia
+var transient Vector cachedDrawOffset;
+var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
+var const float inertiaSpeed;                            //SARGE: How fast weapons move.
 
 //END GMDX:
 
@@ -630,6 +643,8 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
 function string GetFrobString(DeusExPlayer player)
 {
     local string str;
+    local DeusExPlayer pl;
+    local string skinName;
     
     //Disposable weapons show their ammo count, if above 1 (which should only ever happen in the MJ12 prison facility)
     if (bDisposableWeapon)
@@ -666,6 +681,21 @@ function string GetFrobString(DeusExPlayer player)
     if (str != "")
         str = " (" $ str $ ")";
 
+    if (currentWeaponSkin != "default")
+    {
+        if (DeusExPlayer(owner) != None)
+            pl = DeusExPlayer(owner);
+        else
+            pl = DeusExPlayer(GetPlayerPawn());
+
+        if (pl != None)
+        {
+            skinName = pl.WeaponSkinManager.GetSkinName(self);
+            if (skinName != "")
+                return itemName @ "[" $ skinName $ "]" $ str;
+        }
+    }
+    
     return itemName $ str;
 }
 
@@ -798,6 +828,9 @@ function Draw(DeusExPlayer frobber)
     ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
+            
+    //Reset weapon inertia
+    cachedDrawOffset = Vect(0,0,0);
 
     DoWeaponOffset(frobber);
 }
@@ -2562,6 +2595,10 @@ function PlaceGrenade()
 	gren = ThrownProjectile(spawn(ProjectileClass, Owner,, placeLocation, Rotator(placeNormal)));
 	if (gren != None)
 	{
+        //AUGMENTIQUE: Give our fired projectile the right skin.
+        if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).weaponSkinManager != None)
+            DeusExPlayer(Owner).weaponSkinManager.ApplyProjectileSkinFrom(self,gren);
+
 		AmmoType.UseAmmo(1);
 		if ( AmmoType.AmmoAmount <= 0 )
 			bDestroyOnFinish = True;
@@ -2656,6 +2693,9 @@ simulated function Tick(float deltaTime)
                 lerpAid = 0;
         }
     }
+    
+    //SARGE: Weapon Inertia
+    inertiaDelta = deltaTime*inertiaSpeed;
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -3412,6 +3452,7 @@ function private PreDisplayWeapon(bool overlay)
     Style = default.Style;
     
     DisplayWeapon(overlay);
+    DisplayWeaponSkin(overlay);
 
     OP = DeusExPlayer(Owner);
     OSP = ScriptedPawn(Owner);
@@ -3439,9 +3480,21 @@ function private PreDisplayWeapon(bool overlay)
         bNoSmooth=default.bNoSmooth;
 }
 
-//SARGE: Override this
+//SARGE: Override this for basic weapon display, addons etc
 function DisplayWeapon(bool overlay)
 {
+}
+
+//SARGE: Override this for custom weapon skins.
+//Shouldn't need overriding in most cases
+function DisplayWeaponSkin(bool overlay)
+{
+    local DeusExPlayer player;
+    if (skinManager == None)
+        skinManager = class'WeaponSkinManagerBase'.static.GetManager(self);
+
+    if (skinManager != None)
+        skinManager.ApplyWeaponSkin(self,overlay);
 }
 
 //SARGE: Override this for custom behaviour while cloaking or radar trans'd
@@ -4799,6 +4852,7 @@ simulated function vector CalcDrawOffset()
 	local Pawn			PawnOwner;
 	local vector unX,unY,unZ;
     local Rotator vr;                       //SARGE: Added viewrotation variable
+    local Vector newOffset;
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -4823,6 +4877,28 @@ simulated function vector CalcDrawOffset()
             vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
 
         DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+
+        newOffset = drawOffset;
+
+        if (VSize(cachedDrawOffset) == 0 || VSize(cachedDrawOffset - drawOffset) > 40)
+            cachedDrawOffset = drawOffset;
+
+        //SARGE: Handle Weapon Inertia
+        if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
+        {
+            //diff = VSize(cachedDrawOffset - drawOffset);
+            //Log("diff:" $ drawOffset @ cachedDrawOffset);
+            //diff = FMax(-8.0,FMin(8.0,diff));
+            //Log("diff:" $ diff);
+
+            newOffset.X = lerp(inertiaDelta,cachedDrawOffset.X,drawOffset.X);
+            newOffset.Y = lerp(inertiaDelta,cachedDrawOffset.Y,drawOffset.Y);
+            newOffset.Z = lerp(inertiaDelta,cachedDrawOffset.Z,drawOffset.Z);
+        }
+    
+        cachedDrawOffset = newOffset;
+
+        DrawOffset = newOffset;
         DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
@@ -5248,6 +5324,10 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
     LaserPitch += (currentAccuracy*laserKick) * (Rand(4096) - 2048);
+
+    //AUGMENTIQUE: Give our fired projectile the right skin.
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).weaponSkinManager != None)
+        DeusExPlayer(Owner).weaponSkinManager.ApplyProjectileSkinFrom(self,proj);
 
 	return proj;
 }
@@ -6009,13 +6089,18 @@ simulated function bool UpdateInfo(Object winObject)
     else
         winInfo.SetTitle(itemName);
 
-    //SARGE: Add Decline Button
     if (P.IsA('DeusExPlayer'))
     {
+        //SARGE: Add Decline Button
 		winInfo.AddDeclineButton(class);
 
+        //SARGE: Add Secondary Button
         if (CanAssignSecondary(DeusExPlayer(P)))
 	       winInfo.AddSecondaryButton(self);
+		
+        //SARGE: Add Skins Button
+        if (DeusExPlayer(P).WeaponSkinManager.GetSkinCountFor(self) > 1)
+            winInfo.AddSkinsButtons(self);
     }
 
 	winInfo.SetText(msgInfoWeaponStats);
@@ -6851,8 +6936,33 @@ exec function UpdateHDTPsettings()
     SetWeaponHandTex();
     UpdateLargeIcon();
     CheckWeaponSkins();
+    UpdateSkin();
     if (Owner != None && Owner.IsA('DeusExPlayer'))
         DoWeaponOffset(DeusExPlayer(Owner));
+}
+
+function SelectNextSkin()
+{
+    if (DeusExPlayer(owner) != None)
+        DeusExPlayer(owner).WeaponSkinManager.SelectNextSkin(self);
+}
+
+function SelectPreviousSkin()
+{
+    if (DeusExPlayer(owner) != None)
+        DeusExPlayer(owner).WeaponSkinManager.SelectPreviousSkin(self);
+}
+
+function UpdateSkin()
+{
+    local DeusExPlayer pl;
+    if (DeusExPlayer(owner) != None)
+        pl = DeusExPlayer(owner);
+    else
+        pl = DeusExPlayer(GetPlayerPawn());
+
+    if (pl != None && pl.WeaponSkinManager != None)
+        pl.WeaponSkinManager.UpdateWeaponSkinTextures(self);
 }
 
 //
@@ -7878,5 +7988,7 @@ defaultproperties
      addonPenalties(0)=0.1 //Scope
      addonPenalties(1)=0.2 //Silencer
      addonPenalties(2)=0.075 //Laser
+     currentWeaponSkin="default"
      totalScopeTime=0.41
+     inertiaSpeed=30
 }

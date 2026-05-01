@@ -40,7 +40,17 @@ simulated function BeginPlay()
     else
     {
         SetCollision(False, False, False);
+        DrawScale = 0f;         //Stop them appearing in dxrando for any reason.
 	}
+}
+
+//SARGE: Added to prevent blowing up scripted grenades
+simulated function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation, Vector Momentum, name damageType)
+{
+    if (bScriptedGrenade)
+        return;
+
+    super.TakeDamage(Damage, instigatedBy, HitLocation, Momentum, damageType);
 }
 
 defaultproperties

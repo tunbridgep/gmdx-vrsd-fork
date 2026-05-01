@@ -161,6 +161,17 @@ function DisplayWeaponBlood(bool overlay)
         multiskins[3] = Texture'PinkMaskTex';
 }
 
+//SARGE: Special case for dealing with weapon skins
+function DisplayWeaponSkin(bool overlay)
+{
+    super.DisplayWeaponSkin(overlay);
+    if (currentWeaponSkin != "default" && overlay)
+        multiskins[1] = skinTextures[1];
+    else if (currentWeaponSkin != "default" && !overlay)
+        multiskins[2] = skinTextures3rd[2];
+
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);
@@ -561,4 +572,5 @@ defaultproperties
      bFancyScopeAnimation=true
      bShowWeaponWhenZoomed=true
      totalScopeTime=0.51 //Heavy boy!
+     inertiaSpeed=0
 }

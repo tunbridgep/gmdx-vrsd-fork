@@ -504,6 +504,18 @@ exec function UpdateHDTPsettings()
     PlayerViewMesh=class'HDTPLoader'.static.GetMesh2("FOMOD.flare1st","DeusExItems.Flare",IsHDTP());
     if (bCarriedItem)
         Mesh = PlayerViewMesh;
+
+    //SARGE: A bit of a hack
+    if (!IsHDTP())
+    {
+        inertiaSpeed = 0;
+        bUseFOV = false;
+    }
+    else
+    {
+        inertiaSpeed = default.inertiaSpeed;
+        bUseFOV = default.bUseFOV;
+    }
 }
 
 //Force the Clyzm hands if we're using HDTP
