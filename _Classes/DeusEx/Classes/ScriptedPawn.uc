@@ -8707,7 +8707,7 @@ function Tick(float deltaTime)
 	}
 
     //SARGE: Allow head-turning towards the player if we're idle
-    if (bCanTurnHead && player != None && player.CloakManager != None && !player.CloakManager.IsInAnyState() && player.bTurnHeads && Enemy == None && (IsInState('Idle') || IsInState('Standing') || IsInState('Sitting')))
+    if (bCanTurnHead && player != None && player.CloakManager != None && !player.CloakManager.IsInAnyState() && player.bTurnHeads && !player.RestrictInput() && Enemy == None && (IsInState('Idle') || IsInState('Standing') || IsInState('Sitting')))
     {
         if (DistanceFromPlayer < 700)
         {
