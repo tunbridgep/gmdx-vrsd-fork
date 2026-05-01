@@ -2040,7 +2040,7 @@ function DrawVisionAugmentation(GC gc)
 				{
 					dist = VSize(A.Location - loc);
                     //SARGE: Added a new condition for detecting items and security systems only
-                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('Containers') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('AlarmUnit')))
+                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('Containers') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('Shuriken') || A.IsA('AlarmUnit')))
                     {
 						VisionTargetStatus = GetVisionTargetStatus(A);
 						SetSkins(A, oldSkins);
@@ -2259,6 +2259,9 @@ function bool IsHeatSource(Actor A)
     //SARGE: Added pickups and weapons as well
     else if (A.IsA('Inventory'))
         return true;
+    //SARGE: And thrown knives
+    else if (A.IsA('Shuriken') && Shuriken(A).bStuck)
+        return true;
     //SARGE: And crates
     else if (A.IsA('CrateBreakableMedCombat') || A.IsA('CrateBreakableMedGeneral') || A.IsA('CrateBreakableMedMedical') || A.IsA('BoxSmall'))
         return true;
@@ -2378,7 +2381,7 @@ function int GetVisionTargetStatus(Actor Target)
 		return VISIONNEUTRAL;
 	
     //SARGE: Added. Show items as a different colour
-    if (target.IsA('Inventory') || target.IsA('CrateBreakableMedCombat') || target.IsA('CrateBreakableMedGeneral') || target.IsA('CrateBreakableMedMedical') || target.IsA('BoxSmall'))
+    if (target.IsA('Inventory') || target.IsA('CrateBreakableMedCombat') || target.IsA('CrateBreakableMedGeneral') || target.IsA('Shuriken') || target.IsA('CrateBreakableMedMedical') || target.IsA('BoxSmall'))
         return VISIONITEM;
 
 	if (player.Level.NetMode == NM_Standalone)
