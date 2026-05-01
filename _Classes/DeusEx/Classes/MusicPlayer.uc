@@ -195,7 +195,7 @@ function bool CanSetAsSavedSection(int section, DeusExLevelInfo info)
         return false;
     
     if (info.MusicType == MT_Normal)
-        return section != 1 && section != info.SongConversationSection && section != info.SongCombatSection && (section != 5 || string(currentSong) == "NYCStreets_Music.NYCStreets_Music");
+        return section != 1 && section != info.SongConversationSection && section != info.SongCombatSection && (section != 5 || string(currentSong) == "NYCStreets_Music.NYCStreets_Music" || string(currentSong) == "Tunnels_Music.Tunnels_Music");
 
     if (info.MusicType == MT_SingleTrack)
         return true;
