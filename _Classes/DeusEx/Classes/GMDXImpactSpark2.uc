@@ -18,5 +18,5 @@ auto state Flying
 
 defaultproperties
 {
-     LifeSpan=2.000000
+     LifeSpan=1.200000
 }

@@ -296,9 +296,6 @@ simulated function SpawnEffects(Actor Other, float Damage)
 			   spawn(class'GMDXImpactSpark2');
 			   spawn(class'GMDXImpactSpark2');
 			   spawn(class'GMDXImpactSpark2');
-			   spawn(class'GMDXImpactSpark2');
-			   spawn(class'GMDXImpactSpark2');
-			   spawn(class'GMDXImpactSpark2');
 
 				spark = spawn(class'GMDXSparkFade',,,Location+Vector(Rotation)*2.0, Rotation); //cyberP: was *4.5
 				if (spark != None)

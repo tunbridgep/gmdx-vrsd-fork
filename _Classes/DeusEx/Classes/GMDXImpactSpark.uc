@@ -37,7 +37,7 @@ simulated function Tick(float deltaTime)
 defaultproperties
 {
      elasticity=0.300000
-     LifeSpan=1.500000
+     LifeSpan=1.000000
      DrawType=DT_Sprite
      Texture=FireTexture'Effects.Fire.SparkFX1'
      CollisionRadius=0.000000
