@@ -296,8 +296,6 @@ function CreateDartBloodDropHit(Vector vec)
 
 function SpawnBlood(Vector HitLocation, Vector HitNormal)
 {
-	local BloodSpurt spurt;
-
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 	  return;
 
@@ -305,18 +303,11 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 	//Ygll: adding the hit visual effect for flesh hit
 	if (IsA('DartPoison') || IsA('DartTaser') )
 	{
-		//spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
-		//spurt.LifeSpan *= 0.7;
-		//spurt.DrawScale *= 1.0;
-
 		CreateDartHitBaseEffect(false);
 	}
 	else if( bBlood ) //Ygll: if the current projectile is set to generate blood
 	{
-		spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
-		spurt.LifeSpan *= 0.8;
-		spurt.DrawScale *= 1.1;
-
+		spawn(class'BloodSpurt',,, HitLocation+HitNormal);
 		CreateDartBloodDropHit(HitLocation+HitNormal);
 	}
 }

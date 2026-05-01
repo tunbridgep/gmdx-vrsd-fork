@@ -1754,7 +1754,7 @@ function PlaySelect()
            if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
                p = 1.2;
         }
-        if (player != None && IsA('WeaponSawedOffShotgun'))
+        if (player != None)
            player.ShakeView(0.1, 96, 4);
      }
     PlayAnim('Select',p,0.0);
@@ -2731,13 +2731,10 @@ simulated function Tick(float deltaTime)
 				{
 					if ((!bNearWall || (AnimSequence == 'Select')) && AnimSequence != 'Select')
 					{
-					    if (AnimSequence == 'Attack' || AnimSequence == 'Attack2' || AnimSequence == 'Attack3')
-					    {
-					    }
-					    else
+					    if (AnimSequence != 'Attack' && AnimSequence != 'Attack2' && AnimSequence != 'Attack3')
 					    {
 						    PlayAnim('PlaceBegin',, 0.1);
-						    bNearWall = True;
+						    bNearWall = true;
 						}
 					}
 				}
@@ -2929,7 +2926,7 @@ simulated function Tick(float deltaTime)
 		// reduce the recoil based on skill
 		/*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		   recoil = recoilStrength * 0.5; // + GetWeaponSkill() * 2.0; //CyberP: Removed Recoil based on skill level.
-		else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
            recoil = recoilStrength * 0.5;
 		/*else if (player.PerkNamesArray[13] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Perfect Stance: Heavy
 		   recoil = recoilStrength * 0.5;*/
@@ -3020,7 +3017,7 @@ simulated function Tick(float deltaTime)
 		if (player.CombatDifficulty < 1.0)  //CyberP: easy difficulty gets aiming boost
 		    standingTimer += deltaTime*2;*/
         
-		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
             mult += player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').PerkValue;		//RSD: Now +25% bonus
         
 		if (player.AddictionManager.addictions[0].drugTimer > 0)                                      //RSD: Cigarettes make you aim faster
@@ -3044,9 +3041,9 @@ simulated function Tick(float deltaTime)
 		{
 		    /*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		        perkMod = 0;
-		    else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		    else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	            perkMod = 0;
-			else if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+			else if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
                 perkMod = 0;
 			else
                 perkMod = 0.04;
@@ -3590,9 +3587,6 @@ simulated function Timer()
 simulated function MuzzleFlashLight()
 {
 	local Vector offset, X, Y, Z;
-    local PlasmaParticleSpoof spoof;
-    local FireSmoke smoke;
-    local int i;
 
  	if (!bHasMuzzleFlash)
 		return;
@@ -3607,54 +3601,6 @@ simulated function MuzzleFlashLight()
 		flash = spawn(class'MuzzleFlash',,, offset);
 		if (flash != None)
 			flash.SetBase(Owner);
-
-        if ((IsA('WeaponSawedOffShotgun') || IsA('WeaponAssaultShotgun')) && Owner.IsA('DeusExPlayer'))
-    {    //CyberP: hacky, sub-optimal new muzzleflash effects.
-    offset.Z += Owner.CollisionHeight * 0.7;
-    if (IsA('WeaponAssaultShotgun'))
-    offset += Y * Owner.CollisionRadius * 0.75;
-    else
-    offset += Y * Owner.CollisionRadius * 0.25;
-    if (DeusExPlayer(Owner).IsCrouching())
-        offset.Z *= (Owner.CollisionHeight * 0.8);
-    /*smoke = spawn(class'FireSmoke',,, offset, Pawn(Owner).ViewRotation);
-    if (smoke!=none)
-    {
-    smoke.LifeSpan=0.24;
-    smoke.DrawScale=0.400000;
-    smoke.ScaleGlow=0.400000;
-    smoke.bRelinquished2=True;
-    }*/
-	if (IsHDTP())
-	{
-		for(i=0;i<13;i++)
-		{
-			spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
-			if (spoof!=none)
-			{
-				spoof.DrawScale=0.006;
-				spoof.LifeSpan=0.2;
-				spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
-				spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
-				//spoof.Velocity.X = FRand() * 700;
-				//spoof.Velocity.Z = FRand() * 60;
-
-				if (FRand() < 0.3)
-				{
-				spoof.Velocity.Z += FRand() * 80;
-				spoof.Velocity.X += FRand() * 65;
-				spoof.Velocity.Y += FRand() * 65;
-				}
-				else if (FRand() < 0.6)
-				{
-				spoof.Velocity.Z -= FRand() * 20;
-				spoof.Velocity.X -= FRand() * 55;
-				spoof.Velocity.Y -= FRand() * 65;
-				}
-			}
-		}
-    }
-	}
 	}
 }
 
@@ -4287,11 +4233,11 @@ simulated function UpdateRecoilShaker()
 	if(Owner.IsA('DeusExPlayer'))
 	{
 	  DeusExPlayer(Owner).RecoilShaker(RecoilShaker);
-	  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+	  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  /*else if (DeusExPlayer(Owner).PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 	      negTime = (RecoilStrength * default.negTime)*0.75;*/
-	  else if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+	  else if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  else
 	      negTime = RecoilStrength * default.negTime;
@@ -4501,25 +4447,19 @@ function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Other, float D
 	local TraceHitSpawner hitspawner;
 	local Name damageType;
 
-	damageType = WeaponDamageType();
-
 //	log("weap"@Other@Damage@damageType);
 
 	//GMDX:dasraiser fix vanilla bug with fast pc's, do i dare fix entire game spawn system....nfl
 	class'TraceHitSpawner'.default.HitDamage=Damage;
-	class'TraceHitSpawner'.default.damageType=damageType;
+	class'TraceHitSpawner'.default.damageType=WeaponDamageType();
 
 	if (IsA('WeaponNanoSword')) //hitSpawner.damageType='NanoSword';
 	{
 	  class'TraceHitSpawner'.default.bForceBulletHole=true;
 	  class'TraceHitSpawner'.default.damageType='DTS_Strike';
-
-	  //if ((Emitter!=none)&&(Emitter.proxy!=none))
-//      {
-//         HitLocation=Emitter.proxy.Location;
-//      }
-	} else
-	  class'TraceHitSpawner'.default.damageType=damageType;
+	}
+	else if(AmmoName == Class'AmmoRubber')
+		class'TraceHitSpawner'.default.damageType='Rubber';
 
 	if (bPenetrating)
 	{
@@ -5467,7 +5407,7 @@ simulated function TraceFire( float Accuracy )
 
       //RSD: Stopping Power perk for shotguns
       bDoExtraSlugDamage = false;
-      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkStoppingPower').bPerkObtained == true)
+      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkStoppingPower').bPerkObtained)
       {
           if (i == 0)
               initialPawnHit = ScriptedPawn(Other);
@@ -5480,21 +5420,22 @@ simulated function TraceFire( float Accuracy )
 		// randomly draw a tracer for relevant ammo types
 		// don't draw tracers if we're zoomed in with a scope - looks stupid
 	  // DEUS_EX AMSD In multiplayer, draw tracers all the time.
-		if ( ((Level.NetMode == NM_Standalone) && (/*!bZoomed && */(numSlugs >= 1) && (FRand() < 0.5))) ||
+		if ( ((Level.NetMode == NM_Standalone) && (numSlugs >= 1)) ||
 		   ((Level.NetMode != NM_Standalone) && (Role == ROLE_Authority)) )
 		{
-			if ((AmmoName == Class'Ammo10mm') || (AmmoName == Class'Ammo3006') ||
-				(AmmoName == Class'Ammo762mm') || (AmmoName == Class'AmmoShell')) //CyberP: shotguns have tracers
+			if ( (AmmoName != Class'AmmoRubber') && ( (AmmoName == Class'Ammo10mm') || (AmmoName == Class'Ammo3006') ||  //Ygll: No tracer for rubber ammo !
+				(AmmoName == Class'Ammo762mm') || (AmmoName == Class'AmmoShell') || (AmmoName == Class'AmmoSabot') ) ) //CyberP: shotguns have tracers
 			{
 				if (VSize(HitLocation - StartTrace) > 250)
 				{
 					rot = Rotator(EndTrace - StartTrace);
-			   if (Owner.IsA('DeusExPlayer') && AmmoName == Class'Ammo3006')
-				  trcr = Spawn(class'SniperTracer',,, StartTrace + 96 * Vector(rot), rot);
-			   else
-				  trcr = Spawn(class'Tracer',,, StartTrace + 96 * Vector(rot), rot);   //StartTrace + 96 * Vector(rot) //RSD: Added pointer
-				  if (bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
-                  	trcr.DrawType = DT_None;
+					if (AmmoName == Class'Ammo3006')
+						trcr = Spawn(class'SniperTracer',,, StartTrace + 96 * Vector(rot), rot);
+					else
+						trcr = Spawn(class'Tracer',,, StartTrace + 96 * Vector(rot), rot);   //StartTrace + 96 * Vector(rot) //RSD: Added pointer
+
+					if (trcr != None && bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
+						trcr.DrawType = DT_None;
 				}
 			}
 		}
@@ -5649,26 +5590,36 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
         if (Other.IsA('ScriptedPawn') && FRand() < (float(HitDamage)*mult-finalDamage)) //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
             finalDamage++;
 
-		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained == true)
+		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained)
 			finalDamage *= DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').PerkValue;
 
         if (DeusExPlayer(Owner) != None) //cyberP: spawn a tracer               //RSD: != none instead of IsA
         {
          //Owner.BroadcastMessage(finalDamage);                                   //RSD: Testing
-         if (!bHandToHand)                                                      //RSD: Removed && !bZoomed here so water splashing is intact
-         {
-          GetAxes(DeusExPlayer(Owner).ViewRotation,X,Y,Z);
-		  offset = Owner.Location;
-		  offset += X * Owner.CollisionRadius * 1.75;
-		  if (DeusExPlayer(Owner).IsCrouching())
-		  offset.Z += Owner.CollisionHeight * 0.25;
-          else
-		  offset.Z += Owner.CollisionHeight * 0.7;
-		  offset += Y * Owner.CollisionRadius * 0.65;
-          tra= Spawn(class'Tracer',,, offset, (Rotator(HitLocation - offset)));
-          if (tra != None && bZoomed) //RSD: Added bZoomed here so we still get a tracer for water splashing
-              tra.DrawType = DT_None;
-		  }
+			if (!bHandToHand)                                                      //RSD: Removed && !bZoomed here so water splashing is intact
+			{
+				GetAxes(DeusExPlayer(Owner).ViewRotation,X,Y,Z);
+				offset = Owner.Location;
+				offset += X * Owner.CollisionRadius * 1.75;
+				if (DeusExPlayer(Owner).IsCrouching())
+					offset.Z += Owner.CollisionHeight * 0.25;
+				else
+					offset.Z += Owner.CollisionHeight * 0.7;
+
+				offset += Y * Owner.CollisionRadius * 0.65;
+
+				if ( (AmmoName != Class'AmmoRubber') && ( (AmmoName == Class'Ammo10mm') || (AmmoName == Class'Ammo3006') ||  //Ygll: No tracer for rubber ammo !
+				(AmmoName == Class'Ammo762mm') || (AmmoName == Class'AmmoShell') || (AmmoName == Class'AmmoSabot') ) )
+				{
+					if (AmmoName == Class'Ammo3006')
+						tra = Spawn(class'SniperTracer',,, offset, (Rotator(HitLocation - offset)));
+					else
+						tra = Spawn(class'Tracer',,, offset, (Rotator(HitLocation - offset)));
+
+					if (tra != None && bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
+						tra.DrawType = DT_None;
+				}
+			}
 		}
 
 		if (Other != None)
@@ -6528,7 +6479,7 @@ simulated function bool UpdateInfo(Object winObject)
     winInfo.AddInfoItem(msgLethality, str);
 
     //secondary weapon
-    if (bHandToHand && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
+    if (bHandToHand && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained)
        str = msgInfoYes;
     else if (bHandToHand && GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
        str = msgInfoNo;

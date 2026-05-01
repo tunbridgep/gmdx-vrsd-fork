@@ -11,6 +11,7 @@ auto state Flying
 		Velocity.Z = FRand() * 350 + 350; //200+200
 		DrawScale = FRand() * 0.2;
 		SetRotation(Rotator(Velocity));
+		LifeSpan=0.750000;
 	}
 }
 

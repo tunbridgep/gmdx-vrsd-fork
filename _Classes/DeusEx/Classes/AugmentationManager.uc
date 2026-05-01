@@ -572,7 +572,7 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
             if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0 && allTheAugs.heartUpgraded > 0)
             {
                 allTheAugs.CurrentLevel -= allTheAugs.heartUpgraded;
-                allTheAugs.heartUpgraded = 0;;
+                allTheAugs.heartUpgraded = 0;
                 allTheAugs.Setup();
             }
         }

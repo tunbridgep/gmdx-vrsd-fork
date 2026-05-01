@@ -30,10 +30,10 @@ simulated function HitWall (vector HitNormal, actor HitWall)
 
 	if (IsA('FleshFragment') && bFirstHit)   //CyberP: for gore up the walls
 	{
-	offs=Location;
-	offs.Z+=3;
-	if (Velocity.Z > 0) //cyberP: you need to make frag rotation match velocity
-    spawn(class'FleshFragmentWall',,,offs,Rotation);
+		offs = Location;
+		offs.Z += 3;
+		if (Velocity.Z > 0) //cyberP: you need to make frag rotation match velocity
+			Spawn(class'FleshFragmentWall',,,offs,Rotation);
 	}
 
 	// if we are stuck, stop moving
@@ -41,6 +41,7 @@ simulated function HitWall (vector HitNormal, actor HitWall)
 		Velocity = vect(0,0,0);
 	else
 		Velocity = Elasticity*(( Velocity dot HitNormal ) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
+
 	speed = VSize(Velocity);
 	if (bFirstHit && speed<400)
 	{
@@ -91,22 +92,23 @@ state Dying
 			Velocity = vect(0,0,0);
 		else
 			Velocity = Elasticity*(( Velocity dot HitNormal ) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
+
 		speed = VSize(Velocity);
 		if (bFirstHit && speed<400)
 		{
-			bFirstHit=False;
-			bRotatetoDesired=True;
-			bFixedRotationDir=False;
-			DesiredRotation.Pitch=0;
-			DesiredRotation.Yaw=FRand()*65536;
-			DesiredRotation.roll=0;
+			bFirstHit = false;
+			bRotatetoDesired = true;
+			bFixedRotationDir = false;
+			DesiredRotation.Pitch = 0;
+			DesiredRotation.Yaw = FRand()*65536;
+			DesiredRotation.roll = 0;
 		}
 		RotationRate.Yaw = RotationRate.Yaw*0.75;
 		RotationRate.Roll = RotationRate.Roll*0.75;
 		RotationRate.Pitch = RotationRate.Pitch*0.75;
 		if ( (Velocity.Z < 50) && (HitNormal.Z > 0.7) )
 		{
-			SetPhysics(PHYS_none, HitWall);
+			SetPhysics(PHYS_None, HitWall);
 			if (Physics == PHYS_None)
 				bBounce = false;
 		}
@@ -147,18 +149,24 @@ function Destroyed()
 	Super.Destroyed();
 }
 
+//Add here children class you don't want permanente even with the Qol enabled
+function bool IsPermaWhiteList()
+{
+	return !IsA('WaterSplash') && !IsA('WaterSplash2') && !IsA('WaterSplash3')
+			&& !IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2');
+}
+
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-    UpdateHDTPsettings();
-
-	speed *= 1.1;
-
-    if (bPersistant) //SARGE: Stick around forever, if we've enabled the setting.
-        LifeSpan = 0;
-    else if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
-        // randomize the lifespan a bit so things don't all disappear at once
-        LifeSpan += FRand()*1.5; //CyberP: was 1.0
+	UpdateHDTPSkin();
+	UpdateHDTPsettings();
+	Speed *= 1.1;
+	// if non persistant or not in the white list, randomize the lifespan a bit so things don't all disappear at once
+	if(bPersistant && IsPermaWhiteList() )
+		LifeSpan = 0.0; //SARGE: Stick around forever, if we've enabled the setting.
+	else
+		LifeSpan += FRand()*1.5; //CyberP: was 1.0
 }
 
 static function bool IsHDTP()
@@ -189,7 +197,7 @@ simulated function AddSmoke()
 {
     if (smokeTime == -1 && bPersistant)
         return;
-            
+
     bVisionImportant = true;
 
 	smokeGen = Spawn(class'ParticleGenerator', Self);
@@ -214,9 +222,8 @@ simulated function AddSmoke()
 
 simulated function Tick(float deltaTime)
 {
-
-    //SARGE: Shortcut! If we have already smoked out, and have persistence on, then there's no need to do anything, so just bail
-    if (bSmokeDone && bPersistant)
+	//SARGE: Shortcut! If we have already smoked out, and have persistence on, then there's no need to do anything, so just bail
+	if (bPersistant && ( ( !bSmoking && Velocity == Vect(0,0,0) ) || bSmokeDone ) )
     {
         Disable('Tick');
         bBounce = false;
@@ -228,7 +235,7 @@ simulated function Tick(float deltaTime)
         AddSmoke();
 
 	// fade out the object smoothly 2 seconds before it dies completely
-	if (LifeSpan <= 2 && LifeSpan != 0 && !IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
+	if (LifeSpan > 0.0 && LifeSpan <= 2.0)
 	{
 		if (Style != STY_Translucent)
 			Style = STY_Translucent;
@@ -259,9 +266,7 @@ auto state flying
 {
     simulated function BeginState()
     {
-        UpdateHDTPsettings();
         super.BeginState();
-        UpdateHDTPSkin();
     }
 }
 

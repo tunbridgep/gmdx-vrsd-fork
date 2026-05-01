@@ -268,7 +268,7 @@ event StyleChanged()
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
 	colName   = theme.GetColorFromName('HUDColor_HeaderText');
-	colLine   = theme.GetColorFromName('HUDColor_NormalText');;
+	colLine   = theme.GetColorFromName('HUDColor_NormalText');
 	colCursor = colName;
 	colQueued = theme.GetColorFromName('HUDColor_NormalText');
 }

@@ -9,12 +9,12 @@ auto state Flying
 	{
 		Super.BeginState();
 
-		Velocity = VRand() * 100;
-		DrawScale = (DrawScale * 0.1) + FRand() * 0.15;
+		Velocity = VRand() * 150;
+		DrawScale = (DrawScale * 0.18) + FRand() * 0.15;
 		if (FRand() < 0.8)
 		{
-		ImpactSound=None;
-        MiscSound=None;
+			ImpactSound=None;
+			MiscSound=None;
 		}
 	}
 }

@@ -11,13 +11,14 @@ auto state Flying
 		Velocity.Z = FRand() * 280 + 280; //200+200
 		DrawScale = FRand() * 0.15;
 		SetRotation(Rotator(Velocity));
+		LifeSpan=0.500000;
 	}
 }
 
 defaultproperties
 {
      elasticity=0.400000
-     LifeSpan=0.600000
+     LifeSpan=0.500000
      DrawType=DT_Sprite
      Texture=Texture'Effects.Generated.WtrDrpSmall'
      bUnlit=True

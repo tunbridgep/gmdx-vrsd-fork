@@ -7,8 +7,17 @@ class WoodFragment expands DeusExFragment;
 
 function SkinVariation()
 {
-     if (Skin == default.Skin || FRand() < 0.15)
+     if (Skin == default.Skin || FRand() < 0.35)
         Multiskins[0]=Texture'BoatHouseWood_D';
+}
+
+auto state Flying
+{
+	simulated function BeginState()
+	{
+		Super.BeginState();
+		DrawScale = (DrawScale * 0.17) + FRand() * 0.15;
+	}
 }
 
 defaultproperties
