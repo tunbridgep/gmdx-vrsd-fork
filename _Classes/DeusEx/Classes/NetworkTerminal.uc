@@ -373,6 +373,10 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 		return Super.VirtualKeyPressed(key, bRepeat);
 }
 
+function bool IsLockedOut()
+{
+    return Computers(compOwner) != None && Computers(compOwner).allowHackingLockout && Computers(compOwner).timesHacked > player.SkillSystem.GetSkillLevel(class'SkillComputer') && (player.bHardcoreMode || player.bHackLockouts);
+}
 
 // ----------------------------------------------------------------------
 // ShowFirstScreen()
@@ -380,7 +384,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 function ShowFirstScreen()
 {
-    if (Computers(compOwner) != None && Computers(compOwner).allowHackingLockout && Computers(compOwner).timesHacked > player.SkillSystem.GetSkillLevel(class'SkillComputer') && (player.bHardcoreMode || player.bHackLockouts))
+    if (IsLockedOut())
         ShowScreen(LockoutScreen);
     else
     	ShowScreen(FirstScreen);
@@ -483,7 +487,8 @@ function CloseScreen(String action)
     //SARGE: Re-show the hack window when logging out.
     if (action == "LOGOUT")
     {
-        CreateHackWindow();
+        if (!IsLockedOut() || ComputerSecurity(compOwner) == None)
+            CreateHackWindow();
 		bNoHack = False;
     }
 }

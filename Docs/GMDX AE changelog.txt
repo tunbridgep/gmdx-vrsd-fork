@@ -110,6 +110,7 @@ New Features:
     - Always enabled in Hardcore mode
 
 Bugfixes:
+- Fixed a GMDX:AE v1.11 bug where the Hacking window would continue to appear on locked-out terminals.
 - Fixed GMDXv9 scope and "weapon against wall" animations being framerate dependent.
     - The amount of pullback when near a wall can now also be adjusted in the QoL menu or disabled entirely.
     - Grenades no longer pull back when near walls, to allow their placement preparing animations to appear smoother.

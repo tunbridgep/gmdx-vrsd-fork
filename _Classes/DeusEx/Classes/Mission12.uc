@@ -142,6 +142,10 @@ function Timer()
 
 				foreach AllActors(Class'DeusExMover', M, 'junkyard_doors')
 					M.BlowItUp(None);
+            
+                //Let tiffany actually leave her cell.
+                foreach AllActors(Class'TiffanySavage', Tiffany)
+                    Tiffany.bNoDoorInteractions = false;
 
 				flags.SetBool('TiffanyRescued', True,, 14);
 				flags.SetBool('MS_ChopperGasUnhidden', True,, 14);
@@ -155,11 +159,12 @@ function Timer()
             {
                 //Force tiffany to cloak and prevent her uncloaking
                 Tiffany.bHasCloak = true;
-                Tiffany.EnableCloak(true);
                 Tiffany.bCloakOn = true;
                 Tiffany.bForcedCloak = true;
+                Tiffany.EnableCloak(true);
                 Tiffany.CloakThreshold = 9999;
                 Tiffany.bDetectable = false;
+                Tiffany.SetupCloakManager();
             }
             flags.SetBool('TiffanyCloaked_Done', True,, 14);
         }
