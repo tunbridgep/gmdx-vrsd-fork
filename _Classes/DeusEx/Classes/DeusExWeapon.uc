@@ -1754,8 +1754,6 @@ function PlaySelect()
            if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
                p = 1.2;
         }
-        if (player != None && IsA('WeaponSawedOffShotgun'))
-           player.ShakeView(0.1, 96, 4);
      }
     PlayAnim('Select',p,0.0);
     bAimingDown=False;
