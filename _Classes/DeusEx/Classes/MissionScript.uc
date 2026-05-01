@@ -610,9 +610,6 @@ function FirstFrame()
 		// Set this flag so we only get in here once per mission.
 		flags.SetBool(flagName, True);
 	}
-        
-    //SARGE: Setup precipitation nodes
-    SetRainLevel();
 
 	//SARGE: Remove the MJ12 Elite vocoded voices, they don't work properly for LDDP,
 	//and have some other issues.
@@ -775,6 +772,7 @@ function SetRainLevel()
 {
     local PrecipitationInfoBase precips;                                        //SARGE
     local float maxPrecipDensity;
+    local string consoleVal;
 
     if (player == None)
         return;
@@ -809,10 +807,21 @@ function SetRainLevel()
         player.precipDensity = 7;
     else
         player.precipDensity = 0;
+        
+    //SARGE: Shut down the precipitators when we're not using them
+    //Horrid hack!
+    if (player.iWeatherControl <= 0 || player.precipDensity == 0)
+        consoleVal = "False";
+    else
+        consoleVal = "True";
+
+    ConsoleCommand("set Precipitation.Precipitator bWeatherEnabled " $ consoleVal);
     
     player.DebugLog("Rain density is: " $ player.precipDensity @ "nextPrecipChange:" @ player.nextPrecipChange @ "desired" @ player.desiredPrecip);
     foreach AllActors(class'PrecipitationInfoBase', precips)
     {
+        //precips.SetWeatherEnabled(player.iWeatherControl > 0);
+
         //player.DebugLog("Updating precipitation info: " $ precips);
         precips.PrecipDensity = player.precipDensity;
         precips.bSplashyFeet = player.precipDensity >= 4;

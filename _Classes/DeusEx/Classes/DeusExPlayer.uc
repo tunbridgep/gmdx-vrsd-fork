@@ -2273,6 +2273,10 @@ event TravelPostAccept()
     SetupKeybindManager();
 	SetupDecalManager();
 	SetupCloakManager();
+    
+    //SARGE: Dirty hack to disable rain at the start of the game if we haven't got it enabled
+    if (iWeatherControl == 0)
+        ConsoleCommand("set Precipitation.Precipitator bWeatherEnabled false");
 
     //reset "fake" death
     bFakeDeath = false;

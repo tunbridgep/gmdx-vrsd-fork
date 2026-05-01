@@ -60,6 +60,9 @@ static function private PrecipitationInfoBase GetBaseInfo()
         default.infoClass = class'PrecipitationInfoBase';
 }
 
+//SARGE: Allow toggling weather through the API
+function SetWeatherEnabled(bool enabled) { Log("WTF"); }
+
 //SARGE: Static function to get an info for a given zeon
 static function PrecipitationInfoBase GetBaseInfoFromZone(ZoneInfo Z)
 {
