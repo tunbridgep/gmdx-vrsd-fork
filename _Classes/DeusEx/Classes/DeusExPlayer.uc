@@ -1005,6 +1005,11 @@ var globalconfig bool bCameraStatic;                //SARGE: Blank out the scree
 
 var globalconfig bool bWeaponSelectShake;               //SARGE: Selecting weapons will shake the screen, like for the Shotgun in Vanilla.
 
+//Weather Control
+var globalconfig int iWeatherControl;                    //SARGE: Use the Precipitation System. 0 = off, 1 = on (how it was before), 2 = dynamic.
+var globalconfig float precipMaxDensity;                 //SARGE: Max density allowed for precipitation
+var globalconfig float precipMinDensity;                 //SARGE: Min density allowed for precipitation
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
@@ -1028,6 +1033,12 @@ var const localized string ShortFuseDisabled;
 var travel bool bShortFuseEnabled;          //SARGE: Allow manually activating/deactivating short fuse with the reload key.
 
 var private bool bHackDamage;               //SARGE: Make the player take damage next tick, from hacking failure.
+
+//SARGE: Precipitation Variables for Weather Control
+var travel float precipDensity;    //Current precipitation density
+var travel int nextPrecipChange;   //How many Timer()'s until next change
+var travel float desiredPrecip;    //Our desired precipitation value.
+
 
 //////////END GMDX
 
@@ -2267,6 +2278,10 @@ event TravelPostAccept()
     SetupKeybindManager();
 	SetupDecalManager();
 	SetupCloakManager();
+    
+    //SARGE: Dirty hack to disable rain at the start of the game if we haven't got it enabled
+    if (iWeatherControl == 0)
+        ConsoleCommand("set Precipitation.Precipitator bWeatherEnabled false");
 
     //reset "fake" death
     bFakeDeath = false;
@@ -17770,9 +17785,9 @@ function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
         //SARGE: Hardcore Mode significantly reduces skill gain later.
         if (!bAlwaysAllow)
         {
-            if (bHardcoreMode)
-                actualPoints *= 0.75;
-            else if (bHarderSkillRebalance)
+            //if (bHardcoreMode)
+            //    actualPoints *= 0.75;
+            /*else*/ if (bHarderSkillRebalance)
                 actualPoints *= 0.85;
 
             actualPoints = FloorTo(actualPoints,5);
@@ -20747,5 +20762,11 @@ defaultproperties
      bEnergyBarShowsReserve=true
      bViewmodelInertia=true
      bTurnHeads=true
+     precipDensity=-1
+     nextPrecipChange=-50
+     desiredPrecip=-1
      bFullInventoryMsgShowsSize=true
+     iWeatherControl=1
+     precipMaxDensity=14.0
+     precipMinDensity=0.0
 }

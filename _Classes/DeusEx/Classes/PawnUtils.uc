@@ -77,7 +77,7 @@ static function Sound GetFootstepSound(Pawn P, Name FloorMaterial, Name FloorTex
 		else
 			stepSound = Sound'WaterStep3';
 	}
-    else if (FloorTexture == 'Marker' || FloorTexture == 'Marker_sky' || FloorTexture == 'FlufBlueCloud_A' || FloorTexture == 'metalgrate_a') //SARGE: Moved this out of the Metal check, to handle new special case for invisible walkways
+    else if (FloorTexture == 'Marker' || FloorTexture == 'Marker_sky' || FloorTexture == 'FlufBlueCloud_A' || FloorTexture == 'ClenCmandWall_J' || FloorTexture == 'metalgrate_a') //SARGE: Moved this out of the Metal check, to handle new special case for invisible walkways
     {
         bRainStep = 0; //SARGE: No splash effects on gratings
 		volumeMultiplier = 0.9;

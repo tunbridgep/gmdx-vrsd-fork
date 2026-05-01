@@ -4203,8 +4203,12 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
     if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer') && !bHidden && !bCloakOn)
     {
-     if (DeusExPlayer(instigatedBy).bHitmarkerOn)
-         DeusExPlayer(instigatedBy).hitmarkerTime = 0.2;
+        //SARGE: Don't display poison effect hitmarkers in Hardcore mode. //SARGE: Or at all.
+        if ((DamageType != 'PoisonEffect' && DamageType != 'TearGas') || !DeusExPlayer(instigatedBy).bHardcoreMode)
+        {
+            if (DeusExPlayer(instigatedBy).bHitmarkerOn)
+                DeusExPlayer(instigatedBy).hitmarkerTime = 0.2;
+        }
 
      /*if (DeusExPlayer(instigatedBy).inHand != None)                           //RSD: Handling this outside of ScriptedPawn.uc, yuck
      {
@@ -8707,7 +8711,7 @@ function Tick(float deltaTime)
 	}
 
     //SARGE: Allow head-turning towards the player if we're idle
-    if (bCanTurnHead && player != None && player.CloakManager != None && !player.CloakManager.IsInAnyState() && player.bTurnHeads && Enemy == None && (IsInState('Idle') || IsInState('Standing') || IsInState('Sitting')))
+    if (bCanTurnHead && player != None && player.CloakManager != None && !player.CloakManager.IsInAnyState() && player.bTurnHeads && !player.RestrictInput() && Enemy == None && (IsInState('Idle') || IsInState('Standing') || IsInState('Sitting')))
     {
         if (DistanceFromPlayer < 700)
         {
