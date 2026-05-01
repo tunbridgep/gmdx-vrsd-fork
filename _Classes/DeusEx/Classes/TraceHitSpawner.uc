@@ -145,7 +145,6 @@ simulated function KungFuHitEffect()
 {
 	local SFXExp puff1;
 
-	Spawn(class'GMDXFireSmokeFade',,,Location+Vector(Rotation), Rotation);
 	puff1 = Spawn(class'SFXExp',,,Location+Vector(Rotation), Rotation);
 	if ( puff1 != None )
 	{
@@ -175,8 +174,12 @@ simulated function SpawnEffects(Actor Other, float Damage)
   
 	if(damageType == 'Rubber' || damageType == 'KnockedOut') //rubber bullet is the baton for hit tracer
 	{
-		KungFuHitEffect();
-		return;
+        //SARGE: This looks awful on Pawns, so limit it.
+        if (Pawn(Other) == None && class'DeusExPlayer'.default.bJohnWooSparks)
+        {
+            KungFuHitEffect();
+            return;
+        }
 	}
 
 	if (bPenetrating && !bHandToHand && Other != none)
@@ -186,10 +189,10 @@ simulated function SpawnEffects(Actor Other, float Damage)
 	      puff2 = spawn(class'SmokeTrail',,,Location+(Vector(Rotation)*1.75), Rotation);
 			if ( puff2 != None )
 			{
-			puff2.DrawScale = 0.35; //1
-			puff2.OrigScale = puff2.DrawScale;
-			puff2.LifeSpan = 1.0;
-	        puff2.OrigLifeSpan = puff2.LifeSpan;
+                puff2.DrawScale = 0.35; //1
+                puff2.LifeSpan = 1.0;
+                puff2.OrigScale = puff2.DrawScale;
+                puff2.OrigLifeSpan = puff2.LifeSpan;
 	        }
         }
         else
