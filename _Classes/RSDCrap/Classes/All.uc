@@ -263,10 +263,12 @@ class All expands Object
 ////QoL and OBM Menu images
 
 //QoL Menu
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AccAmmo1.pcx"	                NAME="QoL_AccAmmo1"                     GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AccAmmo2.pcx"	                NAME="QoL_AccAmmo2"                     GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AmmoRight1.pcx"	                NAME="QoL_AmmoRight1"                   GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AmmoRight2.pcx"	                NAME="QoL_AmmoRight2"                   GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AmmoSwapItem1.pcx"	            NAME="QoL_AmmoSwapItem1"                GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AmmoSwapItem2.pcx"	            NAME="QoL_AmmoSwapItem2"                GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AudioCombatMusic1.pcx"	        NAME="QoL_AudioCombatMusic1"    	    GROUP="UserInterface"    FLAGS=2
-#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AudioCombatMusic2.pcx"	        NAME="QoL_AudioCombatMusic2"    	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugmentiqueRandomOutfits1.pcx"	NAME="QoL_AugmentiqueRandomOutfits1"    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugmentiqueRandomOutfits2.pcx"	NAME="QoL_AugmentiqueRandomOutfits2"    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_AutoAddAugs1.pcx"	    NAME="QoL_AugWheel_AutoAddAugs1"   	    GROUP="UserInterface"    FLAGS=2
@@ -286,8 +288,12 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AutoSkins2.pcx"	                NAME="QoL_AutoSkins2"            	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_BeltMemory1.pcx"	                NAME="QoL_BeltMemory1"            	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_BeltMemory2.pcx"	                NAME="QoL_BeltMemory2"            	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_CombatMusic1.pcx"	            NAME="QoL_CombatMusic1"            	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_CombatMusic2.pcx"	            NAME="QoL_CombatMusic2"            	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_DeathPerspect1.pcx"	            NAME="QoL_DeathPerspect1"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_DeathPerspect2.pcx"	            NAME="QoL_DeathPerspect2"          	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_DeathWpnDrop1.pcx"	            NAME="QoL_DeathWpnDrop1"          	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_DeathWpnDrop2.pcx"	            NAME="QoL_DeathWpnDrop2"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FemaleHand1.pcx"	                NAME="QoL_FemaleHand1"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FemaleHand2.pcx"	                NAME="QoL_FemaleHand2"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FPConv1.pcx"	                    NAME="QoL_FPConv1"              	    GROUP="UserInterface"    FLAGS=2
@@ -296,14 +302,28 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_GameBloodyWeapons2.pcx"	        NAME="QoL_GameBloodyWeapons2"    	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_IWBelt1.pcx"	                    NAME="QoL_IWBelt1"               	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_IWBelt2.pcx"	                    NAME="QoL_IWBelt2"               	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_JWooMode1.pcx"	                NAME="QoL_JWooMode1"               	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_JWooMode2.pcx"	                NAME="QoL_JWooMode2"               	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_PainDeath1.pcx"	                NAME="QoL_PainDeath1"             	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_PainDeath2.pcx"	                NAME="QoL_PainDeath2"             	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_PersistantMode1.pcx"	            NAME="QoL_PersistentMode1"         	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_PersistantMode2.pcx"	            NAME="QoL_PersistentMode2"         	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_ReservedEnerg1.pcx"	            NAME="QoL_ReservedEnerg1"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_ReservedEnerg2.pcx"	            NAME="QoL_ReservedEnerg2"          	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_SaveFade1.pcx"	                NAME="QoL_SaveFade1"            	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_SaveFade2.pcx"	                NAME="QoL_SaveFade2"            	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_Secondary1.pcx"	                NAME="QoL_Secondary1"            	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_Secondary2.pcx"	                NAME="QoL_Secondary2"            	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_SkinIcons1.pcx"	                NAME="QoL_SkinIcons1"            	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_SkinIcons2.pcx"	                NAME="QoL_SkinIcons2"            	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_SmartBinocular1.pcx"	            NAME="QoL_SmartBinocular1"         	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_SmartBinocular2.pcx"	            NAME="QoL_SmartBinocular2"         	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_TexFilter1.pcx"	                NAME="QoL_TexFilter1"            	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_TexFilter2.pcx"	                NAME="QoL_TexFilter2"            	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_UnlootItems1.pcx"	            NAME="QoL_UnlootItems1"         	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_UnlootItems2.pcx"	            NAME="QoL_UnlootItems2"         	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_Weather1.pcx"	                NAME="QoL_Weather1"         	        GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_Weather2.pcx"	                NAME="QoL_Weather2"         	        GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_WpnInertia1.pcx"	                NAME="QoL_WpnInertia1"         	        GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_WpnInertia2.pcx"	                NAME="QoL_WpnInertia2"         	        GROUP="UserInterface"    FLAGS=2
 
@@ -338,6 +358,10 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_FrobColors2.pcx"	            NAME="OBM_FrobColors2"              GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GepGun1.pcx"	                NAME="OBM_GepGun1"     		    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GepGun2.pcx"	                NAME="OBM_GepGun2"     		    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GMDXLaunch1.pcx"	            NAME="OBM_GMDXLaunch1"   	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GMDXLaunch2.pcx"	            NAME="OBM_GMDXLaunch2"   	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GMDXMenu1.pcx"	            NAME="OBM_GMDXMenu1"    	    	GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_GMDXMenu2.pcx"	            NAME="OBM_GMDXMenu2"    	    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Grenade1.pcx"	            NAME="OBM_Grenade1"	     	    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Grenade2.pcx"	            NAME="OBM_Grenade2"	     	    	GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Hardcore1.pcx"	            NAME="OBM_Hardcore1"		    	GROUP="UserInterface"    FLAGS=2
