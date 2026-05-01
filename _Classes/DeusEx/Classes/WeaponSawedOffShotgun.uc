@@ -134,7 +134,7 @@ simulated function MuzzleFlashLight()
 			flash.SetBase(Owner);
 	}
 
-	if (Owner.IsA('DeusExPlayer') && IsHDTP())
+	if (DeusExPlayer(Owner) != None && IsHDTP())
     {    //CyberP: hacky, sub-optimal new muzzleflash effects.
 		offset.Z += Owner.CollisionHeight * 0.7;
 		if (IsA('WeaponAssaultShotgun'))
