@@ -34,8 +34,6 @@ simulated function Timer()
 	SpawnEffects(Owner, HitDamage);
 	//GMDX:just do these too, incase
 	class'TraceHitSpawner'.default.bForceBulletHole=false; //dasraiser: wow this should not be how to ;)
-	class'GMDXHitSpawner'.default.HitDamage=1;
-	class'GMDXHitSpawner'.default.damageType='';
 	//default.bForceBulletHole=false; dasraiser: surprised this didn't work!
 	Destroy();
 }
