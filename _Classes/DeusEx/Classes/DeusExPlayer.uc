@@ -999,7 +999,7 @@ var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn
 
 var globalconfig bool bFullInventoryMsgShowsSize;        //SARGE: The "You don't have enough space" message will show the inventory size of objects.
 
-var globalconfig bool bCameraHum;                        //SARGE: Restore the Camera Hum from Vanilla
+var globalconfig bool bRemoveCameraHum;                  //SARGE: Restore the Camera Hum from Vanilla
 
 var globalconfig bool bCameraStatic;                //SARGE: Blank out the screen when using cameras
 
@@ -20746,5 +20746,4 @@ defaultproperties
      bViewmodelInertia=true
      bTurnHeads=true
      bFullInventoryMsgShowsSize=true
-     bCameraHum=true
 }

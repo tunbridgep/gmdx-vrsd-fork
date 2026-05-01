@@ -21,9 +21,15 @@ event InitWindow()
 //Update belt when closing the menu
 function SaveSettings()
 {
+    local SecurityCamera cam;
+
     Super.SaveSettings();
     player.UpdateCrosshairStyle();
     player.UpdateHUD();
+
+    //Update security cameras to force-refresh their ambient sounds
+    ForEach player.AllActors(class'SecurityCamera', cam)
+        cam.SetDefaultAmbientSound(true);
 }
 
 event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
@@ -80,6 +86,7 @@ defaultproperties
      items(20)=(HelpText="Lockpicking and Electronics skills will use Hardcore Mode values",actionText="Harder Lockpicking and Electronics",variable="bHarderLockpicking",defaultValue=0)
      items(21)=(HelpText="Throwing unconscious carcasses around will kill them. Unconscious carcasses are particularly vulnerable and will die from short falls.",actionText="Unconscious Fall Damage",variable="bUnconsciousFallDamage",defaultValue=1)
      items(22)=(HelpText="Camera screens in Security Computers will show static when cameras are disabled, forcing you to re-enable them if you want to view from the camera.",actionText="Disabled Camera Screens",variable="bCameraStatic",defaultValue=0)
+     items(23)=(HelpText="Disable the ambient sound made by security cameras when in their idle state, which will make them harder to spot.",actionText="Silent Camera Ambient Sound",variable="bRemoveCameraHum",defaultValue=0)
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"
