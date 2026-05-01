@@ -27,7 +27,7 @@ function BuildModifierList()
         RemoveItem("bImprisonmentTakesAmmo");
         RemoveItem("bGEPUsesWPByDefault");
         RemoveItem("bHarderChargedPickups");
-        RemoveItem("bHarderSkillRebalance");
+        //RemoveItem("bHarderSkillRebalance");
         //RemoveItem("bRestrictedMetabolism");
     }
 

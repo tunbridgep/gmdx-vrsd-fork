@@ -17768,9 +17768,9 @@ function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
         //SARGE: Hardcore Mode significantly reduces skill gain later.
         if (!bAlwaysAllow)
         {
-            if (bHardcoreMode)
-                actualPoints *= 0.75;
-            else if (bHarderSkillRebalance)
+            //if (bHardcoreMode)
+            //    actualPoints *= 0.75;
+            /*else*/ if (bHarderSkillRebalance)
                 actualPoints *= 0.85;
 
             actualPoints = FloorTo(actualPoints,5);
