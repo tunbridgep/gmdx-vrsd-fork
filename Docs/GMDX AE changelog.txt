@@ -107,7 +107,6 @@ New Features:
 - Added a new Playthrough Modifier to make Thermoptic Camo and Rebreathers disposable and non-rechargable, similar to GMDX v9
     - Always enabled in Hardcore mode
 - Added a new Playthrough Modifier to reduce skill gains by 15% (rounded to the nearest 5 skill points)
-    - Always enabled in Hardcore mode
 
 Bugfixes:
 - Fixed a GMDX:AE v1.11 bug where the Hacking window would continue to appear on locked-out terminals.
@@ -161,7 +160,7 @@ Misc Changes:
 - Buttons now glow slightly to make them more visible in the dark.
 - Disabled cameras now show static in the Security Computer window, similar to Transcended.
 - The Regeneration Aug will now disable immediately upon completely refilling your health, rather than after a short delay.
-- Restored the vanilla security camera "hum". This can be disabled in the Advanced options menu.
+- Restored the vanilla security camera "hum" to ease in finding cameras. This can be disabled in the Gameplay options menu.
 - Added engine fix DLL to allow playing at high framerates.
 - A number of Repair Bots have been removed on Hardcore difficulty in order to better balance Energy availability.
 - Sleight of Hand and Doorsman have been swapped in the Lockpicking perk tree.
