@@ -660,6 +660,9 @@ function PreTravel()
 
 function Timer()
 {
+    //SARGE: Setup precipitation nodes
+    SetRainLevel();
+
 	// make sure our flags are initialized correctly
 	if (flags == None)
 	{
@@ -755,6 +758,77 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 	}
 
 	return aPoint;
+}
+
+//SARGE: Rain Control
+function SetRainLevel()
+{
+    local PrecipitationInfoBase precips;                                        //SARGE
+    local float maxPrecipDensity;
+    local string consoleVal;
+
+    if (player == None)
+        return;
+    
+    if (player.iWeatherControl >= 2)
+    {
+
+        if (player.precipDensity == -1)
+            player.precipDensity = 5 + FRand() * 2;
+
+        if (player.nextPrecipChange <= 0)
+        {
+            //roll a desired density for us to move towards
+            player.desiredPrecip = FRand() * player.precipMaxDensity;
+            player.DebugMessage("ROLLED NEW DESIRED PRECIP: " $ player.desiredPrecip);
+            player.nextPrecipChange = 150 + Rand(250);
+        }
+        else
+        {
+            if (player.precipDensity < player.desiredPrecip + 1 && player.precipDensity > player.desiredPrecip - 1)
+                player.precipDensity = player.desiredPrecip;
+            else if (player.precipDensity < player.desiredPrecip)
+                player.precipDensity += FRand() * 0.4;
+            else
+                player.precipDensity -= FRand() * 0.4;
+        }
+    
+        player.precipDensity = FMAX(player.precipMinDensity,player.precipDensity);
+        player.precipDensity = FMIN(player.precipMaxDensity,player.precipDensity);
+    }
+    else if (player.iWeatherControl == 1)
+        player.precipDensity = 7;
+    else
+        player.precipDensity = 0;
+        
+    //SARGE: Shut down the precipitators when we're not using them
+    //Horrid hack!
+    if (player.iWeatherControl <= 0 || player.precipDensity == 0)
+        consoleVal = "False";
+    else
+        consoleVal = "True";
+
+    ConsoleCommand("set Precipitation.Precipitator bWeatherEnabled " $ consoleVal);
+    
+    player.DebugLog("Rain density is: " $ player.precipDensity @ "nextPrecipChange:" @ player.nextPrecipChange @ "desired" @ player.desiredPrecip);
+    foreach AllActors(class'PrecipitationInfoBase', precips)
+    {
+        //precips.SetWeatherEnabled(player.iWeatherControl > 0);
+
+        //player.DebugLog("Updating precipitation info: " $ precips);
+        precips.PrecipDensity = player.precipDensity;
+        precips.bSplashyFeet = player.precipDensity >= 4;
+
+        if (player.precipDensity >= 1)
+            precips.NoiseVolume = (255.0 / 20) * player.precipDensity;
+        else
+            precips.NoiseVolume = 0; 
+        player.DebugLog("Updating precipitation volume: " $ precips.NoiseVolume);
+        precips.UpdatePrecipitationSettings(true);
+    }
+
+    if (player.nextPrecipChange >= 0)
+        player.nextPrecipChange--;
 }
 
 //Gives the specified item to 0-X random enemies in the map.
