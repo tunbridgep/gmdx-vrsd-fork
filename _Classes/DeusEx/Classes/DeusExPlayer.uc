@@ -1003,6 +1003,8 @@ var globalconfig bool bRemoveCameraHum;                  //SARGE: Restore the Ca
 
 var globalconfig bool bCameraStatic;                //SARGE: Blank out the screen when using cameras
 
+var globalconfig bool bWeaponSelectShake;               //SARGE: Selecting weapons will shake the screen, like for the Shotgun in Vanilla.
+
 //var globalconfig bool bHitFlinch;                           //SARGE: Flinch when being hit
 
 //New method for detecting if we're in combat efficiently
