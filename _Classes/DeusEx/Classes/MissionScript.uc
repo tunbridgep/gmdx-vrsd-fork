@@ -623,13 +623,6 @@ function FirstFrame()
 				P.BarkBindName = "MJ12TroopB";
 	   }
 	}
-
-	//HDTP DDL: make the trees not unlit, because seriously WTF people
-	foreach AllActors(Class'tree', tree)
-	{
-		if(tree.bUnlit)
-			tree.bUnlit = false;
-	}
 }
 
 // ----------------------------------------------------------------------
