@@ -1432,9 +1432,9 @@ function DrawTargetAugmentation(GC gc)
 	local vector AimLocation;
 	local int AimBodyPart, casted;
     local float visi, wepAcc, litemult, dist;                                   //RSD: Added litemult, dist
-    local int ifflevel;
     local float x,y,w,h,mult;
     local bool bValidTarget;
+    local Augmentation iff;
 
 	crossColor.R = 255; crossColor.G = 255; crossColor.B = 255;
 
@@ -1449,27 +1449,30 @@ function DrawTargetAugmentation(GC gc)
 	//CyberP: Aug IFF
         if (Player != none && Player.AugmentationSystem!= none) //RSD: accessed none?
         {
-            ifflevel = Player.AugmentationSystem.GetAugLevelValue(class'AugIFF');
-
-            //Level 2 - hazard check
-            //if (!bDefenseActive && ifflevel >= 2.0)
-            if (ifflevel >= 2.0)
-                checkForHazards(gc);
-
-            //Level 3 - visibility display
-            if (ifflevel >= 3.0)
+            //SARGE: It's a toggle now, so this isn't good enough
+            //ifflevel = Player.AugmentationSystem.GetAugLevelValue(class'AugIFF');
+            iff = Player.AugmentationSystem.GetAug(class'AugIFF');
+            if (iff != None && iff.bHasIt)
             {
-                visi = Player.AIVisibility(false);
-                //litemult = ((visi - 0.062745) / (visi));                      //RSD: Jose21Crisis' formula to keep visibility constant during night vision
-                litemult = visi-0.031376;                                       //RSD: New formula to keep visibility constant during night vision (9.3%)
-                if ((Player.UsingChargedPickup(class'TechGoggles') ||  Player.AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0) && visi != 0.0)
-                   visi = litemult;
-                if(Player.IsCrouching())
-                   visi *= 1.0-0.15*Player.SkillSystem.GetSkillLevel(class'SkillStealth'); //RSD: Stealth skill fakes visibility reduction by 0/15/30/45%
-                casted = (int(visi*300));
-                if (casted > 100)
-                   casted = 100;
-                Player.LightLevelDisplay = casted;
+                //Level 2 - hazard check
+                if (iff.CurrentLevel >= 1 && iff.bIsActive)
+                    checkForHazards(gc);
+
+                //Level 3 - visibility display
+                if (iff.CurrentLevel >= 2)
+                {
+                    visi = Player.AIVisibility(false);
+                    //litemult = ((visi - 0.062745) / (visi));                      //RSD: Jose21Crisis' formula to keep visibility constant during night vision
+                    litemult = visi-0.031376;                                       //RSD: New formula to keep visibility constant during night vision (9.3%)
+                    if ((Player.UsingChargedPickup(class'TechGoggles') ||  Player.AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0) && visi != 0.0)
+                    visi = litemult;
+                    if(Player.IsCrouching())
+                    visi *= 1.0-0.15*Player.SkillSystem.GetSkillLevel(class'SkillStealth'); //RSD: Stealth skill fakes visibility reduction by 0/15/30/45%
+                    casted = (int(visi*300));
+                    if (casted > 100)
+                    casted = 100;
+                    Player.LightLevelDisplay = casted;
+                }
             }
         }
 
@@ -2040,7 +2043,7 @@ function DrawVisionAugmentation(GC gc)
 				{
 					dist = VSize(A.Location - loc);
                     //SARGE: Added a new condition for detecting items and security systems only
-                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('Containers') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('AlarmUnit')))
+                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('Containers') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('Shuriken') || A.IsA('AlarmUnit')))
                     {
 						VisionTargetStatus = GetVisionTargetStatus(A);
 						SetSkins(A, oldSkins);
@@ -2259,6 +2262,9 @@ function bool IsHeatSource(Actor A)
     //SARGE: Added pickups and weapons as well
     else if (A.IsA('Inventory'))
         return true;
+    //SARGE: And thrown knives
+    else if (A.IsA('Shuriken') && Shuriken(A).bStuck)
+        return true;
     //SARGE: And crates
     else if (A.IsA('CrateBreakableMedCombat') || A.IsA('CrateBreakableMedGeneral') || A.IsA('CrateBreakableMedMedical') || A.IsA('BoxSmall'))
         return true;
@@ -2378,7 +2384,7 @@ function int GetVisionTargetStatus(Actor Target)
 		return VISIONNEUTRAL;
 	
     //SARGE: Added. Show items as a different colour
-    if (target.IsA('Inventory') || target.IsA('CrateBreakableMedCombat') || target.IsA('CrateBreakableMedGeneral') || target.IsA('CrateBreakableMedMedical') || target.IsA('BoxSmall'))
+    if (target.IsA('Inventory') || target.IsA('CrateBreakableMedCombat') || target.IsA('CrateBreakableMedGeneral') || target.IsA('Shuriken') || target.IsA('CrateBreakableMedMedical') || target.IsA('BoxSmall'))
         return VISIONITEM;
 
 	if (player.Level.NetMode == NM_Standalone)

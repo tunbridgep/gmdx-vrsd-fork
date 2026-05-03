@@ -102,7 +102,7 @@ defaultproperties
      items(36)=(HelpText="If enabled, the bioenergy bar will show the reserved energy amount in red.",actionText="HUD: Show Reserved Energy",variable="bEnergyBarShowsReserve",defaultValue=1,image1="Qol_ReservedEnerg2",image2="Qol_ReservedEnerg1")
      items(37)=(HelpText="If enabled, weapons will have inertia when turning and moving.",actionText="HUD: Weapon Inertia",variable="bViewmodelInertia",defaultValue=1,image1="Qol_WpnInertia2",image2="Qol_WpnInertia1")
      items(38)=(HelpText="With Restricted Saving enabled, save points will fade out when far away from the player. Increases immersion at the cost of visibility.",actionText="Game: Fade Out Save Points",variable="bFadeOutSavePoints",image1="Qol_SaveFade2",image2="Qol_SaveFade1")
-     items(39)=(HelpText="If enabled, conversations will play in first-person rather than using a third-person camera",actionText="Player: First Person Conversations",variable="bFirstPersonConversation",image1="Qol_FPConv2",image2="Qol_FPConv1")
+     items(39)=(HelpText="If enabled, conversations will play in first-person rather than using a third-person camera",actionText="Player: First Person Conversations",variable="bFirstPersonConversation",image1="Qol_FPConv1",image2="Qol_FPConv2")
      items(40)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Weapon Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1,image1="Qol_AutoSkins1",image2="Qol_AutoSkins2")
 
      Title="GMDX Quality of Life Options"

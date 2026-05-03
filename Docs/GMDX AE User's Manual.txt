@@ -56,7 +56,17 @@ To launch GMDX: AE through steam, please add the following to the Launch Paramet
 Be sure to replace the path specified with your actual Deus Ex installation path. This can be found by right-clicking Deus Ex in Steam,
 selecting Manage, and then selecting Browse Local Files.
 
-**To ensure the mod is installed correctly, the Main Menu should display the words "Give Me Deus Ex: Augmented Edition" at the bottom.
+**To ensure the mod is installed correctly, the Main Menu should display the words "Give Me Deus Ex: Augmented Edition" at the bottom.**
+
+|||Enabling DXVK|||
+
+GMDX:AE comes with DXVK installed by default, but not enabled. DXVK doesn't work well with some graphics cards, but works well with others.
+
+To enable DXVK for the DirectX 9 and DirectX 10 renderers, run `dxvk_enable.cmd` in the Deus Ex/System folder. To disable it, run `dxvk_disable.cmd`
+
+The file `dxvk.conf` should be modified to configure various settings, such as frame limits and vsync.
+
+NOTE: DXVK may cause the game to crash on launch for some people.
 
 |||Special Cases and Alternate Launchers|||
 
