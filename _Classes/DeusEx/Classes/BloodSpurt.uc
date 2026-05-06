@@ -15,8 +15,8 @@ auto state Flying
 		}
 
 		Velocity = vect(0,0,0);
-		LifeSpan *= 1.05;
-		DrawScale *= 1.01;
+		LifeSpan *= 1.15;
+		DrawScale *= 1.15;
 		//DrawScale -= FRand() * 0.5;
 		PlayAnim('Spurt');
 	}

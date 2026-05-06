@@ -32,9 +32,9 @@ function BeginPlay()
 		rnd = 0.2;
 
 	if (IsHDTP())
-		randomScale = rnd * 0.09;
+		randomScale = rnd * 0.085;
 	else if (IsNewBlood())
-		randomScale = rnd * -0.45;
+		randomScale = rnd * -0.5;
 	else //vanilla but bigger
 		randomScale = rnd * 0.05;
 

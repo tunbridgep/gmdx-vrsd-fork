@@ -137,7 +137,7 @@ function SetHighlight(bool bNewHighlight)
 {
 	bHighlight = bNewHighlight;
 
-	if (bHighlight)
+	if (bHighlight && player.iAltFrobDisplay < 2)
         winText.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	else
         winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));

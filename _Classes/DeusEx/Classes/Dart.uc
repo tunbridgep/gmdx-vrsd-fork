@@ -10,12 +10,9 @@ var ParticleGenerator smokeGen;
 function CreateSparkHitWallEffect()
 {
 	local GMDXSparkFade fade;
-	local GMDXImpactSpark s;
-	local GMDXImpactSpark2 t;
-	local int i;
 
-	//hit location little spark	explosion
-	fade = spawn(class'GMDXSparkFade');
+	//hit location spark explosion animated texture 
+	fade = Spawn(class'GMDXSparkFade');
 	if (fade != None)
 	{
 		fade.DrawScale = 0.16;
@@ -23,22 +20,14 @@ function CreateSparkHitWallEffect()
 	}
 
 	//flying spark
-	for (i=0; i<4; i++)
-	{
-		s = spawn(class'GMDXImpactSpark');
-		if( s != None  )
-		{
-			s.LifeSpan=FRand()*0.12;
-			s.DrawScale = FRand() * 0.06;
-		}
-
-		t = spawn(class'GMDXImpactSpark2');
-		if( t != None )
-		{
-			t.LifeSpan=FRand()*0.12;
-			t.DrawScale = FRand() * 0.06;
-		}
-	}
+	Spawn(class'GMDXImpactSpark');
+	Spawn(class'GMDXImpactSpark');
+	Spawn(class'GMDXImpactSpark');
+	Spawn(class'GMDXImpactSpark2');
+	Spawn(class'GMDXImpactSpark2');
+	Spawn(class'GMDXImpactSpark2');
+	Spawn(class'GMDXImpactSpark2');
+	Spawn(class'GMDXImpactSpark2');
 }
 
 simulated function DoProjectileHitEffects(bool bWallHit)
@@ -46,7 +35,7 @@ simulated function DoProjectileHitEffects(bool bWallHit)
 	Super.DoProjectileHitEffects(bWallHit);
 
 	//Ygll: Spark effect when hitting hard surface
-	if(bWallHit)
+	if(bWallHit && !IsA('DartTaser'))
 	{
 		CreateSparkHitWallEffect();
 	}

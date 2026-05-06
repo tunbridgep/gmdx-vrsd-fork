@@ -943,31 +943,12 @@ state DeActivated
 simulated function bool UpdateInfo(Object winObject)
 {
 	local PersonaInfoWindow winInfo;
-	local string str;
-    local DeusExPlayer player;
-
-    player = DeusExPlayer(Owner);
 
 	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None || player == None)
-		return False;
+	if (winInfo == None)
+		return false;
 
-    //Set title
-	winInfo.SetTitle(GetTitle(player));
-
-    if (player != None)
-		winInfo.AddDeclineButton(class);
-
-    if (player != None && CanAssignSecondary(player))
-		winInfo.AddSecondaryButton(self);
-
-	winInfo.SetText(GetDescription(player));
-		
-    winInfo.AppendText(winInfo.CR());
-
-	winInfo.SetText(GetDescription2(player));
-
-	return True;
+	return winInfo.UpdatePickupInfo(Self);
 }
 
 // ----------------------------------------------------------------------

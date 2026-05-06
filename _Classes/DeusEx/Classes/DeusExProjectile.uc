@@ -789,7 +789,7 @@ auto simulated state Flying
 	
 	   if (IsA('RubberBullet'))
 	   {
-			Velocity = 0.8*((Velocity dot HitNormal) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
+			Velocity = 0.6*((Velocity dot HitNormal) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
 			speed2 = VSize(Velocity);
 			bFixedRotationDir = true;
 			RotationRate = RotRand(false);
