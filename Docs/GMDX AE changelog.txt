@@ -1,4 +1,4 @@
-1.2 Hotfix:
+1.21 (Hotfix Release):
 
 New Features:
 - The Realtime Aug Menu has been moved to it's own setting in the Gameplay menu, independent of the regular Realtime UI setting.
