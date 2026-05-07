@@ -2836,11 +2836,33 @@ exec function RestartLevel()
 }
 
 // ----------------------------------------------------------------------
+// BarkHackFix()
+// SARGE: The bark window causes crashes when reloading.
+// This attempts to fix it. This is kind of the nuclear option....
+// ----------------------------------------------------------------------
+function BarkHackFix()
+{
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    
+    //SARGE: For some reason this fixes crashes...
+    if (root != None && root.hud != None)
+    {
+        root.hud.barkDisplay.DestroyWindow();
+        root.hud.barkDisplay.Destroy();
+        root.hud.barkDisplay = None;
+        barkManager.Destroy();
+    }
+}
+
+
+// ----------------------------------------------------------------------
 // LoadGame()
 // ----------------------------------------------------------------------
-
 exec function LoadGame(int saveIndex)
 {
+    BarkHackFix();
+    SetPause(true);
     SetupRendererSettings();
 
     if (DeusExRootWindow(rootWindow) != None)

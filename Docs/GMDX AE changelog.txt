@@ -2,6 +2,7 @@
 
 Bug Fixes:
 - Fixed Alternate Start not awarding skill points when using the UNATCO Graduate modifier
+- Fixed a rare crash when quickloading while enemy bark lines were displayed on the screen
 
 
 1.2:
