@@ -1,5 +1,8 @@
 1.2 Hotfix:
 
+New Features:
+- The Realtime Aug Menu has been moved to it's own setting in the Gameplay menu, independent of the regular Realtime UI setting.
+
 Bug Fixes:
 - Fixed Alternate Start not awarding skill points when using the UNATCO Graduate modifier
 - Fixed a rare crash when quickloading while enemy bark lines were displayed on the screen
