@@ -7,7 +7,7 @@ New Features:
 Bug Fixes:
 - Fixed Alternate Start not awarding skill points when using the UNATCO Graduate modifier
 - Fixed a rare crash when quickloading while enemy bark lines were displayed on the screen
-
+- The Weapon Skin Selection in the inventory screen no longer appears for a weapon when using the HDTP model, because HDTP models can't have weapon skins
 
 1.2:
 

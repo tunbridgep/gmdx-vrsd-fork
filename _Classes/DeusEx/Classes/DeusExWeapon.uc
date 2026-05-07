@@ -6097,7 +6097,7 @@ simulated function bool UpdateInfo(Object winObject)
 	       winInfo.AddSecondaryButton(self);
 		
         //SARGE: Add Skins Button
-        if (DeusExPlayer(P).WeaponSkinManager.GetSkinCountFor(self) > 1)
+        if (DeusExPlayer(P).WeaponSkinManager.GetSkinCountFor(self) > 1 && !IsHDTP())
             winInfo.AddSkinsButtons(self);
     }
 
