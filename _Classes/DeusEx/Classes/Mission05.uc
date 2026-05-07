@@ -96,6 +96,8 @@ function FirstFrame()
 	{
         Fix9905Code();
 
+        DoAcademyGraduateSkills();
+
 		// make sure this goal is completed
 		Player.GoalCompleted('EscapeToBatteryPark');
 		// delete Paul's carcass if he's still alive

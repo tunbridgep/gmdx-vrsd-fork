@@ -28,6 +28,22 @@ var byte savedMusicVolume;
 var byte savedSpeechVolume;
 
 // ----------------------------------------------------------------------
+// SARGE: TriggerSkillsAtStart()
+//
+// Gives us a bunch of skill points upfront, then sets a flag.
+// This is done here because it is needed in multiple places, due to alternate start.
+// ----------------------------------------------------------------------
+		
+ function DoAcademyGraduateSkills()
+ {
+    if (!flags.GetBool('GMDXUpfrontSkills') && player.bSkillsSetAtStart /*&& player.bPrisonStart*/)
+    {
+        player.SkillPointsAdd(12000,true);
+        flags.SetBool('GMDXUpfrontSkills', True,, 6);
+    }
+ }
+
+// ----------------------------------------------------------------------
 // SARGE: TriggerUNATCOTakeover()
 //
 // Generic version of mission end event where UNATCO sends troops to take over an area

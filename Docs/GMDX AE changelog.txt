@@ -1,3 +1,9 @@
+1.2 Hotfix:
+
+Bug Fixes:
+- Fixed Alternate Start not awarding skill points when using the UNATCO Graduate modifier
+
+
 1.2:
 
 New Features:

@@ -88,14 +88,9 @@ function FirstFrame()
 			foreach AllActors(class'TerroristCommander', cmdr, 'TerroristCommander')
 				cmdr.Destroy();
 		}
+        
+        DoAcademyGraduateSkills();
 		
-        //If we have the Academy Skills modifier, add a bunch of skill points
-        if (!flags.GetBool('GMDXUpfrontSkills') && player.bSkillsSetAtStart)
-        {
-            player.SkillPointsAdd(12000,true);
-            flags.SetBool('GMDXUpfrontSkills', True);
-        }
-
 	}
 	//DDL added to fix a newspaper that gets destroyed by JC's door
 	if(localURL == "01_NYC_UNATCOHQ")
