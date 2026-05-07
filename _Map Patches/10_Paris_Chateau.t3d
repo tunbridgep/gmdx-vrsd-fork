@@ -130435,7 +130435,8 @@ Begin Actor Class=WeaponSword Name=WeaponSword0
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=WeaponSword
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2230,ZoneNumber=10)
-    Location=(X=-1192.900024,Y=636.588867,Z=421.163757)
+    Location=(X=-462.900024,Y=1057.588867,Z=370.163757)
+    Rotation=(Yaw=-5000)
     OldLocation=(X=-1229.900024,Y=1098.588867,Z=392.163757)
     Name=WeaponSword0
 End Actor
@@ -130448,5 +130449,16 @@ Begin Actor Class=WeaponEMPGrenade Name=WeaponEMPGrenade0
     Location=(X=-816.862427,Y=532.181213,Z=370.530609)
     OldLocation=(X=-816.862427,Y=532.181213,Z=370.530609)
     Name=WeaponEMPGrenade0
+End Actor
+Begin Actor Class=WeaponSawedOffShotgun Name=WeaponSawedOffShotgun0
+    currentWeaponSkin="hotpink"
+    PickupAmmoCount=0
+    LastRenderTime=108.095398
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponSawedOffShotgun
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=919,ZoneNumber=1)
+    Location=(X=-1144.924561,Y=-4693.502441,Z=16.999344)
+    OldLocation=(X=-1144.924561,Y=-4590.502441,Z=16.999344)
+    Name=WeaponSawedOffShotgun0
 End Actor
 End Map

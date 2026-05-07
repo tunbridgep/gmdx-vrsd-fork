@@ -313863,4 +313863,14 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner8
     OldLocation=(X=6143.182617,Y=-6468.725098,Z=-5177.897461)
     Name=OutfitSpawner8
 End Actor
+Begin Actor Class=WeaponAssaultShotgun Name=WeaponAssaultShotgun0
+    currentWeaponSkin="goldengun"
+    LastRenderTime=84.686310
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponAssaultShotgun
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3448,ZoneNumber=10)
+    Location=(X=7339.028809,Y=-8944.900391,Z=-4959.896973)
+    OldLocation=(X=7339.028809,Y=-8913.900391,Z=-5171.896973)
+    Name=WeaponAssaultShotgun0
+End Actor
 End Map
