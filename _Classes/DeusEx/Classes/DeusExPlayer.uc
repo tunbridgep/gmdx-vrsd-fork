@@ -1041,6 +1041,8 @@ var travel float desiredPrecip;    //Our desired precipitation value.
 
 var globalconfig bool bRealtimeRadialMenu;  //SARGE: The radial menu is now controlled separately to the old RealUI setting
 
+var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar, even when the Stamina System is disabled.
+
 //////////END GMDX
 
 // OUTFIT STUFF

@@ -195,6 +195,7 @@ defaultproperties
      items(143)=(HelpText="If enabled, NPCs will turn their heads to face the player when nearby",actionText="NPCs: Look at Player",variable="bTurnHeads")
      items(144)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1)
      items(145)=(HelpText="When attempting to pick up an item for which you don't have inventory space, the pickup message will show the size of the item in grid squares.",actionText="HUD: Pickup Message Shows Size",variable="bFullInventoryMsgShowsSize",defaultValue=1)
+     items(146)=(HelpText="Always show the Stamina bar, even when the Stamina system is disabled.",actionText="HUD: Always Show Stamina Bar",variable="bAlwaysShowStamina")
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

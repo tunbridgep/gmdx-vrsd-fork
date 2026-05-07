@@ -2,6 +2,7 @@
 
 New Features:
 - The Realtime Aug Menu has been moved to it's own setting in the Gameplay menu, independent of the regular Realtime UI setting.
+- Added a new QoL setting to always show the stamina bar, even when not using the Stamina system.
 
 Bug Fixes:
 - Fixed Alternate Start not awarding skill points when using the UNATCO Graduate modifier

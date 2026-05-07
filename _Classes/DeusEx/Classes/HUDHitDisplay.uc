@@ -353,7 +353,7 @@ event DrawWindow(GC gc)
         gc.DrawText(13, 74, 8, 8, int(player.Energy));
 
 	// If we're underwater draw the breathometer
-	if (bUnderwater || Player.iStaminaSystem > 0 || Player.bHardCoreMode)
+	if (bUnderwater || Player.iStaminaSystem > 0 || Player.bHardCoreMode || player.bAlwaysShowStamina)
 	{
 	    breathPercent = 100.0 * player.swimTimer / player.swimDuration;
 	    breathPercent = FClamp(breathPercent, 0.0, 100.0);
@@ -510,7 +510,7 @@ event Tick(float deltaSeconds)
 		}
 
 		// Now show or hide the breath meter
-		if (Player.iStaminaSystem == 0 && !Player.bHardCoreMode)
+		if (Player.iStaminaSystem == 0 && !Player.bHardCoreMode && !player.bAlwaysShowStamina)
 		{
 		if (bUnderwater)
 		{
