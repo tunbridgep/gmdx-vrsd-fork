@@ -67,7 +67,7 @@ defaultproperties
      items(2)=(HelpText="Security Terminals will disable access after being hacked a certain number of times, and Cameras and Turrets will reboot after a short time.",actionText="Advanced Security System",variable="bHackLockouts",defaultValue=1);
      items(3)=(HelpText="Crossbow Darts are no longer recoverable after hitting walls.",actionText="Fragile Darts",variable="iFragileDarts",valueText1="Tranquiliser Darts",valueText2="Tranquiliser and Taser Darts",valueText3="All Darts except Flare Darts",valueText4="Everything");
      items(4)=(HelpText="Corpses can only be destroyed by realistic means and do not deal throw damage with the muscle aug.",actionText="Persistent Corpses",variable="bRealisticCarc",defaultValue=1);
-     items(5)=(HelpText="If enabled, time is not paused whilst in the inventory & during general UI navigation.",actionText="Real Time UI",variable="bRealUI");
+     items(5)=(HelpText="If enabled, time is not paused whilst in the inventory & during general UI navigation. Does not affect the Augmentation Wheel.",actionText="Real Time UI",variable="bRealUI");
      items(6)=(HelpText="JC can only eat/drink so much before getting full, and withdrawal symptoms occur twice as quickly.",actionText="Restricted Metabolism",variable="bRestrictedMetabolism",defaultValue=1);
      items(7)=(HelpText="Reloading will reset your standing accuracy",actionText="Reloading resets accuracy.",variable="bReloadingResetsAim");
      items(8)=(HelpText="If enabled, running, jumping and throwing objects will drain stamina over time. In Relaxed mode, stamina recovers automatically while crouched.",actionText="Stamina System",variable="iStaminaSystem",valueText2="Relaxed");
@@ -87,6 +87,7 @@ defaultproperties
      items(21)=(HelpText="Throwing unconscious carcasses around will kill them. Unconscious carcasses are particularly vulnerable and will die from short falls.",actionText="Unconscious Fall Damage",variable="bUnconsciousFallDamage",defaultValue=1)
      items(22)=(HelpText="Camera screens in Security Computers will show static when cameras are disabled, forcing you to re-enable them if you want to view from the camera.",actionText="Disabled Camera Screens",variable="bCameraStatic",defaultValue=0)
      items(23)=(HelpText="Disable the ambient sound made by security cameras when in their idle state, which will make them harder to spot.",actionText="Silent Camera Ambient Sound",variable="bRemoveCameraHum",defaultValue=0)
+     items(24)=(HelpText="If enabled, time is not paused whilst using the Aug Wheel.",actionText="Real Time Aug Wheel",variable="bRealtimeRadialMenu");
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"

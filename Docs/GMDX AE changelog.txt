@@ -1,8 +1,18 @@
-1.2 Hotfix:
+1.21 (Hotfix Release):
+
+New Features:
+- The Realtime Aug Menu has been moved to it's own setting in the Gameplay menu, independent of the regular Realtime UI setting.
+- Added a new QoL setting to always show the stamina bar, even when not using the Stamina system.
+- Added Several new Weapon Skins:
+    - Hot Pink Sawed-Off Shotgun
+    - Golden Assault Gun
+    - Golden Assault Shotgun
+    - Golden Combat Knife
 
 Bug Fixes:
 - Fixed Alternate Start not awarding skill points when using the UNATCO Graduate modifier
-
+- Fixed a rare crash when quickloading while enemy bark lines were displayed on the screen
+- The Weapon Skin Selection in the inventory screen no longer appears for a weapon when using the HDTP model, because HDTP models can't have weapon skins
 
 1.2:
 

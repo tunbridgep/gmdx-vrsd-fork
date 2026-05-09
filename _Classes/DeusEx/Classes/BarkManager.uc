@@ -133,7 +133,8 @@ function bool StartBark(DeusExRootWindow newRoot, ScriptedPawn newBarkPawn, EBar
 		// Show the speech if Subtitles are on //CyberP: and isn't in state dying HACK
 		if ((DeusExPlayer(owner) != None) && (DeusExPlayer(owner).bSubtitles) && (conSpeech != None) && (conSpeech.speech != "") && (!DeusExPlayer(owner).IsInState('Dying')))
 		{
-			rootWindow.hud.barkDisplay.AddBark(conSpeech.speech, barkDuration, newBarkPawn);
+			if (rootWindow != None && rootWindow.hud != None && rootWindow.hud.barkDisplay != None) //SARGE: Crash prevention???
+				rootWindow.hud.barkDisplay.AddBark(conSpeech.speech, barkDuration, newBarkPawn);
 		}
 
 		// Keep track fo the bark

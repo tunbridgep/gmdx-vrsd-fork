@@ -1039,6 +1039,11 @@ var travel float precipDensity;    //Current precipitation density
 var travel int nextPrecipChange;   //How many Timer()'s until next change
 var travel float desiredPrecip;    //Our desired precipitation value.
 
+/////////Version 1.21 Hotfix
+
+var globalconfig bool bRealtimeRadialMenu;  //SARGE: The radial menu is now controlled separately to the old RealUI setting
+
+var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar, even when the Stamina System is disabled.
 
 //////////END GMDX
 
@@ -2838,11 +2843,33 @@ exec function RestartLevel()
 }
 
 // ----------------------------------------------------------------------
+// BarkHackFix()
+// SARGE: The bark window causes crashes when reloading.
+// This attempts to fix it. This is kind of the nuclear option....
+// ----------------------------------------------------------------------
+function BarkHackFix()
+{
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    
+    //SARGE: For some reason this fixes crashes...
+    if (root != None && root.hud != None)
+    {
+        root.hud.barkDisplay.DestroyWindow();
+        root.hud.barkDisplay.Destroy();
+        root.hud.barkDisplay = None;
+        barkManager.Destroy();
+    }
+}
+
+
+// ----------------------------------------------------------------------
 // LoadGame()
 // ----------------------------------------------------------------------
-
 exec function LoadGame(int saveIndex)
 {
+    BarkHackFix();
+    SetPause(true);
     SetupRendererSettings();
 
     if (DeusExRootWindow(rootWindow) != None)
@@ -8376,7 +8403,7 @@ simulated event RenderOverlays( canvas Canvas )
 // Are we in a state which doesn't allow certain exec functions?
 // ----------------------------------------------------------------------
 
-function bool RestrictInput(optional bool bDontCheckConversation)
+function bool RestrictInput(optional bool bDontCheckConversation, optional bool bDontCheckPause)
 {
 	if (IsInState('Interpolating') || IsInState('Dying') || IsInState('Paralyzed') || (FlagBase.GetBool('PlayerTraveling') ))
 		return True;
@@ -8387,7 +8414,7 @@ function bool RestrictInput(optional bool bDontCheckConversation)
 
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
     //This way, real-time UI is actually a real-time UI
-    if (bHardCoreMode || bRealUI)
+    if ((bHardCoreMode || bRealUI) && !bDontCheckPause)
     {
         if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).bUIPaused || Level.Pauser != "")
             return true;
@@ -12740,7 +12767,7 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 
     if (!root.hud.bIsVisible) return; // don't toggle menu if HUD is invis
 
-    if (RestrictInput())
+    if (RestrictInput(false,!bRealtimeRadialMenu && !bHardCoreMode))
         return;
 
     if (killswitchTimer > -1 && !bRadialAugMenuVisible)
@@ -12777,11 +12804,8 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
             WHEELSAVErotation = SAVErotation;
 
         //SetPause(true);
-        if (!bHardCoreMode && !bRealUI)
-        {
+        if (!bHardCoreMode && !bRealtimeRadialMenu)
             SetPause(true);
-            UpdateHUD(true);
-        }
 	}
 	else if (bSpyDroneActive && !bSpyDroneSet)                                  //RSD: Allows the user to toggle between moving and controlling the drone
     {
@@ -12789,16 +12813,13 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
     }
     else
     {
-        if (!bHardCoreMode && !bRealUI)
-        {
+        if (!bHardCoreMode && !bRealtimeRadialMenu)
             SetPause(false);
-            UpdateHUD(true);
-        }
     }
 
 
     UpdateCrosshair();
-    UpdateHud();
+    UpdateHUD(true);
 }
 
 // ----------------------------------------------------------------------
