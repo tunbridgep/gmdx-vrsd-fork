@@ -1,3 +1,8 @@
+1.22 (Hotfix Release):
+
+Bug Fixes:
+- Fixed the Aug Wheel not being usable when Real Time UI is enabled and Real Time Aug Wheel is disabled.
+
 1.21 (Hotfix Release):
 
 New Features:
