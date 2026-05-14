@@ -2,6 +2,7 @@
 
 Bug Fixes:
 - Fixed the Aug Wheel not being usable when Real Time UI is enabled and Real Time Aug Wheel is disabled.
+- Fixed the Recoil stats in the Inventory screen not being updated when adding/removing laser sights from weapons.
 
 1.21 (Hotfix Release):
 
