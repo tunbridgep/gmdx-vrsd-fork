@@ -455,6 +455,16 @@ function float GetMaxRange()
 }
 
 // ----------------------------------------------------------------------
+// GetRecoilPenaltyMod()
+//
+// SARGE: Returns the recoil penalty of the weapon
+// ----------------------------------------------------------------------
+function float GetRecoilPenaltyMod()
+{
+    return GetAddonPenalty(Laser) + GetAddonPenalty(Scope);
+}
+
+// ----------------------------------------------------------------------
 // GetAccurateRange()
 //
 // SARGE: Returns the accurate range of the weapon
@@ -2933,8 +2943,7 @@ simulated function Tick(float deltaTime)
 		else
 		   recoil = recoilStrength;
 
-        recoil += GetAddonPenalty(Laser); //SARGE: Penalties for addons
-        recoil += GetAddonPenalty(Scope); //SARGE: Penalties for addons
+		recoil += GetRecoilPenaltyMod(); //SARGE: Penalties for addons
 
 		if (recoil < 0.0)
 			recoil = 0.0;

@@ -918,7 +918,7 @@ function bool WeaponInfoExtended(DeusExWeapon weapon)
 		AddInfoItem(weapon.msgInfoROF, str, weapon.HasROFMod());
 
 	//-- recoil
-    mod = weapon.GetAddonPenalty(Scope); //SARGE: Penalties for addons
+    mod = weapon.GetRecoilPenaltyMod(); //SARGE: Penalties for addons
 	str = FormatFloatString(weapon.Default.recoilStrength, 0.01);
 	if (weapon.HasRecoilMod() || mod > 0.0)
 	{
@@ -1186,7 +1186,7 @@ function bool WeaponInfoVanilla(DeusExWeapon weapon)
 		AddInfoItem(weapon.msgInfoReload, str, weapon.HasReloadMod() || mod >= 0.01);
 
 	// recoil
-    mod = weapon.GetAddonPenalty(Scope); //SARGE: Penalties for addons
+	mod = weapon.GetRecoilPenaltyMod(); //SARGE: Penalties for addons
 	str = FormatFloatString(weapon.Default.recoilStrength, 0.01);
 	if (weapon.HasRecoilMod() || mod > 0.0)
 	{
