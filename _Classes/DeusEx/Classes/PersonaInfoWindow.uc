@@ -627,6 +627,33 @@ function bool ChildRequestedReconfiguration(window child)
 	return true;
 }
 
+function AddDeclineSecondButtons(Inventory wep, bool secondary)
+{
+	if (wep != None)
+	{
+		AddLine();
+		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
+		winActionButtonsSecondary.SetWidth(32); //149
+		winActionButtonsSecondary.FillAllSpace(false);
+
+		buttonDeclineG = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+        buttonDeclineG.SetText(msgDeclineGlobal);
+        UpdateDeclineButtonG(wep.class);
+
+		buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+        UpdateDeclineButton(wep.class);
+
+		if (secondary)
+		{
+			buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+			assignThis = wep;
+			UpdateSecondaryButton(wep.class);
+		}
+
+		AddLine();
+	}
+}
+
 function AddSecondaryButton(Inventory wep)                                      //RSD: Extending secondary items to more than just weapons
 {
 	if (wep != None)
@@ -696,7 +723,6 @@ function AddDeclineButton(class<Inventory> wep)
 
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
         UpdateDeclineButton(wep);
-
         AddLine();
     }
 }
@@ -913,10 +939,15 @@ function bool UpdatePickupInfo(DeusExPickup pickup)
     //Set title
 	SetTitle(pickup.GetTitle(player));
 
-	AddDeclineButton(pickup.class);
+	if(player.iAltFrobDisplay == 2)
+		AddDeclineSecondButtons(pickup, pickup.CanAssignSecondary(player));
+	else
+	{
+		AddDeclineButton(pickup.class);
 
-	if (pickup.CanAssignSecondary(player))
-		AddSecondaryButton(pickup);
+		if (pickup.CanAssignSecondary(player))
+			AddSecondaryButton(pickup);
+	}
 
 	SetText(pickup.GetDescription(player));
 

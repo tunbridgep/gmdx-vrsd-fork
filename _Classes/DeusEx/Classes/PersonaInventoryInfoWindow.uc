@@ -285,7 +285,7 @@ final function String BuildPercentString(Float value)
 	return ("(" $ str $ "%)");
 }
 
-function DoNanoSwordAmmoInfo(DeusExPlayer player, DeusExWeapon weapon)
+function DoNanoSwordAmmoInfo(DeusExWeapon weapon)
 {
     if (!player.bNanoswordEnergyUse && !player.bHardcoreMode)
         return;
@@ -295,15 +295,15 @@ function DoNanoSwordAmmoInfo(DeusExPlayer player, DeusExWeapon weapon)
     AddLine();
 }
 
-//Do the Ammo Display in the Inventory Window
-function DoAmmoInfoWindow(DeusExPlayer player, DeusExWeapon weapon)
+function bool DrawAmmoButtons(DeusExWeapon weapon)
 {
 	local bool bAmmoAvailable;
 	local Ammo weaponAmmo;
 	local int  ammoAmount;
 	local bool bHasAmmo;
-	local string str;
     local int i;
+
+	bAmmoAvailable = false;
 
 	// Create the ammo buttons.  Start with the AmmoNames[] array,
 	// which is used for weapons that can use more than one
@@ -361,6 +361,18 @@ function DoAmmoInfoWindow(DeusExPlayer player, DeusExWeapon weapon)
 			bAmmoAvailable = true;
 		}
 	}
+
+	return bAmmoAvailable;
+}
+
+//Do the Ammo Display in the Inventory Window
+function DoAmmoInfoWindow(DeusExWeapon weapon)
+{
+	local bool bAmmoAvailable;
+	local string str;
+    local int i;
+
+	bAmmoAvailable = DrawAmmoButtons(weapon);
 
 	// Only draw another line if we actually displayed ammo.
 	if (bAmmoAvailable)
@@ -385,78 +397,19 @@ function DoAmmoInfoWindow(DeusExPlayer player, DeusExWeapon weapon)
 }
 
 //Do the Ammo Display in the Inventory Window
-function DoAmmoInfoExtended(DeusExPlayer player, DeusExWeapon weapon)
+function DoAmmoInfoExtended(DeusExWeapon weapon)
 {
 	local bool bAmmoAvailable;
-	local Ammo weaponAmmo;
-	local int  ammoAmount;
-	local bool bHasAmmo;
 	local string str;
-    local int i;
 	local float mod;
 
-	// Create the ammo buttons.  Start with the AmmoNames[] array,
-	// which is used for weapons that can use more than one
-	// type of ammo.
-	if (weapon.AmmoNames[0] != None)
-	{
-		for (i=0; i<ArrayCount(weapon.AmmoNames); i++)
-		{
-			if (weapon.AmmoNames[i] != None)
-			{
-				// Check to make sure the player has this ammo type
-				// *and* that the ammo isn't empty
-				weaponAmmo = Ammo(player.FindInventoryType(weapon.AmmoNames[i]));
-
-				if (weaponAmmo != None)
-				{
-					ammoAmount = weaponAmmo.AmmoAmount;
-					bHasAmmo = (weaponAmmo.AmmoAmount > 0);
-				}
-				else
-				{
-					ammoAmount = 0;
-					bHasAmmo = false;
-				}
-
-				AddAmmo(weapon.AmmoNames[i], bHasAmmo, ammoAmount);
-				bAmmoAvailable = true;
-
-				if (weapon.AmmoNames[i] == weapon.AmmoName)
-                    SetLoaded(weapon.AmmoName, true);                          //RSD: Added bAmmoSelectWait hack
-			}
-		}
-	}
-	else
-	{
-		// Now peer at the AmmoName variable, but only if the AmmoNames[]
-		// array is empty
-		if ((weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0))
-		{
-			weaponAmmo = Ammo(player.FindInventoryType(weapon.AmmoName));
-
-			if (weaponAmmo != None)
-			{
-				ammoAmount = weaponAmmo.AmmoAmount;
-				bHasAmmo = (weaponAmmo.AmmoAmount > 0);
-			}
-			else
-			{
-				ammoAmount = 0;
-				bHasAmmo = false;
-			}
-
-			AddAmmo(weapon.AmmoName, bHasAmmo, ammoAmount);
-			SetLoaded(weapon.AmmoName, true);                                  //RSD: Added true hack
-			bAmmoAvailable = true;
-		}
-	}
+	bAmmoAvailable = DrawAmmoButtons(weapon);
 
 	// Only draw another line if we actually displayed ammo.
 	if (bAmmoAvailable)
 		AddLine();
 
-	// clip size
+	//-- clip size
 	if ((weapon.Default.ReloadCount == 0) || weapon.bHandToHand)
 		str = weapon.msgInfoNA;
 	else
@@ -475,7 +428,7 @@ function DoAmmoInfoExtended(DeusExPlayer player, DeusExWeapon weapon)
     if (!weapon.bHandToHand || weapon.IsA('WeaponProd') || weapon.IsA('WeaponPepperGun'))
 		AddInfoItem(weapon.msgInfoClip, str, weapon.HasClipMod());
 
-	// reload time
+	//-- reload time
 	if ((weapon.Default.ReloadCount == 0) || weapon.bHandToHand)
 		str = weapon.msgInfoNA;
 	else
@@ -513,46 +466,22 @@ function bool WeaponInfoExtended(DeusExWeapon weapon)
 	local int dmg, numMods;
 	local float mod, stamDrain;
 	local float hh;
-    local DeusExPlayer player;
     local string noiseLev, msgMultiplier;
     local float prec;                                                           //RSD: Floating point precision
     local float vol,rad;                                                        //SARGE: Added
 
-    player = DeusExPlayer(GetPlayerPawn());
-
-	if(player == None)
-		return false;
-
-    //-- Show modified weapons in title
-    if (weapon.bModified && player.bBeltShowModified)
-        SetTitle(weapon.ItemName @ "(" $ weapon.strModified $ ")");
-    else
-        SetTitle(weapon.ItemName);
-
-	//-- Add Decline Button
-	AddDeclineButton(weapon.class);
-
-	//-- Add Secondary Button
-	if (weapon.CanAssignSecondary(player))
-	   AddSecondaryButton(weapon);
-
-	//-- Add Skins Button
-	if (player.WeaponSkinManager.GetSkinCountFor(weapon) > 1)
-		AddSkinsButtons(weapon);
-
-	//-- New mod toggle buttons and penalties description
+	//-- New mod toggle buttons for weapon
 	if (weapon.bHadLaser || weapon.bHadSilencer || weapon.bHadScope)
 	{
 		AddWeaponModButtons(weapon);
-		AddWeaponModDrawbacks(weapon);
 		AddLine();
 	}
 
 	//-- Do a specific ammo info log for nano sword, refactoring from the WeaponNanoSword to let the persona window handle the code
 	if(weapon.IsA('WeaponNanoSword'))
-		DoNanoSwordAmmoInfo(player, weapon);
+		DoNanoSwordAmmoInfo(weapon);
 	else
-		DoAmmoInfoExtended(player, weapon);
+		DoAmmoInfoExtended(weapon);
 
 	//-- Installed mod
     if (weapon.bCanHaveModBaseAccuracy || weapon.bCanHaveModReloadCount || weapon.bCanHaveModAccurateRange || weapon.bCanHaveModReloadTime || weapon.bCanHaveModRecoilStrength || weapon.bCanHaveModShotTime || weapon.bCanHaveModDamage)
@@ -607,7 +536,6 @@ function bool WeaponInfoExtended(DeusExWeapon weapon)
 		if (weapon.bCanHaveModShotTime)
 		{
 			numMods = Int(Abs(weapon.ModShotTime) * 10);
-			//winInfo.AddInfoItem("Rate of Fire:", numMods $ "/5", (numMods == 5));
 			if (weapon.IsA('WeaponAssaultGun'))
 				AddModInfo(weapon.msgRate, numMods, (numMods == 3), 2);
 			else
@@ -617,14 +545,12 @@ function bool WeaponInfoExtended(DeusExWeapon weapon)
 		if (weapon.bCanHaveModRecoilStrength)
 		{
 			numMods = Int(Abs(weapon.ModRecoilStrength) * 10);
-			//winInfo.AddInfoItem("Recoil:", numMods $ "/5", (numMods == 5));
 			AddModInfo(weapon.msgReco, numMods, (numMods == 5));
 		}
 
 		if (weapon.bCanHaveModAccurateRange)
 		{
 			numMods = Int(Abs(weapon.ModAccurateRange) * 10);
-			//winInfo.AddInfoItem("Range:", numMods $ "/5", (numMods == 5));
 			AddModInfo(weapon.msgRang, numMods, (numMods == 5));
 		}
 
@@ -640,7 +566,6 @@ function bool WeaponInfoExtended(DeusExWeapon weapon)
 		if (weapon.bCanHaveModReloadTime)
 		{
 			numMods = Int(Abs(weapon.ModReloadTime) * 10);
-			//winInfo.AddInfoItem("Reload:", numMods $ "/5", (numMods == 5));
 			AddModInfo(weapon.msgRelo, numMods, (numMods == 5));
 		}
 
@@ -961,6 +886,10 @@ function bool WeaponInfoExtended(DeusExWeapon weapon)
 	//-- mass
 	AddInfoItem(weapon.msgInfoMass, FormatFloatString(weapon.Default.Mass, 1.0) @ weapon.msgMassUnit);
 
+	//-- New mod penalties description
+	if (weapon.bHadLaser || weapon.bHadSilencer || weapon.bHadScope)
+		AddWeaponModDrawbacks(weapon);
+
 	//-- weapon description
 	AddLine();
 	SetText(weapon.Description);
@@ -974,40 +903,17 @@ function bool WeaponInfoVanilla(DeusExWeapon weapon)
 	local int dmg, numMods;
 	local float mod, stamDrain;
 	local float hh;
-    local DeusExPlayer player;
     local string noiseLev, msgMultiplier;
     local float prec;                                                           //RSD: Floating point precision
     local float vol,rad;                                                        //SARGE: Added
-
-    player = DeusExPlayer(GetPlayerPawn());
-
-	if(player == None)
-		return false;
-
-    //SARGE: Show modified weapons in title
-    if (weapon.bModified && player.bBeltShowModified)
-        SetTitle(weapon.ItemName @ "(" $ weapon.strModified $ ")");
-    else
-        SetTitle(weapon.ItemName);
-
-	//SARGE: Add Decline Button
-	AddDeclineButton(weapon.class);
-
-	//SARGE: Add Secondary Button
-	if (weapon.CanAssignSecondary(player))
-	   AddSecondaryButton(weapon);
-
-	//SARGE: Add Skins Button
-	if (player.WeaponSkinManager.GetSkinCountFor(weapon) > 1)
-		AddSkinsButtons(weapon);
 
 	SetText(weapon.msgInfoWeaponStats);
 	AddLine();
 
 	if(weapon.IsA('WeaponNanoSword'))
-		DoNanoSwordAmmoInfo(player, weapon);
+		DoNanoSwordAmmoInfo(weapon);
 	else
-		DoAmmoInfoWindow(player, weapon);
+		DoAmmoInfoWindow(weapon);
 
 	// base damage
 	if (weapon.AreaOfEffect == AOE_Cone)
@@ -1522,6 +1428,31 @@ function bool WeaponInfoVanilla(DeusExWeapon weapon)
 
 function bool UpdateWeaponInfo(DeusExWeapon weapon)
 {
+	if(player == None)
+		return false;
+
+    //SARGE: Show modified weapons in title
+    if (weapon.bModified && player.bBeltShowModified)
+        SetTitle(weapon.ItemName @ "(" $ weapon.strModified $ ")");
+    else
+        SetTitle(weapon.ItemName);
+
+	if(player.iAltFrobDisplay == 2)
+		AddDeclineSecondButtons(weapon, weapon.CanAssignSecondary(player));
+	else
+	{
+		//SARGE: Add Decline Button
+		AddDeclineButton(weapon.class);
+
+		//SARGE: Add Secondary Button
+		if (weapon.CanAssignSecondary(player))
+		   AddSecondaryButton(weapon);
+	}
+
+	//SARGE: Add Skins Button
+	if (player.WeaponSkinManager.GetSkinCountFor(weapon) > 1 && !weapon.IsHDTP())
+		AddSkinsButtons(weapon);
+
 	if(player.iAltFrobDisplay == 2)
 		WeaponInfoExtended(weapon);
 	else
