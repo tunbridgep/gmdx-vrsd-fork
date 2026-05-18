@@ -269,7 +269,7 @@ defaultproperties
      CollisionRadius=15.600000
      CollisionHeight=5.200000
      Mass=40.000000
-     minSkillRequirement=1;
-     bFancyScopeAnimation=true
+     minSkillRequirement=1
+     bFancyScopeAnimation=True
      totalScopeTime=0.51 //Heavy boy!
 }

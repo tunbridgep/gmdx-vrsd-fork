@@ -300,7 +300,7 @@ defaultproperties
      LightSaturation=64
      LightRadius=4
      Mass=20.000000
-     minSkillRequirement=3;
+     minSkillRequirement=3
      chargePerUse=5
      totalCharge=100
 }
