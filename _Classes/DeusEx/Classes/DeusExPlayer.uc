@@ -8855,14 +8855,15 @@ exec function ParseLeftClick()
 	// - Use inHand
 	// - Select last weapon
 
-	if (RestrictInput())
-		return;
-
     //Select current aug
 	if (bRadialAugMenuVisible) {
         RadialMenuToggleCurrentAug();
         return;
     }
+
+    //SARGE: Moved this AFTER toggle current aug, so we can do it while UI paused.
+	if (RestrictInput())
+		return;
 
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
