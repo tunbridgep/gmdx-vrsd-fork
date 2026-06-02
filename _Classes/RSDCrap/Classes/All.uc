@@ -425,29 +425,33 @@ class All expands Object
 
 // Hands Textures
 
+/*
 #exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex0Male.bmp"   	NAME="CrossbowHandstex0"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex1Male.bmp"   	NAME="CrossbowHandstex1"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex2Male.bmp"   	NAME="CrossbowHandstex2"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex3Male.bmp"   	NAME="CrossbowHandstex3"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex4Male.bmp"	    NAME="CrossbowHandstex4"			GROUP="Skins"
+*/
 
-#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex0MaleAugs.bmp"	NAME="CrossbowHandstex0A"			GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex1MaleAugs.bmp"	NAME="CrossbowHandstex1A"			GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex2MaleAugs.bmp"	NAME="CrossbowHandstex2A"			GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex3MaleAugs.bmp"	NAME="CrossbowHandstex3A"			GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex4MaleAugs.bmp"	NAME="CrossbowHandstex4A"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex0MaleAugs.bmp"	NAME="CrossbowHandstex0"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex1MaleAugs.bmp"	NAME="CrossbowHandstex1"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex2MaleAugs.bmp"	NAME="CrossbowHandstex2"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex3MaleAugs.bmp"	NAME="CrossbowHandstex3"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex4MaleAugs.bmp"	NAME="CrossbowHandstex4"			GROUP="Skins"
 
+/*
 #exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex0.bmp"        	NAME="WeaponHandstex0"	    		GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex1.bmp"        	NAME="WeaponHandstex1"	    		GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex2.bmp"        	NAME="WeaponHandstex2"	    		GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex3.bmp"        	NAME="WeaponHandstex3"	    		GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex4.bmp"        	NAME="WeaponHandstex4"	    		GROUP="Skins"
+*/
 
-#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex0Augs.bmp"       	NAME="WeaponHandstex0A"	    		GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex1Augs.bmp"       	NAME="WeaponHandstex1A"	    		GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex2Augs.bmp"       	NAME="WeaponHandstex2A"	    		GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex3Augs.bmp"       	NAME="WeaponHandstex3A"	    		GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex4Augs.bmp"       	NAME="WeaponHandstex4A"	    		GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex0Augs.bmp"       	NAME="WeaponHandstex0"	    		GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex1Augs.bmp"       	NAME="WeaponHandstex1"	    		GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex2Augs.bmp"       	NAME="WeaponHandstex2"	    		GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex3Augs.bmp"       	NAME="WeaponHandstex3"	    		GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\WeaponHandsTex4Augs.bmp"       	NAME="WeaponHandstex4"	    		GROUP="Skins"
 
 //New Wall Socket texture to replace GMDX's janky one
 #exec TEXTURE IMPORT FILE="Textures\Skins\SocketTex1.pcx"		    NAME="SocketTex1"	        GROUP="Skins"
