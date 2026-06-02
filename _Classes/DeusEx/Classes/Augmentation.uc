@@ -732,7 +732,7 @@ defaultproperties
      PassiveLabel="Passive"
      TypeDescriptorPassive="Passive Augmentations are always active and use no bioelectrical energy."
      TypeDescriptorActive="Active Augmentations use bioelectrical energy at a standard rate while activated."
-     TypeDescriptorToggle="Toggled Augmentations may reserve an amount of bioelectrical energy while active, but use no energy to remain active. The reserve amount is lost upon deactivation."
+     TypeDescriptorToggle="Toggled Augmentations reserve bioelectrical energy when activated, but use no energy to remain active. The reserve energy is not regained upon deactivation."
      TypeDescriptorAutomatic="Automatic Augmentations can be activated with no bioelectrical energy cost. While active, bioelectrical energy is drained based on specific circumstances."
      ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
      DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'
