@@ -2209,7 +2209,7 @@ function DrawContents(GC gc, Containers C)
     if (P != None)
         newMesh = class'HDTPLoader'.static.GetMesh2(P.default.HDTPMesh,string(P.default.PickupViewMesh),P.static.isHDTP());
     if (W != None)
-        newMesh = class'HDTPLoader'.static.GetMesh2(W.default.HDTPPickupViewMesh,string(W.default.PickupViewMesh),W.static.isHDTP());
+        newMesh = class'HDTPLoader'.static.GetMesh2(W.default.HDTPPickupViewMesh,string(W.default.PickupViewMesh),W.static.isHDTPClass());
     if (A != None)
         newMesh = class'HDTPLoader'.static.GetMesh2(A.default.HDTPMesh,string(A.default.Mesh),A.static.isHDTP());
 

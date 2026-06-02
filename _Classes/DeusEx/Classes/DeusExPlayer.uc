@@ -9496,6 +9496,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     {
         WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget));
         WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
+
+        //GMDX Exclusive Code
+        if (DeusExWeapon(Weapon) != None)
+            DeusExWeapon(Weapon).UpdateHDTPSettings();
     }
 
     //SARGE: Set the source of the interaction (used by the HUD Display)

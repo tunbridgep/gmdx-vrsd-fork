@@ -1,5 +1,8 @@
 1.3:
 
+New Features:
+- Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
+
 Bug Fixes:
 - Fixed mismatched texture on the Combat Knife (thanks Kisskills, original mod here: https://www.nexusmods.com/deusex/mods/92)
     - Also fixed the same issue on all Augmentique knife skins.

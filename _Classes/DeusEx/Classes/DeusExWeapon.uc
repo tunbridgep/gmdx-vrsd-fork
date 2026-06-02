@@ -1777,9 +1777,14 @@ function PlaySelect()
 	}
 }
 
-static function bool IsHDTP()
+function static bool IsHDTPClass()
 {
     return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
+}
+
+function bool IsHDTP()
+{
+    return IsHDTPClass() && (currentWeaponSkin == "default" || currentWeaponSkin == "");
 }
 
 function bool IsHDTPMuzzle()
@@ -4969,7 +4974,7 @@ function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
 
     //SARGE: Wake up the AI
     if (wakeUp)
-        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.5,true);
+        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.25,true);
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
@@ -6106,7 +6111,7 @@ simulated function bool UpdateInfo(Object winObject)
 	       winInfo.AddSecondaryButton(self);
 		
         //SARGE: Add Skins Button
-        if (DeusExPlayer(P).WeaponSkinManager.GetSkinCountFor(self) > 1 && !IsHDTP())
+        if (DeusExPlayer(P).WeaponSkinManager.GetSkinCountFor(self) > 1)
             winInfo.AddSkinsButtons(self);
     }
 
@@ -6952,12 +6957,18 @@ function SelectNextSkin()
 {
     if (DeusExPlayer(owner) != None)
         DeusExPlayer(owner).WeaponSkinManager.SelectNextSkin(self);
+
+    //GMDX Specific Code
+    UpdateHDTPsettings();
 }
 
 function SelectPreviousSkin()
 {
     if (DeusExPlayer(owner) != None)
         DeusExPlayer(owner).WeaponSkinManager.SelectPreviousSkin(self);
+
+    //GMDX Specific Code
+    UpdateHDTPsettings();
 }
 
 function UpdateSkin()
