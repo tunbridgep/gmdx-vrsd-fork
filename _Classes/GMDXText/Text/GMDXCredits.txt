@@ -23,6 +23,7 @@
 <P>TheAstropath - for the new more readable HUD Fonts
 <P>Popmechanics - Augmentique weapon skins
 <P>NG+ - Discord server organization and community management.
+<P>Kisskills - Fixed Combat Knife textures.
 <P>
 <B>Testing and QA
 <P>Julian, Georg, the1truepickaxe, Xriborg, domitomi,

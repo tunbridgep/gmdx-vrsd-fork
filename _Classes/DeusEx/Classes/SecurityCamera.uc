@@ -77,17 +77,15 @@ function bool DisplayHackText()
 }
 
 //SARGE: Horrible mess of a function...
-function SetDefaultAmbientSound(bool bSoundCheck)
+function SetDefaultAmbientSound()
 {
     local DeusExPlayer player;
     player = DeusExPlayer(GetPlayerPawn());
     
-    if (player != None && !player.bRemoveCameraHum && !player.bHardcoreMode && (!bSoundCheck || AmbientSound == None) && bActive && !bConfused && !bRebooting)
+    if (player != None && !player.bRemoveCameraHum && !player.bHardcoreMode && bActive && !bConfused && !bRebooting)
         AmbientSound = default.AmbientSound;
-    else if ((player == None || player.bRemoveCameraHum || player.bHardcoreMode) && (!bSoundCheck || AmbientSound == default.AmbientSound))
+    else
         AmbientSound = None;
-
-    Log("Player is: " $ player);
 }
 
 function EnableCamera()
@@ -97,7 +95,7 @@ function EnableCamera()
 
     bActive = true;
     MultiSkins[2] = GetCameraLightTex(1);
-    SetDefaultAmbientSound(false);
+    SetDefaultAmbientSound();
     SoundVolume = default.SoundVolume;
     SoundRadius = default.SoundRadius;
     SoundPitch = default.SoundPitch;
@@ -113,6 +111,9 @@ function DisableCamera()
     AmbientSound = None;
     DesiredRotation = origRot;
     bRebooting = false;    
+    //SARGE: Fix continuing to beep after being reactivated
+    bPlayerSeen = false;
+    bCarcassSeen = false;
 }
 
 function Trigger(Actor Other, Pawn Instigator)
@@ -536,7 +537,7 @@ function Tick(float deltaTime)
 
     if (!bFirstTickDone)
     {
-        SetDefaultAmbientSound(true);
+        SetDefaultAmbientSound();
         bFirstTickDone = true;
     }
 
@@ -610,7 +611,7 @@ function Tick(float deltaTime)
             {
                 MultiSkins[2] = GetCameraLightTex(0);
             }
-            SetDefaultAmbientSound(false);
+            SetDefaultAmbientSound();
 
 			SoundPitch = default.SoundPitch;
 			DesiredRotation = origRot;

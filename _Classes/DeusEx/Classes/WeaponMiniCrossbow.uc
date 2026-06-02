@@ -40,11 +40,11 @@ function SetWeaponHandTex()
             switch(p.PlayerSkin)
             {
                 //default, black, latino, ginger, albino, respectively
-                case 0: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex0A"); break;
-                case 1: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex1A"); break;
-                case 2: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex2A"); break;
-                case 3: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex3A"); break;
-                case 4: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex4A"); break;
+                case 0: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex0"); break;
+                case 1: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex1"); break;
+                case 2: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex2"); break;
+                case 3: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex3"); break;
+                case 4: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex4"); break;
             }
         }
     }

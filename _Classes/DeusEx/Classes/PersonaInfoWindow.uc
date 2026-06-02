@@ -84,6 +84,8 @@ var localized String WeaponModEffectsLabel;
 var string strDash;
 var PersonaButtonBarWindow winActionButtonRemove;
 
+var localized String WeaponSkinsHDTPUnsupported;
+
 //AUGMENTIQUE - Weapon Skin Selection
 var localized string msgSkinNext;
 var localized string msgSkinPrev;
@@ -103,6 +105,11 @@ function AddSkinsButtons(DeusExWeapon wep)
 	if (wep != None)
 	{
         winSkinName = SetText(sprintf(msgSkinName,player.WeaponSkinManager.GetSkinName(wep)));
+
+        //GMDX Specific Code
+        if (wep.IsHDTPClass())
+            SetText(WeaponSkinsHDTPUnsupported);
+
 		skinBtnWin = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
 		skinBtnWin.SetWidth(32);
 		skinBtnWin.FillAllSpace(false);
@@ -996,4 +1003,5 @@ defaultproperties
      msgSkinNext="Next"
      msgSkinPrev="Prev"
      msgSkinName="Current Skin: %s"
+     WeaponSkinsHDTPUnsupported="NOTE: HDTP Models are not supported"
 }

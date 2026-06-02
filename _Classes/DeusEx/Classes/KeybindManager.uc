@@ -93,6 +93,9 @@ function string GetBindName(string keyName)
         case "NumPad8": return "KP8";
         case "NumPad9": return "KP9";
         case "NumPad0": return "KP0";
+        case "MiddleMouse": return "MMB";
+        case "LeftMouse": return "LMB";
+        case "RightMouse": return "RMB";
         default: return keyName;
     }
 }

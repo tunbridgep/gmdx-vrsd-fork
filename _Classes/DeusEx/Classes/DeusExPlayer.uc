@@ -9498,6 +9498,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     {
         WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget));
         WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
+
+        //GMDX Exclusive Code
+        if (DeusExWeapon(Weapon) != None)
+            DeusExWeapon(Weapon).UpdateHDTPSettings();
     }
 
     //SARGE: Set the source of the interaction (used by the HUD Display)
@@ -12579,11 +12583,11 @@ function texture GetWeaponHandTex(bool bClyzm)
 		switch(PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex0A"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex1A"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex2A"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex3A"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex4A"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex0"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex1"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex2"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex3"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex4"); break;
 		}
     }
 
