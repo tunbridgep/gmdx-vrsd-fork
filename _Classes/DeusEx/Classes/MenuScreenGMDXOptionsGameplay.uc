@@ -29,7 +29,7 @@ function SaveSettings()
 
     //Update security cameras to force-refresh their ambient sounds
     ForEach player.AllActors(class'SecurityCamera', cam)
-        cam.SetDefaultAmbientSound(true);
+        cam.SetDefaultAmbientSound();
 }
 
 event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
