@@ -507,6 +507,9 @@ class All expands Object
 #exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex5.pcx" NAME="FlatFXTex5" GROUP="Blood"
 #exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex6.pcx" NAME="FlatFXTex6" GROUP="Blood"
 
+//Fixed knife texture, thanks to Kisskills
+#exec TEXTURE IMPORT  FILE="Textures\Skins\CombatKnifeTex1Fixed.pcx" NAME="CombatKnifeTex1F" GROUP="Skins"
+
 defaultproperties
 {
 }

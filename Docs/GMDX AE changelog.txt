@@ -1,6 +1,8 @@
 1.3:
 
 Bug Fixes:
+- Fixed mismatched texture on the Combat Knife (thanks Kisskills, original mod here: https://www.nexusmods.com/deusex/mods/92)
+    - Also fixed the same issue on all Augmentique knife skins.
 - Fixed some cases of cameras erroneously playing ambient sounds while disabled.
 - Minor typo and text fixes
 

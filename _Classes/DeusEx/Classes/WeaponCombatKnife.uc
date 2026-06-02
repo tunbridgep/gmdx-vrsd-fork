@@ -22,7 +22,11 @@ function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
 	if (overlay)
+    {
+        if (!IsHDTP() && currentWeaponSkin == "default")
+            multiskins[0]=Texture'RSDCrap.Skins.CombatKnifeTex1F';      //SARGE: Fix knife tex
 		multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
+    }
 }
 
 defaultproperties
