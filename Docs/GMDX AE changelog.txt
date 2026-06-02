@@ -1,3 +1,8 @@
+1.3:
+
+Bug Fixes:
+- Minor typo and text fixes
+
 1.22 (Hotfix Release):
 
 Bug Fixes:
