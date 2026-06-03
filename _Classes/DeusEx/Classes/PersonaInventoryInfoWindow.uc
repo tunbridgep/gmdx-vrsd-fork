@@ -1450,7 +1450,7 @@ function bool UpdateWeaponInfo(DeusExWeapon weapon)
 	}
 
 	//SARGE: Add Skins Button
-	if (player.WeaponSkinManager.GetSkinCountFor(weapon) > 1 && !weapon.IsHDTP())
+	if (player.WeaponSkinManager.GetSkinCountFor(weapon) > 1)
 		AddSkinsButtons(weapon);
 
 	if(player.iAltFrobDisplay == 2)
