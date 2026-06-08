@@ -4,6 +4,7 @@ New Features:
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
 
 Bug Fixes:
+- Fixed a crash when pressing ESC at the start of the endgame cutscenes.
 - Fixed mismatched texture on the Combat Knife (thanks Kisskills, original mod here: https://www.nexusmods.com/deusex/mods/92)
     - Also fixed the same issue on all Augmentique knife skins.
 - Fixed some cases of cameras erroneously playing ambient sounds while disabled.

@@ -13717,8 +13717,9 @@ exec function ShowMainMenu()
 		foreach AllActors(class'MissionEndgame', Script)
 			break;
 
-		if (Script != None)
+		if (Script != None && Script.Flags != None)
 			Script.FinishCinematic();
+        return;
 	}
 	else
 	{
