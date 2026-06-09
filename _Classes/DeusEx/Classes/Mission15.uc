@@ -16,6 +16,7 @@ struct sUCData
 var sUCData spawnData[12];
 var float jockTimer, pageTimer;
 var BobPageAugmented page;
+var int spawnCheckCount; //SARGE: Added.
 
 // ----------------------------------------------------------------------
 // FirstFrame()
@@ -117,7 +118,6 @@ function Timer()
     local DeusExCarcass carc;
     local MJ12Troop mjt;
     local HumanMilitary hm;
-    local int spawnCheckCount;
 
 	Super.Timer();
 
