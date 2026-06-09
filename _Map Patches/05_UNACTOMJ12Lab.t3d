@@ -176016,17 +176016,6 @@ Begin Actor Class=DataLinkTrigger Name=DataLinkTrigger7
     OldLocation=(X=-902.382690,Y=-486.167419,Z=-135.899811)
     Name=DataLinkTrigger7
 End Actor
-Begin Actor Class=DataLinkTrigger Name=DataLinkTrigger8
-    datalinkTag=DL_nopaulcorpse
-    LastRenderTime=0.699245
-    DistanceFromPlayer=551.179504
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=DataLinkTrigger
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-894.447693,Y=-541.267212)
-    OldLocation=(X=-868.167786,Y=-510.607300)
-    Name=DataLinkTrigger8
-End Actor
 Begin Actor Class=Brush Name=Brush1420
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)

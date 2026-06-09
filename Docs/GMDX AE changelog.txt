@@ -13,6 +13,10 @@ Bug Fixes:
     - It's been replaced with a "Toggle Coronas" setting.
 - Minor typo and text fixes
 
+Map Changes:
+- 05_NYC_UNATCOMJ12LAB:
+    - Removed an erroneous DataLink Trigger that was linking to a datalink that doesn't exist.
+
 1.22 (Hotfix Release):
 
 Bug Fixes:
