@@ -152647,6 +152647,8 @@ Begin Actor Class=Microscope Name=Microscope3
 End Actor
 Begin Actor Class=BookClosed Name=BookClosed0
     textTag=05_Book01
+    bAddToVault=True
+    bHardcoreRemoveIt=True
     LastRenderTime=0.675720
     DistanceFromPlayer=3472.711670
     Level=LevelInfo'MyLevel.LevelInfo0'

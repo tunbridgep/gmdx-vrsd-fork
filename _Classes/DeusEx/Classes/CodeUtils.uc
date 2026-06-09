@@ -468,6 +468,10 @@ defaultproperties
     
     //Missed Tutorial Note
     codeNotes(183)=(code1="154",noteName="Datacube14")
+    
+    //Missed Notes from 1.22
+    codeNotes(184)=(code1="dmoreau",code2="raptor",noteName="05_Book01")
+    codeNotes(185)=(code1="LAB 12",code2="GRAYTEST",noteName="15_Datacube18")
 
     guessableCodes(0)="8675309"
     guessableCodes(1)="calvo"
