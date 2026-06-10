@@ -1764,6 +1764,8 @@ function PlaySelect()
            if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
                p = 1.2;
         }
+        if (player != None && player.bWeaponSelectShake)
+           player.ShakeView(0.1, 96, 4);
      }
     PlayAnim('Select',p,0.0);
     bAimingDown=False;
@@ -2744,13 +2746,10 @@ simulated function Tick(float deltaTime)
 				{
 					if ((!bNearWall || (AnimSequence == 'Select')) && AnimSequence != 'Select')
 					{
-					    if (AnimSequence == 'Attack' || AnimSequence == 'Attack2' || AnimSequence == 'Attack3')
-					    {
-					    }
-					    else
+					    if (AnimSequence != 'Attack' && AnimSequence != 'Attack2' && AnimSequence != 'Attack3')
 					    {
 						    PlayAnim('PlaceBegin',, 0.1);
-						    bNearWall = True;
+						    bNearWall = true;
 						}
 					}
 				}
@@ -2942,14 +2941,14 @@ simulated function Tick(float deltaTime)
 		// reduce the recoil based on skill
 		/*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		   recoil = recoilStrength * 0.5; // + GetWeaponSkill() * 2.0; //CyberP: Removed Recoil based on skill level.
-		else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
            recoil = recoilStrength * 0.5;
 		/*else if (player.PerkNamesArray[13] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Perfect Stance: Heavy
 		   recoil = recoilStrength * 0.5;*/
 		else
 		   recoil = recoilStrength;
 
-        recoil += GetRecoilPenaltyMod(); //SARGE: Penalties for addons
+		recoil += GetRecoilPenaltyMod(); //SARGE: Penalties for addons
 
 		if (recoil < 0.0)
 			recoil = 0.0;
@@ -3032,7 +3031,7 @@ simulated function Tick(float deltaTime)
 		if (player.CombatDifficulty < 1.0)  //CyberP: easy difficulty gets aiming boost
 		    standingTimer += deltaTime*2;*/
         
-		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
             mult += player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').PerkValue;		//RSD: Now +25% bonus
         
 		if (player.AddictionManager.addictions[0].drugTimer > 0)                                      //RSD: Cigarettes make you aim faster
@@ -3056,9 +3055,9 @@ simulated function Tick(float deltaTime)
 		{
 		    /*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		        perkMod = 0;
-		    else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		    else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	            perkMod = 0;
-			else if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+			else if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
                 perkMod = 0;
 			else
                 perkMod = 0.04;
@@ -3145,8 +3144,8 @@ function UpdateInventoryInfo()                                                  
 
     winInv = PersonaScreenInventory(root.GetTopWindow());                       //RSD: Might be none
 
-    if (winInv != none && winInv.winInfo != none)
-        winInv.WeaponUpdateInfo(self);
+    if (winInv != None && winInv.winInfo != None)
+        winInv.WeaponUpdateInfo(Self);
 }
 
 function ScopeOn()
@@ -3602,9 +3601,6 @@ simulated function Timer()
 simulated function MuzzleFlashLight()
 {
 	local Vector offset, X, Y, Z;
-    local PlasmaParticleSpoof spoof;
-    local FireSmoke smoke;
-    local int i;
 
  	if (!bHasMuzzleFlash)
 		return;
@@ -3619,54 +3615,6 @@ simulated function MuzzleFlashLight()
 		flash = spawn(class'MuzzleFlash',,, offset);
 		if (flash != None)
 			flash.SetBase(Owner);
-
-        if ((IsA('WeaponSawedOffShotgun') || IsA('WeaponAssaultShotgun')) && Owner.IsA('DeusExPlayer'))
-    {    //CyberP: hacky, sub-optimal new muzzleflash effects.
-    offset.Z += Owner.CollisionHeight * 0.7;
-    if (IsA('WeaponAssaultShotgun'))
-    offset += Y * Owner.CollisionRadius * 0.75;
-    else
-    offset += Y * Owner.CollisionRadius * 0.25;
-    if (DeusExPlayer(Owner).IsCrouching())
-        offset.Z *= (Owner.CollisionHeight * 0.8);
-    /*smoke = spawn(class'FireSmoke',,, offset, Pawn(Owner).ViewRotation);
-    if (smoke!=none)
-    {
-    smoke.LifeSpan=0.24;
-    smoke.DrawScale=0.400000;
-    smoke.ScaleGlow=0.400000;
-    smoke.bRelinquished2=True;
-    }*/
-	if (IsHDTP())
-	{
-		for(i=0;i<13;i++)
-		{
-			spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
-			if (spoof!=none)
-			{
-				spoof.DrawScale=0.006;
-				spoof.LifeSpan=0.2;
-				spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
-				spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
-				//spoof.Velocity.X = FRand() * 700;
-				//spoof.Velocity.Z = FRand() * 60;
-
-				if (FRand() < 0.3)
-				{
-				spoof.Velocity.Z += FRand() * 80;
-				spoof.Velocity.X += FRand() * 65;
-				spoof.Velocity.Y += FRand() * 65;
-				}
-				else if (FRand() < 0.6)
-				{
-				spoof.Velocity.Z -= FRand() * 20;
-				spoof.Velocity.X -= FRand() * 55;
-				spoof.Velocity.Y -= FRand() * 65;
-				}
-			}
-		}
-    }
-	}
 	}
 }
 
@@ -4299,11 +4247,11 @@ simulated function UpdateRecoilShaker()
 	if(Owner.IsA('DeusExPlayer'))
 	{
 	  DeusExPlayer(Owner).RecoilShaker(RecoilShaker);
-	  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+	  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  /*else if (DeusExPlayer(Owner).PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 	      negTime = (RecoilStrength * default.negTime)*0.75;*/
-	  else if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+	  else if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  else
 	      negTime = RecoilStrength * default.negTime;
@@ -4513,25 +4461,19 @@ function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Other, float D
 	local TraceHitSpawner hitspawner;
 	local Name damageType;
 
-	damageType = WeaponDamageType();
-
 //	log("weap"@Other@Damage@damageType);
 
 	//GMDX:dasraiser fix vanilla bug with fast pc's, do i dare fix entire game spawn system....nfl
 	class'TraceHitSpawner'.default.HitDamage=Damage;
-	class'TraceHitSpawner'.default.damageType=damageType;
+	class'TraceHitSpawner'.default.damageType=WeaponDamageType();
 
 	if (IsA('WeaponNanoSword')) //hitSpawner.damageType='NanoSword';
 	{
 	  class'TraceHitSpawner'.default.bForceBulletHole=true;
 	  class'TraceHitSpawner'.default.damageType='DTS_Strike';
-
-	  //if ((Emitter!=none)&&(Emitter.proxy!=none))
-//      {
-//         HitLocation=Emitter.proxy.Location;
-//      }
-	} else
-	  class'TraceHitSpawner'.default.damageType=damageType;
+	}
+	else if(AmmoName == Class'AmmoRubber')
+		class'TraceHitSpawner'.default.damageType='Rubber';
 
 	if (bPenetrating)
 	{
@@ -5479,7 +5421,7 @@ simulated function TraceFire( float Accuracy )
 
       //RSD: Stopping Power perk for shotguns
       bDoExtraSlugDamage = false;
-      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkStoppingPower').bPerkObtained == true)
+      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkStoppingPower').bPerkObtained)
       {
           if (i == 0)
               initialPawnHit = ScriptedPawn(Other);
@@ -5492,21 +5434,22 @@ simulated function TraceFire( float Accuracy )
 		// randomly draw a tracer for relevant ammo types
 		// don't draw tracers if we're zoomed in with a scope - looks stupid
 	  // DEUS_EX AMSD In multiplayer, draw tracers all the time.
-		if ( ((Level.NetMode == NM_Standalone) && (/*!bZoomed && */(numSlugs >= 1) && (FRand() < 0.5))) ||
+		if ( ((Level.NetMode == NM_Standalone) && (numSlugs >= 1)) ||
 		   ((Level.NetMode != NM_Standalone) && (Role == ROLE_Authority)) )
 		{
-			if ((AmmoName == Class'Ammo10mm') || (AmmoName == Class'Ammo3006') ||
-				(AmmoName == Class'Ammo762mm') || (AmmoName == Class'AmmoShell')) //CyberP: shotguns have tracers
+			if ( (AmmoName != Class'AmmoRubber') && ( (AmmoName == Class'Ammo10mm') || (AmmoName == Class'Ammo3006') ||  //Ygll: No tracer for rubber ammo !
+				(AmmoName == Class'Ammo762mm') || (AmmoName == Class'AmmoShell') || (AmmoName == Class'AmmoSabot') ) ) //CyberP: shotguns have tracers
 			{
 				if (VSize(HitLocation - StartTrace) > 250)
 				{
 					rot = Rotator(EndTrace - StartTrace);
-			   if (Owner.IsA('DeusExPlayer') && AmmoName == Class'Ammo3006')
-				  trcr = Spawn(class'SniperTracer',,, StartTrace + 96 * Vector(rot), rot);
-			   else
-				  trcr = Spawn(class'Tracer',,, StartTrace + 96 * Vector(rot), rot);   //StartTrace + 96 * Vector(rot) //RSD: Added pointer
-				  if (bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
-                  	trcr.DrawType = DT_None;
+					if (AmmoName == Class'Ammo3006')
+						trcr = Spawn(class'SniperTracer',,, StartTrace + 96 * Vector(rot), rot);
+					else
+						trcr = Spawn(class'Tracer',,, StartTrace + 96 * Vector(rot), rot);   //StartTrace + 96 * Vector(rot) //RSD: Added pointer
+
+					if (trcr != None && bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
+						trcr.DrawType = DT_None;
 				}
 			}
 		}
@@ -5661,26 +5604,36 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
         if (Other.IsA('ScriptedPawn') && FRand() < (float(HitDamage)*mult-finalDamage)) //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
             finalDamage++;
 
-		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained == true)
+		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained)
 			finalDamage *= DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').PerkValue;
 
         if (DeusExPlayer(Owner) != None) //cyberP: spawn a tracer               //RSD: != none instead of IsA
         {
          //Owner.BroadcastMessage(finalDamage);                                   //RSD: Testing
-         if (!bHandToHand)                                                      //RSD: Removed && !bZoomed here so water splashing is intact
-         {
-          GetAxes(DeusExPlayer(Owner).ViewRotation,X,Y,Z);
-		  offset = Owner.Location;
-		  offset += X * Owner.CollisionRadius * 1.75;
-		  if (DeusExPlayer(Owner).IsCrouching())
-		  offset.Z += Owner.CollisionHeight * 0.25;
-          else
-		  offset.Z += Owner.CollisionHeight * 0.7;
-		  offset += Y * Owner.CollisionRadius * 0.65;
-          tra= Spawn(class'Tracer',,, offset, (Rotator(HitLocation - offset)));
-          if (tra != None && bZoomed) //RSD: Added bZoomed here so we still get a tracer for water splashing
-              tra.DrawType = DT_None;
-		  }
+			if (!bHandToHand)                                                      //RSD: Removed && !bZoomed here so water splashing is intact
+			{
+				GetAxes(DeusExPlayer(Owner).ViewRotation,X,Y,Z);
+				offset = Owner.Location;
+				offset += X * Owner.CollisionRadius * 1.75;
+				if (DeusExPlayer(Owner).IsCrouching())
+					offset.Z += Owner.CollisionHeight * 0.25;
+				else
+					offset.Z += Owner.CollisionHeight * 0.7;
+
+				offset += Y * Owner.CollisionRadius * 0.65;
+
+				if ( (AmmoName != Class'AmmoRubber') && ( (AmmoName == Class'Ammo10mm') || (AmmoName == Class'Ammo3006') ||  //Ygll: No tracer for rubber ammo !
+				(AmmoName == Class'Ammo762mm') || (AmmoName == Class'AmmoShell') || (AmmoName == Class'AmmoSabot') ) )
+				{
+					if (AmmoName == Class'Ammo3006')
+						tra = Spawn(class'SniperTracer',,, offset, (Rotator(HitLocation - offset)));
+					else
+						tra = Spawn(class'Tracer',,, offset, (Rotator(HitLocation - offset)));
+
+					if (tra != None && bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
+						tra.DrawType = DT_None;
+				}
+			}
 		}
 
 		if (Other != None)
@@ -5746,11 +5699,8 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 			if ((bPenetrating || bHandToHand) && Other.IsA('ScriptedPawn') && !Other.IsA('Robot'))
 			{
 				offy = Other.Location;
-				offy.Z += (Other.CollisionHeight * 0.93);
-				if (HitLocation.Z > offy.Z && ScriptedPawn(Other).bHasHelmet == True)
-                {
-                }
-                else
+				offy.Z += (Other.CollisionHeight * 0.93); //Ygll: Head location is currently really accurate ?
+				if (HitLocation.Z < offy.Z || !ScriptedPawn(Other).bHasHelmet)
                 {
 				    if (!bHandToHand && !IsA('WeaponProd') && (!IsA('WeaponSawedOffShotgun') || AmmoRubber(ammoType) == none) && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
                     {
@@ -5952,116 +5902,6 @@ function Finish()
 		GotoState('Idle');
 }
 
-// ----------------------------------------------------------------------
-// UpdateInfo()
-// ----------------------------------------------------------------------
-
-//Do the Ammo Display in the Inventory Window
-function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
-{
-	local bool bAmmoAvailable;
-	local class<DeusExAmmo> ammoClass;
-	local Ammo weaponAmmo;
-	local int  ammoAmount;
-	local bool bHasAmmo;
-	local string str;
-    local int i;
-	local float hh;
-    local DeusExPlayer player;
-    local string noiseLev, msgMultiplier;
-    local float prec;                                                           //RSD: Floating point precision
-
-	// Create the ammo buttons.  Start with the AmmoNames[] array,
-	// which is used for weapons that can use more than one
-	// type of ammo.
-
-	if (AmmoNames[0] != None)
-	{
-		for (i=0; i<ArrayCount(AmmoNames); i++)
-		{
-			if (AmmoNames[i] != None)
-			{
-				// Check to make sure the player has this ammo type
-				// *and* that the ammo isn't empty
-				weaponAmmo = Ammo(P.FindInventoryType(AmmoNames[i]));
-
-				if (weaponAmmo != None)
-				{
-					ammoAmount = weaponAmmo.AmmoAmount;
-					bHasAmmo = (weaponAmmo.AmmoAmount > 0);
-				}
-				else
-				{
-					ammoAmount = 0;
-					bHasAmmo = False;
-				}
-
-				winInfo.AddAmmo(AmmoNames[i], bHasAmmo, ammoAmount);
-				bAmmoAvailable = True;
-
-				if (AmmoNames[i] == AmmoName)
-				{
-                    winInfo.SetLoaded(AmmoName, true);                          //RSD: Added bAmmoSelectWait hack
-					ammoClass = class<DeusExAmmo>(AmmoName);
-				}
-			}
-		}
-	}
-	else
-	{
-		// Now peer at the AmmoName variable, but only if the AmmoNames[]
-		// array is empty
-		if ((AmmoName != class'AmmoNone') && (!bHandToHand) && (ReloadCount != 0))
-		{
-			weaponAmmo = Ammo(P.FindInventoryType(AmmoName));
-
-			if (weaponAmmo != None)
-			{
-				ammoAmount = weaponAmmo.AmmoAmount;
-				bHasAmmo = (weaponAmmo.AmmoAmount > 0);
-			}
-			else
-			{
-				ammoAmount = 0;
-				bHasAmmo = False;
-			}
-
-			winInfo.AddAmmo(AmmoName, bHasAmmo, ammoAmount);
-			winInfo.SetLoaded(AmmoName, true);                                  //RSD: Added true hack
-			ammoClass = class<DeusExAmmo>(AmmoName);
-			bAmmoAvailable = True;
-		}
-	}
-
-	// If this weapon has ammo info, display it here
-    /*
-	if (ammoClass != None)
-	{
-		winInfo.AddLine();
-		winInfo.AddAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
-	}
-    */
-
-	// Only draw another line if we actually displayed ammo.
-	if (bAmmoAvailable)
-		winInfo.AddLine();
-
-	// Ammo loaded
-	if ((AmmoName != class'AmmoNone') && (!bHandToHand) && (ReloadCount != 0))
-		winInfo.AddAmmoLoadedItem(msgInfoAmmoLoaded, AmmoType.itemName);
-
-	// ammo info
-	if ((AmmoName == class'AmmoNone') || (ReloadCount == 0))
-		str = msgInfoNA;
-	else
-		str = AmmoName.Default.ItemName;
-	for (i=0; i<ArrayCount(AmmoNames); i++)
-		if ((AmmoNames[i] != None) && (AmmoNames[i] != AmmoName))
-			str = str $ "|n" $ AmmoNames[i].Default.ItemName;
-    if (!bHandToHand || IsA('WeaponProd'))
-	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
-}
-
 //SARGE: Now each object can define it's own function for whether it can be a secondary or not.
 function bool CanAssignSecondary(DeusExPlayer player)
 {
@@ -6077,680 +5917,25 @@ function bool CanAssignSecondary(DeusExPlayer player)
 simulated function bool UpdateInfo(Object winObject)
 {
 	local PersonaInventoryInfoWindow winInfo;
-	local string str;
-	local int dmg, numMods;
-	local float mod, stamDrain;
-	local Pawn P;
-	local float hh;
-    local DeusExPlayer player;
-    local string noiseLev, msgMultiplier;
-    local float prec;                                                           //RSD: Floating point precision
-    local float vol,rad;                                                        //SARGE: Added
-
-	P = Pawn(Owner);
-	if (P == None)
-		return False;
 
 	winInfo = PersonaInventoryInfoWindow(winObject);
 	if (winInfo == None)
-		return False;
-    
-    //SARGE: Show modified weapons in title
-    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
-        winInfo.SetTitle(itemName @ "(" $ strModified $ ")");
-    else
-        winInfo.SetTitle(itemName);
+		return false;
 
-    if (P.IsA('DeusExPlayer'))
-    {
-        //SARGE: Add Decline Button
-		winInfo.AddDeclineButton(class);
-
-        //SARGE: Add Secondary Button
-        if (CanAssignSecondary(DeusExPlayer(P)))
-	       winInfo.AddSecondaryButton(self);
-		
-        //SARGE: Add Skins Button
-        if (DeusExPlayer(P).WeaponSkinManager.GetSkinCountFor(self) > 1)
-            winInfo.AddSkinsButtons(self);
-    }
-
-	winInfo.SetText(msgInfoWeaponStats);
-	winInfo.AddLine();
-
-    DoAmmoInfoWindow(P,winInfo);
-
-	// base damage
-	if (AreaOfEffect == AOE_Cone)
-	{
-		if (bInstantHit)
-		{
-			if (Level.NetMode != NM_Standalone)
-				dmg = Default.mpHitDamage * 5;
-			else
-				dmg = Default.HitDamage;
-		}
-		else
-		{
-			if (Level.NetMode != NM_Standalone)
-				dmg = Default.mpHitDamage * 3;
-			else
-                dmg = Default.HitDamage;
-		}
-	}
-	else
-	{
-		if (Level.NetMode != NM_Standalone)
-			dmg = Default.mpHitDamage;
-		else
-			dmg = Default.HitDamage;
-	}
-	if (AmmoName != None)                                                       //RSD: Gotta totally rework this stuff
-    {
-        if (AmmoName == class'AmmoDartPoison')
-            dmg = 15;
-        else if (AmmoName == class'AmmoDart')
-            dmg = 18;
-        else if (AmmoName == class'AmmoDartFlare')
-            dmg = 7;
-        else if (AmmoName == class'AmmoDartTaser')
-            dmg = 10;                                                           //RSD Was 15
-        else if (AmmoName == class'Ammo20mm')
-            dmg = 200;
-        else if (AmmoName == class'AmmoRocketWP')
-            dmg = 50;
-        else if (Ammoname == class'AmmoSabot')                                  //RSD: Sabot are now slug rounds
-            dmg = 18;
-        else if (AmmoName == class'AmmoRubber')
-            dmg = 18;                                                           //RSD Was 12 (actually 13/19)
-    }
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AugmentationSystem != none) //RSD: accessed none?
-        hh = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
-	str = String(dmg);
-	if (AreaOfEffect == AOE_Cone)                                               //RSD: Tell us if we're using a multi-slug weapon
-	{
-		if (isA('WeaponSawedOffShotgun') && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
-			str = str $ "x9";
-        else if (bInstantHit && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
-			str = str $ "x8";
-		else if (!bInstantHit && AmmoName!=class'AmmoRubber')
-			str = str $ "x3";
-	}
-
-    if (hh < 1.0)
-    	hh = 0.0;
-    /*else if (hh == 1.250000)                                                  //RSD: How about no, WTF
-    hh = 0.25;
-    else if (hh == 1.500000)
-    hh = 0.5;
-    else if (hh == 1.750000)
-    hh = 0.75;
-    else if (hh == 2.000000)
-    hh = 1.0;*/
-    else
-    	hh -= 1.0;                                                              //RSD: Simple formula! Wow!
-
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost, accessed none?
-    	hh += 0.5;
-
-	//G-Flex: display the correct damage bonus
-	mod = 1.0 - (2.0 * GetWeaponSkill()) + ModDamage;  //CyberP: damage mods
-    mod *= 1.0 - GetAddonPenalty(Silencer);
-	if (IsA('WeaponSawedoffShotgun') && AmmoName==class'AmmoRubber')            //RSD: Sawed-off gets +30% damage on rubber bullets
-	   mod += 0.30;
-	if (bHandToHand)
-       mod = 1.0 - (2.0 * GetWeaponSkill()) + hh;
-	if (IsA('WeaponNanoSword'))                                                 //RSD: Can mod damage of DTS now
-       mod = 1.0 - (2.0 * GetWeaponSkill()) + hh + ModDamage;
-    if (mod != 1.0 || HasDAMMod())
-	{
-		str = str @ BuildPercentString(mod - 1.0);
-		if (float(dmg)*mod-int(dmg*mod) >= 0.1)                                 //RSD: Print more decimals if there's roundoff
-			prec = 0.1;
-		else
-		    prec = 1.0;
-		str = str @ "=" @ FormatFloatString(float(dmg) * mod, prec);            //RSD: Now float with 0.1 precision because damage increases are now distributed continously
-
-		if (AreaOfEffect == AOE_Cone)                                               //RSD: Tell us if we're using a multi-slug weapon
-		{
-			if (isA('WeaponSawedOffShotgun') && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
-				str = str $ "x9";
-			else if (bInstantHit && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
-				str = str $ "x8";
-			else if (!bInstantHit && AmmoName!=class'AmmoRubber')
-				str = str $ "x3";
-		}
-	}
-
-    winInfo.AddInfoItem(msgInfoDamage, str, (mod != 1.0));
-
-    //Headshot multiplier
-    str = "x8";
-    if (IsA('WeaponProd') || IsA('WeaponBaton') || AmmoName==class'AmmoRubber') //RSD: Moved to top of branch so Rubber Bullets dominate Sawed-Off Shotgun
-    str = "x5";
-    else if (ItemName == "USP.10" || IsA('WeaponSawedOffShotgun') || IsA('WeaponShuriken')) //RSD: Added WeaponShuriken
-    str = "x9";
-    else if (IsA('WeaponNanoSword') || IsA('WeaponCrowbar'))
-    str = "x6";
-
-    if (!IsA('WeaponPepperGun'))
-    winInfo.AddInfoItem(msgHeadMultiplier, str);
-	// clip size
-	if ((Default.ReloadCount == 0) || bHandToHand)
-		str = msgInfoNA;
-	else
-	{
-		if ( Level.NetMode != NM_Standalone )
-			str = Default.mpReloadCount @ msgInfoRounds;
-		else
-			str = Default.ReloadCount @ msgInfoRounds;
-	}
-
-	if (HasClipMod())
-	{
-		str = str @ BuildPercentString(ModReloadCount);
-		str = str @ "=" @ ReloadCount @ msgInfoRounds;
-	}
-    if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponPepperGun'))
-	winInfo.AddInfoItem(msgInfoClip, str, HasClipMod());
-
-	// rate of fire
-	if ((Default.ReloadCount == 0) || bHandToHand)
-	{
-		str = msgInfoNA;
-	}
-	else
-	{
-		if (bAutomatic || bFullAuto)
-			str = msgInfoAuto;
-		else
-			str = msgInfoSingle;
-
-		str = str $ "," @ FormatFloatString(1.0/Default.ShotTime, 0.1) @ msgInfoRoundsPerSec;
-		if(HasROFMod())
-		{
-			str = str @ BuildPercentString(-ModShotTime);                       //RSD: negative because we subtract ShotTime, but display ROF... numbers are a lie!
-			str = str @ "=" @ FormatFloatString(1.0/ShotTime, 0.1) @ msgInfoRoundsPerSec;
-		}
-	}
-	if (!bHandToHand || IsA('WeaponProd'))
-	winInfo.AddInfoItem(msgInfoROF, str, HasROFMod());
-
-	// reload time
-	if ((Default.ReloadCount == 0) || bHandToHand)
-		str = msgInfoNA;
-	else
-	{
-        mod = 0.0;
-		if (Level.NetMode != NM_Standalone )
-			str = FormatFloatString(Default.mpReloadTime, 0.1) @ msgTimeUnit;
-		else if (bPerShellReload)
-			str = FormatFloatString(1 / Default.ReloadTime, 0.1) @ msgInfoRoundsPerSec;
-		else
-			str = FormatFloatString(Default.ReloadTime, 0.1) @ msgTimeUnit;
-	}
-
-    mod = GetAddonPenalty(Scope); //SARGE: Penalties for addons
-	if (HasReloadMod() || mod > 0.0)
-	{
-		str = str @ BuildPercentString(ModReloadTime + mod);
-		if (bPerShellReload)
-			str = str @ "=" @ FormatFloatString(1 / (ReloadTime + mod), 0.1) @ msgInfoRoundsPerSec;
-		else
-            str = str @ "=" @ FormatFloatString(ReloadTime + mod, 0.1) @ msgTimeUnit;
-	}
-    if (!bHandToHand || IsA('WeaponPepperGun') || IsA('WeaponProd'))
-	winInfo.AddInfoItem(msgInfoReload, str, HasReloadMod() || mod >= 0.01);
-
-	// recoil
-    mod = GetRecoilPenaltyMod(); //SARGE: Penalties for addons
-	str = FormatFloatString(Default.recoilStrength, 0.01);
-	if (HasRecoilMod() || mod > 0.0)
-	{
-		str = str @ BuildPercentString(ModRecoilStrength + mod);
-		str = str @ "=" @ FormatFloatString(recoilStrength + mod, 0.01);
-	}
-    if (!bHandToHand)
-	winInfo.AddInfoItem(msgInfoRecoil, str, HasRecoilMod() || mod > 0.0);
-
-	// base accuracy (2.0 = 0%, 0.0 = 100%)
-	if ( Level.NetMode != NM_Standalone )
-	{
-		str = Int((2.0 - Default.mpBaseAccuracy)*50.0) $ "%";
-		mod = (Default.mpBaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
-		if (mod != 0.0)
-		{
-			str = str @ BuildPercentString(mod);
-			str = str @ "=" @ Min(100, Int(100.0*mod+(2.0 - Default.mpBaseAccuracy)*50.0)) $ "%";
-		}
-	}
-	else
-	{
-		str = Int((2.0 - Default.BaseAccuracy)*50.0) $ "%";
-		mod = (Default.BaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
-
-		if (mod != 0.0)
-		{
-			str = str @ BuildPercentString(mod);
-			str = str @ "=" @ Min(100, Int(100.0*mod+(2.0 - Default.BaseAccuracy)*50.0)) $ "%";
-		}
-	}
-	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponShuriken') || GoverningSkill == class'DeusEx.SkillDemolition')
-	winInfo.AddInfoItem(msgInfoAccuracy, str, (mod != 0.0));
-
-	// accurate range
-	//if (bHandToHand)
-	//	str = msgInfoNA;
-	//else
-	//{
-        mod = GetAddonPenalty(Silencer);
-		if ( Level.NetMode != NM_Standalone )
-			str = FormatFloatString((Default.mpAccurateRange)/16.0, 1.0) @ msgRangeUnit;
-		else
-			str = FormatFloatString((Default.AccurateRange)/16.0, 1.0) @ msgRangeUnit;
-	//}
-
-	if (HasRangeMod() || mod > 0.0)
-	{
-		str = str @ BuildPercentString(ModAccurateRange-mod);
-		str = str @ "=" @ FormatFloatString((AccurateRange*(1.0-mod))/16.0, 1.0) @ msgRangeUnit;
-	}
-	if (!bHandToHand || IsA('WeaponShuriken'))
-	winInfo.AddInfoItem(msgInfoAccRange, str, HasRangeMod() || mod > 0.0);
-
-	// max range
-	//if (bHandToHand)
-	//	str = msgInfoNA;
-	//else
-	//{
-        mod = GetAddonPenalty(Silencer);
-		if ( Level.NetMode != NM_Standalone )
-			str = FormatFloatString((Default.mpMaxRange)/16.0, 1.0) @ msgRangeUnit;
-		else
-			str = FormatFloatString((Default.MaxRange)/16.0, 1.0) @ msgRangeUnit;
-	//}
-	if (HasRangeMod() || mod > 0.0)                                                          //RSD: Added because we can now mod MaxRange
-	{
-		str = str @ BuildPercentString(ModAccurateRange-mod);
-		str = str @ "=" @ FormatFloatString((MaxRange*(1.0-mod))/16.0, 1.0) @ msgRangeUnit;
-	}
-	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod() || mod > 0.0);                    //RSD: Added HasRangeMod()
-
-	//Noise level
-	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') || IsA('WeaponLAW'))
-	{
-	noiseLev="dB";
-
-    //SARGE: Now we just read it's actual noise level, rather than this dumb bullshit
-
-    GetAIVolume(vol,rad);
-    if (vol == 0)
-        vol = 1;
-	winInfo.AddInfoItem(msgNoise,FormatFloatString(vol * 30,1.0) @ noiseLev);
-    /*
-	  if (bHasSilencer)
-      {
-         str = "1.0";                                                           //RSD: Was 0.5
-         winInfo.AddInfoItem(msgNoise,str @ noiseLev);
-      }
-      else
-	winInfo.AddInfoItem(msgNoise,FormatFloatString(NoiseLevel * 10,1.0) @ noiseLev); //SARGE: Multiplied by 10
-    */
-    }
-
-    if (meleeStaminaDrain != 0 && !IsA('WeaponShuriken'))  //CyberP: display special, speed rating & stamina drain
-    {
-    player = DeusExPlayer(GetPlayerPawn());
-		mod = player.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech');
-        if (mod < 3)
-          mod = 1;
-        else
-          mod = 0.5;
-
-    if (IsA('WeaponSword'))
-    {
-      str = msgSpec;
-      if (player.AugmentationSystem.GetAugLevelValue(class'AugCombat') == -1.0)
-         msgMultiplier = msgModerate;
-      else
-         msgMultiplier = msgFast;
-      stamDrain = meleeStaminaDrain*mod;
-    }
-    else if (IsA('WeaponCrowbar'))
-    {
-      str = msgSpec;
-      if (player.AugmentationSystem != none && player.AugmentationSystem.GetAugLevelValue(class'AugCombat') == -1.0) //RSD: accessed none?
-         msgMultiplier = msgFast;
-      else
-         msgMultiplier = msgVeryFast;
-      stamDrain = meleeStaminaDrain*mod;
-    }
-    else if (IsA('WeaponBaton'))
-    {
-      str = msgSpec;
-      if (player.AugmentationSystem != none && player.AugmentationSystem.GetAugLevelValue(class'AugCombat') == -1.0) //RSD: accessed none?
-         msgMultiplier = msgSlow;
-      else
-         msgMultiplier = msgModerate;
-      stamDrain = meleeStaminaDrain*mod;
-    }
-    else if (IsA('WeaponCombatKnife'))
-    {
-      str = msgSpec;
-      if (player.AugmentationSystem != none && player.AugmentationSystem.GetAugLevelValue(class'AugCombat') == -1.0) //RSD: accessed none?
-         msgMultiplier = msgFast;
-      else
-         msgMultiplier = msgVeryFast;
-      stamDrain = meleeStaminaDrain*mod;
-    }
-    else if (IsA('WeaponNanoSword'))
-    {
-      str = msgSpec;
-      if (player.AugmentationSystem != none && player.AugmentationSystem.GetAugLevelValue(class'AugCombat') == -1.0) //RSD: accessed none?
-         msgMultiplier = msgModerate;
-      else
-         msgMultiplier = msgFast;
-      stamDrain = meleeStaminaDrain*mod;
-    }
-    if (player.AugmentationSystem != none && player.AugmentationSystem.GetAugLevelValue(class'AugCombat') == -1.0) //RSD: accessed none?
-         winInfo.AddInfoItem(msgSpeedR,msgMultiplier,false);
-    else
-         winInfo.AddInfoItem(msgSpeedR,msgMultiplier,true);
-    if (mod != 1)
-        winInfo.AddInfoItem(msgStamDrain, FormatFloatString(stamDrain,0.01), true);
-    else
-        winInfo.AddInfoItem(msgStamDrain, FormatFloatString(stamDrain,0.01), false);
-    winInfo.AddInfoItem(msgSpec2,str);
-    }
-
-	// mass
-	winInfo.AddInfoItem(msgInfoMass, FormatFloatString(Default.Mass, 1.0) @ msgMassUnit);
-
-	// laser mod
-	if (bCanHaveLaser)
-	{
-		if (bHasLaser)
-			str = msgInfoYes;
-		else
-			str = msgInfoNo;
-	}
-	else
-	{
-		str = msgInfoNA;
-	}
-	if (!bHandToHand)
-	winInfo.AddInfoItem(msgInfoLaser, str, bCanHaveLaser && bHasLaser && (Default.bHasLaser != bHasLaser));
-
-	// scope mod
-	if (bCanHaveScope)
-	{
-		if (bHasScope)
-			str = msgInfoYes;
-		else
-			str = msgInfoNo;
-	}
-	else
-	{
-		str = msgInfoNA;
-	}
-	if (!bHandToHand)
-	winInfo.AddInfoItem(msgInfoScope, str, bCanHaveScope && bHasScope && (Default.bHasScope != bHasScope));
-
-	// silencer mod
-	if (bCanHaveSilencer)
-	{
-		if (bHasSilencer)
-			str = msgInfoYes;
-		else
-			str = msgInfoNo;
-	}
-	else
-	{
-		str = msgInfoNA;
-	}
-	if (!bHandToHand)
-	winInfo.AddInfoItem(msgInfoSilencer, str, bCanHaveSilencer && bHasSilencer && (Default.bHasSilencer != bHasSilencer));
-
-    //CyberP: full-auto mod
-    if (!bHandToHand)
-    {
-    if (IsA('WeaponSawedOffShotgun'))
-    {
-            str = msgSpec;
-            winInfo.AddInfoItem(msgSpec2,str);
-			str = msgPump;
-    }
-	else if (bFullAuto || bAutomatic)
-	{
-			str = msgFull;
-	}
-	else
-	{
-	       str = msgSemi;
-	}
-	winInfo.AddInfoItem(msgInfoFullAuto, str, bCanHaveModFullAuto && bFullAuto && (Default.bFullAuto != bFullAuto));
-    }
-    //Lethality
-    if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponAssaultShotgun'))
-    str= msgVar;
-    else if (bPenetrating || IsA('WeaponCrowbar'))
-    str= msgLethal;
-    else
-    str= msgNon;
-    winInfo.AddInfoItem(msgLethality, str);
-
-    //secondary weapon
-    if (bHandToHand && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-       str = msgInfoYes;
-    else if (bHandToHand && GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-       str = msgInfoNo;
-    else if (bHandToHand)
-       str = msgInfoYes;
-    else
-       str = msgInfoNo;
-    winInfo.AddInfoItem(msgSecondary, str);
-
-	// Governing Skill
-    //SARGE: Also Weapon requirement
-    if (minSkillRequirement > 0 && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).bWeaponRequirementsMatter)
-        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName @ "(" $ msgRequires @  DeusExPlayer(Owner).SkillSystem.GetSkillFromClass(GoverningSkill).GetLevelString(minSkillRequirement) $ ")");
-    else
-        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName);
-
-    if (bCanHaveModBaseAccuracy || bCanHaveModReloadCount || bCanHaveModAccurateRange || bCanHaveModReloadTime || bCanHaveModRecoilStrength || bCanHaveModShotTime || bCanHaveModDamage)
-        {
-            winInfo.AddLine();
-            winInfo.SetText(msgAllMods);
-            winInfo.AddLine();
-
-                if (bCanHaveModReloadCount)
-                {
-                        numMods = Int(Abs(ModReloadCount) * 10);
-                        if (IsA('WeaponProd'))
-                            winInfo.AddModInfo(msgClip, numMods, (numMods == 4), 1);
-                        else
-                            winInfo.AddModInfo(msgClip, numMods, (numMods == 5));
-                }
-
-                if (bCanHaveModShotTime)
-                {
-                        numMods = Int(Abs(ModShotTime) * 10);
-                        //winInfo.AddInfoItem("Rate of Fire:", numMods $ "/5", (numMods == 5));
-                        if (IsA('WeaponAssaultGun'))
-                            winInfo.AddModInfo(msgRate, numMods, (numMods == 3), 2);
-                        else
-                            winInfo.AddModInfo(msgRate, numMods, (numMods == 5));
-                }
-
-                if (bCanHaveModReloadTime)
-                {
-                        numMods = Int(Abs(ModReloadTime) * 10);
-                        //winInfo.AddInfoItem("Reload:", numMods $ "/5", (numMods == 5));
-                        winInfo.AddModInfo(msgRelo, numMods, (numMods == 5));
-                }
-
-                if (bCanHaveModDamage)
-                {
-                        numMods = Int(Abs(ModDamage) * 10);
-                        winInfo.AddModInfo(msgDama, numMods, (numMods == 5));
-                }
-
-                if (bCanHaveModRecoilStrength)
-                {
-                        numMods = Int(Abs(ModRecoilStrength) * 10);
-                        //winInfo.AddInfoItem("Recoil:", numMods $ "/5", (numMods == 5));
-                        winInfo.AddModInfo(msgReco, numMods, (numMods == 5));
-                }
-
-                if (bCanHaveModBaseAccuracy)
-                {
-                        numMods = Int(Abs(ModBaseAccuracy) * 10);
-                        if (IsA('WeaponSawedOffShotgun'))
-                            winInfo.AddModInfo(msgAccu, numMods, (numMods == 2), 3);
-                        else
-                            winInfo.AddModInfo(msgAccu, numMods, (numMods == 5));
-                }
-
-                if (bCanHaveModAccurateRange)
-                {
-                        numMods = Int(Abs(ModAccurateRange) * 10);
-                        //winInfo.AddInfoItem("Range:", numMods $ "/5", (numMods == 5));
-                        winInfo.AddModInfo(msgRang, numMods, (numMods == 5));
-                }
-                if (bCanHaveScope) //CyberP: uncomment to add scope, laser, silencer and full-auto for extra fun
-                {
-                if (bHasScope)
-                    winInfo.AddModInfo(msgInfoScope, 1, (numMods == 1), 4);
-                else
-                    winInfo.AddModInfo(msgInfoScope, 0, (numMods == 1), 4);
-                }
-                if (bCanHaveLaser)
-                {
-	            if (bHasLaser)
-	         	    winInfo.AddModInfo(msgInfoLaser, 1, (numMods == 1), 4);
-                else
-                    winInfo.AddModInfo(msgInfoLaser, 0, (numMods == 1), 4);
-                }
-                if (bCanHaveSilencer)
-                {
-	            if (bHasSilencer)
-	         	    winInfo.AddModInfo(msgInfoSilencer, 1, (numMods == 1), 4);
-                else
-                    winInfo.AddModInfo(msgInfoSilencer, 0, (numMods == 1), 4);
-                }
-                if (bCanHaveModFullAuto)
-                {
-	            if (bFullAuto)
-	         	    winInfo.AddModInfo(msgInfoFullAuto, 1, (numMods == 1), 4);
-                else
-                    winInfo.AddModInfo(msgInfoFullAuto, 0, (numMods == 1), 4);
-                }
-         }
-    if (bHadLaser || bHadSilencer || bHadScope)
-    {
-        winInfo.AddLine();
-        winInfo.AddWeaponModButtons(self);
-        winInfo.AddWeaponModDrawbacks(self);
-    }
-	winInfo.AddLine();
-	winInfo.SetText(Description);
-
-	return True;
+	return winInfo.UpdateWeaponInfo(Self);
 }
-
 // ----------------------------------------------------------------------
 // UpdateAmmoInfo()
 // ----------------------------------------------------------------------
-
 simulated function UpdateAmmoInfo(Object winObject, Class<DeusExAmmo> ammoClass)
 {
 	local PersonaInventoryInfoWindow winInfo;
-	local string str;
-	local int i;
 
 	winInfo = PersonaInventoryInfoWindow(winObject);
 	if (winInfo == None)
 		return;
 
-	// Ammo loaded
-	if ((AmmoName != class'AmmoNone') && (!bHandToHand) && (ReloadCount != 0))
-		winInfo.UpdateAmmoLoaded(AmmoType.itemName);
-
-	// ammo info
-	if ((AmmoName == class'AmmoNone') || bHandToHand || (ReloadCount == 0))
-		str = msgInfoNA;
-	else
-		str = AmmoName.Default.ItemName;
-	for (i=0; i<ArrayCount(AmmoNames); i++)
-		if ((AmmoNames[i] != None) && (AmmoNames[i] != AmmoName))
-			str = str $ "|n" $ AmmoNames[i].Default.ItemName;
-
-	winInfo.UpdateAmmoTypes(str);
-
-	// If this weapon has ammo info, display it here
-	if (ammoClass != None)
-		winInfo.UpdateAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
-}
-
-// ----------------------------------------------------------------------
-// BuildPercentString()
-// ----------------------------------------------------------------------
-
-simulated final function String BuildPercentString(Float value)
-{
-	local string str;
-
-	str = String(Int(Abs(value * 100.0)+0.5));                                  //RSD: Added 0.5 for proper rounding
-	if (value < 0.0)
-		str = "-" $ str;
-	else
-		str = "+" $ str;
-
-	return ("(" $ str $ "%)");
-}
-
-// ----------------------------------------------------------------------
-// FormatFloatString()
-// ----------------------------------------------------------------------
-
-simulated function String FormatFloatString(float value, float precision)
-{
-	local string str, numstr;                                                   //RSD: Added numstr
-    local int i;                                                                //RSD
-
-	if (precision == 0.0)
-		return "ERR";
-
-	// build integer part
-	str = String(Int(value));
-
-	// build decimal part
-	if (precision < 1.0)
-	{
-		value += 0.5*precision;                                                 //RSD: Pre-round the value so we don't get e.g. 1.998 -> 1.10 with precision=0.01, but only for non-int values!
-		str = String(Int(value));                                               //RSD: Redo this so we don't lose the base from truncation
-        value -= Int(value);
-		//str = str $ "." $ String(Int((0.5 * precision) + value * (1.0 / precision)));
-		//RSD: Rest of this is to fix tenths etc. places being lost when equal to 0 for higher precision e.g. 1.05 -> 1.5
-		numstr = String(Int(value * (1.0 / precision)));
-        str = str $ ".";
-        for (i=0;i<int(Loge(1.0/precision)/Loge(10.))-Len(numstr);i++)
-        {
-        	str = str $ '0';
-        }
-		str = str $ numstr;
-	}
-
-	return str;
-}
-
-// ----------------------------------------------------------------------
-// CR()
-// ----------------------------------------------------------------------
-
-simulated function String CR()
-{
-	return Chr(13) $ Chr(10);
+	winInfo.UpdateWpnAmmoInfo(Self, ammoClass);
 }
 
 // ----------------------------------------------------------------------

@@ -296,8 +296,6 @@ function CreateDartBloodDropHit(Vector vec)
 
 function SpawnBlood(Vector HitLocation, Vector HitNormal)
 {
-	local BloodSpurt spurt;
-
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 	  return;
 
@@ -305,18 +303,11 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 	//Ygll: adding the hit visual effect for flesh hit
 	if (IsA('DartPoison') || IsA('DartTaser') )
 	{
-		//spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
-		//spurt.LifeSpan *= 0.7;
-		//spurt.DrawScale *= 1.0;
-
 		CreateDartHitBaseEffect(false);
 	}
 	else if( bBlood ) //Ygll: if the current projectile is set to generate blood
 	{
-		spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
-		spurt.LifeSpan *= 0.8;
-		spurt.DrawScale *= 1.1;
-
+		spawn(class'BloodSpurt',,, HitLocation+HitNormal);
 		CreateDartBloodDropHit(HitLocation+HitNormal);
 	}
 }
@@ -798,7 +789,7 @@ auto simulated state Flying
 	
 	   if (IsA('RubberBullet'))
 	   {
-			Velocity = 0.8*((Velocity dot HitNormal) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
+			Velocity = 0.6*((Velocity dot HitNormal) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
 			speed2 = VSize(Velocity);
 			bFixedRotationDir = true;
 			RotationRate = RotRand(false);

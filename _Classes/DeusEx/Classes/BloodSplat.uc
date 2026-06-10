@@ -18,17 +18,25 @@ function BeginPlay()
 	}
 
 	rnd = FRand();
-    
     if (rnd < 0.25)
         bloodTex = 1;
 	else if (rnd < 0.5)
         bloodTex = 2;
 	else if (rnd < 0.75)
         bloodTex = 3;
-    
+
     //better textures can cope with greater size variation -DDL
     //SARGE: Turns out the vanilla textures can cope too!
-    randomScale = FRand() * 0.12;
+	rnd = FRand();
+	if(rnd < 0.1)
+		rnd = 0.2;
+
+	if (IsHDTP())
+		randomScale = rnd * 0.085;
+	else if (IsNewBlood())
+		randomScale = rnd * -0.5;
+	else //vanilla but bigger
+		randomScale = rnd * 0.05;
 
 	Super.BeginPlay();
 }
@@ -45,14 +53,13 @@ function DoHDTP()
     }
 
     DrawScale += randomScale;  //better textures can cope with greater size variation -DDL
-
 }
 
 defaultproperties
 {
      MultiDecalLevel=2
      HDTPTexture="HDTPItems.Skins.HDTPFlatFXtex2"
-     HDTPDrawScale=0.025000
+     HDTPDrawScale=0.005000
      Texture=Texture'DeusExItems.Skins.FlatFXTex2'
      DrawScale=0.450000
 }

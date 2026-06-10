@@ -7,7 +7,7 @@ var float randomScale;
 
 function BeginPlay()
 {
-	randomScale = frand()*0.2;
+	randomScale = FRand()*0.2;
 	Super.BeginPlay();
 }
 
@@ -16,10 +16,10 @@ function BeginPlay()
 function DoHDTP()
 {
     super.DoHDTP();
-	drawscale *= 1.0 + randomScale;
+	DrawScale *= 1.0 + randomScale;
 
     if (class'DeusExPlayer'.default.bJohnWooSparks)
-        drawScale *= 1.5;
+        DrawScale *= 1.55;
 
 	//if(!AttachDecal(32, vect(0.1,0.1,0)))
 	//	Destroy();

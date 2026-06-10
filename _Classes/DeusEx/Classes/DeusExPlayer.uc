@@ -1003,6 +1003,8 @@ var globalconfig bool bRemoveCameraHum;                  //SARGE: Restore the Ca
 
 var globalconfig bool bCameraStatic;                //SARGE: Blank out the screen when using cameras
 
+var globalconfig bool bWeaponSelectShake;               //SARGE: Selecting weapons will shake the screen, like for the Shotgun in Vanilla.
+
 //Weather Control
 var globalconfig int iWeatherControl;                    //SARGE: Use the Precipitation System. 0 = off, 1 = on (how it was before), 2 = dynamic.
 var globalconfig float precipMaxDensity;                 //SARGE: Max density allowed for precipitation

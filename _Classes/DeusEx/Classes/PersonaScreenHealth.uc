@@ -448,7 +448,7 @@ function PushHealth()
 	playerHealth[5] = player.HealthLegLeft;
 }
 
-simulated function String FormatFloatString(float value, float precision)
+final function String FormatFloatString(float value, float precision)
 {
 	local string str;
 

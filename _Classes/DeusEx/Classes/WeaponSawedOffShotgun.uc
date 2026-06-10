@@ -112,6 +112,72 @@ exec function UpdateHDTPsettings()                                              
     Super.UpdateHDTPsettings();
 }
 
+simulated function MuzzleFlashLight()
+{
+	local Vector offset, X, Y, Z;
+    local PlasmaParticleSpoof spoof;
+    //local FireSmoke smoke;
+    local int i;
+
+	if (!bHasMuzzleFlash)
+		return;
+
+	if ((flash != None) && !flash.bDeleteMe)
+		flash.LifeSpan = flash.Default.LifeSpan;
+	else
+	{
+		GetAxes(Pawn(Owner).ViewRotation,X,Y,Z);
+		offset = Owner.Location;
+		offset += X * Owner.CollisionRadius * 2;
+		flash = spawn(class'MuzzleFlash',,, offset);
+		if (flash != None)
+			flash.SetBase(Owner);
+	}
+
+	if (DeusExPlayer(Owner) != None && IsHDTP())
+    {    //CyberP: hacky, sub-optimal new muzzleflash effects.
+		offset.Z += Owner.CollisionHeight * 0.7;
+		if (IsA('WeaponAssaultShotgun'))
+			offset += Y * Owner.CollisionRadius * 0.75;
+		else
+			offset += Y * Owner.CollisionRadius * 0.25;
+		if (DeusExPlayer(Owner).IsCrouching())
+			offset.Z *= (Owner.CollisionHeight * 0.8);
+		/*smoke = spawn(class'FireSmoke',,, offset, Pawn(Owner).ViewRotation);
+		if (smoke!=none)
+		{
+		smoke.LifeSpan=0.24;
+		smoke.DrawScale=0.400000;
+		smoke.ScaleGlow=0.400000;
+		smoke.bRelinquished2=True;
+		}*/
+		for(i=0;i<9;i++)
+		{
+			spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
+			if (spoof!=none)
+			{
+				spoof.DrawScale=0.006;
+				spoof.LifeSpan=0.2;
+				spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
+				spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
+
+				if (FRand() < 0.3)
+				{
+				spoof.Velocity.Z += FRand() * 80;
+				spoof.Velocity.X += FRand() * 65;
+				spoof.Velocity.Y += FRand() * 65;
+				}
+				else if (FRand() < 0.6)
+				{
+				spoof.Velocity.Z -= FRand() * 20;
+				spoof.Velocity.X -= FRand() * 55;
+				spoof.Velocity.Y -= FRand() * 65;
+				}
+			}
+		}
+	}
+}
+
 //
 // called from the MESH NOTIFY
 //

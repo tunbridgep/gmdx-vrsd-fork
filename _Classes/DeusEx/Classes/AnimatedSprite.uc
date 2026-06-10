@@ -7,7 +7,7 @@ class AnimatedSprite expands Effects
 var float animSpeed;
 var int numFrames;
 var int nextFrame;
-var texture frames[30]; //16
+var Texture frames[30]; //16
 var float time, totalTime, duration;
 
 simulated function Tick(float deltaTime)

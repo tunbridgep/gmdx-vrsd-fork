@@ -634,6 +634,33 @@ function bool ChildRequestedReconfiguration(window child)
 	return true;
 }
 
+function AddDeclineSecondButtons(Inventory wep, bool secondary)
+{
+	if (wep != None)
+	{
+		AddLine();
+		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
+		winActionButtonsSecondary.SetWidth(32); //149
+		winActionButtonsSecondary.FillAllSpace(false);
+
+		buttonDeclineG = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+        buttonDeclineG.SetText(msgDeclineGlobal);
+        UpdateDeclineButtonG(wep.class);
+
+		buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+        UpdateDeclineButton(wep.class);
+
+		if (secondary)
+		{
+			buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+			assignThis = wep;
+			UpdateSecondaryButton(wep.class);
+		}
+
+		AddLine();
+	}
+}
+
 function AddSecondaryButton(Inventory wep)                                      //RSD: Extending secondary items to more than just weapons
 {
 	if (wep != None)
@@ -703,7 +730,6 @@ function AddDeclineButton(class<Inventory> wep)
 
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
         UpdateDeclineButton(wep);
-
         AddLine();
     }
 }
@@ -732,6 +758,37 @@ function UpdateWeaponModButtons(DeusExWeapon weapon)
         }
     }
 
+}
+
+final function String FormatFloatString(float value, float precision)
+{
+	local string str, numstr;                                                   //RSD: Added numstr
+    local int i;                                                                //RSD
+
+	if (precision == 0.0)
+		return "ERR";
+
+	// build integer part
+	str = String(Int(value));
+
+	// build decimal part
+	if (precision < 1.0)
+	{
+		value += 0.5*precision;                                                 //RSD: Pre-round the value so we don't get e.g. 1.998 -> 1.10 with precision=0.01, but only for non-int values!
+		str = String(Int(value));                                               //RSD: Redo this so we don't lose the base from truncation
+        value -= Int(value);
+
+		//RSD: Rest of this is to fix tenths etc. places being lost when equal to 0 for higher precision e.g. 1.05 -> 1.5
+		numstr = String(Int(value * (1.0 / precision)));
+        str = str $ ".";
+        for (i=0;i<int(Loge(1.0/precision)/Loge(10.))-Len(numstr);i++)
+        {
+			str = str $ '0';
+        }
+		str = str $ numstr;
+	}
+
+	return str;
 }
 
 //SARGE: Add buttons to attach and detach bulky weapon mods.
@@ -789,13 +846,13 @@ function AddWeaponModDrawbacks(DeusExWeapon weapon)
     if (bDrawLaser)
     {
         SetText(LaserLabel $ ":");
-        SetText("  " $ RecoilPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Laser) * 100, 0.1) $ "%");
+        SetText("  " $ RecoilPenaltyLabel $ ": +" $ FormatFloatString(weapon.GetAddonPenalty(Laser) * 100, 0.1) $ "%");
     }
     if (bDrawScope)
     {
         SetText(ScopeLabel $ ":");
         SetText("  " $ RecoilPenaltyLabel $ ": +" $ int(weapon.GetAddonPenalty(Scope) * 100) $ "%");
-        SetText("  " $ ReloadPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Scope), 0.1) $ " sec");
+        SetText("  " $ ReloadPenaltyLabel $ ": +" $ FormatFloatString(weapon.GetAddonPenalty(Scope), 0.1) $ " sec");
     }
     if (bDrawSilencer)
     {
@@ -884,10 +941,32 @@ function AddDeclinedInfoWindow()
     }
 }
 
+function bool UpdatePickupInfo(DeusExPickup pickup)
+{
+    //Set title
+	SetTitle(pickup.GetTitle(player));
+
+	if(player.iAltFrobDisplay == 2)
+		AddDeclineSecondButtons(pickup, pickup.CanAssignSecondary(player));
+	else
+	{
+		AddDeclineButton(pickup.class);
+
+		if (pickup.CanAssignSecondary(player))
+			AddSecondaryButton(pickup);
+	}
+
+	SetText(pickup.GetDescription(player));
+
+	AppendText(CR());
+
+	SetText(pickup.GetDescription2(player));
+
+	return true;
+}
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
-
 defaultproperties
 {
      textVerticalOffset=20

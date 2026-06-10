@@ -23,14 +23,20 @@ simulated function PostBeginPlay()
 	  SetOwner(Level);
 
 	//GMDX:dasraiser argh :)
-	HitDamage=class'TraceHitSpawner'.default.HitDamage;
-	damageType=class'TraceHitSpawner'.default.damageType;
+	HitDamage = class'TraceHitSpawner'.default.HitDamage;
+	damageType = class'TraceHitSpawner'.default.damageType;
 
-	SpawnEffects(Owner,HitDamage);
+	SetTimer(0.01,false);
 }
 
 simulated function Timer()
 {
+	SpawnEffects(Owner, HitDamage);
+	//GMDX:just do these too, incase
+	class'TraceHitSpawner'.default.bForceBulletHole = false; //dasraiser: wow this should not be how to ;)
+	class'TraceHitSpawner'.default.HitDamage = 1;
+    class'TraceHitSpawner'.default.damageType = '';
+	//default.bForceBulletHole=false; dasraiser: surprised this didn't work!
 	Destroy();
 }
 
@@ -41,7 +47,7 @@ simulated function PlayHitSound(actor destActor, Actor hitActor)
 {
 	local float rnd;
 	local sound snd;
-	local name texName,texGroup;
+	local name texGroup;
 
 	// don't ricochet unless it's hit by a bullet
 	if ((damageType != 'Shot') && (damageType != 'Sabot'))
@@ -136,29 +142,47 @@ function name GetFloorMaterial(optional out name Tname)
 	return texGroup;
 }
 
+//-- Boum, you sleep !
+simulated function KungFuHitEffect()
+{
+	local SFXExp puff1;
+
+	puff1 = Spawn(class'SFXExp',,,Location+Vector(Rotation), Rotation);
+	if ( puff1 != None )
+	{
+		puff1.RemoteRole = ROLE_None;
+		puff1.scaleFactor = 0.02;
+		puff1.scaleFactor2 = 2.45;
+		puff1.GlowFactor = 0.2;
+		puff1.animSpeed = 0.014;
+	}
+}
+
 simulated function SpawnEffects(Actor Other, float Damage)
 {
 	local SmokeTrail puff2;
 	local int i;
 	local BulletHole hole;
 	local RockChip chip;
-	local Rotator rot;
 	local DeusExMover mov;
-	local GMDXSparkFade		spark;
+	local GMDXSparkFade spark;
 	local SFXHitPuff plume;
 	local SFXExp puff;
-	local BurnMark ems_burn;
     local WoodFragment wf;
-	local name texName,texGroup;
+	local Name texGroup;
 
-	//log("SpawnEffects Other="@Other@" Damage="@Damage@" damageType="@damageType@" bHandToHand="@bHandToHand@" bPenetrating="@bPenetrating@" HitDamage="@HitDamage@" bInstantHit="@bInstantHit);
-
-	SetTimer(0.1,False);
 	if (Level.NetMode == NM_DedicatedServer)
 	  return;
-
-   //texGroup=GetFloorMaterial(texName);
-   //log("TRACE FLOOR Name:-"@texName@" Group:-"@texGroup);
+  
+	if(damageType == 'Rubber' || damageType == 'KnockedOut') //rubber bullet is the baton for hit tracer
+	{
+        //SARGE: This looks awful on Pawns, so limit it.
+        if (Pawn(Other) == None && class'DeusExPlayer'.default.bJohnWooSparks)
+        {
+            KungFuHitEffect();
+            return;
+        }
+	}
 
 	if (bPenetrating && !bHandToHand && Other != none)
 	{
@@ -167,31 +191,16 @@ simulated function SpawnEffects(Actor Other, float Damage)
 	      puff2 = spawn(class'SmokeTrail',,,Location+(Vector(Rotation)*1.75), Rotation);
 			if ( puff2 != None )
 			{
-			puff2.DrawScale = 0.35; //1
-			puff2.OrigScale = puff2.DrawScale;
-			puff2.LifeSpan = 1.0;
-	        puff2.OrigLifeSpan = puff2.LifeSpan;
+                puff2.DrawScale = 0.35; //1
+                puff2.LifeSpan = 1.0;
+                puff2.OrigScale = puff2.DrawScale;
+                puff2.OrigLifeSpan = puff2.LifeSpan;
 	        }
-	        else
-		    {
-			if (FRand() < 0.5)
-			{
-				puff2 = spawn(class'SmokeTrail',,,Location+Vector(Rotation), Rotation);
-				if (puff2 != None)
-				{
-					puff2.DrawScale *= 0.2; //0.3
-					puff2.OrigScale = puff2.DrawScale;
-					puff2.LifeSpan = 0.25;
-					puff2.OrigLifeSpan = puff2.LifeSpan;
-			   puff2.RemoteRole = ROLE_None;
-				}
-			}
-		 }
-         }
-         else
-         {
+        }
+        else
+        {
 		//	puff = spawn(class'SmokeTrail',,,Location+(Vector(Rotation)*1.75), Rotation);
-		puff = spawn(class'SFXExp',,,Location+(Vector(Rotation)*1.75), Rotation);
+			puff = spawn(class'SFXExp',,,Location+(Vector(Rotation)*1.75), Rotation);
 			if ( puff != None )
 			{
 			//	puff.DrawScale = 0.35; //1
@@ -204,291 +213,247 @@ simulated function SpawnEffects(Actor Other, float Damage)
 		        puff.animSpeed=0.015;
 			    puff.RemoteRole = ROLE_None;
 			}
+		}
 
-		else
+		if (!Other.IsA('DeusExMover'))
 		{
-			if (FRand() < 0.5)
+			for (i=0; i<2+(Damage/10); i++)
 			{
-				puff = spawn(class'SFXExp',,,Location+Vector(Rotation), Rotation);
-				if (puff != None)
+				if (FRand() < 0.8)
 				{
-					//puff.DrawScale *= 0.2; //0.3
-					//puff.OrigScale = puff.DrawScale;
-					//puff.LifeSpan = 0.25;
-					//puff.OrigLifeSpan = puff.LifeSpan;
-			   //puff.RemoteRole = ROLE_None;
-			   puff.scaleFactor=0.01;
-		        puff.scaleFactor2=2.25;
-		        puff.GlowFactor=0.2;
-		        puff.animSpeed=0.015;
-			    puff.RemoteRole = ROLE_None;
+				   chip = spawn(class'Rockchip',,,Location+Vector(Rotation));
+				   if (chip != None)
+				   {
+					  chip.RemoteRole = ROLE_None;
+					  chip.Velocity*=(1+Damage*0.125); //CyberP: was *0.05
+					  chip.LifeSpan*=0.5;
+					  if (GetFloorMaterial(texGroup)=='Wood')
+					  {
+						  chip.Skin = Texture'GMDXSFX.Skins.WoodBoxTex';
+						  chip.Velocity.Z+= 10;
+						  if (i < 6)
+						  {
+							  wf = spawn(class'WoodFragment',,,Location+Vector(Rotation));
+							  if (wf != None)
+							  {
+								  wf.DrawScale*= 0.1 + (FRand()*0.1);
+								  wf.Velocity=VRand()*180;
+								  wf.Velocity.Z+= 60;
+								  wf.ImpactSound=None;
+								  wf.MiscSound=None;
+								  wf.RotationRate=RotRand();
+							  }
+						  }
+					  }
+					}
 				}
 			}
-		 }
 		}
-	 if (!Other.IsA('DeusExMover'))
-		 for (i=0; i<2+(Damage/10); i++)
-			if (FRand() < 0.8)
-			{
-			   chip = spawn(class'Rockchip',,,Location+Vector(Rotation));
-			   if (chip != None)
-			   {
-				  chip.RemoteRole = ROLE_None;
-				  chip.Velocity*=(1+Damage*0.125); //CyberP: was *0.05
-				  chip.LifeSpan*=0.5;
-				  if (GetFloorMaterial(texGroup)=='Wood')
-				  {
-				  chip.Skin = Texture'GMDXSFX.Skins.WoodBoxTex';
-				  chip.Velocity.Z+= 10;
-				  if (i < 6)
-				  {
-				  wf = spawn(class'WoodFragment',,,Location+Vector(Rotation));
-				  if (wf != None)
-				  {
-				  wf.DrawScale*= 0.1 + (FRand()*0.1);
-				  wf.Velocity=VRand()*180;
-				  wf.Velocity.Z+= 60;
-				  wf.ImpactSound=None;
-				  wf.MiscSound=None;
-				  wf.RotationRate=RotRand();
-				  }
-				  }
-				  }
+	}
+	//dasraiser im surprised this works :) there is hope
+	if (Other != none)
+	{
+		if (!bHandToHand && bInstantHit && bPenetrating)
+		{
+		  hole = spawn(class'BulletHole', Other,, Location/*+Vector(Rotation)*/, Rotation);
+		  if (hole != None)
+			 hole.RemoteRole = ROLE_None;
+
+			 if (GetFloorMaterial(texGroup)=='Glass' && hole != none)
+			 {
+				hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","DeusExItems.Skins.FlatFXTex29",IsHDTP());
+				if (IsHDTP())
+				{
+					hole.DrawScale = 0.05625;
+					hole.drawscale *= 1.0 + frand()*0.2;
 				}
+				else
+					hole.DrawScale = 0.1;
+				hole.ReattachDecal();
 			}
-	}
-//dasraiser im surprised this works :) there is hope
-if (Other != none)
-{
-	if (!bHandToHand && bInstantHit && bPenetrating)
-	{
-	  hole = spawn(class'BulletHole', Other,, Location/*+Vector(Rotation)*/, Rotation);
-	  if (hole != None)
-		 hole.RemoteRole = ROLE_None;
-
-         if (GetFloorMaterial(texGroup)=='Glass' && hole != none)
-         {
-            hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","DeusExItems.Skins.FlatFXTex29",IsHDTP());
-            if (IsHDTP())
-            {
-                hole.DrawScale = 0.05625;
-                hole.drawscale *= 1.0 + frand()*0.2;
-            }
-            else
-                hole.DrawScale = 0.1;
-            hole.ReattachDecal();
-        }
-        else if (GetFloorMaterial(texGroup)=='Brick' && hole != none)
-        {
-          if (FRand() < 0.5)
-              hole.Texture = Texture'GMDXSFX.Decals.FlatFXTex7a';
-          else
-              hole.Texture = Texture'GMDXSFX.Decals.FlatFXTex8a';
-          hole.DrawScale = 0.06525;
-	      hole.drawscale *= 1.0 + frand()*0.2;
-	      hole.ReattachDecal();
-        }
-
-		if ( !Other.IsA('Pawn') && !Other.IsA('DeusExCarcass') )		// Sparks on people look bad
-		{
-         if (GetFloorMaterial(texGroup)!= '' && GetFloorMaterial(texGroup)!='Foliage' && GetFloorMaterial(texGroup)!='Earth'
-         && GetFloorMaterial(texGroup)!='Wood' && GetFloorMaterial(texGroup)!='Glass')
-         {
-           spawn(class'GMDXImpactSpark');   //CyberP: we won't use a for loop as slower.
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-           spawn(class'GMDXImpactSpark2');
-			spark = spawn(class'GMDXSparkFade',,,Location+Vector(Rotation)*2.0, Rotation); //cyberP: was *4.5
-			if (spark != None)
+			else if (GetFloorMaterial(texGroup)=='Brick' && hole != none)
 			{
-				spark.RemoteRole = ROLE_None;   PlayHitSound(spark, Other);
-				if (damageType == 'Sabot')                                  //if ( Level.NetMode != NM_Standalone )
+			  if (FRand() < 0.5)
+				  hole.Texture = Texture'GMDXSFX.Decals.FlatFXTex7a';
+			  else
+				  hole.Texture = Texture'GMDXSFX.Decals.FlatFXTex8a';
+			  hole.DrawScale = 0.06525;
+			  hole.drawscale *= 1.0 + frand()*0.2;
+			  hole.ReattachDecal();
+			}
+
+			if ( !Other.IsA('Pawn') && !Other.IsA('DeusExCarcass') )		// Sparks on people look bad
+			{
+			 if (GetFloorMaterial(texGroup)!= '' && GetFloorMaterial(texGroup)!='Foliage' && GetFloorMaterial(texGroup)!='Earth'
+			 && GetFloorMaterial(texGroup)!='Wood' && GetFloorMaterial(texGroup)!='Glass')
+			 {
+			   spawn(class'GMDXImpactSpark');	//CyberP: we won't use a for loop as slower.
+			   spawn(class'GMDXImpactSpark');
+			   spawn(class'GMDXImpactSpark');
+			   spawn(class'GMDXImpactSpark');
+			   spawn(class'GMDXImpactSpark');
+			   spawn(class'GMDXImpactSpark');
+			   spawn(class'GMDXImpactSpark');
+			   spawn(class'GMDXImpactSpark2');
+			   spawn(class'GMDXImpactSpark2');
+			   spawn(class'GMDXImpactSpark2');
+			   spawn(class'GMDXImpactSpark2');
+			   spawn(class'GMDXImpactSpark2');
+
+				spark = spawn(class'GMDXSparkFade',,,Location+Vector(Rotation)*2.0, Rotation); //cyberP: was *4.5
+				if (spark != None)
 				{
-                 spark.DrawScale=0.120000;
-				 spark.Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPMuzzleflashLarge7","DeusExItems.Skins.FlatFXTex29",IsHDTP());
-				 spark.LightRadius=3;
-				 spark.LightBrightness=255;
-                 spark.LightSaturation=192;
-                 spark.LightHue=8;                       	        //else
-				}                                 			//	spark.DrawScale = 0.2;
-				                               				 //PlayHitSound(spark, Other);
-			}
-			}
-			if (HitDamage >= 50)
-			{
-			plume=spawn(class'SFXHitPuff',,, Location/*+Vector(Rotation)*/, Rotation);//spawn(class'GMDXFireSmokeFade',,, Location/*+Vector(Rotation)*/, Rotation);
-			if (plume!=none)
-		   {
-		      //plume.animSpeed=0.007000;
-		      plume.DrawScale*=0.015;
-		      //plume.LifeSpan=15;//plume.DrawScale;
-		   }
-		   }
-		}
-	}
-
-	// draw the correct damage art for what we hit
-	if (bPenetrating || bHandToHand)
-	{
-		if (Other.IsA('DeusExMover') || Other == Level)
-		{
-			mov = DeusExMover(Other);
-			if (hole == None) //(mov != None) && (
-            {
-                hole = spawn(class'BulletHole', Other,, Location+Vector(Rotation), Rotation);
-                if (hole != None)
-                {
-                    hole.remoteRole = ROLE_None;
-                    hole.Texture = Texture'FlatFXTex8';
-                }
-            }
-
-			if (hole != None)
-			{
-				if (mov != none )// && mov.bBreakable && mov.minDamageThreshold <= Damage) //SARGE: Allow glass-holes on glass objects always
-				{
-					// don't draw damage art on destroyed movers, or ones we can't damage
-                    //SARGE: Always show it, the tooltip will tell us
-					if (mov.bDestroyed)// || (mov.minDamageThreshold > Damage))
-						hole.Destroy();
-					else if (mov.FragmentClass == class'GlassFragment')
+					spark.RemoteRole = ROLE_None;   PlayHitSound(spark, Other);
+					if (damageType == 'Sabot')                                  //if ( Level.NetMode != NM_Standalone )
 					{
-						// glass hole
-                        if (IsHDTP())
-							hole.Texture = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXTex29");
-						else if (FRand() < 0.5)
-						    hole.Texture = Texture'FlatFXTex29';
-						else
-							hole.Texture = Texture'FlatFXTex30';
+					 spark.DrawScale=0.120000;
+					 spark.Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPMuzzleflashLarge7","DeusExItems.Skins.FlatFXTex29",IsHDTP());
+					 spark.LightRadius=3;
+					 spark.LightBrightness=255;
+					 spark.LightSaturation=192;
+					 spark.LightHue=8;                       	        //else
+					}                                 			//	spark.DrawScale = 0.2;
+																 //PlayHitSound(spark, Other);
+				}
+				}
+				if (HitDamage >= 50)
+				{
+				plume=spawn(class'SFXHitPuff',,, Location/*+Vector(Rotation)*/, Rotation);//spawn(class'GMDXFireSmokeFade',,, Location/*+Vector(Rotation)*/, Rotation);
+				if (plume!=none)
+			   {
+				  //plume.animSpeed=0.007000;
+				  plume.DrawScale*=0.015;
+				  //plume.LifeSpan=15;//plume.DrawScale;
+			   }
+			   }
+			}
+		}
 
-                        if (IsHDTP())
-                        {
-                            hole.DrawScale = 0.05625;
-                            hole.drawscale *= 1.0 + frand()*0.2;
-                        }
-                        else
-                        {
-                            hole.DrawScale = 0.1;
-                        }
-						hole.ReattachDecal();
+		// draw the correct damage art for what we hit
+		if (bPenetrating || bHandToHand)
+		{
+			if (Other.IsA('DeusExMover') || Other == Level)
+			{
+				mov = DeusExMover(Other);
+				if (hole == None) //(mov != None) && (
+				{
+					hole = spawn(class'BulletHole', Other,, Location+Vector(Rotation), Rotation);
+					if (hole != None)
+					{
+						hole.remoteRole = ROLE_None;
+						hole.Texture = Texture'FlatFXTex8';
+					}
+				}
+
+				if (hole != None)
+				{
+					if (mov != none )// && mov.bBreakable && mov.minDamageThreshold <= Damage) //SARGE: Allow glass-holes on glass objects always
+					{
+						// don't draw damage art on destroyed movers, or ones we can't damage
+						//SARGE: Always show it, the tooltip will tell us
+						if (mov.bDestroyed)// || (mov.minDamageThreshold > Damage))
+							hole.Destroy();
+						else if (mov.FragmentClass == class'GlassFragment')
+						{
+							// glass hole
+							if (IsHDTP())
+								hole.Texture = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXTex29");
+							else if (FRand() < 0.5)
+								hole.Texture = Texture'FlatFXTex29';
+							else
+								hole.Texture = Texture'FlatFXTex30';
+
+							if (IsHDTP())
+							{
+								hole.DrawScale = 0.05625;
+								hole.drawscale *= 1.0 + frand()*0.2;
+							}
+							else
+							{
+								hole.DrawScale = 0.1;
+							}
+							hole.ReattachDecal();
+						}
+						else
+						{
+							// non-glass crack
+							if (mov.FragmentClass == class'MetalFragment')
+							{
+								if (FRand() < 0.5)
+									hole.Texture = Texture'FlatFXTex7';
+								else
+									hole.Texture = Texture'FlatFXTex8';
+								hole.DrawScale = 0.75;
+							}
+							else if (mov.FragmentClass == class'WoodFragment' || mov.FragmentClass == class'Rockchip')
+							{
+								if (FRand() < 0.5)
+								hole.Texture = Texture'FlatFXTex7b';
+								else
+								hole.Texture = Texture'FlatFXTex8b';
+								hole.DrawScale = 0.25;
+							}
+							else
+							{
+							if (FRand() < 0.5)
+								hole.Texture = Texture'FlatFXTex7';
+							else
+								hole.Texture = Texture'FlatFXTex8';
+								hole.DrawScale = 0.75;
+							}
+							hole.ReattachDecal();
+						}
 					}
 					else
 					{
-						// non-glass crack
-						if (mov.FragmentClass == class'MetalFragment')
+						if (!bPenetrating || bHandToHand)
 						{
-	    					if (FRand() < 0.5)
-							    hole.Texture = Texture'FlatFXTex7';
-						    else
-							    hole.Texture = Texture'FlatFXTex8';
-							hole.DrawScale = 0.75;
-						}
-						else if (mov.FragmentClass == class'WoodFragment' || mov.FragmentClass == class'Rockchip')
-						{
-						    if (FRand() < 0.5)
-							hole.Texture = Texture'FlatFXTex7b';
-						    else
-							hole.Texture = Texture'FlatFXTex8b';
-							hole.DrawScale = 0.25;
-						}
-						else
-						{
-						if (FRand() < 0.5)
-							hole.Texture = Texture'FlatFXTex7';
-						else
-							hole.Texture = Texture'FlatFXTex8';
-							hole.DrawScale = 0.75;
-                        }
-						hole.ReattachDecal();
-					}
-				}
-				else
-				{
-					if (!bPenetrating || bHandToHand)
-					{
-                    if (GetFloorMaterial(texGroup)!= '' && GetFloorMaterial(texGroup)!='Foliage' && GetFloorMaterial(texGroup)!='Earth' && GetFloorMaterial(texGroup)!='Glass'
-                    && GetFloorMaterial(texGroup)!='Wood' && GetFloorMaterial(texGroup)!='Concrete' && GetFloorMaterial(texGroup)!='Stone')
-						{
-						if (GetFloorMaterial(texGroup)=='Metal')
-						{
-	    					if (FRand() < 0.5)
-							    hole.Texture = Texture'FlatFXTex7';
-						    else
-							    hole.Texture = Texture'FlatFXTex8';
-						}
-						else
-						{
-                            if (FRand() < 0.5)
-							    hole.Texture = Texture'FlatFXTex7';
-						    else
-							    hole.Texture = Texture'FlatFXTex8';
-                        }
-                        hole.DrawScale = 0.004500;
-                        hole.ReattachDecal();//hole.Destroy();
-                        }
-                        else if (GetFloorMaterial(texGroup)=='Wood' || GetFloorMaterial(texGroup)=='Concrete' || GetFloorMaterial(texGroup)=='Stone')
-                        {
-                        if (FRand() < 0.5)
-							hole.Texture = Texture'FlatFXTex7';
-						else
-							hole.Texture = Texture'FlatFXTex8';
+						if (GetFloorMaterial(texGroup)!= '' && GetFloorMaterial(texGroup)!='Foliage' && GetFloorMaterial(texGroup)!='Earth' && GetFloorMaterial(texGroup)!='Glass'
+						&& GetFloorMaterial(texGroup)!='Wood' && GetFloorMaterial(texGroup)!='Concrete' && GetFloorMaterial(texGroup)!='Stone')
+							{
+							if (GetFloorMaterial(texGroup)=='Metal')
+							{
+								if (FRand() < 0.5)
+									hole.Texture = Texture'FlatFXTex7';
+								else
+									hole.Texture = Texture'FlatFXTex8';
+							}
+							else
+							{
+								if (FRand() < 0.5)
+									hole.Texture = Texture'FlatFXTex7';
+								else
+									hole.Texture = Texture'FlatFXTex8';
+							}
+							hole.DrawScale = 0.004500;
+							hole.ReattachDecal();//hole.Destroy();
+							}
+							else if (GetFloorMaterial(texGroup)=='Wood' || GetFloorMaterial(texGroup)=='Concrete' || GetFloorMaterial(texGroup)=='Stone')
+							{
+							if (FRand() < 0.5)
+								hole.Texture = Texture'FlatFXTex7';
+							else
+								hole.Texture = Texture'FlatFXTex8';
 
-						hole.DrawScale = 0.004500;
-						hole.ReattachDecal();
-                        }
-                        else if (GetFloorMaterial(texGroup)=='Glass')
-                        {
-                        hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","DeusExItems.Skins.FlatFXTex29",IsHDTP());
-						if (IsHDTP())
-							hole.DrawScale = 0.05;
-						else
-							hole.DrawScale = 0.5;
-	                    hole.drawscale *= 1.0 + frand()*0.2;
-	                    hole.ReattachDecal();
-                        }
-                     }
+							hole.DrawScale = 0.004500;
+							hole.ReattachDecal();
+							}
+							else if (GetFloorMaterial(texGroup)=='Glass')
+							{
+							hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","DeusExItems.Skins.FlatFXTex29",IsHDTP());
+							if (IsHDTP())
+								hole.DrawScale = 0.05;
+							else
+								hole.DrawScale = 0.5;
+							hole.drawscale *= 1.0 + frand()*0.2;
+							hole.ReattachDecal();
+							}
+						 }
+					}
 				}
 			}
 		}
 	}
-	class'TraceHitSpawner'.default.bForceBulletHole=false; //dasraiser: wow this should not be how to ;)
-
-	//GMDX:just do these too, incase
-	class'TraceHitSpawner'.default.HitDamage=-1;
-	class'TraceHitSpawner'.default.damageType='';
-
-	//default.bForceBulletHole=false; dasraiser: surprised this didn't work!
-}
 }
 
 defaultproperties

@@ -150,8 +150,8 @@ defaultproperties
      CollisionHeight=2.430000
      Mass=5.000000
      Buoyancy=2.000000
-     bDisposableWeapon=true
-     minSkillRequirement=2;
-     bFakeHandToHand=true
-     bIsPlaceableOnWall=true
+     bDisposableWeapon=True
+     minSkillRequirement=2
+     bFakeHandToHand=True
+     bIsPlaceableOnWall=True
 }
