@@ -23,6 +23,7 @@ Misc Changes:
 - Sprinter perk now requires Master athletics (was Advanced).
 - "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
 - Slightly decreased enemy footstep detection on higher difficulties.
+- Slightly increased swimming stamina requirements in Hardcore mode.
 
 Map Changes:
 - 05_NYC_UNATCOMJ12LAB:
