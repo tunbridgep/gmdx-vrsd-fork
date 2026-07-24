@@ -1043,6 +1043,8 @@ var globalconfig bool bRealtimeRadialMenu;  //SARGE: The radial menu is now cont
 
 var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar, even when the Stamina System is disabled.
 
+var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5853,35 +5855,52 @@ function Landed(vector HitNormal)
 
 function BumpWall( vector HitLocation, vector HitNormal )
 {
-local AugIcarus icar;
-local actor     acti;
+    local AugIcarus icar;
+    local actor     acti;
+    local float surfForce;
 
-  super.BumpWall(HitLocation,HitNormal);
+    super.BumpWall(HitLocation,HitNormal);
+    
+    //SARGE: Thanks to TheAstropath for this!
+    //Dot product gets us the amount of our velocity that is perpendicular to the surface itself (the HitNormal)
+    //This is probably a better way to determine if you really slammed into it than using pure velocity
+    //1200 velocity is honestly pretty fast...
+    surfForce = -(HitNormal dot Velocity); //The dot product result is negative, just make it positive so it's comparable to VSize(Velocity)
 
-  if (VSize(Velocity) > 430) //CyberP: Smash through glass at high velocities.
-  {
-      acti = Trace(HitLocation,HitNormal,Location + (velocity*0.1),Location); //CyberP: Trace in the direction we are moving
-      if (acti != None && acti.IsA('DeusExMover'))
-      {
-         if (DeusExMover(acti).DamageThreshold < 4 && DeusExMover(acti).bBreakable) //CyberP: Limit it to breakable glass only
-         {
-             DeusExMover(acti).TakeDamage(10,self,DeusExMover(acti).Location,vect(0,0,0),'shot');
-             TakeDamage(5,self,Location,vect(0,0,0),'shot'); //CyberP: Hurts the player a bit too!
-         }
-      }
-      if (VSize(Velocity) > 1200 && Velocity.Z > -600)
-      {
-         TakeDamage(6,self,vect(0,0,0),vect(0,0,0),'shot');
-      }
-  }
-  if (RocketTargetMaxDistance==40001.000000)
-  {
-    icar = AugIcarus(AugmentationSystem.FindAugmentation(class'AugIcarus'));
-    if (icar.incremental > 1.75 - AugmentationSystem.GetAugLevelValue(class'DeusEx.AugIcarus'))
+    if (surfForce > 430) //CyberP: Smash through glass at high velocities.
     {
-       icar.incremental = 2;
+            acti = Trace(HitLocation,HitNormal,Location + (velocity*0.1),Location); //CyberP: Trace in the direction we are moving
+            if (acti != None && acti.IsA('DeusExMover'))
+            {
+                if (DeusExMover(acti).DamageThreshold < 4 && DeusExMover(acti).bBreakable && !bTookBumpDamage) //CyberP: Limit it to breakable glass only
+                {
+                    DeusExMover(acti).TakeDamage(10,self,DeusExMover(acti).Location,vect(0,0,0),'shot');
+                    TakeDamage(5,self,Location,vect(0,0,0),'fell'); //CyberP: Hurts the player a bit too!
+                    bTookBumpDamage = true;
+                }
+            }
+            
+            //Also take damage if we hit walls at high speed
+            /*
+            //SARGE: Temporarily removed, hitting walls hurting you is inconsistent and FPS dependent and feels bad, it usually only happens on ramps.
+            if (surfForce > 1200 && Velocity.Z > -600 && !bTookBumpDamage)
+            {
+                bTookBumpDamage = true;
+                TakeDamage(6,self,vect(0,0,0),vect(0,0,0),'fell');
+            }
+            */
     }
-  }
+    else
+    {
+        bTookBumpDamage = false;
+    }
+
+    if (RocketTargetMaxDistance == 40001.000000)
+    {
+        icar = AugIcarus(AugmentationSystem.FindAugmentation(class'AugIcarus'));
+        if (icar.incremental > 1.75 - AugmentationSystem.GetAugLevelValue(class'DeusEx.AugIcarus'))
+            icar.incremental = 2;
+    }
 }
 
 // ----------------------------------------------------------------------
