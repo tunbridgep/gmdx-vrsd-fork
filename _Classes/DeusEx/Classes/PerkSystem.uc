@@ -87,8 +87,8 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 
 	// Athletics Perks
 	AddPerk(Class'DeusEx.PerkPerserverance');
-	AddPerk(Class'DeusEx.PerkSprinter');
 	AddPerk(Class'DeusEx.PerkAdrenalineRush');
+	AddPerk(Class'DeusEx.PerkSprinter');
 	AddPerk(Class'DeusEx.PerkEndurance');
 
 	// Stealth Perks
