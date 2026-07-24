@@ -12,6 +12,7 @@ Bug Fixes:
 - Removed the "Toggle Fullscreen" Display menu option as it doesn't work properly with Kenties Deus Exe.
     - It's been replaced with a "Toggle Coronas" setting.
 - Minor typo and text fixes
+- Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 
 Misc Changes:
 - Minor internal changes to make translations easier, such as localizing a few strings.
