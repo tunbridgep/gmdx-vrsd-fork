@@ -3,6 +3,8 @@
 //=============================================================================
 class Mission10 expands MissionScript;
 
+var const localized string DeFriendName;
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -120,8 +122,8 @@ function Timer()
                 {
                     foreach AllActors(class'Male2', defoe)
                     {
-                        if (defoe.FamiliarName == "Defoe" && defoe.LastConEndTime > 0)
-                            defoe.FamiliarName = "Defriend";
+                        if (defoe.BindName == "Defoe" && defoe.LastConEndTime > 0)
+                            defoe.FamiliarName = DeFriendName;
                     }
                 }
             }
@@ -205,4 +207,5 @@ function Timer()
 
 defaultproperties
 {
+    DeFriendName="Defriend"
 }

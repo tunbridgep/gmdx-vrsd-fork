@@ -3,6 +3,9 @@
 //=============================================================================
 class Mission02 expands MissionScript;
 
+var const localized string JakeName;
+var const localized string RafaelName;
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -516,13 +519,13 @@ function Timer()
         {
             foreach AllActors(class'BumMale3', bum3, 'Rafael')
             {
-                bum3.FamiliarName = "Rafael";
-                bum3.UnfamiliarName = "Rafael";
+                bum3.FamiliarName = RafaelName;
+                bum3.UnfamiliarName = RafaelName;
             }
             foreach AllActors(class'BumMale2', bum2, 'Jake')
             {
-                bum2.FamiliarName = "Jake";
-                bum2.UnfamiliarName = "Jake";
+                bum2.FamiliarName = JakeName;
+                bum2.UnfamiliarName = JakeName;
             }
 
 			flags.SetBool('GMDXClinicBumsRenamed', True,, 3);
@@ -585,4 +588,6 @@ function Timer()
 
 defaultproperties
 {
+    JakeName="Jake"
+    RafaelName="Rafael"
 }

@@ -154,9 +154,9 @@ function Font GetFont(TextType TT)
         
         case TT_MedFont:
             if (iBigConsoleFont == 2)
-                return GetFontSelection(Font'MedFont',,Font'RSDCrap.DXRMedFont_x3');
+                return GetFontSelection(Font'RSDCrap.DXRMedFont_x3',,Font'RSDCrap.DXRMedFont_x3');
             if (iBigConsoleFont == 1)
-                return GetFontSelection(Font'MedFont',,Font'RSDCrap.DXRMedFont_x2');
+                return GetFontSelection(Font'RSDCrap.DXRMedFont_x2',,Font'RSDCrap.DXRMedFont_x2');
             else
                 return GetFontSelection(Font'MedFont',,Font'RSDCrap.DXRMedFont');
 

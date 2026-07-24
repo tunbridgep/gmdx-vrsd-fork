@@ -64,6 +64,8 @@ var(GMDX) bool bIsOwnedItem;                                                    
 
 var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this item on mission completion.
 
+var const localized string msgRecharged;                                        //SARGE: Pickup message when we recharge an object rather than 
+
 //SARGE: Icon Info.
 //TODO: Use SSkinInfo above instead, and handle all the skins the same way you handle icons.
 struct IconInfo
@@ -403,6 +405,17 @@ function PostPostBeginPlay()
 {
     Super.PostPostBeginPlay();
     
+	//SARGE: Suppress the default Activation and Deactivation messages, we will handle them ourselves
+	//This way, if something (like a translation) changes the default activation message, we will still suppress it.
+	//Edibles use the consumed message instead (to prevent Activation messages when we can't eat/drink etc)
+	if (IsA('RSDEdible'))
+	{
+		default.M_Activated="";
+		default.M_Deactivated="";
+		M_Activated="";
+		M_Deactivated="";
+	}
+	
     //Generate a list of skins for this class.
     GenerateIcons();
 
@@ -448,14 +461,14 @@ function bool HandlePickupQuery( inventory Item )
 	local DeusExPlayer player;
 	local Inventory anItem;
 	local Bool bAlreadyHas;
-	local Bool bResult, bSound;
+	local Bool bResult, bRecharged;
 	local int i, startcopies, tempCharge;                                       //RSD: Added tempCharge
 
 	if ( Item.Class == Class )
 	{
 		player = DeusExPlayer(Owner);
 		bResult = False;
-        bSound = true;
+        bRecharged = false;
 
 		// Check to see if the player already has one of these in
 		// his inventory
@@ -479,7 +492,7 @@ function bool HandlePickupQuery( inventory Item )
                     else
                         player.PlaySound(Item.PickupSound, SLOT_None,,, 256);
                     
-                    bSound = false;
+                    bRecharged = true;
                     
                     anItem.Charge += DeusExPickup(item).Charge;
                     if (anItem.Charge >= anItem.default.Charge)
@@ -521,7 +534,7 @@ function bool HandlePickupQuery( inventory Item )
                     else
                         player.PlaySound(Item.PickupSound, SLOT_None,,, 256);
                     
-                    bSound = false;
+                    bRecharged = true;
                     
  			    	NumCopies--;                                                //RSD: Keep the stack number the same as before but add the pickup charge
                 }
@@ -545,10 +558,15 @@ function bool HandlePickupQuery( inventory Item )
 
 		if (bResult)
 		{
-            DisplayPickupMessage(player,Item,DeusExPickup(item).NumCopies);
-            
-            if (bSound)
+            if (bRecharged)
+            {
+                player.ClientMessage(sprintf(msgRecharged,Item.itemName));
+            }
+            else
+            {
+                DisplayPickupMessage(player,Item,DeusExPickup(item).NumCopies);
                 Item.PlaySound(Item.PickupSound);
+            }
 
 			// Destroy me!
 			// DEUS_EX AMSD In multiplayer, we don't want to destroy the item, we want it to set to respawn
@@ -1269,10 +1287,10 @@ defaultproperties
      LandSound=Sound'DeusExSounds.Generic.PaperHit1'
      bProjTarget=True
      iHDTPModelToggle=1
-     //SARGE: Suppress the default Activation and Deactivation messages, we will handle them ourselves
-     M_Activated=""
-     M_Deactivated=""
      bVisionImportant=true
      inertiaSpeed=0
      bUseFOV=false
+     msgRecharged="Your %s was Recharged!"
+	 M_Activated=""
+	 M_Deactivated=""
 }

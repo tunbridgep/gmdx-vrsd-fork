@@ -7,7 +7,7 @@ class DataLinkPlay expands ConPlayBase
 struct S_InfoLinkNames
 {
 	var String BindName;
-	var String DisplayName;
+	var localized String DisplayName;
 };
 
 var HUDInfoLinkDisplay datalink;			    // Window that displays the datalink
@@ -22,7 +22,7 @@ var Float		perCharDelay;
 var Bool        bSilent;
 
 // Array of Bind -> Display names. Yes, horrible hack. Oh well.
-var S_InfoLinkNames infoLinkNames[17];
+var localized S_InfoLinkNames infoLinkNames[17];
 
 // Queue to support queuing of up to eight DataLinks
 var Conversation dataLinkQueue[8];
