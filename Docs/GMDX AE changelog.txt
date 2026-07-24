@@ -20,6 +20,7 @@ Misc Changes:
 - Disabled robots will now be destroyed when hit by movers, rather than blocking or resetting the mover.
 - GMDX Help Menu updates.
 - Sprinter perk now requires Master athletics (was Advanced).
+- "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
 
 Map Changes:
 - 05_NYC_UNATCOMJ12LAB:

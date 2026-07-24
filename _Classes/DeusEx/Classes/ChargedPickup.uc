@@ -198,7 +198,7 @@ function bool IsDisposable()
 {
     local DeusExPlayer player;
     player = DeusExPlayer(Owner);
-    return player != None && bCanBeDisposable && (player.bHarderChargedPickups || player.bHardCoreMode);
+    return player != None && bCanBeDisposable && (player.bHarderChargedPickups || (player.bHardCoreMode && player.bExtraHardcore));
 }
 
 // ----------------------------------------------------------------------
