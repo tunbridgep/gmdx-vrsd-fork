@@ -28,6 +28,12 @@ function SaveSettings()
         player.weaponSkinManager.SaveConfig();
 }
 
+//Called whenever we set a valud
+function OnValueSet()
+{
+    player.HDTP();
+}
+
 //We need to change options depending on Augmentique
 function BuildModifierList()
 {
@@ -73,7 +79,7 @@ defaultproperties
      items(24)=(HelpText="If enabled, the intro cutscene is not loaded.",actionText="Game: Skip Intro",variable="bSkipNewGameIntro");
      items(25)=(HelpText="Show outer crosshairs at 100% accuracy. Disable this if they get in the way.",actionText="HUD: 100% Accuracy Crosshairs",variable="bFullAccuracyCrosshair",defaultValue=1);
      items(26)=(HelpText="Always display the total amount of ammo available, rather than the number of magazines. Some weapons always show total ammo count. Disabled on Hardcore.",actionText="HUD: Accurate Ammo Display",variable="bDisplayTotalAmmo");
-     items(27)=(HelpText="Change weapon viewmodels to display better at high FOV (110+).",actionText="HUD: Alternate Weapon Offsets",variable="iEnhancedWeaponOffsets",defaultValue=1,valueText1="Automatic",valueText2="Always");
+     items(27)=(HelpText="Change weapon viewmodels to display better at high FOV.",actionText="HUD: Alternate Weapon Offsets",variable="bEnhancedWeaponOffsets",defaultValue=1);
      items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=0);
      items(29)=(HelpText="Always show the accuracy crosshairs for your currently held weapon.",actionText="HUD: Always Show Bloom",variable="bAlwaysShowBloom");
      items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="Tool Windows: Alternative Layout",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
@@ -188,7 +194,7 @@ defaultproperties
      items(136)=(HelpText="Use Secondary will automatically select your secondary item when pressed.",helpText1="If set to Always Activate, it will also use secondary items immediately.",helpText2="In Simple Dynamic Mode, items will always be selected normally and always used immediately if the Run/Walk key is held.",helpText3="In Simple Dynamic Inverted mode, items will always be used immediately by default, and always selected if the Run/Walk key is held.",helpText4="In Smart Dynamic mode, non-disposable weapons will be selected always, while disposable weapons and items will be used instantly. The Run/Walk key inverts the behaviour.",actionText="Game: Secondary Mode",variable="iSecondaryMode",valueText0="Select Only",valueText1="Always Activate",valueText2="Simple Dynamic",valueText3="Simple Dynamic Inverted",valueText4="Smart Dynamic",defaultValue=1)
      items(137)=(HelpText="If enabled, the bioenergy bar will show the reserved energy amount in red.",actionText="HUD: Show Reserved Energy",variable="bEnergyBarShowsReserve",defaultValue=1)
      items(138)=(HelpText="If enabled, weapons will have inertia when turning and moving.",actionText="HUD: Weapon Inertia",variable="bViewmodelInertia",defaultValue=1)
-     items(139)=(HelpText="If enabled, lockpicks and other pickups will appear smaller on the screen based on FOV. Otherwise they will appear larger, which some players may prefer.",actionText="HUD: Pickups respect FOV.",variable="bPickupsUseFOV")
+     items(139)=(HelpText="If enabled, lockpicks and other pickups will appear smaller on the screen. Otherwise they will appear larger, which some players may prefer.",actionText="HUD: Smaller Tools.",variable="bPickupsUseFOV")
      items(140)=(HelpText="With Restricted Saving enabled, save points will fade out when far away from the player. Increases immersion at the cost of visibility.",actionText="Game: Fade Out Save Points",variable="bFadeOutSavePoints")
      items(141)=(HelpText="If enabled, MJ12 will use the classic full-face helmet from vanilla.",actionText="NPCs: Classic MJ12 Troops",variable="bClassicMJ12Skin")
      items(142)=(HelpText="If enabled, conversations will play in first-person rather than using a third-person camera",actionText="Player: First Person Conversations",variable="bFirstPersonConversation")
@@ -196,6 +202,8 @@ defaultproperties
      items(144)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1)
      items(145)=(HelpText="When attempting to pick up an item for which you don't have inventory space, the pickup message will show the size of the item in grid squares.",actionText="HUD: Pickup Message Shows Size",variable="bFullInventoryMsgShowsSize",defaultValue=1)
      items(146)=(HelpText="Always show the Stamina bar, even when the Stamina system is disabled.",actionText="HUD: Always Show Stamina Bar",variable="bAlwaysShowStamina")
+     items(147)=(HelpText="If enabled, searching a carcass will also search all carcasses nearby.",actionText="Interaction: Search Carcass Piles",variable="bSearchCorpsePiles",defaultValue=1)
+     items(148)=(HelpText="Sets viewmodel FOV. Requires the Alternate Weapon Offsets setting to be enabled.",actionText="HUD: Viewmodel FOV",consoleTarget="ViewmodelFOVManager",variable="weaponFOV",realValue0=60,realValue1=75,realValue2=80,realValue3=90,realValue4=100,realValue5=110,valueText0="60 FOV",valueText1="75 FOV",valueText2="80 FOV",valueText3="90 FOV",valueText4="100 FOV",valueText5="110 FOV",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

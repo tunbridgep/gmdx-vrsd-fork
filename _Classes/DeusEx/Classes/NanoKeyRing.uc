@@ -313,6 +313,7 @@ function Display(bool overlay)
 
 defaultproperties
 {
+     weaponOffsets=(X=14.00,Y=15.00,Z=-18.00)
      NoKeys="No Nano Keys Available!"
      KeysAvailableLabel="Nano Keys Available:"
      UseSound=Sound'DeusExSounds.Generic.KeysRattling'

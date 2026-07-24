@@ -10,6 +10,24 @@ var float           p; //CyberP: combatspeedaug
 
 var const Sound ClassicUseSound;
 
+//SARGE: Weapon Offset Stuff
+var travel ViewmodelFOVManager FOVManager;                                      //SARGE: Manage Viewmodel FOV
+var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
+
+function Draw(DeusExPlayer frobber)
+{
+    super.Draw(frobber);
+    //DoWeaponOffset();
+}
+
+//Function to fix weapon offsets
+function DoWeaponOffset()
+{
+    if (FOVManager == None)
+        FOVManager = new(Self) class'ViewmodelFOVManager';
+    FOVManager.SetViewmodelOffset(Self,true);
+}
+
 function GetAugSpeed()
 	{
 	local DeusExPlayer player;
@@ -209,6 +227,7 @@ simulated function PreBeginPlay()
 		SoundVolume = 96;
 		SoundRadius = 16;
 	}
+    DoWeaponOffset();
 }
 
 exec function UpdateHDTPsettings()
@@ -225,6 +244,17 @@ exec function UpdateHDTPsettings()
             else
                 multiskins[slot] = default.multiskins[slot];
     }
+    DoWeaponOffset();
+}
+
+function Destroyed()
+{
+    if (FOVManager != None)
+    {
+        CriticalDelete(FOVManager);
+        FOVManager = None;
+    }
+	Super.Destroyed();
 }
 
 // ----------------------------------------------------------------------

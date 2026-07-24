@@ -23,10 +23,9 @@ var bool    bHasSkins;
 var string savedName;                                                           //SARGE: vRSD seemingly forgot to add this?
 
 //SARGE: Weapon Offset Stuff
-//TODO: Replace this with a generic implementation
+var travel ViewmodelFOVManager FOVManager;                                      //SARGE: Manage Viewmodel FOV
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
-var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
-var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
+
 var travel bool bSearched;                                                      //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
 var travel int PickupAmmoCount;                                                 //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
 
@@ -50,47 +49,18 @@ struct AugmentiqueCarcassData
 var travel AugmentiqueCarcassData augmentiqueData;
 
 //Function to fix weapon offsets
-function DoWeaponOffset(DeusExPlayer player)
+function DoWeaponOffset()
 {
-    local bool bDoOffsets;
-
-    if (player == None)
-        return;
-
-    if ((weaponOffsets.x != 0.0 || weaponOffsets.y != 0.0 || weaponOffsets.z != 0.0))
-    {
-    
-        //Remember our old weapon offsets
-        if (!bOldOffsetsSet)
-        {
-            //player.ClientMessage("Setting old offsets");
-            oldOffsets.x = default.PlayerViewOffset.x;
-            oldOffsets.y = default.PlayerViewOffset.y;
-            oldOffsets.z = default.PlayerViewOffset.z;
-            bOldOffsetsSet = true;
-        }
-
-        bDoOffsets = player.iEnhancedWeaponOffsets == 2 || (player.iEnhancedWeaponOffsets == 1 && player.defaultFOV >= 110);
-        if (bDoOffsets)
-        {
-            default.PlayerViewOffset.x = weaponOffsets.x;
-            default.PlayerViewOffset.y = weaponOffsets.y;
-            default.PlayerViewOffset.z = weaponOffsets.z;
-        }
-        else if (bOldOffsetsSet)
-        {
-            default.PlayerViewOffset.x = oldOffsets.x;
-            default.PlayerViewOffset.y = oldOffsets.y;
-            default.PlayerViewOffset.z = oldOffsets.z;
-        }
-    }
+    if (FOVManager == None)
+        FOVManager = new(Self) class'ViewmodelFOVManager';
+    FOVManager.SetViewmodelOffset(Self);
 }
 
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-    DoWeaponOffset(frobber);
     SetWeaponHandTex();
+    //DoWeaponOffset();
 }
 
 function Display(bool overlay)
@@ -104,7 +74,7 @@ function Display(bool overlay)
 function PreBeginPlay()
 {
 	Super.PreBeginPlay();
-    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
+    DoWeaponOffset();
 }
 
 simulated event RenderOverlays( canvas Canvas )
@@ -115,6 +85,16 @@ simulated event RenderOverlays( canvas Canvas )
     
     super.RenderOverlays(canvas);
     multiskins[1] = none;
+}
+
+function Destroyed()
+{
+    if (FOVManager != None)
+    {
+        CriticalDelete(FOVManager);
+        FOVManager = None;
+    }
+	Super.Destroyed();
 }
 
 defaultproperties

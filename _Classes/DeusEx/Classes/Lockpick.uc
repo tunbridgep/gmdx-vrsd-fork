@@ -47,6 +47,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 
 defaultproperties
 {
+     weaponOffsets=(X=15.00,Y=8.00,Z=-17.00)
      UseSound=Sound'RSDCrap.Misc.LockpickUse'
      ClassicUseSound=Sound'DeusExSounds.Generic.LockpickRattling'
      maxCopies=20

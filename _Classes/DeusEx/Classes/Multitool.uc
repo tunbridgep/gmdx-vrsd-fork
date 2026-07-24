@@ -47,6 +47,7 @@ simulated function PreBeginPlay()
 
 defaultproperties
 {
+     weaponOffsets=(X=19.00,Y=10.00,Z=-17.00)
      UseSound=Sound'DeusExSounds.Generic.MultitoolUse'
      maxCopies=20
      bCanHaveMultipleCopies=True
