@@ -5453,7 +5453,14 @@ simulated function PlayFootStep()
             //Log("Pawn: " $ P.Name @  P.AICanSee(Self));
 
             if (bPawnCheck)
-                ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.6);
+            {
+                if (bHardcoreMode && bExtraHardcore)
+                    footstepCheckMod = 0.6;
+                else
+                    footstepCheckMod = 0.55;
+
+                ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*footstepCheckMod);
+            }
         }
 
         //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
