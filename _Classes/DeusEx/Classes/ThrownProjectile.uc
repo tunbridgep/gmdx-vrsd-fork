@@ -294,6 +294,11 @@ simulated function Tick(float deltaTime)
 						{
 							foreach RadiusActors(class'ScriptedPawn', P, proxRadius*4)
 							{
+
+                                //SARGE: Disabled bots won't set off grenades
+                                if (P != None && P.IsA('Robot') && Robot(P).EMPHitPoints == 0)
+                                    continue;
+
 								// only "heavy" pawns will set this off
 								if ((P != None) && (P.Mass >= 40))
 								{

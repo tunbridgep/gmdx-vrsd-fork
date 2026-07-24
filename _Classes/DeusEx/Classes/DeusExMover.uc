@@ -1031,6 +1031,14 @@ function bool EncroachingOn( actor Other )                                      
 		Other.Destroy();
 		return false;
 	}
+	
+    //SARGE: Blow up disabled bots when hit by movers
+    if (Other.IsA('Robot') && Robot(other).EMPHitPoints == 0)
+	{
+		//Other.Destroy();
+        Other.TakeDamage(1000,None,vect(0,0,0),vect(0,0,0),'exploded');
+		return false;
+	}
 
 	// DEUS_EX CNN - make based actors not stop movers
 	if (Other.Base == Self)
