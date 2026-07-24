@@ -1043,6 +1043,9 @@ var globalconfig bool bRealtimeRadialMenu;  //SARGE: The radial menu is now cont
 
 var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar, even when the Stamina System is disabled.
 
+/////////Version 1.3 Additions
+/////////June 2026
+
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
 //////////END GMDX
