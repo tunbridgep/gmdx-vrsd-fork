@@ -995,6 +995,11 @@ function LowKeyDestroy(Pawn instigatedBy)                                       
 	if (Leader != None)
 		Leader.MakeGroupStop();
 
+    //SARGE: Fix the base pos
+    //Taken from DXRando
+    //This might do literally nothing, IDK.
+    BasePos = Location;
+
 	Instigator = instigatedBy;
 
 	// trigger our event
