@@ -5321,6 +5321,7 @@ simulated function PlayFootStep()
     local float stealthLevel;
 	local Pawn P;
     local bool bPawnCheck;
+    local float footstepCheckMod;
     
     //SARGE: Precipitation Stuff
     local float RainstepVolMod;
@@ -5425,8 +5426,10 @@ simulated function PlayFootStep()
         range*=0.9;
 
     //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
-    if (bHardCoreMode)
+    if (bHardCoreMode && bExtraHardcore)
         volumeMultiplier *= 1.25;
+    else if (bHardCoreMode)
+        volumeMultiplier *= 1.2;
     else if (CombatDifficulty >= 3.0)
         volumeMultiplier *= 1.15;
 

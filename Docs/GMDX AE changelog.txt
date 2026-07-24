@@ -22,6 +22,7 @@ Misc Changes:
 - GMDX Help Menu updates.
 - Sprinter perk now requires Master athletics (was Advanced).
 - "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
+- Slightly decreased enemy footstep detection on higher difficulties.
 
 Map Changes:
 - 05_NYC_UNATCOMJ12LAB:
