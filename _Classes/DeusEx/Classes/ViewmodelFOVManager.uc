@@ -91,12 +91,13 @@ function SetViewmodelOffset(Inventory item, optional bool bUpdateIndividualScale
     
     if (VSize(oldOffsets) == 0)
         oldOffsets = GetDefaultWeaponOffsets(item);
+        
+    offsets = GetWeaponOffsets(item);
 
-    bDoOffsets = class'DeusExPlayer'.default.bEnhancedWeaponOffsets;
+    bDoOffsets = class'DeusExPlayer'.default.bEnhancedWeaponOffsets && VSize(offsets) > 0;
 
     if (bDoOffsets)
     {
-        offsets = GetWeaponOffsets(item);
         ratio = 1.777; // 16:9
         if(item.GetPlayerPawn() != None)
             ratio = GetRatio(item);
