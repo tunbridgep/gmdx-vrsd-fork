@@ -248,6 +248,7 @@ function RenderPortal(canvas Canvas)
 	local float ofy2;
 	local rotator rdif;
 	local vector rloc;
+	local vector scopeCheck;
     local float offset;
     local DeusExPlayer player;
     
@@ -286,8 +287,13 @@ function RenderPortal(canvas Canvas)
          actnul=player;
       }
 		PlayerViewOffset=MountedViewOffset*100;
+
+        scopeCheck = (10 + player.CollisionRadius) * Vector(player.ViewRotation);
+        scopeCheck.Z = player.BaseEyeHeight;
+        scopeCheck += player.Location;
+
 		//if(FRand()>0.01) //(0.95-offset))
-        if (player.FastTrace(rloc)) //SARGE: Stop GEP Scope wallhacks! Disable the screen if we would be going through a wall.
+        if (player.FastTrace(scopeCheck)) //SARGE: Stop GEP Scope wallhacks! Disable the screen if we would be going through a wall.
         {
             Canvas.DrawPortal(Canvas.ClipX/8,ofy+offsetY,Canvas.ClipX*0.75,height,actnul, rloc, rdif,110);
         }

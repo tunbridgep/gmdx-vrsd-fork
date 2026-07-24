@@ -14,6 +14,7 @@ Bug Fixes:
 - Minor typo and text fixes
 - Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 - Fixed the player taking damage after moving down ramps at high framerates.
+- Fixed GEP Gun scope being disabled when fired rockets leave the players line of sight.
 
 Misc Changes:
 - Minor internal changes to make translations easier, such as localizing a few strings.
