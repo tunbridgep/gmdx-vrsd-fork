@@ -1046,6 +1046,8 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 /////////Version 1.3 Additions
 /////////June 2026
 
+var globalconfig bool bSearchCorpsePiles;   //SARGE: Allow searching multiple carcasses at once when they are stacked on top of each other.
+
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
 //////////END GMDX
@@ -20831,4 +20833,5 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bSearchCorpsePiles=true
 }

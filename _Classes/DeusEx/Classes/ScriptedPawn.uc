@@ -535,6 +535,9 @@ var(GMDX) const float fRandomHeightMult;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
+//SARGE: When we drop a weapon on death, keep track of it.
+var Weapon linkedWeapon;
+
 //SARGE: Only allow receiving one extra weapon in certain circumstances
 //See DistributeItem() in MissionScript for more info
 var bool bAlreadyDistributedWeapon;
@@ -16933,7 +16936,10 @@ state Dying
 Begin:
     //SARGE: Drop weapons on death.
     if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
+    {
+        linkedWeapon = Weapon;
         DropWeapon();
+    }
 
 	WaitForLanding();
 	MoveFallingBody();
