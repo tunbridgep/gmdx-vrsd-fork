@@ -2,6 +2,8 @@
 
 New Features:
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
+- Added sounds for picking up Collectibles.
+- Added sounds when acquiring Traumas.
 
 Bug Fixes:
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.

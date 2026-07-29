@@ -15,7 +15,7 @@ This fork is possible thanks to the following awesome people:
 - LupusDraconis - Perk Icons and other graphical assets, female JC voices and other LDDP work.
 - Adman32 - Art and some weapon sounds.
 - Maciek - Trailer.
-- Made In China - LDDP+ConFix Conversation files, various art assets and icons.
+- Made In China - LDDP+ConFix Conversation files, various art assets and icons, some sounds.
 - Joe Wintergreen (https://www.joewintergreen.com/) - for help with the Lip Synch and Blinking issue.
 - Sebastian Kaufel (Hanfling) - for the awesome RenderExt and Editor patch, which fixed a lot of rendering-related crashes.
 - cappucciNO - for the vanilla weapon models with attachments, and the new junk item inventory/belt icons
@@ -26,6 +26,7 @@ This fork is possible thanks to the following awesome people:
 - Popmechanics - Augmentique weapon skins
 - NG+ - Discord server organization and community management.
 - Kisskills - Fixed Combat Knife textures.
+- pancaketaicho - Collectible Pickup and other sound effects.
 
 This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe, Made In China,
