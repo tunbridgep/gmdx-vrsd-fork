@@ -51,6 +51,11 @@ var localized String DisplayOnScreen;
 
 var transient bool bFakeEditUpdate;             //SARGE: Allow updating the edit checkbox without modifying the players variable
 
+var localized const string strShowDefaultNotes;
+var localized const string strShowUserNotes;
+var localized const string strShowMarkerNotes;
+var localized const string strAllowEditing;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -188,7 +193,7 @@ function CreateShowDefaultNotesCheckbox()
 {
 	chkShowDefaultNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
 
-	chkShowDefaultNotes.SetText("Show Default Notes");
+	chkShowDefaultNotes.SetText(strShowDefaultNotes);
 	chkShowDefaultNotes.SetToggle(player.bShowRegularNotes);
 	chkShowDefaultNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 63, 207);
 }
@@ -201,7 +206,7 @@ function CreateShowUserNotesCheckbox()
 {
 	chkShowUserNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
 
-	chkShowUserNotes.SetText("Show User Notes");
+	chkShowUserNotes.SetText(strShowUserNotes);
 	chkShowUserNotes.SetToggle(player.bShowUserNotes);
 	chkShowUserNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 203, 207);
 }
@@ -214,7 +219,7 @@ function CreateShowMarkerNotesCheckbox()
 {
 	chkShowMarkerNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
 
-	chkShowMarkerNotes.SetText("Show Marker Notes");
+	chkShowMarkerNotes.SetText(strShowMarkerNotes);
 	chkShowMarkerNotes.SetToggle(player.bShowMarkerNotes);
 	chkShowMarkerNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 343, 207);
 }
@@ -227,7 +232,7 @@ function CreateEditCheckbox()
 {
 	chkAllowEdit = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
     chkAllowEdit.SetToggle(player.bAllowNoteEditing);
-	chkAllowEdit.SetText("Allow Editing");
+	chkAllowEdit.SetText(strAllowEditing);
 	chkAllowEdit.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 263, 412);
 }
 
@@ -765,4 +770,8 @@ defaultproperties
      clientTextureCols=3
      clientBorderTextureRows=2
      clientBorderTextureCols=3
+     strShowDefaultNotes="Show Default Notes"
+     strShowUserNotes="Show User Notes"
+     strShowMarkerNotes="Show Marker Notes"
+     strAllowEditing="Allow Editing"
 }
