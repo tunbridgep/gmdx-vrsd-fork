@@ -415,11 +415,11 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
 	{
 		invBelt.AssignObjectBeltByKey(anItem, key);
 	}
-	else if (Alias ~= "UseSecondary")
+	else if (Left(Alias,12) ~= "UseSecondary")
     {
         AssignSecondary();
     }
-	else if (Alias ~= "DropItem" || key == IK_MiddleMouse)
+	else if (Left(Alias,8) ~= "DropItem" || key == IK_MiddleMouse)
     {
         DropSelectedItem();
     }

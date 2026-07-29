@@ -15,6 +15,7 @@ Bug Fixes:
 - Removed the "Toggle Fullscreen" Display menu option as it doesn't work properly with Kenties Deus Exe.
     - It's been replaced with a "Toggle Coronas" setting.
 - Minor typo and text fixes
+- Fixed "Drop Item" and "Use Secondary" keybindings not being reflected in the Inventory screen.
 - Fixed Ammo Display not showing Cyan for full weapons in some cases.
 - Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 - Fixed the player taking damage after moving down ramps at high framerates.
