@@ -27,6 +27,7 @@ Bug Fixes:
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
+- It is now significantly less likely to be unable to drop a carcass when in a tight space, such as a vent.
 - Minor internal changes to make translations easier, such as localizing a few strings.
 - Disabled robots will no longer set off proximity grenades.
 - Disabled robots will now be destroyed when hit by movers, rather than blocking or resetting the mover.
