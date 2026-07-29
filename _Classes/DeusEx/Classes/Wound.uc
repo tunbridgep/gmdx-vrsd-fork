@@ -113,7 +113,7 @@ defaultproperties
      WoundPoints="Current Wound Progress: %d/%d"
      WoundAfflicted="You are suffering from %s"
      requiredMedkits=1
-     DamageThreshold=450
+     DamageThreshold=350
      bHidden=True
      bTravel=True
 }
