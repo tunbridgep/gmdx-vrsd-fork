@@ -25,6 +25,7 @@ Bug Fixes:
 - Fixed the player taking damage after moving down ramps at high framerates.
 - Fixed GEP Gun scope being disabled when fired rockets leave the players line of sight.
 - Fixed climbing ladders at different speeds based on whether you're running or walking.
+- Fixed Randomized Weapon Mods not reflecting the physics state of the replaced mods when creating replacement mods.
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
