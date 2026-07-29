@@ -1048,6 +1048,8 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
+var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
+
 var const localized string msgSaveName;
 
 //////////END GMDX
@@ -9530,6 +9532,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local WeaponNanoSword dts;
     local bool bDestroy;
     local string source;
+    local ChargedPickup cp;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -9775,6 +9778,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                     DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
                 }
             }
+    
+            //Auto-equip chargedpickups if we have nothing else equipped
+            cp = ChargedPickup(FrobTarget);
+            if (cp != None && !bLeftClicked && !cp.bUnequipWhenDrained && bAutoUseChargedPickups && cp.IsTorsoFree())
+                cp.Activate();
         }
 	}
 
@@ -20849,5 +20857,6 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bAutoUseChargedPickups=true
      msgSaveName="%s [%s]"
 }

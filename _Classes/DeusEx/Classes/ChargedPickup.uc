@@ -46,6 +46,18 @@ function string GetFrobString(DeusExPlayer player)
 		return ItemName @ "(" $ int(GetCurrentCharge()) $ "%)"; //SARGE: Append the current charge only
 }
 
+//SARGE: Check if we have nothing equipped in our torso slot
+function bool IsTorsoFree()
+{
+    local ChargedPickup char;
+    foreach AllActors(class'ChargedPickup',char)
+    {
+        if (char.owner == owner && char.IsInState('Activated') && (char.IsA('BallisticArmor') || char.IsA('HazMatSuit') || char.IsA('AdaptiveArmor')))
+            return false;
+    }
+    return true;
+}
+
 function string GetDescription2(DeusExPlayer player)
 {
     local string str;
@@ -391,8 +403,9 @@ state Activated
         local ChargedPickup char;
         local int i;
 
+        //SARGE: TODO: Clean this up and properly differentiate between body slots.
         ForEach AllActors(class'ChargedPickup',char)
-           if (char.IsInState('Activated') && (char.IsA('BallisticArmor') || char.IsA('HazMatSuit') || char.IsA('AdaptiveArmor')))
+           if (char.owner == owner && char.IsInState('Activated') && (char.IsA('BallisticArmor') || char.IsA('HazMatSuit') || char.IsA('AdaptiveArmor')))
            {   //i++;
               if (char != self && (self.IsA('BallisticArmor') || self.IsA('HazMatSuit') || self.IsA('AdaptiveArmor')))
                  char.GotoState('DeActivated');                                 //RSD: Automtically switches to the other armor instead of yelling at you

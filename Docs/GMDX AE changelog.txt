@@ -2,6 +2,7 @@
 
 New Features:
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
+- Ballistic Vests and HazMat Suits will now be auto-equipped when picked up if nothing else is equipped.
 - Left-Clicking can now be used to instantly equip Augmentique outfits found in the world.
 - Added sounds for picking up Collectibles.
 - Added sounds when acquiring Traumas.
