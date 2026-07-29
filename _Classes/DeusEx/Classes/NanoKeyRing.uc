@@ -320,6 +320,7 @@ defaultproperties
      bDisplayableInv=False
      ItemName="Nanokey Ring"
      ItemArticle="the"
+     OldPlayerViewOffset=(X=16.000000,Y=15.000000,Z=-16.000000)
      PlayerViewOffset=(X=16.000000,Y=15.000000,Z=-16.000000)
      PlayerViewMesh=LodMesh'DeusExItems.NanoKeyRingPOV'
      PickupViewMesh=LodMesh'DeusExItems.NanoKeyRing'
