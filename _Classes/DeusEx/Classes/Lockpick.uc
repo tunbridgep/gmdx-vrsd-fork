@@ -55,7 +55,8 @@ defaultproperties
      ItemName="Lockpick"
      OldPlayerViewOffset=(X=16.000000,Y=8.000000,Z=-16.000000)
      PlayerViewOffset=(X=16.000000,Y=8.000000,Z=-16.000000)
-     PlayerViewMesh=LodMesh'DeusExItems.LockpickPOV'
+     //PlayerViewMesh=LodMesh'DeusExItems.LockpickPOV'
+     PlayerViewMesh=LodMesh'RSDCrap.LockpickPOV_Fixed'
      PickupViewMesh=LodMesh'DeusExItems.Lockpick'
      ThirdPersonMesh=LodMesh'DeusExItems.Lockpick3rd'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit2'

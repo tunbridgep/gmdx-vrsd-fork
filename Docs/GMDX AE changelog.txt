@@ -28,6 +28,7 @@ Misc Changes:
 - "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
 - Slightly decreased enemy footstep detection on higher difficulties.
 - Slightly increased swimming stamina requirements in Hardcore mode.
+- Adds a fixed Lockpick model to work better at higher FOV values.
 
 Map Changes:
 - 05_NYC_UNATCOMJ12LAB:
