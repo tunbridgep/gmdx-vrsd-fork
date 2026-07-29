@@ -20831,4 +20831,5 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bPickupsUseFOV=true
 }
