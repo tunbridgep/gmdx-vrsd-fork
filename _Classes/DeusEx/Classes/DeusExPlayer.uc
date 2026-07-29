@@ -1048,6 +1048,8 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
+var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
+
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 var const localized string msgSaveName;
@@ -11706,6 +11708,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 	local bool bRemovedFromSlots;
 	local int  itemPosX, itemPosY, tex, i, amm;
     local Ammo ammoType;
+    local Vector loc;
 
 	bDropped = True;
 
@@ -12005,11 +12008,28 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 		                            PlayAnim('Attack',,0.1);
 								}
 							}
-							else
+                            else
                             {
-                                ClientMessage(CannotDropHere);
-								carc.bHidden = True;
-                                carc.Destroy();
+                                //SARGE: Allow dropping carcasses at our feet
+                                if (bAlwaysDropCarcasses)
+                                {
+                                    loc = Location;
+                                    loc.z -= CollisionHeight / 2;
+                                    loc.z -= carc.CollisionHeight / 2;
+                                    carc.bCollideWorld = false;
+                                    carc.SetLocation(loc);
+                                    carc.bCollideWorld = true;
+                                    SetInHandPending(None);
+                                    item.Destroy();
+                                    item = None;
+                                    DebugMessage("Dropped at feet");
+                                }
+                                else
+                                {
+                                    ClientMessage(CannotDropHere);
+                                    carc.bHidden = True;
+                                    carc.Destroy();
+                                }
                             }
 						}
 					}
@@ -20859,5 +20879,6 @@ defaultproperties
      precipMaxDensity=14.0
      precipMinDensity=0.0
      bAutoUseChargedPickups=true
+     bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
 }

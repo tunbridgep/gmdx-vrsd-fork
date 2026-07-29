@@ -197,6 +197,7 @@ defaultproperties
      items(145)=(HelpText="When attempting to pick up an item for which you don't have inventory space, the pickup message will show the size of the item in grid squares.",actionText="HUD: Pickup Message Shows Size",variable="bFullInventoryMsgShowsSize",defaultValue=1)
      items(146)=(HelpText="Always show the Stamina bar, even when the Stamina system is disabled.",actionText="HUD: Always Show Stamina Bar",variable="bAlwaysShowStamina")
      items(149)=(HelpText="Automatically equip Ballistic Armor and HazMat Suits when picking them up if you don't have anything equipped.",actionText="Interaction: Auto-Use Armor Items",variable="bAutoUseChargedPickups",defaultValue=1)
+     items(150)=(HelpText="Drop carcasses at your feet when dropping would otherwise fail, such as in tight corridoors or vents.",actionText="Interaction: Always Drop Carcasses",variable="bAlwaysDropCarcasses",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214
