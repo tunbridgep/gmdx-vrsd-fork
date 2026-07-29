@@ -112,6 +112,9 @@ var float breatheTime;
 
 var string carcassID;                                                                 //SARGE: Generally, the carcas name. Kept through pickup and put down.
 
+//SARGE: Linked weapons from ScriptedPawns, dropped on death.
+var Weapon droppedWeapon;
+
 // ----------------------------------------------------------------------
 // Augmentique
 // ----------------------------------------------------------------------
@@ -306,6 +309,11 @@ function InitFor(Actor Other)
         //SARGE: All corpses can be reacted to
         if (!IsA('Animal'))
             bEmitCarcass = true;
+
+        //SARGE: Check if we have a linked weapon,
+        //and if so, set it here.
+        if (Other.IsA('ScriptedPawn'))
+            droppedWeapon = ScriptedPawn(Other).droppedWeapon;
 
         /*
 		// set as unconscious or add the pawns name to the description
@@ -1315,6 +1323,49 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
 	local DeusExPickup invItem;
     local bool bShowReceived;                                                   //SARGE: Show the Received Items Window for new pickups
     local Inventory newItem;                                                    //SARGE: An item that was spawned in the players inventory.
+    local Actor previousFrobTarget;                                             //SARGE: For holding the previous frob target.
+
+
+    /*
+    //SARGE: Before searching the inventory, try to pick up our dropped weapon
+    //TODO: Refactor this into the normal inventory searching.
+    if (droppedWeapon != None)
+    {
+        item = droppedWeapon;
+        bFoundSomething = True;
+        found = player.FindInventoryType(item.class);
+        bDeclined = player.declinedItemsManager.IsDeclined(item.Class,true);
+        player.FrobTarget = item;
+        if (player.HandleItemPickup(item,false,false,Self,true,true))
+        {
+            bPickedSomethingUp = True;
+            droppedWeapon = None;
+            if (found == None)
+            {
+                //player.DebugMessage("Adding good item: " $ item);
+                AddReceivedItem(player, item, 1);
+            }
+            else
+            {
+                bFoundInvalid=True;
+                source.AddBadItem(player,found);
+                if (!bSearched)
+                    player.ClientMessage(found.PickupMessage @ found.itemArticle @ found.itemName @ IgnoredString);
+            }
+        }
+        else
+        {
+            //player.DebugMessage("Adding bad item: " $ item);
+            source.AddBadItem(player,item);
+        }
+
+        if (bDeclined && !bSearched)
+        {
+            bFoundInvalid=True;
+            player.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ DeclinedString);
+        }
+    }
+    */
 
     while(Inventory.Owner == player)
     {
@@ -1323,8 +1374,15 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
             break;
     }
 
-    item = Inventory;
+    if (droppedWeapon != None && droppedWeapon.Owner != player)
+        item = droppedWeapon;
+    else
+        item = Inventory;
+
     startItem = item;
+            
+    if (droppedWeapon != None)
+        player.DebugMessage("DroppedWeapon: " $ droppedWeapon @ item);
 
     do
     {
@@ -1343,7 +1401,12 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
         if(item == None)
             break;
         //== end
-        nextItem = item.Inventory;
+
+        if (item == droppedWeapon && droppedWeapon != None && droppedWeapon.Owner != player)
+            nextItem = Inventory;
+        else
+            nextItem = item.Inventory;
+
         //== start
         if(nextItem != None)
         {
@@ -1669,11 +1732,21 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                             bFoundSomething = True;
                             if (player.HandleItemPickup(Item,false,true,self,!bLootedAmmo,false) != False)
                             {
-                                DeleteInventory(item);
+                                if (item == droppedWeapon)
+                                {
+                                    newItem = item;
+                                    droppedWeapon = none;
+                                }
+                                else
+                                {
+                                    DeleteInventory(item);
 
-                                // DEUS_EX AMSD Belt info isn't always getting cleaned up.  Clean it up.
-                                item.bInObjectBelt=False;
-                                item.BeltPos=-1;
+                                    // DEUS_EX AMSD Belt info isn't always getting cleaned up.  Clean it up.
+                                    item.bInObjectBelt=False;
+                                    item.BeltPos=-1;
+                                    
+                                    newItem = item.SpawnCopy(player);
+                                }
 
                                 //PlaySound(Item.PickupSound);
                                     
@@ -1687,8 +1760,6 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                                 if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                     LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
-                                newItem = item.SpawnCopy(player);
-                                
                                 //SARGE: Swap to a new belt item
                                 if (player != None && player.iBeltMemory >= 2)
                                     player.ShifterSwitchAll(newItem,false,true);

@@ -9545,7 +9545,19 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     if (FromCorpse != None)
         source = FromCorpse.carcassID;
     else
-        source = string(self.Class.name);
+    {
+        foreach AllActors(class'DeusExCarcass', linkedCarc)
+        {
+            if (linkedCarc.droppedWeapon == Weapon(FrobTarget))
+            {
+                source = linkedCarc.carcassID;
+                break;
+            }
+        }
+
+        if (source == "")
+            source = string(self.Class.name);
+    }
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
@@ -9715,8 +9727,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
 
         //SARGE: Decline checking.
-        if (!bSkipDeclineCheck)
+        if (!bSkipDeclineCheck && FromCorpse != None)
+            bDeclined = DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class));
+        else if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
+
         if (!bDeclined && !bSearchOnly)
             FindInventorySlot(Inventory(FrobTarget), false);
     }
@@ -9752,7 +9767,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             //bLeftClicked = False;
             }*/
             // This is bad. We need to reset the number so restocking works
-            if ( Level.NetMode != NM_Standalone )
+            if ( Level.NetMode != NM_Standalone  && FromCorpse == None)
             {
                 if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
                 {
@@ -9818,7 +9833,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DebugLog("AddReceivedItem - Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
+        DebugLog("AddReceivedItem - Item is: " $ item $ ", owned by " $ owner $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
 
         DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 

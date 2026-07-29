@@ -2,6 +2,7 @@
 
 New Features:
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
+- If an enemy dropped a weapon, searching their carcass will also include their dropped weapon.
 
 Bug Fixes:
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.

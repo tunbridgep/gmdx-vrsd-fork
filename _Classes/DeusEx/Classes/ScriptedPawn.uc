@@ -535,8 +535,9 @@ var(GMDX) const float fRandomHeightMult;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
-//SARGE: When we drop a weapon on death, keep track of it.
-var Weapon linkedWeapon;
+//SARGE: When we drop a weapon on death, keep track of it for the purposes of looting.
+//But intentionally forget about it if we pick up the corpse, so we don't pick up weapons from across the room.
+var Weapon droppedWeapon;
 
 //SARGE: Only allow receiving one extra weapon in certain circumstances
 //See DistributeItem() in MissionScript for more info
@@ -16937,7 +16938,7 @@ Begin:
     //SARGE: Drop weapons on death.
     if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
     {
-        linkedWeapon = Weapon;
+        droppedWeapon = Weapon;
         DropWeapon();
     }
 
