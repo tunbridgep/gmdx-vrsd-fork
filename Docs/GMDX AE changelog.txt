@@ -38,6 +38,8 @@ Misc Changes:
 - Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
 
 Map Changes:
+- 04_NYC_NSFHQ:
+    - Added a trigger for Paul to send an infolink informing you that you need to align the dishes before sending the transmission.
 - 05_NYC_UNATCOMJ12LAB:
     - Removed an erroneous DataLink Trigger that was linking to a datalink that doesn't exist.
 
