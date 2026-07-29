@@ -9521,6 +9521,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local WeaponNanoSword dts;
     local bool bDestroy;
     local string source;
+    local DeusExCarcass linkedCarc;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
