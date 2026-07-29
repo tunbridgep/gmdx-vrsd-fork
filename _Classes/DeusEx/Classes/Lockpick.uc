@@ -53,6 +53,7 @@ defaultproperties
      maxCopies=20
      bCanHaveMultipleCopies=True
      ItemName="Lockpick"
+     OldPlayerViewOffset=(X=16.000000,Y=8.000000,Z=-16.000000)
      PlayerViewOffset=(X=16.000000,Y=8.000000,Z=-16.000000)
      PlayerViewMesh=LodMesh'DeusExItems.LockpickPOV'
      PickupViewMesh=LodMesh'DeusExItems.Lockpick'

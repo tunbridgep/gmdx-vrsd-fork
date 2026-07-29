@@ -332,6 +332,7 @@ defaultproperties
      Misc1Sound=Sound'GMDXSFX.Weapons.SniperDryFire'
      InventoryGroup=5
      ItemName="Sniper Rifle"
+     OldPlayerViewOffset=(X=15.000000,Y=-2.000000,Z=-29.000000)
      PlayerViewOffset=(X=15.000000,Y=-2.000000,Z=-29.000000)
      PlayerViewMesh=LodMesh'DeusExItems.SniperRifle'
      PickupViewMesh=LodMesh'DeusExItems.SniperRiflePickup'

@@ -74,6 +74,7 @@ defaultproperties
      Misc3Sound=Sound'DeusExSounds.Weapons.CombatKnifeHitSoft'
      InventoryGroup=11
      ItemName="Combat Knife"
+     OldPlayerViewOffset=(X=6.000000,Y=-8.000000,Z=-15.000000)
      PlayerViewOffset=(X=6.000000,Y=-8.000000,Z=-15.000000)
      Icon=Texture'DeusExUI.Icons.BeltIconCombatKnife'
      largeIcon=Texture'DeusExUI.Icons.LargeIconCombatKnife'

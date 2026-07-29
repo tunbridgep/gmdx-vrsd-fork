@@ -305,6 +305,7 @@ defaultproperties
      InventoryGroup=6
      iHDTPModelToggle=2
      ItemName="Sawed-off Shotgun"
+     OldPlayerViewOffset=(X=11.000000,Y=-5.000000,Z=-28.000000)
      PlayerViewOffset=(X=11.000000,Y=-4.000000,Z=-13.000000)
      PlayerViewMesh=LodMesh'DeusExItems.Shotgun'
      PickupViewMesh=LodMesh'DeusExItems.ShotgunPickup'

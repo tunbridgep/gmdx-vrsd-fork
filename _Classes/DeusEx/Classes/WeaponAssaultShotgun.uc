@@ -151,6 +151,7 @@ defaultproperties
      InventoryGroup=7
      ItemName="Assault Shotgun"
      ItemArticle="an"
+     OldPlayerViewOffset=(Y=-11.000000,Z=-12.000000)
      PlayerViewOffset=(Y=-11.000000,Z=-12.000000)
      PlayerViewMesh=LodMesh'DeusExItems.AssaultShotgun'
      PickupViewMesh=LodMesh'DeusExItems.AssaultShotgunPickup'

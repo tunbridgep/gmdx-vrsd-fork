@@ -25,6 +25,7 @@ var string savedName;                                                           
 //SARGE: Weapon Offset Stuff
 var travel ViewmodelFOVManager FOVManager;                                      //SARGE: Manage Viewmodel FOV
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
+var const vector OldPlayerViewOffset;
 
 var travel bool bSearched;                                                      //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
 var travel int PickupAmmoCount;                                                 //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
@@ -60,7 +61,7 @@ function DoWeaponOffset()
 function Draw(DeusExPlayer frobber)
 {
     SetWeaponHandTex();
-    //DoWeaponOffset();
+    DoWeaponOffset();
 }
 
 function Display(bool overlay)
@@ -103,6 +104,7 @@ defaultproperties
      MaxDamage=10
      bDisplayableInv=False
      ItemName="body"
+     OldPlayerViewOffset=(X=20.000000,Y=13.000000,Z=-5.000000)
      PlayerViewOffset=(X=20.000000,Y=13.000000,Z=-5.000000)
      PlayerViewMesh=LodMesh'DeusExItems.POVCorpse'
      PickupViewMesh=LodMesh'DeusExItems.TestBox'

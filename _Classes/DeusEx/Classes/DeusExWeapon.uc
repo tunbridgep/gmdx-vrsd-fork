@@ -297,7 +297,7 @@ var travel int invSlotsYtravel;                                                 
 var travel float previousAccuracy;                                              //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
 
 //SARGE: Weapon Offset Stuff
-var travel ViewmodelFOVManager FOVManager;                                      //SARGE: Manage Viewmodel FOV
+var transient ViewmodelFOVManager FOVManager;                                   //SARGE: Manage Viewmodel FOV
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
 
 var travel bool givenFreeReload;                                                //Sarge: Give a free reload when selecting the weapon for the first time, otherwise it starts empty
@@ -391,6 +391,9 @@ struct BloodTex
 };
 
 var travel BloodTex BloodTextures[8];
+
+//SARGE: Remember old weapon offsets even when the defaults change.
+var const vector OldPlayerViewOffset;
 
 //AUGMENTIQUE: Weapon Skin system
 var(Augmentique) travel string currentWeaponSkin;
@@ -803,7 +806,7 @@ function Draw(DeusExPlayer frobber)
     //Reset weapon inertia
     cachedDrawOffset = Vect(0,0,0);
 
-    //DoWeaponOffset();
+    DoWeaponOffset();
 }
 
 // ---------------------------------------------------------------------
@@ -4741,10 +4744,13 @@ simulated function Vector ComputeProjectileStart(Vector X, Vector Y, Vector Z)
         //SARGE: Filthy. dirty hack!!
         //We need to reset our offsets because otherwise projectiles can
         //spawn too close to the player, and collide with him!
-        //if (bOldOffsetsSet && Owner != None && Owner.IsA('DeusExPlayer'))
-        //    default.PlayerViewOffset = oldOffsets;
+        if (Owner != None && Owner.IsA('DeusExPlayer') && FOVManager != None && ProjectileClass != None)
+        {
+            default.PlayerViewOffset = FOVManager.GetDefaultWeaponOffsets(Self);
+            default.FireOffset = -(FOVManager.GetDefaultWeaponOffsets(Self));
+        }
 		Start = Owner.Location + CalcDrawOffset() + FireOffset.X * X + FireOffset.Y * Y + FireOffset.Z * Z;
-        //DoWeaponOffset();
+        DoWeaponOffset();
     }
 
 	return Start;
@@ -7849,11 +7855,8 @@ function DestroyMe()
 
 function Destroyed()
 {
-    if (FOVManager != None)
-    {
-        CriticalDelete(FOVManager);
-        FOVManager = None;
-    }
+    CriticalDelete(FOVManager);
+    FOVManager = None;
 	Super.Destroyed();
 }
 

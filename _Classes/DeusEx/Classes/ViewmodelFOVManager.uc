@@ -6,16 +6,16 @@
 //=============================================================================
 class ViewmodelFOVManager extends Object;
 
-var vector offsets;
-var travel vector oldOffsets;
 var globalconfig float weaponFOV;
 
 function private vector GetDefaultWeaponOffsets(Inventory item)
 {
-    if (DeusExPickup(item) != None)
-        return DeusExPickup(item).default.PlayerViewOffset;
+    if (SkilledTool(item) != None)
+        return SkilledTool(item).default.OldPlayerViewOffset;
+    else if (POVCorpse(item) != None)
+        return POVCorpse(item).default.OldPlayerViewOffset;
     else if (DeusExWeapon(item) != None)
-        return DeusExWeapon(item).default.PlayerViewOffset;
+        return DeusExWeapon(item).default.OldPlayerViewOffset;
 }
 
 function private vector GetWeaponOffsets(Inventory item)
@@ -85,21 +85,23 @@ function SetViewmodelOffset(Inventory item, optional bool bUpdateIndividualScale
     local vector v;
     local float n, w, ratio; // narrow and wide multipliers
     local bool bDoOffsets;
+    local vector offsets, oldOffsets;
 
-    if (item == None/* || DeusExPlayer(item.Owner) == None*/)
+    if (item == None || DeusExPlayer(item.Owner) == None)
         return;
     
-    if (VSize(oldOffsets) == 0)
-        oldOffsets = GetDefaultWeaponOffsets(item);
-        
     offsets = GetWeaponOffsets(item);
+    oldOffsets = GetDefaultWeaponOffsets(item);
 
-    bDoOffsets = class'DeusExPlayer'.default.bEnhancedWeaponOffsets && VSize(offsets) > 0;
+    if (VSize(oldOffsets) == 0 || VSize(offsets) == 0) //No offsets set, don't to FOV stuff.
+        return;
+
+    bDoOffsets = class'DeusExPlayer'.default.bEnhancedWeaponOffsets;
 
     if (bDoOffsets)
     {
         ratio = 1.777; // 16:9
-        if(item.GetPlayerPawn() != None)
+        if(item.Owner != None)
             ratio = GetRatio(item);
 
         w = H2V(class'DeusExPlayer'.default.DefaultFOV, ratio);
@@ -119,16 +121,13 @@ function SetViewmodelOffset(Inventory item, optional bool bUpdateIndividualScale
     {
         v = oldOffsets;
     }
-        
+    
     SetDefaultWeaponOffsets(item,v);
 
     if (bUpdateIndividualScale)
-    {
-        v *= 100;
-        SetWeaponOffsets(item,v);
-    }
-    
-    DeusExPlayer(item.GetPlayerPawn()).DebugMessage("Applying Offsets for " $ item $ ": " $ v);
+        SetWeaponOffsets(item,v * 100);
+
+    DeusExPlayer(item.Owner).DebugMessage("Applying Offsets for " $ item $ ": " $ v);
 }
 
 defaultproperties

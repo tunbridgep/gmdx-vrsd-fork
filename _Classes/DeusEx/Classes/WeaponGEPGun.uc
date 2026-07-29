@@ -545,6 +545,7 @@ defaultproperties
      Misc1Sound=Sound'DeusExSounds.Special.Switch2ClickOff'
      InventoryGroup=17
      ItemName="Guided Explosive Projectile (GEP) Gun"
+     OldPlayerViewOffset=(X=42.000000,Y=-22.000000,Z=-10.000000)
      PlayerViewOffset=(X=42.000000,Y=-22.000000,Z=-10.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPGEPgun"
      HDTPPickupViewMesh="HDTPItems.HDTPGEPgunPickup"

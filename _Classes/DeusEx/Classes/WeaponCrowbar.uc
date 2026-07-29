@@ -86,6 +86,7 @@ defaultproperties
      Misc3Sound=Sound'DeusExSounds.Weapons.CrowbarHitSoft'
      InventoryGroup=10
      ItemName="Crowbar"
+     OldPlayerViewOffset=(X=38.000000,Y=-15.000000,Z=-10.000000)
      PlayerViewOffset=(X=38.000000,Y=-15.000000,Z=-10.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPWeaponCrowbar"
      HDTPPickupViewMesh="HDTPItems.HDTPCrowbarPickup"

@@ -2,6 +2,10 @@
 
 New Features:
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
+- Weapon FOV is now properly detected, instead of using preset weapon positions.
+    - Weapons should now feel a lot more consistent with their on-screen positions at different resolutions and aspect ratios.
+    - A new Weapon FOV setting has been added to accommodate this
+    - The old "Alternate Weapon Offsets" setting has been updated to no longer have the "Automatic" setting.
 
 Bug Fixes:
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.

@@ -88,6 +88,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.LAWSelect'
      InventoryGroup=16
      ItemName="Light Anti-Tank Weapon (LAW)"
+     OldPlayerViewOffset=(X=14.000000,Y=-18.000000,Z=-7.000000)
      PlayerViewOffset=(X=14.000000,Y=-18.000000,Z=-7.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPLaw"
      HDTPPickupViewMesh="HDTPItems.HDTPLAWPickup"
