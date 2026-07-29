@@ -9533,6 +9533,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local bool bDestroy;
     local string source;
     local ChargedPickup cp;
+    local bool bTransfer;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
