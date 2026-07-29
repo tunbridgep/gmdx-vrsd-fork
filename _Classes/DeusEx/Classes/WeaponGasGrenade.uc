@@ -173,8 +173,9 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.GasGrenadeSelect'
      InventoryGroup=21
      ItemName="Gas Grenade"
-     OldPlayerViewOffset=(Y=-13.000000,Z=-19.000000)
-     PlayerViewOffset=(Y=-13.000000,Z=-19.000000)
+     //OldPlayerViewOffset=(Y=-13.000000,Z=-19.000000)
+     OldPlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
+     PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPGasGrenade"
      HDTPPickupViewMesh="HDTPItems.HDTPGasGrenadePickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPGasGrenade3rd"
