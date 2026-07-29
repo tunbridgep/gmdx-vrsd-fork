@@ -7158,7 +7158,9 @@ state PlayerWalking
 
       if (Physics == PHYS_Walking && (iStaminaSystem > 0 || bHardCoreMode))   //CyberP: stamina system
       {
-      if (bIsWalking == false && !IsCrouching() && (Velocity.X != 0 || Velocity.Y != 0 ))
+      //SARGE: Added bOnLadder check so that we use stamina when on ladders regardless of speed,
+      //since ladder climbing limits us to walking speed regardless.
+      if (((bIsWalking == false && !IsCrouching()) || bOnLadder) && (Velocity.X != 0 || Velocity.Y != 0 ))
 	  {
 	    /*if (bHardCoreMode)                                                    //RSD: Generalizing this a bit
 		swimTimer -= deltaTime*1.3;
