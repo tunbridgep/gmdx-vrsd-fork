@@ -40,5 +40,5 @@ function UpdateWeaponSkinsForPawn(ScriptedPawn P) {}
 function ApplyWeaponSkin(DeusExWeapon wep, bool firstPerson) {}
 function ApplyProjectileSkin(DeusExProjectile proj) {}
 function ApplyProjectileSkinFrom(DeusExWeapon wep, DeusExProjectile proj) {}
-function TransferSkin(DeusExWeapon wep) {}
+function bool TransferSkin(DeusExWeapon wep) {}
 function RefreshAllWeapons() {}

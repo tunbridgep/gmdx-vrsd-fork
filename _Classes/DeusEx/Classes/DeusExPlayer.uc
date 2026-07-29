@@ -9542,12 +9542,19 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //AUGMENTIQUE: Handle weapon skin changes.
     if (DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
     {
+        //SARGE: GMDX Exclusive Dirty hack to show the WPN SKIN when picking a weapon up.
+        //if (/*FromCorpse == None && */!WeaponSkillManager.IsUnlocked(DeusExWeapon(FrobTarget)))
+            //WeaponSkinManager.DisplayReceivedIcon(self);
+            //DeusExRootWindow(rootWindow).hud.receivedItems.AddGenericIcon("", , count, bDeclined, bNoGroup, overrideTexture);
         WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget));
-        WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
+        bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
 
         //GMDX Exclusive Code
-        if (DeusExWeapon(Weapon) != None)
+        if (bTransfer)
+        {
             DeusExWeapon(Weapon).UpdateHDTPSettings();
+            Weapon.PlaySound(DeusExWeapon(Weapon).CopyModsSound,SLOT_None,0.8);
+        }
     }
 
     //SARGE: Set the source of the interaction (used by the HUD Display)
