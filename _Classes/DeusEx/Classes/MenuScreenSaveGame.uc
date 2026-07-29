@@ -355,12 +355,13 @@ function NewSaveGame()
 
 function SaveMissionLocationString()
 {
-	local DeusExLevelInfo aDeusExLevelInfo;
+	//local DeusExLevelInfo aDeusExLevelInfo;
 
 	missionLocation = "";
 
 	// Grab the mission location, which we'll use to build a default
 	// save game string
+    /*
 	foreach player.AllActors(class'DeusExLevelInfo', aDeusExLevelInfo)
 	{
 		if (aDeusExLevelInfo != None)
@@ -369,6 +370,8 @@ function SaveMissionLocationString()
 			break;
 		}
 	}
+    */
+    missionLocation = player.GetDefaultSaveName();
 
 	if (missionLocation == "")
 		missionLocation = defaultSaveText;

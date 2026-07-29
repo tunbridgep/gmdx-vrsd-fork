@@ -1048,6 +1048,8 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
+var const localized string msgSaveName;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -2941,6 +2943,11 @@ function GameDirectory GetSaveGameDirectory()
 	return saveDir;
 }
 
+function string GetDefaultSaveName()
+{
+    return sprintf(msgSaveName,retInfo(),TruePlayerName);
+}
+
 //SARGE: We can't modify the native function, so do this here, and then call it
 function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
@@ -3009,6 +3016,10 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         dataLinkPlay.AbortAndSaveHistory();
 
     //root.hide();
+
+    if (saveDesc == "")
+        saveDesc = GetDefaultSaveName();
+
     root.GenerateSnapshot(True);
     DebugLog("Save Game: " $ saveIndex @ saveDesc);
     SaveGame(saveIndex, saveDesc);
@@ -20831,4 +20842,5 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     msgSaveName="%s [%s]"
 }
