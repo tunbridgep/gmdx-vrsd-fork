@@ -15,6 +15,7 @@ Bug Fixes:
 - Minor typo and text fixes
 - Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 - Fixed the player taking damage after moving down ramps at high framerates.
+- Minor carcass searching fixes.
 
 Misc Changes:
 - Minor internal changes to make translations easier, such as localizing a few strings.

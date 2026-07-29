@@ -307,7 +307,7 @@ function InitFor(Actor Other)
             savedName = ScriptedPawn(Other).UnfamiliarName;
 
         //SARGE: All corpses can be reacted to
-        if (!IsA('Animal'))
+        if (!Other.IsA('Animal'))
             bEmitCarcass = true;
 
         //SARGE: Check if we have a linked weapon,
@@ -1206,7 +1206,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     if (Level.NetMode == NM_Standalone && player.bClearReceivedDisplay)
         player.ClearReceivedItems();
 
-    if (Inventory != None && (!bDblClickStart || player.inHand != None))
+    if (!bDblClickStart || player.inHand != None)
     {
         SearchCarcass(player,self,_bPickedSomethingUp,_bSuppressEmptyMessage,_bFoundInvalid,_bFoundSomething);
         bPickedSomethingUp = _bPickedSomethingUp == 1;
@@ -1216,7 +1216,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     }
 
     //SARGE: Additionally search any nearby carcasses
-    if (player.bSearchCorpsePiles && !bDblClickStart)
+    if (player.bSearchCorpsePiles && (!bDblClickStart || player.inHand != None))
     {
         foreach AllActors(class'DeusExCarcass',nearby)
         {
@@ -1726,6 +1726,7 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                     // check if the pawn is allowed to pick this up
                     if ((player.Inventory == None) || (Level.Game.PickupQuery(player, item)))
                     {
+                        previousFrobTarget = player.FrobTarget;
                         player.FrobTarget = item;
                         if (!bDeclined)
                         {
@@ -1770,6 +1771,7 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                                 bAddBad = true;
                             }
                         }
+                        player.FrobTarget = previousFrobTarget;
                     }
                     else
                     {
