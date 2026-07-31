@@ -67,7 +67,7 @@ function OutfitAddPartReference(string partID) {}
 function Unlock(string id, optional bool bShowMessage) {}
 
 //Function called by spawners
-function SpawnerPickup(OutfitSpawner S) {}
+function SpawnerPickup(OutfitSpawner S, optional bool bAutoEquip) {}
 
 //Force-apply current outfit
 function ApplyCurrentOutfit() {}

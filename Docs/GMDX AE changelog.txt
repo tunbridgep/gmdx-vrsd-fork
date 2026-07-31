@@ -3,9 +3,14 @@
 New Features:
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
 - If an enemy dropped a weapon, searching their carcass will also include their dropped weapon.
+- Ballistic Vests and HazMat Suits will now be auto-equipped when picked up if nothing else is equipped.
+- Left-Clicking can now be used to instantly equip Augmentique outfits found in the world.
+- Added sounds for picking up Collectibles.
+- Added sounds when acquiring Traumas.
 
 Bug Fixes:
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
+- Various fixes for red borders when hovering over some items in certain circumstances.
 - Fixed Female JC not displaying overlays in the Augmentation screen when Augs are installed.
 - Fixed mismatched texture on the Combat Knife (thanks Kisskills, original mod here: https://www.nexusmods.com/deusex/mods/92)
     - Also fixed the same issue on all Augmentique knife skins.
@@ -13,11 +18,23 @@ Bug Fixes:
 - Removed the "Toggle Fullscreen" Display menu option as it doesn't work properly with Kenties Deus Exe.
     - It's been replaced with a "Toggle Coronas" setting.
 - Minor typo and text fixes
+- Minor fixes for Weapon Skin selection.
+- Minor Music loop fixes, now it should update more reliably.
+- Fixed "Drop Item" and "Use Secondary" keybindings not being reflected in the Inventory screen.
+- Fixed Ammo Display not showing Cyan for full weapons in some cases.
 - Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 - Fixed the player taking damage after moving down ramps at high framerates.
 - Minor carcass searching fixes.
+- Fixed GEP Gun scope being disabled when fired rockets leave the players line of sight.
+- Fixed climbing ladders at different speeds based on whether you're running or walking.
+- Fixed Randomized Weapon Mods not reflecting the physics state of the replaced mods when creating replacement mods.
+- Fixed Traumas list not properly updating when curing using a a MedBot
+- Fixed hidden codes (such as Maggie Chow's "insurgent" password) being autofilled.
+- Fixed Grenade Traps not actually working due to wrong cooldown timers.
 
 Misc Changes:
+- The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
+- It is now significantly less likely to be unable to drop a carcass when in a tight space, such as a vent.
 - Minor internal changes to make translations easier, such as localizing a few strings.
 - Disabled robots will no longer set off proximity grenades.
 - Disabled robots will now be destroyed when hit by movers, rather than blocking or resetting the mover.
@@ -27,10 +44,26 @@ Misc Changes:
 - Slightly decreased enemy footstep detection on higher difficulties.
 - Slightly increased swimming stamina requirements in Hardcore mode.
 - NPCs killed by poison gas and other non-bloody methods will no longer leave blood pools.
+- Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
+- Added Pride outfit.
 
 Map Changes:
+- 03_NYC_BatteryPark:
+    - Harley Filben now properly responds if you obtain the Mole People password from Curly's journal.
+- 04_NYC_*:
+    - Fixed being able to take Paul's corpse to the MJ12 Prison map.
+    - Fixed Paul being registered as alive after being killed in some circumstances.
+- 04_NYC_NSFHQ:
+    - Added a trigger for Paul to send an infolink informing you that you need to align the dishes before sending the transmission.
 - 05_NYC_UNATCOMJ12LAB:
     - Removed an erroneous DataLink Trigger that was linking to a datalink that doesn't exist.
+- 06_HongKong_Helibase:
+    - Fixed not being able to interact with the button to raise the second helicopter bay elevator platform.
+- 06_HongKong_WanChai_Market:
+    - After uploading the Nanotech ROM from Versalife, Gordon Quick will be forcibly de-aggroed if he became hostile for whatever reason beforehand, allowing the triad ceremony to complete.
+- 06_HongKong_WanChai_Underworld:
+    - "Businesswoman" is now "Versalife Employee" after being interacted with
+    - "Russian Sailors" renamed to "Russian Sailor"
 
 1.22 (Hotfix Release):
 

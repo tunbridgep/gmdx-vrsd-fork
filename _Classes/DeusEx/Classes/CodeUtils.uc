@@ -36,15 +36,18 @@ static function bool CanAutofill(DeusExNote note)
     local int i;
     for (i = 0;i < ArrayCount(default.codeNotes);i++)
     {
-        if (CodeMatch(i,note) && default.codeNotes[i].AutofillMode != AUTOFILL_NONE)
+        if (CodeMatch(i,note,false) && default.codeNotes[i].AutofillMode != AUTOFILL_NONE)
             return true;
     }
     return false;
 }
 
-static function private bool CodeMatch(int index, DeusExNote note)
+static function private bool CodeMatch(int index, DeusExNote note, bool bAllowHidden)
 {
     local bool bCheck1, bCheck2;
+
+    if (default.codeNotes[index].bHidden && !bAllowHidden)
+        return false;
 
     //Check that the note name is valid
     bCheck1 = caps(default.codeNotes[index].noteName) == caps(string(note.textTag))
@@ -74,7 +77,7 @@ static function GetCodeFromNote(DeusExNote note, int codeNumber, out string code
     {
         for (i = 0;i < ArrayCount(default.codeNotes);i++)
         {
-            if (CodeMatch(i,note))
+            if (CodeMatch(i,note,false))
             {
                 //We need to store ALL the codes, so we can
                 //go through and find one that matches exactly.
@@ -187,7 +190,7 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
 
                 //Datacube/email/etc notes need to be linked manually
                 //P.DebugLog("Compare: " $ caps(string(note.textTag)) @ caps(default.codeNotes[i].noteName));
-                if (CodeMatch(i,note))
+                if (CodeMatch(i,note,true))
                 {
                     if (!bNoHidden || !default.codeNotes[i].bHidden)
                     {

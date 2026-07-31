@@ -79,6 +79,7 @@ simulated function bool UpdateInfo(Object winObject)
 	if (winInfo == None)
 		return False;
 
+	winInfo.Clear();
 	winInfo.SetTitle(itemName);
 	winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
 

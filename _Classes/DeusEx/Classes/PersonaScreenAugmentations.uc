@@ -267,6 +267,7 @@ function CreateInfoWindow()
     winClient.SetClientTexture(1,Texture'GMDXSFX.UI.AugInterface2');
     //winClient.SetClientTexture(2,Texture'GMDXSFX.UI.AugInterface3');
     winInfo.bStylization2 = True;
+	winInfo.Clear();
 	winInfo.SetTitle(" " $ titString);
 	winInfo.AddLine();
     winInfo.SetText(" " $ overviewLabel);
@@ -331,6 +332,7 @@ local int timeRem;
     if (!augButtonPressed && !winInfo.bMedBotCall)
     {
     winInfo.bStylization2 = True;
+	winInfo.Clear();
 	winInfo.SetTitle(" " $ titString);
     winInfo.AddLine();
     winInfo.SetText(" " $ overviewLabel);

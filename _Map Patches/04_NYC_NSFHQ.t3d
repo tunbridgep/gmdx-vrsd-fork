@@ -122766,4 +122766,37 @@ Begin Actor Class=PrecipitationShelter Name=PrecipitationShelter2
     bSelected=True
     Name=PrecipitationShelter2
 End Actor
+Begin Actor Class=FlagTrigger Name=FlagTrigger13
+    FlagName=CanSendSignal
+    flagValue=False
+    bSetFlag=False
+    bTrigger=True
+    flagExpiration=16
+    bDynamicLight=True
+    LastRenderTime=338.199615
+    DistanceFromPlayer=5806.281738
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SendIt
+    Event=SignalSendFailed
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo4',iLeaf=1537,ZoneNumber=4)
+    Location=(X=49.023865,Y=343.616882,Z=1064.096436)
+    OldLocation=(X=132.023865,Y=494.616882,Z=1064.096436)
+    bCollideActors=False
+    Name=FlagTrigger13
+End Actor
+Begin Actor Class=DataLinkTrigger Name=DataLinkTrigger6
+    datalinkTag=DL_PaulGoodJob
+    bDynamicLight=True
+    LastRenderTime=338.199615
+    DistanceFromPlayer=5805.691895
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SignalSendFailed
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo4',iLeaf=1586,ZoneNumber=4)
+    Location=(X=54.759430,Y=346.214417,Z=1015.930725)
+    OldLocation=(X=135.759430,Y=490.214417,Z=1015.930725)
+    bSelected=True
+    CollisionRadius=40.000000
+    bCollideActors=False
+    Name=DataLinkTrigger6
+End Actor
 End Map

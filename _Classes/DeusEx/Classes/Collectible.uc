@@ -7,6 +7,8 @@ class Collectible extends DeusExDecoration abstract;
 var localized string FoundString;
 const maxCollectibles = 13;
 
+var const Sound PickupSound;
+
 //Destroy upon pickup.
 //Taken from NanoKey.uc
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
@@ -15,6 +17,9 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 
     frobber.collectiblesFound++;
     msg = sprintf(FoundString,frobber.collectiblesFound,maxCollectibles);
+	
+    //PlaySound(PickupSound,SLOT_Interact,2.0,,1024);
+    frobber.PlaySound(PickupSound,SLOT_None);
 
     frobber.ClientMessage(class'DeusExPickup'.default.PickupMessage @ itemArticle @ itemName @ msg, 'Pickup');
     Destroy();
@@ -40,4 +45,5 @@ defaultproperties
     Mass=15.000000
     Buoyancy=15.000000
     Physics=PHYS_Falling
+    PickupSound=Sound'RSDCrap.Pickup.CollectiblePickup'
 }

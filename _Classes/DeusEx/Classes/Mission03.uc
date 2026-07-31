@@ -395,6 +395,12 @@ function Timer()
 				flags.SetBool('JugHeadGangDefeated', True,, 4);
 		}
 	}
+	else if (localURL == "03_NYC_BATTERYPARK")
+    {
+        //SARGE: Make Harley Filben respect if you've read the right note
+		if (player.HasNote('03_Book06'))
+            flags.SetBool('PlayerKnowsPhoneCode',true);
+    }
 }
 
 // ----------------------------------------------------------------------

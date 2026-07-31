@@ -328,7 +328,6 @@ function CreateGeneralPerkButtons()
 	local DeusExPlayer player;
     local Perk currPerk;
 
-	Clear();
 	SetTitle(GeneralPerksTitleText);
 
     player = DeusExPlayer(GetPlayerPawn());
@@ -487,7 +486,6 @@ function bool ButtonActivated( Window buttonPressed )
 // ----------------------------------------------------------------------
 function SetTitle(String newTitle)
 {
-	Clear();
 	winTitle.SetText(newTitle);
 	PassedSkillName = newTitle; //Totalitarian: perks
 }

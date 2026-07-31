@@ -240,6 +240,18 @@ function FirstFrame()
 			flags.SetBool('MS_InventoryRemoved', True,, 6);
 		}
 
+        //SARGE: Remove the players carried decoration and carcass
+        if (player.carriedDecoration != None)
+        {
+            player.carriedDecoration.Destroy();
+            player.carriedDecoration = none;
+        }
+        if (POVCorpse(player.InHand) != None)
+        {
+            player.inHand.Destroy();
+            player.PutInHand(None);
+        }
+
         //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
         //then reduce the killswitch by 3 hours
         if (player.bRealKillswitch && flags.GetBool('GMDXKillswitchSet') && !flags.GetBool('GMDXKillswitchReduced1'))

@@ -40,11 +40,27 @@ function bool ButtonActivated(Window buttonPressed)
 
 function MedBotCurePlayer()
 {
+    local int i;
 	medBot.CurePlayer(player);
 	UpdateMedBotDisplay();
 	//UpdateRegionWindows();
+    
+    //Update all wound buttons
+    for(i = 0;i < ArrayCount(traumaButtons);i++)
+    {
+        Log("traumaButtons[i]: " $ traumaButtons[i]);
+        if (traumaButtons[i] != None)
+            traumaButtons[i].RefreshWoundInfo();
+    }
+    
 	
 	player.HealScreenEffect(8.0, false);
+}
+
+//Dirty Hack
+function bool IsPlayerDamaged()
+{
+    return IsPlayerWounded();
 }
 
 // ----------------------------------------------------------------------
@@ -60,6 +76,7 @@ function EnableButtons()
 	
     if (HUDMedBotNavBarWindow(winNavBar).btnWounds != None)
         HUDMedBotNavBarWindow(winNavBar).btnWounds.SetSensitivity(False);
+    
 }
 
 // ----------------------------------------------------------------------
@@ -105,7 +122,7 @@ defaultproperties
     clientTextures(3)=Texture'RSDCrap.UserInterface.HUDMedBotTraumaBackground_4'
     clientTextures(4)=Texture'RSDCrap.UserInterface.HUDMedBotTraumaBackground_5'
      
-     HealthInfoTextLabel="The MedBot will cure all traumas currently sustained. Trauma progress is also completely reset, preventing them from being acquired again for some time."
+     HealthInfoTextLabel="The MedBot will cure all traumas currently sustained. Progress is also reset, preventing them from being acquired again for some time."
      MedBotReadyLabel="|nThe MedBot is Ready, you may now be Cured."
-     MedBotYouAreHealed=""
+     MedBotYouAreHealed="|nYou are not currently suffering from any Traumas."
 }

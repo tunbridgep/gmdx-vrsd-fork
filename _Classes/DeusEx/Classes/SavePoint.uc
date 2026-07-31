@@ -8,7 +8,6 @@ var int Tcount;
 var DeusExPlayer player;
 var localized String msgDeducted;
 var localized String msgNotEnough;
-var localized String msgSaveName;
 
 var() Name requiredFlag;
 
@@ -68,7 +67,7 @@ State QuickSaver
         }
         bUsedSavePoint=true;
         bHighlight=false;
-        player.DoSaveGame(0,sprintf(msgSaveName,player.retInfo(),player.TruePlayerName));
+        player.DoSaveGame(0);
         //player.QuickSave2(sprintf(msgSaveName,player.retInfo(),player.TruePlayerName),true); //SARGE: This needs fixing
         PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
         GotoState('');
@@ -84,7 +83,6 @@ defaultproperties
      Tcount=100
      msgDeducted="100 credits deducted from your account"
      msgNotEnough="100 credits required"
-     msgSaveName="%s [%s]"
      numThings=0
      bFlammable=False
      bHighlight=False

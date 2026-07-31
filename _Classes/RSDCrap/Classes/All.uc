@@ -466,7 +466,10 @@ class All expands Object
 // New Sounds
 #exec AUDIO IMPORT FILE="Sounds\PistolCaseSound.wav"			NAME="PistolCaseSound"			GROUP="Weapons"
 #exec AUDIO IMPORT FILE="Sounds\ShellCaseSound.wav"			NAME="ShellCaseSound"			GROUP="Weapons"
+#exec AUDIO IMPORT FILE="Sounds\Trauma.wav"		        	NAME="Trauma"		        	GROUP="Misc"
 
+//Pickup and Use Sounds
+#exec AUDIO IMPORT FILE="Sounds\CollectiblePickup.wav"			NAME="CollectiblePickup"			GROUP="Pickup"
 #exec AUDIO IMPORT FILE="Sounds\BallisticVestEquip.wav"			NAME="BallisticVestEquip"			GROUP="Pickup"
 #exec AUDIO IMPORT FILE="Sounds\BallisticVestUnequip.wav"			NAME="BallisticVestUnequip"			GROUP="Pickup"
 #exec AUDIO IMPORT FILE="Sounds\HazmatSuitEquip.wav"			NAME="HazmatSuitEquip"			GROUP="Pickup"

@@ -135,6 +135,8 @@ replication
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    local OutfitSpawner S;
+    local int index;
     /*
     //Don't allow frobbing while swimming, and only allow objects grabbable via left click
     if (bLeftGrab)
@@ -149,8 +151,19 @@ function bool DoLeftFrob(DeusExPlayer frobber)
             return false;
         }
     }
+
     else*/ if (!bInvincible && frobber.SelectMeleePriority(minDamageThreshold))
         return false;
+
+    //SARGE: Do this here, since we would otherwise need GMDX Exclusive code inside the OutfitSpawner class,
+    //which needs to be project-agnostic as much as possible
+    if (IsA('OutfitSpawner'))
+    {
+        S = OutfitSpawner(Self);
+        S.outfitManager.spawnerPickup(S,true);
+        return false;
+    }
+
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)

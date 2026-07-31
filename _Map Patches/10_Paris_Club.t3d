@@ -62019,6 +62019,17 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner16
     OldLocation=(X=-1915.055664,Y=-60.919178,Z=-47.899994)
     Name=OutfitSpawner16
 End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner0
+    Id="pride"
+    LastRenderTime=241.607162
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1708,ZoneNumber=12)
+    Location=(X=-256.274994,Y=464.725006,Z=6.099939)
+    Rotation=(Yaw=18546)
+    OldLocation=(X=-267.274994,Y=468.725006,Z=6.099939)
+    Name=OutfitSpawner0
+End Actor
 Begin Actor Class=LDDPAchilleS Name=LDDPAchille0
     Orders=Sitting
     InitialAlliances(0)=(AllianceName=clubstaff,AllianceLevel=1.000000)

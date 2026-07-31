@@ -133037,6 +133037,7 @@ Begin Actor Class=Switch1 Name=Switch1
     Name=Switch1
 End Actor
 Begin Actor Class=Switch1 Name=Switch2
+    bSkipLOSFrobCheck=True
     LastRenderTime=8.551986
     DistanceFromPlayer=970.893250
     Level=LevelInfo'MyLevel.LevelInfo0'

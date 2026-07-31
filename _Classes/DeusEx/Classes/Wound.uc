@@ -24,6 +24,8 @@ var const float woundData[4];           //SARGE: Allow assigning data to wounds
 
 var const bool bNoDisplay;              //SARGE: Don't display in the list. It's essentially hidden.
 
+var const Sound WoundSound;             //SARGE: Play a sound when we get a trauma.
+
 function int GetRequiredMedkits()
 {
     if (bHasIt)
@@ -73,6 +75,7 @@ function AddWoundDamage(int amount)
 function WoundAdded()
 {
     player.ClientMessage(sprintf(WoundAfflicted,WoundName));
+    player.PlaySound(WoundSound,SLOT_None);
 }
 
 function WoundRemoved()
@@ -104,12 +107,13 @@ function UpdateInfo(PersonaInfoWindow winInfo)
 defaultproperties
 {
      WoundIcon=Texture'DeusExUI.UserInterface.SkillIconMedicine'
+     WoundSound=Sound'RSDCrap.Misc.Trauma'
      WoundName="Default Trauma."
      WoundDescription="Report this as a bug!"
      WoundPoints="Current Wound Progress: %d/%d"
      WoundAfflicted="You are suffering from %s"
      requiredMedkits=1
-     DamageThreshold=450
+     DamageThreshold=350
      bHidden=True
      bTravel=True
 }

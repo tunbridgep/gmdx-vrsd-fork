@@ -20,9 +20,6 @@ function FirstFrame()
 	local int count;
     local Phone P;
 
-	if(flags.GetBool('PaulDenton_Dead') && !flags.GetBool('TalkedToPaulAfterMessage')) //== Paul CANNOT die before the raid, period
-		flags.SetBool('PaulDenton_Dead',False,, 16);  //CyberP: now checks until talked to paul after message
-
 	if(flags.GetBool('PlayerBailedOutWindow') && !flags.GetBool('PaulDenton_Dead')) //CyberP: only check if paul isn't already dead.
 	{
 		if(flags.GetBool('M04_Hotel_Cleared'))
