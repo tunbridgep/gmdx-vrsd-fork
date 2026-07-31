@@ -1466,10 +1466,8 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
             //Always unrotate weapons. Hopefully fixes weapons with wrong icon
             W.Unrotate();
 
-            if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
-            {
+            if (!bSearched && W != droppedWeapon)     //Sarge: Attempted fix for ammo dupe bug
                 W.SetDroppedAmmoCount(PickupAmmoCount);
-            }
         }
 
         if (item != None)
