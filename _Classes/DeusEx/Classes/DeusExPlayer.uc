@@ -9786,7 +9786,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     
             //Auto-equip chargedpickups if we have nothing else equipped
             cp = ChargedPickup(FrobTarget);
-            if (cp != None && !bLeftClicked && !cp.bUnequipWhenDrained && bAutoUseChargedPickups && cp.IsTorsoFree())
+            if (cp.Owner == self && cp != None && !bLeftClicked && !cp.bUnequipWhenDrained && bAutoUseChargedPickups && cp.IsTorsoFree())
                 cp.Activate();
         }
 	}
