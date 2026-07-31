@@ -47,6 +47,9 @@ Misc Changes:
 Map Changes:
 - 03_NYC_BatteryPark:
     - Harley Filben now properly responds if you obtain the Mole People password from Curly's journal.
+- 04_NYC_*:
+    - Fixed being able to take Paul's corpse to the MJ12 Prison map.
+    - Fixed Paul being registered as alive after being killed in some circumstances.
 - 04_NYC_NSFHQ:
     - Added a trigger for Paul to send an infolink informing you that you need to align the dishes before sending the transmission.
 - 05_NYC_UNATCOMJ12LAB:
