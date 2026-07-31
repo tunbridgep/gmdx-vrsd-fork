@@ -18,6 +18,7 @@ function Trigger( actor Other, pawn EventInstigator )
     {
         super.Trigger(Other, EventInstigator);
         info.SongAmbientSection = SongSection;
+        class'MusicPlayer'.default.currentLevelSection = SongSection;
     }
     else if (Song != Level.Song)
     {
