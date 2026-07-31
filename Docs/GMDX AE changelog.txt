@@ -56,6 +56,8 @@ Map Changes:
     - Removed an erroneous DataLink Trigger that was linking to a datalink that doesn't exist.
 - 06_HongKong_Helibase:
     - Fixed not being able to interact with the button to raise the second helicopter bay elevator platform.
+- 06_HongKong_WanChai_Market:
+    - After uploading the Nanotech ROM from Versalife, Gordon Quick will be forcibly de-aggroed if he became hostile for whatever reason beforehand, allowing the triad ceremony to complete.
 - 06_HongKong_WanChai_Underworld:
     - "Businesswoman" is now "Versalife Employee" after being interacted with
     - "Russian Sailors" renamed to "Russian Sailor"

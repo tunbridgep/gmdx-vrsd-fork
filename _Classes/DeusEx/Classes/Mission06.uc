@@ -365,6 +365,7 @@ function Timer()
 	local Keypad1 pad;
 	local BreakableGlass glassAT;
     local TriadRedArrow TRA;
+    local GordonQuick GQ;
 
 	Super.Timer();
 
@@ -590,6 +591,21 @@ function Timer()
 		if (flags.GetBool('Have_ROM') &&
 			!flags.GetBool('TriadCeremony_Played')) //CyberP: failsafe
 			   flags.SetBool('CeremonyReadyToBegin', True,True);
+
+        //SARGE: Make Gordon Quick non-hostile if he aggro'd for whatever reason
+		if (flags.GetBool('Have_ROM') && !flags.GetBool('GMDXGordonQuickAggroReset'))
+        {
+			foreach AllActors(class'GordonQuick', GQ)
+            {
+			    GQ.bHateShot=False;
+			    GQ.bHateDistress=False;
+                GQ.ChangeAlly('Player', 1, True);
+
+                if (GQ.Enemy == player)
+                    GQ.SetEnemy(None, GQ.EnemyLastSeen, true);
+            }
+            flags.SetBool('GMDXGordonQuickAggroReset', True,, 8);
+        }
 	}
 	else if (localURL == "06_HONGKONG_HELIBASE")
 	{
