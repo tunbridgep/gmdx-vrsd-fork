@@ -28,6 +28,7 @@ Bug Fixes:
 - Fixed Randomized Weapon Mods not reflecting the physics state of the replaced mods when creating replacement mods.
 - Fixed Traumas list not properly updating when curing using a a MedBot
 - Fixed hidden codes (such as Maggie Chow's "insurgent" password) being autofilled.
+- Fixed Grenade Traps not actually working due to wrong cooldown timers.
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
