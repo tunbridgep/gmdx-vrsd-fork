@@ -64,5 +64,5 @@ defaultproperties
      Mass=40.000000
      Buoyancy=30.000000
 	 bHDTPFailsafe=False
-     ShenanigansText="%d Social Credit Points Deducted!!!"
+     ShenanigansText="%d Social Credit Points Deducted"
 }
