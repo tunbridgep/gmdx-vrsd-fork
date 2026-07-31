@@ -27,6 +27,7 @@ Bug Fixes:
 - Fixed climbing ladders at different speeds based on whether you're running or walking.
 - Fixed Randomized Weapon Mods not reflecting the physics state of the replaced mods when creating replacement mods.
 - Fixed Traumas list not properly updating when curing using a a MedBot
+- Fixed hidden codes (such as Maggie Chow's "insurgent" password) being autofilled.
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
