@@ -129,6 +129,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     local int capacity, myammo;
     local Inventory Inv;
     local Inventory playerInv;
+    local string _dontUse; //Used to hold an out variable that we don't use.
     
     //Aug Can stuff
     local AugmentationCannister A;
@@ -203,9 +204,9 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         {
             //Do Nothing
         }
-        
-        //Stack is full
-        else if (Inv.IsA('DeusExPickup') && player.GetInventoryCount(Inv.class.name) >= DeusExPickup(Inv).RetMaxCopies() && DeusExPickup(Inv).bCanHaveMultipleCopies)
+
+        //Stack is full or we don't have space
+        else if ((player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True)) || (Inv.IsA('DeusExPickup') && player.GetInventoryCount(Inv.class.name) >= DeusExPickup(Inv).RetMaxCopies() && DeusExPickup(Inv).bCanHaveMultipleCopies))
         {
             //Stack is full and we can recharge
             if (Inv.IsA('ChargedPickup'))
@@ -221,6 +222,20 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
 
             return colBadAug;
         }
+        
+        
+        //Declined
+        else if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1 && player.FindInventoryType(Inv.Class) == None)
+        {
+            //If it's a food item and we can use it where it stands, then show it blue instead
+            if (Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player,_dontUse))
+                return colWireless;
+            return colBadAug;
+        }
+
+        //Can carry only 1
+        else if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
+            return colBadAug;
         
         //Weapons and Ammo show BLUE when able to be patially looted, and Red if they can't be looted at all.
         else if (AM != None)
@@ -257,18 +272,6 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
                     return colWireless;
             }
         }
-        
-        //Declined
-        else if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
-            return colBadAug;
-
-        //Not enough space
-        else if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
-            return colBadAug;
-
-        //Can carry only 1
-        else if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
-            return colBadAug;
     }
 
 

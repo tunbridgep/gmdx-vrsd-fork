@@ -4,10 +4,12 @@
 class ScriptedGrenadeTrigger extends Trigger;
 
 var ProjectileGenerator ProjGen;
-var(Trigger) bool bNoMoverCheck;
-var(Trigger) float CheckHumanRadius;
-var(Trigger) float CheckMoverRadius;
-var(Trigger) float CheckGasRadius;
+var() bool bNoMoverCheck;
+var() float CheckHumanRadius;
+var() float CheckMoverRadius;
+var() float CheckGasRadius;
+var() float ThrowChance;
+var() float CooldownTime;
 
 var DeusExPlayer player;            //SARGE: Now we run it on a timer, rather than being per touch
 var GasGrenade GG;                  //The actual grenade we're using as a source.
@@ -51,7 +53,8 @@ function TriggerGrenade(bool bGasOnly)
 
     TP = ThrownProjectile(class'SpawnUtils'.static.SpawnSafe(Type,GG,'SpawnedGrenade',GG.Location,GG.Rotation));
     TP.Velocity = 1200.0 * Vector(GG.Rotation);
-    cooldown = Level.TimeSeconds + 10;
+    cooldown = Level.TimeSeconds + CooldownTime;
+    ThrowChance = default.ThrowChance;
     player.DebugMessage("ScriptedGrenadeTrigger - End");
 }
 
@@ -66,8 +69,11 @@ function TriggerCheck()
     player.DebugMessage("ScriptedGrenadeTrigger Check");
 		
     //First check Cooldown
-    if (cooldown < Level.TimeSeconds)
+    if (cooldown >= Level.TimeSeconds)
         return;
+
+
+    //player.DebugMessage("ScriptedGrenadeTrigger Check: Cooldown Passed");
 
     //Then, check if any movers are in the way
     if (!bNoMoverCheck)
@@ -93,6 +99,14 @@ function TriggerCheck()
         player.DebugMessage("State:" @ HM.GetStateName());
         if ((HM.IsInState('Attacking') || HM.IsInState('Seeking')) && !HM.IsA('MJ12Commando')) //SARGE: Added Seeking
         {
+            //Then check chance, and increase if it fails.
+            if (FRand() >= ThrowChance)
+            {
+                ThrowChance += 0.025;
+                player.DebugMessage("ScriptedGrenadeTrigger roll failed. Chance increased to " $ ThrowChance);
+                return;
+            }
+
             bGasOnly = HM.IsA('Terrorist');
             HM.PlayAnimPivot('Attack',,0.2);
             player.DebugMessage("ScriptedGrenadeTrigger - Triggering");
@@ -131,7 +145,7 @@ function Touch(Actor Other)    //Scripted hackage!!!
         player = DeusExPlayer(Other);
         player.DebugMessage("ScriptedGrenadeTrigger Start");
 		
-        if(player != None && FRand() < 0.15)
+        if(player != None)
             TriggerCheck();
 
         //This part was also copied from Trigger.uc
@@ -150,4 +164,6 @@ defaultproperties
      CheckGasRadius=1024.000000
      ReTriggerDelay=1
      RepeatTriggerTime=1
+     ThrowChance=0.15
+     CooldownTime=10
 }

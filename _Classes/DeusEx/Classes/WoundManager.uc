@@ -73,6 +73,10 @@ function private SetupWound(class<Wound> woundClass)
         woundsList[numWounds++] = woundInstance;
         PlayerAttached.DebugMessage("Creating new wound: " $ woundClass);
     }
+
+    //Hardcore has lower thresholds
+    //if (PlayerAttached.bHardCoreMode)
+    //    woundInstance.DamageThreshold = woundInstance.default.DamageThreshold * 0.75;
     
     woundInstance.player = PlayerAttached;
 }

@@ -1452,6 +1452,7 @@ function bool checkItemLootTable(Inventory item, LootTable LT)                  
     local class<Inventory> itemClass;
     local vector itemLoc;
     local rotator itemRot;
+    local EPhysics itemPhys;
 
     itemClass = item.Class;
 
@@ -1473,9 +1474,10 @@ function bool checkItemLootTable(Inventory item, LootTable LT)                  
             {
                 itemLoc=item.Location;
                 itemRot=item.Rotation;
+                itemPhys=item.Physics;                                          //SARGE: Added.
                 item.Destroy();
-                item = Spawn(LT.entries[i].item,,,itemLoc);
-                item.SetRotation(itemRot);
+                item = Spawn(LT.entries[i].item,,,itemLoc,itemRot);
+                item.SetPhysics(itemPhys);
                 break;
             }
         }

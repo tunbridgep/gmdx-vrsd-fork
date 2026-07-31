@@ -238,11 +238,11 @@ event DrawWindow(GC gc)
 			else
 				gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoInClip);
 
-			// if there are no clips (or a partial clip) remaining, color me red
-			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
-				gc.SetTextColor(colAmmoLowText);
-			else if (bMaxAmmo) //SARGE: Show ammo in Yellow at max ammo
+			if (bMaxAmmo) //SARGE: Show ammo in Yellow at max ammo
                 gc.SetTextColor(colAmmoTextMax);
+			// if there are no clips (or a partial clip) remaining, color me red
+			else if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
+				gc.SetTextColor(colAmmoLowText);
 			else
                 gc.SetTextColor(colAmmoText);
 

@@ -1048,6 +1048,12 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
+var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
+
+var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
+
+var const localized string msgSaveName;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -2941,6 +2947,11 @@ function GameDirectory GetSaveGameDirectory()
 	return saveDir;
 }
 
+function string GetDefaultSaveName()
+{
+    return sprintf(msgSaveName,retInfo(),TruePlayerName);
+}
+
 //SARGE: We can't modify the native function, so do this here, and then call it
 function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
@@ -3009,6 +3020,10 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         dataLinkPlay.AbortAndSaveHistory();
 
     //root.hide();
+
+    if (saveDesc == "")
+        saveDesc = GetDefaultSaveName();
+
     root.GenerateSnapshot(True);
     DebugLog("Save Game: " $ saveIndex @ saveDesc);
     SaveGame(saveIndex, saveDesc);
@@ -7143,7 +7158,9 @@ state PlayerWalking
 
       if (Physics == PHYS_Walking && (iStaminaSystem > 0 || bHardCoreMode))   //CyberP: stamina system
       {
-      if (bIsWalking == false && !IsCrouching() && (Velocity.X != 0 || Velocity.Y != 0 ))
+      //SARGE: Added bOnLadder check so that we use stamina when on ladders regardless of speed,
+      //since ladder climbing limits us to walking speed regardless.
+      if (((bIsWalking == false && !IsCrouching()) || bOnLadder) && (Velocity.X != 0 || Velocity.Y != 0 ))
 	  {
 	    /*if (bHardCoreMode)                                                    //RSD: Generalizing this a bit
 		swimTimer -= deltaTime*1.3;
@@ -9519,6 +9536,8 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local WeaponNanoSword dts;
     local bool bDestroy;
     local string source;
+    local ChargedPickup cp;
+    local bool bTransfer;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -9531,12 +9550,19 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //AUGMENTIQUE: Handle weapon skin changes.
     if (DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
     {
+        //SARGE: GMDX Exclusive Dirty hack to show the WPN SKIN when picking a weapon up.
+        //if (/*FromCorpse == None && */!WeaponSkillManager.IsUnlocked(DeusExWeapon(FrobTarget)))
+            //WeaponSkinManager.DisplayReceivedIcon(self);
+            //DeusExRootWindow(rootWindow).hud.receivedItems.AddGenericIcon("", , count, bDeclined, bNoGroup, overrideTexture);
         WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget));
-        WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
+        bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
 
         //GMDX Exclusive Code
-        if (DeusExWeapon(Weapon) != None)
+        if (bTransfer)
+        {
             DeusExWeapon(Weapon).UpdateHDTPSettings();
+            Weapon.PlaySound(DeusExWeapon(Weapon).CopyModsSound,SLOT_None,0.8);
+        }
     }
 
     //SARGE: Set the source of the interaction (used by the HUD Display)
@@ -9757,6 +9783,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                     DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
                 }
             }
+    
+            //Auto-equip chargedpickups if we have nothing else equipped
+            cp = ChargedPickup(FrobTarget);
+            if (cp.Owner == self && cp != None && !bLeftClicked && !cp.bUnequipWhenDrained && bAutoUseChargedPickups && cp.IsTorsoFree())
+                cp.Activate();
         }
 	}
 
@@ -11679,6 +11710,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 	local bool bRemovedFromSlots;
 	local int  itemPosX, itemPosY, tex, i, amm;
     local Ammo ammoType;
+    local Vector loc;
 
 	bDropped = True;
 
@@ -11978,11 +12010,28 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 		                            PlayAnim('Attack',,0.1);
 								}
 							}
-							else
+                            else
                             {
-                                ClientMessage(CannotDropHere);
-								carc.bHidden = True;
-                                carc.Destroy();
+                                //SARGE: Allow dropping carcasses at our feet
+                                if (bAlwaysDropCarcasses)
+                                {
+                                    loc = Location;
+                                    loc.z -= CollisionHeight / 2;
+                                    loc.z -= carc.CollisionHeight / 2;
+                                    carc.bCollideWorld = false;
+                                    carc.SetLocation(loc);
+                                    carc.bCollideWorld = true;
+                                    SetInHandPending(None);
+                                    item.Destroy();
+                                    item = None;
+                                    DebugMessage("Dropped at feet");
+                                }
+                                else
+                                {
+                                    ClientMessage(CannotDropHere);
+                                    carc.bHidden = True;
+                                    carc.Destroy();
+                                }
                             }
 						}
 					}
@@ -18355,6 +18404,7 @@ exec function AllHealth()
 		return;
 
 	RestoreAllHealth();
+    HealAllWounds();
 }
 
 // ----------------------------------------------------------------------
@@ -18378,6 +18428,12 @@ function RestoreAllHealth()
 	HealthArmLeft = default.HealthArmLeft;
 	HealthArmRight = default.HealthArmRight;
 	Health = default.Health;
+}
+
+function HealAllWounds()
+{
+    if (WoundManager != None)
+        WoundManager.ClearAllWounds();
 }
 
 // ----------------------------------------------------------------------
@@ -20832,4 +20888,7 @@ defaultproperties
      precipMaxDensity=14.0
      precipMinDensity=0.0
      bPickupsUseFOV=true
+     bAutoUseChargedPickups=true
+     bAlwaysDropCarcasses=true
+     msgSaveName="%s [%s]"
 }

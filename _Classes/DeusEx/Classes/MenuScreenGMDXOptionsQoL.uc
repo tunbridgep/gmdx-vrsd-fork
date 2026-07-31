@@ -109,7 +109,7 @@ defaultproperties
      items(54)=(HelpText="If enabled, left-clicking with nothing targeted will unholster your last item.",actionText="Interaction: Left-Click Unholstering",variable="bLeftClickUnholster");
      items(55)=(HelpText="Append item counts to item pickup text, if more than 1 item is in the stack.",actionText="Interaction: Show Item Count Labels",variable="bShowItemPickupCounts",defaultValue=1);
      items(56)=(HelpText="Append [Searched] text to corpses and show a blue border when they are interacted with.",actionText="Tool Windows: Show Carcass Searched State",variable="iSearchedCorpseText",valueText1="Text Only",valueText2="Border Only",valueText3="Border and Text",defaultValue=3);
-     items(57)=(HelpText="With an item in your hand, Right-Clicking will pull out Lockpicks and Multitools, similar to Revision, and will also go back to previous item. Left-Clicking works when hands are empty.",actionText="Interaction: Right-Click Tool Selection.",variable="bRightClickToolSelection");
+     items(57)=(HelpText="With an item in your hand, Right-Clicking will pull out Lockpicks and Multitools, similar to Revision, and will also go back to previous item. Left-Clicking works when hands are empty.",actionText="Interaction: Right-Click Tool Selection",variable="bRightClickToolSelection");
      items(58)=(HelpText="Loot will not be declined from corpses if the Walk/Run key is held.",actionText="Interaction: Smart Declining",variable="bSmartDecline",defaultValue=1);
      items(59)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
      items(60)=(HelpText="Changes lighting on some maps to reduce strobing and flickering.",actionText="Lighting: Lighting Accessibility",variable="bLightingAccessibility");
@@ -203,6 +203,8 @@ defaultproperties
      items(145)=(HelpText="When attempting to pick up an item for which you don't have inventory space, the pickup message will show the size of the item in grid squares.",actionText="HUD: Pickup Message Shows Size",variable="bFullInventoryMsgShowsSize",defaultValue=1)
      items(146)=(HelpText="Always show the Stamina bar, even when the Stamina system is disabled.",actionText="HUD: Always Show Stamina Bar",variable="bAlwaysShowStamina")
      items(148)=(HelpText="Sets viewmodel FOV. Requires the Alternate Weapon Offsets setting to be enabled.",actionText="HUD: Viewmodel FOV",consoleTarget="ViewmodelFOVManager",variable="weaponFOV",realValue0=60,realValue1=75,realValue2=80,realValue3=90,realValue4=100,realValue5=110,valueText0="60 FOV",valueText1="75 FOV",valueText2="80 FOV",valueText3="90 FOV",valueText4="100 FOV",valueText5="110 FOV",defaultValue=1)
+     items(149)=(HelpText="Automatically equip Ballistic Armor and HazMat Suits when picking them up if you don't have anything equipped.",actionText="Interaction: Auto-Use Armor Items",variable="bAutoUseChargedPickups",defaultValue=1)
+     items(150)=(HelpText="Drop carcasses at your feet when dropping would otherwise fail, such as in tight corridoors or vents.",actionText="Interaction: Always Drop Carcasses",variable="bAlwaysDropCarcasses",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

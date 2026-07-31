@@ -971,6 +971,7 @@ simulated function bool UpdateInfo(Object winObject)
 		return False;
 
     //Set title
+    winInfo.Clear();
 	winInfo.SetTitle(GetTitle(player));
 
     if (player != None)

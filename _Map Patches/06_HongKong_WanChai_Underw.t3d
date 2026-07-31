@@ -57233,7 +57233,7 @@ Begin Actor Class=Businesswoman1 Name=Businesswoman0
     OldLocation=(X=-1562.908203,Y=-1507.362183,Z=-148.899597)
     BindName="DrinkingWoman"
     BarkBindName="Woman"
-    UnfamiliarName="VersaLife Employee"
+    FamiliarName="VersaLife Employee"
     Name=Businesswoman0
 End Actor
 Begin Actor Class=Brush Name=Brush437
@@ -68910,7 +68910,7 @@ Begin Actor Class=Sailor Name=Sailor0
     BindName="BarSailor"
     BarkBindName="Man"
     FamiliarName="Boris"
-    UnfamiliarName="Russian Sailors"
+    UnfamiliarName="Russian Sailor"
     Name=Sailor0
 End Actor
 Begin Actor Class=Sailor Name=Sailor1
@@ -68948,7 +68948,7 @@ Begin Actor Class=Sailor Name=Sailor1
     BindName="BarSailor"
     BarkBindName="Man"
     FamiliarName="Vladimir"
-    UnfamiliarName="Russian Sailors"
+    UnfamiliarName="Russian Sailor"
     Name=Sailor1
 End Actor
 Begin Actor Class=Sailor Name=Sailor2
@@ -68994,7 +68994,7 @@ Begin Actor Class=Sailor Name=Sailor2
     OldLocation=(X=-1197.227905,Y=-2560.772217,Z=15.600208)
     BindName="BarSailor"
     FamiliarName="Dimitri"
-    UnfamiliarName="Russian Sailors"
+    UnfamiliarName="Russian Sailor"
     Name=Sailor2
 End Actor
 Begin Actor Class=Sailor Name=Sailor3
@@ -69041,7 +69041,7 @@ Begin Actor Class=Sailor Name=Sailor3
     OldLocation=(X=-1244.783325,Y=-2512.196777,Z=15.599751)
     BindName="BarSailor"
     FamiliarName="Ivan"
-    UnfamiliarName="Russian Sailors"
+    UnfamiliarName="Russian Sailor"
     Name=Sailor3
 End Actor
 Begin Actor Class=WineBottle Name=WineBottle33
@@ -81041,7 +81041,6 @@ Begin Actor Class=HKMilitary Name=HKMilitary1
     RotationRate=(Yaw=90000)
     BindName="MallGuard"
     BarkBindName="Man"
-    FamiliarName=""
     UnfamiliarName="Chinese Military Police"
     Name=HKMilitary1
 End Actor
@@ -81097,7 +81096,6 @@ Begin Actor Class=HKMilitary Name=HKMilitary2
     RotationRate=(Yaw=90000)
     BindName="MallGuard"
     BarkBindName="Man"
-    FamiliarName=""
     UnfamiliarName="Chinese Military Police"
     Name=HKMilitary2
 End Actor
@@ -81152,7 +81150,6 @@ Begin Actor Class=HKMilitary Name=HKMilitary3
     RotationRate=(Yaw=90000)
     BindName="MallGuard"
     BarkBindName="Man"
-    FamiliarName=""
     UnfamiliarName="Chinese Military Police"
     Name=HKMilitary3
 End Actor

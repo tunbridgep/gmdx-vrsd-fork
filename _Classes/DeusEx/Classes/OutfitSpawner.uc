@@ -10,8 +10,9 @@ var(Augmentique) const string LookupTexture;              //This lets us use tex
 
 var(Augmentique) const string LinkedObjects[5];           //If this object is removed for being invalid, all linked objects will also be removed
 
-var(Augmentique) const string requiredFlag;               //If required flag is set, then this flag must be true for the object to appear. Checked on a timer.
-var(Augmentique) const bool requiredFlagInverted;         //If required flag is set, then it must be FALSE instead of TRUE
+//NOTE: These 2 arrays should always be the same size, as only the size of requiredFlags is checked!
+var(Augmentique) Name requiredFlags[5]; //Flags that must be true for the outfit to spawn
+var(Augmentique) Name requiredFlagsInverted[5]; //Flags that must be false for the outfit to spawn
 
 var OutfitManagerBase outfitManager;
 
