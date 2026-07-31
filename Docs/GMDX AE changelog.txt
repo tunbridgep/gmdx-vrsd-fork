@@ -50,6 +50,11 @@ Map Changes:
     - Added a trigger for Paul to send an infolink informing you that you need to align the dishes before sending the transmission.
 - 05_NYC_UNATCOMJ12LAB:
     - Removed an erroneous DataLink Trigger that was linking to a datalink that doesn't exist.
+- 06_HongKong_Helibase:
+    - Fixed not being able to interact with the button to raise the second helicopter bay elevator platform.
+- 06_HongKong_WanChai_Underworld:
+    - "Businesswoman" is now "Versalife Employee" after being interacted with
+    - "Russian Sailors" renamed to "Russian Sailor"
 
 1.22 (Hotfix Release):
 
