@@ -394,8 +394,8 @@ struct augBinary                                                                
 struct BeltInfo
 {
     var string      itemClass;              //SARGE: Note. This is set to "none" rather than "" when empty, so that it doesn't reset between map loads when it's none (the default value).
-    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
-    var texture		defaultIcon;			//Sarge. This probably isn't necessary, but it's still a hell of a lot better than trying to fuck around with DynamicLoadObject just to get the default icon...
+    var string		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
+    var string		defaultIcon;			//Sarge. This probably isn't necessary, but it's still a hell of a lot better than trying to fuck around with DynamicLoadObject just to get the default icon...
 };
 
 var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
@@ -1422,17 +1422,18 @@ function AssignSecondary(Inventory item, optional bool bMessage)
     if (item == None)
     {
         assignedWeapon.itemClass = "none";
-        assignedWeapon.icon = None;
-        assignedWeapon.defaultIcon = None;
+        assignedWeapon.icon = "none";
+        assignedWeapon.defaultIcon = "none";
     }
     else
     {
+        Log("Assigned Icon: " $ item.Icon @ string(item.Icon) @ item.default.icon);
         assignedWeapon.itemClass = string(item.Class);
-        assignedWeapon.icon = item.Icon;
+        assignedWeapon.icon = string(item.Icon);
         if (item.IsA('DeusExPickup'))
-            assignedWeapon.defaultIcon = item.default.icon;
+            assignedWeapon.defaultIcon = string(item.default.icon);
         else
-            assignedWeapon.defaultIcon = item.icon;
+            assignedWeapon.defaultIcon = string(item.icon);
     }
 
     if (bMessage)
@@ -1461,10 +1462,19 @@ function Inventory GetSecondary()
 
 function Texture GetSecondaryIcon()
 {
+    local string nm;
+    local texture tx;
+
     if (bSkinnedBeltIcons)
-        return assignedWeapon.icon;
+        nm = assignedWeapon.Icon;
     else
-        return assignedWeapon.defaultIcon;
+        nm = assignedWeapon.defaultIcon;
+    
+    if (nm == "none")
+        return None;
+
+    tx = Texture(DynamicLoadObject(nm, class'Texture'));
+    return tx;
 }
 
 function Class<Inventory> GetSecondaryClass()
@@ -10818,21 +10828,21 @@ function SetPlaceholder(int objectNum, Inventory item)
     if (item != None && item.Class != class'NanoKeyRing')
     {
         beltInfos[objectNum].itemClass = string(item.Class);
-        beltInfos[objectNum].icon = item.icon;
+        beltInfos[objectNum].icon = string(item.icon);
 
         //This is a HORRIBLE, DISGUSTING dirty hack, to make sure we get default icons for pickups,
         //but that HDTP belt icons for weapons stay how they should be.
         if (item.IsA('DeusExPickup'))
-            beltInfos[objectNum].defaultIcon = item.default.icon;
+            beltInfos[objectNum].defaultIcon = string(item.default.icon);
         else
-            beltInfos[objectNum].defaultIcon = item.icon;
+            beltInfos[objectNum].defaultIcon = string(item.icon);
     }
 }
 
 function ClearPlaceholder(int objectNum)
 {
-    beltInfos[objectNum].icon = None;
-    beltInfos[objectNum].defaultIcon = None;
+    beltInfos[objectNum].icon = "none";
+    beltInfos[objectNum].defaultIcon = "none";
     beltInfos[objectNum].itemClass = "none";
 }
 
@@ -10849,10 +10859,19 @@ function BeltInfo GetPlaceholder(int objectNum)
 //Gets a belt placeholder, while preserving the default icons setting
 function Texture GetPlaceholderIcon(int objectNum)
 {
+    local string nm;
+    local Texture tx;
+
     if (bSkinnedBeltIcons)
-        return beltInfos[objectNum].Icon;
+        nm = beltInfos[objectNum].Icon;
     else
-        return beltInfos[objectNum].defaultIcon;
+        nm = beltInfos[objectNum].defaultIcon;
+    
+    if (nm == "none")
+        return None;
+
+    tx = Texture(DynamicLoadObject(nm, class'Texture'));
+	return tx;
 }
 
 function int HasPlaceholderSlot(Class<inventory> obj)

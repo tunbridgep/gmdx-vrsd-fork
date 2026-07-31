@@ -8,6 +8,7 @@ New Features:
 - Added sounds when acquiring Traumas.
 
 Bug Fixes:
+- Fixed Secondary icon sometimes being cleared when transitioning between maps.
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
 - Various fixes for red borders when hovering over some items in certain circumstances.
 - Fixed Female JC not displaying overlays in the Augmentation screen when Augs are installed.
