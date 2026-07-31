@@ -19,6 +19,7 @@ var Float                     playerHealth[6];
 var Bool bShowHealButtons;
 
 var localized String MedKitUseText;
+var localized String MedKitUseTextCure;
 var localized String HealthTitleText;
 var localized String HealAllButtonLabel;
 var localized String HealthLocationHead;
@@ -321,7 +322,10 @@ function UpdateMedKits()
 
 	if (winMedKits != None)
 	{
-		winMedKits.SetText(MedKitUseText);
+        if (bTraumasSelected)
+            winMedKits.SetText(MedKitUseTextCure);
+        else
+            winMedKits.SetText(MedKitUseText);
 
 		medKit = MedKit(player.FindInventoryType(Class'MedKit'));
 
@@ -1249,6 +1253,7 @@ function ToggleTraumaWindow()
         UpdateClientTextures();
     }
 
+	UpdateMedKits();
     EnableButtons();
 }
 
@@ -1354,6 +1359,7 @@ defaultproperties
      HealthPartDesc(3)="Injuries to the leg will result in drastically diminished mobility. If an agent in hostile territory is unfortunate enough to lose the use of both legs but still remain otherwise viable, they are ordered to execute UNATCO Special Operations Order 99009 (Self-Termination).|n|nLight Wounds: Slightly impaired movement.|nMedium Wounds: Moderately impaired movement.|nHeavy Wounds: Significantly impaired movement."
      bShowHealButtons=True
      MedKitUseText="To heal a specific region of the body, click on the region, then click the Heal button."
+     MedKitUseTextCure="To cure a specific trauma, click on the trauma, then click on the Cure button."
      HealthTitleText="Health"
      HealAllButtonLabel="H|&eal All"
      HealthLocationHead="Head"

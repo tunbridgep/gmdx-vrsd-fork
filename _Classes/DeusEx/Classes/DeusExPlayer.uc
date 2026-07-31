@@ -18404,6 +18404,7 @@ exec function AllHealth()
 		return;
 
 	RestoreAllHealth();
+    HealAllWounds();
 }
 
 // ----------------------------------------------------------------------
@@ -18427,6 +18428,12 @@ function RestoreAllHealth()
 	HealthArmLeft = default.HealthArmLeft;
 	HealthArmRight = default.HealthArmRight;
 	Health = default.Health;
+}
+
+function HealAllWounds()
+{
+    if (WoundManager != None)
+        WoundManager.ClearAllWounds();
 }
 
 // ----------------------------------------------------------------------
