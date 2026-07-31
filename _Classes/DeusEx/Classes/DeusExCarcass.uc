@@ -102,6 +102,7 @@ struct BadItem
     var Inventory item;
     var int count;
 	var Texture override;
+    var string srcID;
 };
 
 var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
@@ -892,11 +893,14 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		if ((Physics == PHYS_None) && (Momentum.Z < 0))
 			Momentum.Z *= -1;
 		Velocity += 3 * momentum/(Mass + 200);
-		if (bNotDead && (FRand() < 0.4 || Damage > 18)) //CyberP: don't be lazy self, check for headshots...
+		if ((bNotDead || bNoDefaultPools) && class'PawnUtils'.static.IsBloodyDamageType(damageType))
 		{
-		    KillUnconscious(DeusExPlayer(instigatedBy));                                                  //RSD: Proper kill
-            bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
-            CreateBloodPool();
+            if (FRand() < 0.4 || Damage > 18) //CyberP: don't be lazy self, check for headshots...
+            {
+                KillUnconscious(DeusExPlayer(instigatedBy));                                                  //RSD: Proper kill
+                bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
+                CreateBloodPool();
+            }
 		}
         if (DamageType == 'Exploded' || (DamageType == 'Burned' && Damage >= 10))
 		    {
@@ -1117,7 +1121,7 @@ function PickupCorpse(DeusExPlayer player)
 }
 
 //SARGE: Adds an item to the bad items list
-function AddBadItem(DeusExPlayer P, Inventory item, optional int count)
+function AddBadItem(DeusExPlayer P, DeusExCarcass source, Inventory item, optional int count)
 {
     if (item == None || !P.bShowDeclinedInReceivedWindow)
         return;
@@ -1127,6 +1131,7 @@ function AddBadItem(DeusExPlayer P, Inventory item, optional int count)
 
     badItems[badItemCount].item = item;
     badItems[badItemCount].count = count;
+    badItems[badItemCount].srcID = source.carcassID;
 	
     //Shuriken hack
     if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
@@ -1160,7 +1165,7 @@ function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optio
         P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 
     if (bShowReceived)
-        AddReceivedItem(P, item, count);
+        AddReceivedItem(P, carcassID, item, count);
 }
 
 // ----------------------------------------------------------------------
@@ -1224,6 +1229,7 @@ function Frob(Actor Frobber, Inventory frobWith)
             {
                 nearby.SearchCarcass(player,self,_bPickedSomethingUp,_bSuppressEmptyMessage,_bFoundInvalid,_bFoundSomething);
                 nearby.bSearched = true;
+                nearby.UpdateName();
                 bPickedSomethingUp = bPickedSomethingUp ||  _bPickedSomethingUp == 1;
                 bSuppressEmptyMessage = bSuppressEmptyMessage || _bSuppressEmptyMessage == 1;
                 bFoundInvalid = bFoundInvalid || _bFoundInvalid == 1;
@@ -1237,7 +1243,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     {
         for (i = 0;i < badItemCount;i++)
         {
-            AddReceivedItem(player, badItems[i].item, badItems[i].count, false, true, badItems[i].override);
+            AddReceivedItem(player, badItems[i].srcID, badItems[i].item, badItems[i].count, false, true, badItems[i].override);
         }
     }
 
@@ -1479,7 +1485,7 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                 {
                     if (player.PickupNanoKey(NanoKey(item)))
                     {
-                        AddReceivedItem(player, item, 1);
+                        AddReceivedItem(player, carcassID, item, 1);
                         bFoundSomething = True;
                         bPickedSomethingUp = True;
                     }
@@ -1502,7 +1508,7 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                 {
                     //if (player.PerkNamesArray[33]==1)                 //RSD: No more Neat Hack perk
                     //   Credits(item).numCredits *= 1.5;
-                    AddReceivedItem(player, item, Credits(item).numCredits);
+                    AddReceivedItem(player, carcassID, item, Credits(item).numCredits);
                     player.Credits += Credits(item).numCredits;
                     player.ClientMessage(Sprintf(Credits(item).msgCreditsAdded, Credits(item).numCredits));
                     DeleteInventory(item);
@@ -1787,13 +1793,9 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
             if (bAddBad)
             {
                 if (item.isA('DeusExPickup'))
-                    source.AddBadItem(player,item,DeusExPickup(item).NumCopies);
-                //else if (item.isA('DeusExWeapon'))
-                //    AddBadItem(player,item,DeusExWeapon(item).PickupAmmoCount);
-                //else if (item.isA('DeusExAmmo'))
-                //    AddBadItem(player,item,DeusExAmmo(item).AmmoAmount);
+                    source.AddBadItem(player,self,item,DeusExPickup(item).NumCopies);
                 else
-                    source.AddBadItem(player,item);
+                    source.AddBadItem(player,self,item);
             }
         }
         //log("Processed Item: " $ item.name $ ", bFoundSomething: " $ bFoundSomething);
@@ -1874,7 +1876,7 @@ function string GetFrobString(DeusExPlayer player)
 // AddReceivedItem()
 // ----------------------------------------------------------------------
 
-function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional Texture overrideTexture)
+function AddReceivedItem(DeusExPlayer player, string carcID, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional Texture overrideTexture)
 {
     /*
     //SARGE: TODO: This needs to be split out into a separate function, because now we can display
@@ -1886,8 +1888,8 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.DebugMessage("CarcassID: " $ carcassID);
-    player.AddReceivedItem(carcassID,item,count,bNoGroup,bDeclined,overrideTexture);
+    player.DebugMessage("CarcassID: " $ carcID);
+    player.AddReceivedItem(carcID,item,count,bNoGroup,bDeclined,overrideTexture);
 }
 
 //-----------------------------------------------------------------------

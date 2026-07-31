@@ -26,6 +26,7 @@ Misc Changes:
 - "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
 - Slightly decreased enemy footstep detection on higher difficulties.
 - Slightly increased swimming stamina requirements in Hardcore mode.
+- NPCs killed by poison gas and other non-bloody methods will no longer leave blood pools.
 
 Map Changes:
 - 05_NYC_UNATCOMJ12LAB:
