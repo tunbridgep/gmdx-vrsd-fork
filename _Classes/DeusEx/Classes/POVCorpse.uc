@@ -23,7 +23,7 @@ var bool    bHasSkins;
 var string savedName;                                                           //SARGE: vRSD seemingly forgot to add this?
 
 //SARGE: Weapon Offset Stuff
-var travel ViewmodelFOVManager FOVManager;                                      //SARGE: Manage Viewmodel FOV
+var transient ViewmodelFOVManager FOVManager;                                      //SARGE: Manage Viewmodel FOV
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
 var const vector OldPlayerViewOffset;
 
@@ -90,11 +90,8 @@ simulated event RenderOverlays( canvas Canvas )
 
 function Destroyed()
 {
-    if (FOVManager != None)
-    {
-        CriticalDelete(FOVManager);
-        FOVManager = None;
-    }
+    CriticalDelete(FOVManager);
+    FOVManager = None;
 	Super.Destroyed();
 }
 
