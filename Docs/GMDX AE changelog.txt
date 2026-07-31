@@ -42,6 +42,7 @@ Misc Changes:
 - Slightly decreased enemy footstep detection on higher difficulties.
 - Slightly increased swimming stamina requirements in Hardcore mode.
 - Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
+- Added Pride outfit.
 
 Map Changes:
 - 03_NYC_BatteryPark:
