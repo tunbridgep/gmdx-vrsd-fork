@@ -430,6 +430,7 @@ function SelectHealth(PersonaHealthItemButton buttonPressed)
 		winInfo.bStylization = False;
 		winInfo.bStylization2 = False;
 		winInfo.SetBackground(winInfo.default.background);
+		winInfo.Clear();
         winInfo.SetTitle(selectedHealthButton.GetTitle());
 		winInfo.SetText(selectedHealthButton.GetDesc());
         bBodyPartPressed = True;
@@ -521,6 +522,7 @@ function DisplayCommonInfo()
     winInfo.bStylization2 = True;
     //winInfo.SetBackground(Texture'DeusExUI.UserInterface.GridTex64x64');
 	player.GenerateTotalHealth();
+	winInfo.Clear();
 	winInfo.SetTitle(StatusTitle);
     
     //Display total health

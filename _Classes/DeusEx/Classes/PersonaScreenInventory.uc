@@ -693,7 +693,6 @@ function UpdateAmmoDisplay()
 		bUpdatingAmmoDisplay = True;
 
 		winInfo.Clear();
-
 		winInfo.SetTitle(AmmoTitleLabel);
 		winInfo.AddAmmoCheckbox(player.bShowAmmoDescriptions);
 		winInfo.AddLine();

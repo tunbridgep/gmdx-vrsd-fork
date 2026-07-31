@@ -357,6 +357,7 @@ function UpdateStatusText()
 
     winInfo.bStylization = False;
     winInfo.bStylization2 = True;
+	winInfo.Clear();
     winInfo.SetTitle(StatusTitle);
     //winInfo.SetBackground(Texture'DeusExUI.UserInterface.GridTex64x64');
     

@@ -6094,6 +6094,8 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo = PersonaInventoryInfoWindow(winObject);
 	if (winInfo == None)
 		return False;
+
+    winInfo.Clear();
     
     //SARGE: Show modified weapons in title
     if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
