@@ -669,7 +669,7 @@ function UpdateBeltText()
 
 simulated function BreakItSmashIt(class<fragment> FragType, float size)
 {
-	local int i;
+	local int i, j;
 	local DeusExFragment s;
 	local DeusExPlayer player;   //CyberP: for screenflash if near extinguisher
     local float dist;            //CyberP: for screenflash if near extinguisher
@@ -730,10 +730,8 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
 			if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkFirefighter').bPerkObtained)
             {
                 //Do in a few bursts so that it doesn't affect movers
-				HurtRadius(40,420,'KnockedOut',2000,Location);
-				HurtRadius(40,420,'KnockedOut',2000,Location);
-				HurtRadius(40,420,'KnockedOut',2000,Location);
-				HurtRadius(40,420,'KnockedOut',2000,Location);
+				for (j = 00; j < 10;j++)
+					HurtRadius(15,420,'KnockedOut',2000,Location);
             }
 			else
 				HurtRadius(15,320,'KnockedOut',2000,Location);
