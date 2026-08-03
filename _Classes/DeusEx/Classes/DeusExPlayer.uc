@@ -1058,6 +1058,10 @@ var const localized string msgSaveName;
 
 var const localized String TooSick;
 
+
+//SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
+//passed on to the carcass.
+var bool bBloodyDeath;
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5996,6 +6000,10 @@ function Carcass SpawnCarcass()
 	{
 	    if (bRemoveVanillaDeath)
 	        carc.DrawScale = 0.000050;
+        
+        if (!bBloodyDeath)
+            carc.bNoDefaultPools = true;
+
 		carc.Initfor(self);
 
 		// move it down to the ground

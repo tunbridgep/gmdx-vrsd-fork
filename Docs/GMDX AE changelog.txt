@@ -47,7 +47,7 @@ Misc Changes:
 - "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
 - Slightly decreased enemy footstep detection on higher difficulties.
 - Slightly increased swimming stamina requirements in Hardcore mode.
-- NPCs killed by poison gas and other non-bloody methods will no longer leave blood pools.
+- When the player and NPCs are killed by poison gas and other non-bloody methods, they will no longer leave blood pools.
 - Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
 - Added Pride outfit.
 - When using the Firefighter perk, Fire Extinguishers now deal 15 damage 10 times, rather than 40 damage 4 times, to better match the perk description and to be more consistent with mover damage.
