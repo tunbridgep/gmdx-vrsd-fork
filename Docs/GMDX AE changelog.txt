@@ -29,6 +29,7 @@ Bug Fixes:
 - Fixed Traumas list not properly updating when curing using a a MedBot
 - Fixed hidden codes (such as Maggie Chow's "insurgent" password) being autofilled.
 - Fixed Grenade Traps not actually working due to wrong cooldown timers.
+- Fixed Water Fountains and Water Coolers not respecting the Glutton perk, and various other food-related statuses (such as Traumas).
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
