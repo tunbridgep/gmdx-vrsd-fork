@@ -5660,6 +5660,7 @@ function HighlightCenterObject()
     local float rnd;
     local PerkWirelessStrength perk;
     local HackableDevices hackable;
+    local bool bCheckLOSType;
 
     if (IsInState('Dying'))
 		return;
@@ -5717,7 +5718,8 @@ function HighlightCenterObject()
 		foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
 		{
             //SARGE: Stop being able to frob things through walls
-            if (target.IsA('DeusExDecoration') && !DeusExDecoration(target).bSkipLOSFrobCheck && !LineOfSightTo(target))
+            bCheckLOSType = (target.IsA('DeusExDecoration') && !DeusExDecoration(target).bSkipLOSFrobCheck) || target.IsA('DeusExCarcass') /*|| target.IsA('DeusExPickup') || target.IsA('DeusExWeapon')*/;
+            if (bCheckLOSType && !LineOfSightTo(target))
                 continue;
 
 			if (IsFrobbable(target) && (target != CarriedDecoration))
