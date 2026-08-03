@@ -199,6 +199,7 @@ defaultproperties
      items(147)=(HelpText="If enabled, searching a carcass will also search all carcasses nearby.",actionText="Interaction: Search Carcass Piles",variable="bSearchCorpsePiles",defaultValue=1)
      items(149)=(HelpText="Automatically equip Ballistic Armor and HazMat Suits when picking them up if you don't have anything equipped.",actionText="Interaction: Auto-Use Armor Items",variable="bAutoUseChargedPickups",defaultValue=1)
      items(150)=(HelpText="Drop carcasses at your feet when dropping would otherwise fail, such as in tight corridoors or vents.",actionText="Interaction: Always Drop Carcasses",variable="bAlwaysDropCarcasses",defaultValue=1)
+     items(151)=(HelpText="NPCs and the Player will not create blood pools if killed in non-bloody ways, such as through poison gas or radiation.",actionText="Game: Smarter Blood Pools",variable="bSmartBloodPools",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

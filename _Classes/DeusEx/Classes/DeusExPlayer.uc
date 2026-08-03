@@ -1062,6 +1062,8 @@ var const localized String TooSick;
 //SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
 //passed on to the carcass.
 var bool bBloodyDeath;
+var globalconfig bool bSmartBloodPools;                 //SARGE: Enable or disable the smart blood pools system.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -6001,7 +6003,7 @@ function Carcass SpawnCarcass()
 	    if (bRemoveVanillaDeath)
 	        carc.DrawScale = 0.000050;
         
-        if (!bBloodyDeath)
+        if (!bBloodyDeath && bSmartBloodPools)
             carc.bNoDefaultPools = true;
 
 		carc.Initfor(self);
@@ -17654,6 +17656,9 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
+    
+    //SARGE: Store if the damage that killed us should make our carcass bleed.
+    bBloodyDeath = class'PawnUtils'.static.IsBloodyDamageType(damageType);
 
 	Super.Died(Killer, damageType, HitLocation);
 }
@@ -20966,4 +20971,5 @@ defaultproperties
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bSmartBloodPools=true
 }
