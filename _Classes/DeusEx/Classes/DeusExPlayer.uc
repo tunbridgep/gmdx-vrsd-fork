@@ -1054,6 +1054,8 @@ var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip
 
 var const localized string msgSaveName;
 
+var const localized String TooSick;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -12835,6 +12837,14 @@ exec function AttachLaser()
         W.ToggleAttachedLaser(true);
 }
 
+exec function AttachFullAuto()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedFullAuto(true);
+}
+
 // ----------------------------------------------------------------------
 // SkipMessages
 // ----------------------------------------------------------------------
@@ -20572,6 +20582,44 @@ function LipSynch(float deltaTime)
 	LoopBaseConvoAnim();
 }
 
+//SARGE: Check if we can consume something
+function bool HungerCheck(out string RestrictedMsg)
+{
+    local int maxFullness;
+    local Wound wound, wound2;
+    local Perk glutton;
+    
+    //SARGE: Radiation sickness and poisoning now stop eating entirely
+    if (WoundManager != None)
+    {
+        wound = WoundManager.GetWoundByType(class'WoundRadiation');
+        wound2 = WoundManager.GetWoundByType(class'WoundPoison');
+        if ((wound != None && wound.HasWound()) || (wound2 != None && wound2.HasWound()))
+        {
+            RestrictedMsg = TooSick;
+            return false;
+        }
+    }
+    
+    //Don't check for hunger outside of hardcore mode, or without the option
+    if (!bHardCoreMode && !bRestrictedMetabolism)
+        return true;
+
+    glutton = PerkManager.GetPerkWithClass(class'PerkGlutton');
+
+    maxFullness = 100;
+
+    if (glutton != None && glutton.bPerkObtained)
+        maxFullness *= glutton.PerkValue;
+
+    //Check if we're too full
+    if (fullUp >= maxFullness)
+    {
+        RestrictedMsg = fatty;
+        return false;
+    }
+    return true;
+}
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -20891,4 +20939,5 @@ defaultproperties
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
+     TooSick="You feel too nauseous to consume anything"
 }

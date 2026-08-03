@@ -5,6 +5,7 @@ class ChildMaleCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 nameReference=class'DeusEx.ChildMale'
      Mesh2=LodMesh'DeusExCharacters.GMK_DressShirt_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GMK_DressShirt_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GMK_DressShirt_Carcass'

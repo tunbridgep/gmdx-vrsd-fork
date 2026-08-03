@@ -174,5 +174,5 @@ defaultproperties
      CollisionHeight=8.000000
      Mass=30.000000
      bBigMuzzleFlash=true
-     minSkillRequirement=1;
+     minSkillRequirement=2
 }

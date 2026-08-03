@@ -63,9 +63,9 @@ function RechargeFrom(ChargeManager other)
         target.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
         
         if (charge == maxCharge)
-            owner.ClientMessage(msgFullyCharged);
+            owner.ClientMessage(Sprintf(msgFullyCharged,target.itemName));
         else
-            owner.ClientMessage(Sprintf(msgRecharged,amount));
+            owner.ClientMessage(Sprintf(msgRecharged,target.itemName,amount));
     }
 }
 
@@ -108,7 +108,7 @@ function bool Recharge(optional out string msg)
     }
     else
     {
-        msg = sprintf(msgRecharged,GetRechargeAmountDisplay());
+        msg = sprintf(msgRecharged,target.itemName,GetRechargeAmountDisplay());
     }
     //ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
     unDimIcon();                                      //RSD
@@ -242,8 +242,8 @@ defaultproperties
      ChargeRemainingLabel="Charge remaining: %d%%"
      ChargeRemainingLabelSmall="%d%%"
      BiocellRechargeAmountLabel="Biocell Recharge Amount: %d%%"
-     msgFullyCharged="Fully Recharged"
-     msgRecharged="Recharged by %d%%"
+     msgFullyCharged="%d Fully Recharged"
+     msgRecharged="%d Recharged by %d%%"
      charge=2000
      maxCharge=2000
      chargeMult=0.200000

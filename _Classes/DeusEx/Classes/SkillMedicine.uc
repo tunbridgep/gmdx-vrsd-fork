@@ -27,6 +27,23 @@ simulated function PreBeginPlay()
 	}
 }
 
+//SARGE: Lets make these look proper
+function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
+{
+    local float val;
+    local int s0,s1,s2,s3;
+    val = class'MedKit'.default.healAmount;
+    if (bSmartSkillString)
+    {
+        s0 = val * 1.0;
+        s1 = val * 1.5;
+        s2 = val * 2.166667;
+        s3 = val * 3.0;
+        return sprintf(Description,s0,s1,s2,s3);
+    }
+    return super.GetDescriptionText(bHardcoreMode,combatDifficulty);
+}
+
 // ----------------------------------------------------------------------
 // IncLevel() , no Super.IncLevel is its pointless :P
 // modified by dasraiser for GMDX :increment medical skill and upgrade head/torso hit points !HACK
@@ -121,38 +138,6 @@ function bool DecLevel(
 		return True;
 	}
 	return False;
-}
-
-//SARGE: Added a new function so we can overwrite it in certain contexts.
-//Replaces the janky "Hardcore mode values" text for Lockpicking/Electronics.
-//Now we should be able to accurately show the actual values.
-function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
-{
-    local int s0, s1, s2, s3;
-    local int healAmount;
-
-    healAmount = class'Medkit'.default.healAmount;
-
-    if (bSmartSkillString)
-    {
-        //SARGE: This is some dumb bullshit!
-        s0 = 1 * healAmount;
-        s1 = 1.5 * healAmount;
-        s2 = 2.166667 * healAmount;
-        s3 = 3.000000 * healAmount;
-
-        if (bHardcoreMode)
-        {
-            s0 -= 10;
-            s1 -= 10;
-            s2 -= 10;
-            s3 -= 10;
-        }
-
-        return sprintf(Description,s0,s1,s2,s3);
-    }
-    else
-        return Description;
 }
 
 defaultproperties

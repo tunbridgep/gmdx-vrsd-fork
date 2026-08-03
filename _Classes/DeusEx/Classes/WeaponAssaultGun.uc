@@ -283,7 +283,7 @@ defaultproperties
      CollisionRadius=15.000000
      CollisionHeight=1.100000
      Mass=30.000000
-     minSkillRequirement=3;
+     minSkillRequirement=1
      bFancyScopeAnimation=true
      muzzleSlot=2
  }

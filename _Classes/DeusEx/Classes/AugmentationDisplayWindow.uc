@@ -504,6 +504,10 @@ singular function checkForHazards(GC gc)
         if (CL.Damage == 0)
             continue;
         
+        //Don't warn us when we use the pepper gun
+        if (CL.Owner == Player)
+            continue;
+
         //Get closest
         if (temp != None)
         {

@@ -356,7 +356,7 @@ defaultproperties
      CollisionRadius=26.000000
      CollisionHeight=2.000000
      Mass=30.000000
-     minSkillRequirement=2;
+     minSkillRequirement=2
      bBigMuzzleFlash=true
      bFancyScopeAnimation=true
      muzzleSlot=2 //doesn't have one normally, added by Visible Weapon Attachments
