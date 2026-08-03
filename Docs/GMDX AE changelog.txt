@@ -6,6 +6,7 @@ New Features:
 - Left-Clicking can now be used to instantly equip Augmentique outfits found in the world.
 - Added sounds for picking up Collectibles.
 - Added sounds when acquiring Traumas.
+- Added new "Hold" bindings for active autmentations.
 
 Bug Fixes:
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
