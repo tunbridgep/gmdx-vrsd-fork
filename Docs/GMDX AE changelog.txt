@@ -44,6 +44,7 @@ Misc Changes:
 - Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
 - Added Pride outfit.
 - Added Tiptoes info to the GMDX Help Menu.
+- Weapon Requirements Matter: Assault Gun changed from Master to Trained, Assault Shotgun changed from Trained to Advanced.
 
 Map Changes:
 - 03_NYC_BatteryPark:
