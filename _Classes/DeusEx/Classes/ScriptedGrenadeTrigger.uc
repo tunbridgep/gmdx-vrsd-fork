@@ -93,6 +93,12 @@ function TriggerCheck()
         }
     }
 
+    if (player.LineOfSightTo(GG))
+    {
+        player.DebugMessage("ScriptedGrenadeTrigger - Player has line of sight, aborting");
+        return;
+    }
+
     //Then check for actors
     foreach RadiusActors(class'HumanMilitary', HM, CheckHumanRadius)
     {
