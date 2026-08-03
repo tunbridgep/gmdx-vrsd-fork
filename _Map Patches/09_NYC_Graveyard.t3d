@@ -33972,6 +33972,7 @@ Begin Actor Class=Brush Name=Brush78
 End Actor
 Begin Actor Class=Keypad3 Name=Keypad1
     bToggleLock=False
+    hackStrength=0.05
     LastRenderTime=146.410141
     DistanceFromPlayer=1736.207520
     Level=LevelInfo'MyLevel.LevelInfo0'

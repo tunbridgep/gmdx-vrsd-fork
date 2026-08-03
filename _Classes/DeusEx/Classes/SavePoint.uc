@@ -67,7 +67,8 @@ State QuickSaver
         }
         bUsedSavePoint=true;
         bHighlight=false;
-        player.DoSaveGame(0);
+        //player.DoSaveGame(0);
+        player.QuickSave2("",true); //Blank name means it will use default save name (NOT default quicksave name)
         //player.QuickSave2(sprintf(msgSaveName,player.retInfo(),player.TruePlayerName),true); //SARGE: This needs fixing
         PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
         GotoState('');

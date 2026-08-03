@@ -193,6 +193,10 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
 
     if (HasOwnedItem(owner,icon,label,quantity,bDeclined,bNoGroup,player.saveTime))
         return false;
+
+    //SARGE: Dirty hack to hopefully fix "empty" received displays.
+    if (icon == None)
+        return false;
     
     if (bDeclined)
     {

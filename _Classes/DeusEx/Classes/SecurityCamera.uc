@@ -225,11 +225,8 @@ function HackAction(Actor Hacker, bool bHacked)
 	 local ComputerSecurity CompOwner;
 	 local ComputerSecurity TempComp;
 	 local AutoTurret turret;
-	local name Turrettag;
+    local name Turrettag;
 	 local int ViewIndex;
-
-	if (bConfused)
-		return;
 
 	Super.HackAction(Hacker, bHacked);
 
