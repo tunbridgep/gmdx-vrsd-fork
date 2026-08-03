@@ -1056,6 +1056,8 @@ var const localized string msgSaveName;
 
 var const localized String TooSick;
 
+var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -20207,7 +20209,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
         if (lawfare != None && lawfare.bPerkObtained)
             return lawfare.PerkValue;
         else
-            return 1;
+            return 1 * fGlobalAmmoMod;
     }
     
     //SARGE: Special case for HE Rockets
@@ -20216,8 +20218,8 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     {
         cap = AugAmmoCap(AugmentationSystem.GetAug(class'AugAmmoCap'));
         if (cap != None)
-            return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + cap.CurrentLevel;
-        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy');
+            return (DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + cap.CurrentLevel) * fGlobalAmmoMod;
+        return (DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy')) * fGlobalAmmoMod;
     }
 
 
@@ -20251,7 +20253,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
         adjustedMaxAmmo *= 1.5;
 
     //BroadcastMessage(adjustedMaxAmmo);
-    return adjustedMaxAmmo;
+    return adjustedMaxAmmo * fGlobalAmmoMod;
 }
 
 exec function AllAmmo()                                                         //RSD: Function to override PlayerPawn in Engine classes for adjusted ammo counts
@@ -20939,4 +20941,5 @@ defaultproperties
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     fGlobalAmmoMod=1.0;
 }
