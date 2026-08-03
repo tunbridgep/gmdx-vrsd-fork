@@ -286,7 +286,7 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 	if (winInfo == None)
 		return False;
 
-	winInfo.Clear();
+	//winInfo.Clear();
 	winInfo.SetTitle(sprintf(PerkMenuTitle,SkillName));
 	/*winInfo.SetText(PerksDescription);
 	winInfo.SetText(LineBreaker);
