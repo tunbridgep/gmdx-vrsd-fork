@@ -7,16 +7,9 @@ var Bool			bVisible;
 var DeusExPlayer	player;
 var int             infoX;
 
-var localized String NotAvailable;
-var localized String msgReloading;
-var localized String AmmoLabel;
-var localized String ClipsLabel;
-var localized String InvLabel;
+var const localized String InvLabel;
+var const localized String InvAmmoLabel;
 
-// Used by DrawWindow
-var int clipsRemaining;
-var int ammoRemaining;
-var int ammoInClip;
 var transient DeusExWeapon weapon;
 var transient DeusExPickup item;                                                             //RSD: Added
 
@@ -92,6 +85,7 @@ event DrawWindow(GC gc)
 {
     local int amount, chargeLevel;
     local Texture icon;
+    local string label;
 
 	Super.DrawWindow(gc);
 
@@ -148,6 +142,18 @@ event DrawWindow(GC gc)
 
         if ((amount > 0 || chargeLevel > 0) && (item == None || !item.isA('Binoculars')))
         {
+
+            //Setup prefix
+            if (weapon != None && !weapon.bDisposableWeapon)
+            {
+                if (weapon.bPerShellReload)
+                    label = Sprintf(InvAmmoLabel,weapon.AmmoLeftInClip(),weapon.NumRounds());
+                else
+                    label = Sprintf(InvAmmoLabel,weapon.AmmoLeftInClip(),weapon.NumClips());
+            }
+            else
+                label = Sprintf(InvLabel,amount);
+
             // Draw the ammo count
             gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
             gc.EnableWordWrap(false);
@@ -155,8 +161,8 @@ event DrawWindow(GC gc)
             gc.SetTextColor(colText);
 
             if (amount > 0)
-                gc.DrawText(offset-3, 56, 64, 8, InvLabel @ amount); //Position below icon
-            //gc.DrawText(15+offset, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
+                gc.DrawText(offset-3, 56, 64, 8, label); //Position below icon
+            //gc.DrawText(15+offset, 48, 32, 8, label); //Position at bottom of icon
         
             if (chargeLevel > 0)
                 gc.DrawText(15+offset, 34, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
@@ -227,7 +233,8 @@ function SetVisibility( bool bNewVisibility )
 defaultproperties
 {
      infoX=66
-     InvLabel="COUNT:"
+     InvLabel="COUNT: %d"
+     InvAmmoLabel="AMMO: %d/%d"
      texBackground=Texture'RSDCrap.UserInterface.HudAmmoDisplayBackgroundSecondary'
      texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary'
      texBorderRight=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondaryF'

@@ -6,6 +6,11 @@ New Features:
 - Left-Clicking can now be used to instantly equip Augmentique outfits found in the world.
 - Added sounds for picking up Collectibles.
 - Added sounds when acquiring Traumas.
+- Complete remake of GMDX's secondary weapon system
+    - Added a new general perk "Tactical Rigging" which significantly increases secondary swapping speed.
+    - Fixed "Select" secondary mode being slower than the "Auto-Activate" mode in GMDX:AE v1.2.
+    - Fixed a few secondary weapon bugs and inconsistencies, such as missing animations.
+    - Pepper Spray can now be assigned as a secondary weapon.
 
 Bug Fixes:
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.

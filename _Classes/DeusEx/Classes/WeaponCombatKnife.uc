@@ -85,4 +85,5 @@ defaultproperties
      SoundPitch=96
      CollisionRadius=12.650000
      CollisionHeight=0.800000
+     DeSelectSound=sound'GMDXSFX.Weapons.knifeunequip'
 }

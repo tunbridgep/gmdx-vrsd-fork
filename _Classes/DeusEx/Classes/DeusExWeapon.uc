@@ -265,8 +265,10 @@ var() sound ReloadMidSound;
 var bool bCancelLoading;
 var float negTime;
 var bool bBeginQuickMelee;
-var bool bAlreadyQuickMelee;                                                    //RSD
-var float quickMeleeCombo;
+var bool bBeginQuickMeleeAttack;                                                //SARGE: Now separate attacking and not attacking
+var bool bFinishedQuickMeleeAttack;                                             //SARGE: Now separate attacking and not attacking
+var bool bQuickSelect;                                                         //SARGE: Put it away quickly
+var bool bQuickPutAway;                                                         //SARGE: Put it away quickly
 var vector ironSightLoc;     //unused
 var float meleeStaminaDrain;
 var bool activateAn;
@@ -415,6 +417,9 @@ var transient bool bDontActuallyRenderViewModel;
 var transient Vector cachedDrawOffset;
 var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
 var const float inertiaSpeed;                            //SARGE: How fast weapons move.
+
+//SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
+var const Sound DeselectSound;
 
 //END GMDX:
 
@@ -1728,53 +1733,11 @@ function BringUp()
 function PlaySelect()
 {
     local DeusExPlayer player;
-    local float p, mod;
-    local Projectile firedProjectile;
+    local float p;
 
      player = DeusExPlayer(Owner);
-
-     if (bBeginQuickMelee)
-     {
-       if (IsA('WeaponNanoSword') && !bAlreadyQuickMelee)
-       {
-            Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
-       }
-       if (ReloadCount > 0)
-			AmmoType.UseAmmo(1);
-
-       if (meleeStaminaDrain != 0)
-       {
-       if (player != none)
-       {
-		mod = player.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech');
-        if (mod < 3)
-          mod = 1;
-        else
-          mod = 0.5;
-        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme cancels all melee stamina drain
-          mod = 0.0;
-
-        player.swimTimer -= meleeStaminaDrain*mod;
-          if (player.swimTimer < 0)
-		     player.swimTimer = 0;
-        }
-        }
-
-		bReadyToFire = False;
-		GotoState('NormalFire');
-		bPointing=True;
-		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
-        {
-            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
-            OnProjectileFired(firedProjectile);
-        }
-		if ( Owner.IsA('PlayerPawn') )
-			PlayerPawn(Owner).PlayFiring();
-		PlaySelectiveFiring();
-		PlayFiringSound();
-     }
-     else if (bBeginAmmoSelectLoad)                                             //RSD: For ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
+     
+     if (bBeginAmmoSelectLoad)                                             //RSD: For ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
      {
 		bAmmoSelectWait = true;                                                 //RSD: Need to wait one tick to load ammo otherwise the reload state doesn't engage (???)
 		//LoadAmmoClass(ammoSelectClass);
@@ -1782,25 +1745,41 @@ function PlaySelect()
      }
      else
      {
-     if (player != none && player.AugmentationSystem != none)
-     {
-        p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
-        if (p < 1.0)
+
+        //Skip the select animation in quick melee mode.
+        if (bQuickSelect)
         {
-           p = 1.0;
-           if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
-               p = 1.2;
+            p = 0;
+            bQuickSelect = false;
         }
-     }
-    PlayAnim('Select',p,0.0);
-    bAimingDown=False;
-	Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
-	negTime = 0;
-	
-    if (player != none && bLaserToggle) //Sarge: Add laser check to re-enable laser if we turned it on
-	{                                   //Sarge: The block for mantling checks was also removed, now it uses this directly
-	   LaserOn(true);
-	}
+        else if (bBeginQuickMelee)
+        {
+            if (IsA('WeaponShuriken'))
+                p = 3;
+            else
+                p = 2;
+            //ReadyToFire();
+        }
+        else if (player != none && player.AugmentationSystem != none)
+        {
+            p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
+            if (p < 1.0)
+            {
+            p = 1.0;
+            if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
+                p = 1.2;
+            }
+        }
+
+        PlayAnim('Select',p,0.0);
+        bAimingDown=False;
+        Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
+        negTime = 0;
+        
+        if (player != none && bLaserToggle) //Sarge: Add laser check to re-enable laser if we turned it on
+        {                                   //Sarge: The block for mantling checks was also removed, now it uses this directly
+            LaserOn(true);
+        }
 	}
 }
 
@@ -2749,9 +2728,6 @@ simulated function Tick(float deltaTime)
     	bAmmoSelectWait = false;                                                //RSD: Note we do this last to hack sound effects
    	}
 
-
-    if (quickMeleeCombo > 0)
-        quickMeleeCombo -= deltaTime;
 	//GMDX: ADD PROJECTILE TEST INFLIGHT
 	if ((player!=none)&&player.bGEPprojectileInflight)//(player.aGEPProjectile!=none)) //RSD: Changed so it still updates laser position
 		return;
@@ -5888,33 +5864,19 @@ function Finish()
 	if (bHasMuzzleFlash)
 		EraseMuzzleFlashTexture();
 
-    if (bBeginQuickMelee)
+    if (bBeginQuickMeleeAttack && bFinishedQuickMeleeAttack && DeusExPlayer(Owner) != None)
     {
-            bFiring = False;
-            if (Owner != None && Owner.IsA('DeusExPlayer'))
-            {
-               DeusExPlayer(Owner).StopFiring();
-               if (quickMeleeCombo > 0)
-               {
-                 PlaySelect();
-                 return;
-               }
-               //if (DeusExPlayer(Owner).primaryWeapon != None)                 //RSD: Always quickdraw
-               //{
-                  if (AccurateRange > 200)
-                      Buoyancy=5.123456;
-                  if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
-                  {
-                     bBeginQuickMelee = False;
-				     DestroyMe();
-				     return;
-				  }
-                  if (DeusExPlayer(Owner).CarriedDecoration == None)
-                     DeusExPlayer(Owner).SelectLastWeapon(true);
-                  GotoState('Idle');
-                  return;
-               //}
-            }
+        DeusExPlayer(Owner).StopFiring();
+        DeusExPlayer(Owner).DebugMessage("Selecting old weapon");
+        bFinishedQuickMeleeAttack = false;
+        bBeginQuickMeleeAttack = false;
+        if (DeusExPlayer(Owner).CarriedDecoration == None)
+        {
+            DeusExPlayer(Owner).SetupQuickSwitch(DeusExPlayer(Owner).primaryWeapon,DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'PerkTacticalRigging').bPerkObtained && !DeusExPlayer(Owner).bLastWasEmpty,false);
+            DeusExPlayer(Owner).SelectLastWeapon(true);
+        }
+		GotoState('Idle');
+        return;
     }
 
 	if ( bChangeWeapon )
@@ -6090,9 +6052,14 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 }
 
 //SARGE: Now each object can define it's own function for whether it can be a secondary or not.
+//TODO: Split this out properly
 function bool CanAssignSecondary(DeusExPlayer player)
 {
-	if (bHandToHand)
+    if (IsA('WeaponPepperGun'))
+    {
+        return true;
+    }
+    else if (bHandToHand)
 	{
         if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained || GoverningSkill == class'DeusEx.SkillDemolition' || IsA('WeaponCombatKnife') || IsA('WeaponHideAGun') || IsA('WeaponShuriken'))
             return true;
@@ -7050,6 +7017,14 @@ state NormalFire
 			// if we are a thrown weapon and we run out of ammo, destroy the weapon
 			if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
 			{
+                if (bBeginQuickMeleeAttack && DeusExPlayer(Owner) != None)
+                {
+                    if (DeusExPlayer(Owner).CarriedDecoration == None)
+                    {
+                        DeusExPlayer(Owner).SetupQuickSwitch(DeusExPlayer(Owner).primaryWeapon,DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'PerkTacticalRigging').bPerkObtained && !DeusExPlayer(Owner).bLastWasEmpty,false);
+                        DeusExPlayer(Owner).SelectLastWeapon(true);
+                    }
+                }
 				DestroyMe();
 			}
 		}
@@ -7675,7 +7650,14 @@ Begin:
 	}
 	else
 	{
-		if (!bNearWall && !activateAn && (IsA('WeaponAssaultShotgun') || IsA('WeaponSawedOffShotgun')))
+
+        if (bBeginQuickMeleeAttack)
+        {
+            bFinishedQuickMeleeAttack=true;
+            Fire(0);
+        }
+
+		else if (!bNearWall && !activateAn && (IsA('WeaponAssaultShotgun') || IsA('WeaponSawedOffShotgun')))
         	PlayAnim('Idle2',,0.1);
         else if (!bNearWall && !activateAn && IsA('WeaponPistol'))
         {
@@ -7814,23 +7796,40 @@ ignores Fire, AltFire;
     //CyberP begin
 simulated function TweenDown()
 {
-local DeusExPlayer player;
-local float p;
+    local DeusExPlayer player;
+    local float p;
+    local bool bPlaySound;
 
-     player = DeusExPlayer(Owner);
+    if (DeselectSound != None)
+    {
+        //SARGE: DTS only plays unequip if it's got some charge
+        bPlaySound = !IsA('WeaponNanoSword') || (WeaponNanoSword(Self).chargeManager != None && !WeaponNanoSword(self).chargeManager.IsUsedUp());
+        if (bPlaySound)
+            PlaySound(DeselectSound,SLOT_None);
+    }
+
+    //If we're switching to a secondary, change at high speed
+    if (bQuickPutAway)
+    {
+        PlayAnim('Down', 4, 0.02);
+        bQuickPutAway = false;
+        return;
+    }
+    /*
+    else if (bBeginQuickMelee)
+    {
+        PlayAnim('Down', 2, 0.02);
+        return;
+    }
+    */
+    
+    player = DeusExPlayer(Owner);
 
      if (player != None)
      p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
-
+        
      if (p < 1.0)
      p = 1.0;
-
-        if (IsA('WeaponNanoSword') && WeaponNanoSword(Self).chargeManager != None && !WeaponNanoSword(self).chargeManager.IsUsedUp()) //SARGE: Added sword energy level checks
-            PlaySound(sound'GMDXSFX.Weapons.energybladeunequip2',SLOT_None);
-        else if (IsA('WeaponProd'))
-            PlaySound(sound'GMDXSFX.Weapons.produnequip',SLOT_None);
-        else if (IsA('WeaponCombatKnife') || IsA('WeaponSword'))
-            PlaySound(sound'GMDXSFX.Weapons.knifeunequip',SLOT_None);
 
 	if ( (AnimSequence != '') && (GetAnimGroup(AnimSequence) == 'Select') )
 		TweenAnim( AnimSequence, AnimFrame * 0.4 );
@@ -7862,7 +7861,8 @@ Begin:
 	   FinishAnim();
 	}
     bBeginQuickMelee = False;
-    bAlreadyQuickMelee = False;                                                 //RSD: Added
+    bBeginQuickMeleeAttack = False;
+    bFinishedQuickMeleeAttack = False;
 	//if ( Level.NetMode != NM_Standalone )
 	//{
 	//	ReloadMaxAmmo();	// Auto-reload in multiplayer (when putting away)

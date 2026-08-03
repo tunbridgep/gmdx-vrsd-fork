@@ -94,4 +94,5 @@ defaultproperties
      CollisionHeight=0.500000
      Mass=22.000000
      minSkillRequirement=2;
+     DeSelectSound=sound'GMDXSFX.Weapons.knifeunequip'
 }
