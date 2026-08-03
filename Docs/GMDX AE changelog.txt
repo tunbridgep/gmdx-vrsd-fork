@@ -66,6 +66,8 @@ Map Changes:
     - "Russian Sailors" renamed to "Russian Sailor"
 - 09_NYC_Graveyard:
     - Keypad behind the painting now has a hack strength of 5%, so that nobody can ever softlock on it, even at untrained Electronics.
+- 14_OceanLab_Lab:
+    - All Greasels and Karkians are now killed when Walton Simons arrives, rather than simply being deleted.
 
 1.22 (Hotfix Release):
 
