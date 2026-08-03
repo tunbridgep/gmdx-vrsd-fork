@@ -12020,8 +12020,9 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
                                 if (bAlwaysDropCarcasses)
                                 {
                                     loc = Location;
-                                    loc.z -= CollisionHeight / 2;
-                                    loc.z -= carc.CollisionHeight / 2;
+                                    //loc.z -= CollisionHeight / 2;
+                                    //loc.z -= carc.CollisionHeight / 2;
+                                    loc.z -= 10;
                                     carc.bCollideWorld = false;
                                     carc.SetLocation(loc);
                                     carc.bCollideWorld = true;
