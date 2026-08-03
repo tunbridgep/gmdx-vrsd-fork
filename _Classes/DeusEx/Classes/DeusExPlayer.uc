@@ -12835,6 +12835,14 @@ exec function AttachLaser()
         W.ToggleAttachedLaser(true);
 }
 
+exec function AttachFullAuto()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedFullAuto(true);
+}
+
 // ----------------------------------------------------------------------
 // SkipMessages
 // ----------------------------------------------------------------------

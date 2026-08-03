@@ -17,6 +17,7 @@ var PersonaActionButtonWindow    buttonDeclineG;
 var PersonaActionButtonWindow    buttonAddRemoveLaser; //SARGE: Weapon mod buttons
 var PersonaActionButtonWindow    buttonAddRemoveScope; //SARGE: Weapon mod buttons
 var PersonaActionButtonWindow    buttonAddRemoveSilencer; //SARGE: Weapon mod buttons
+var PersonaActionButtonWindow    buttonAddRemoveFullAuto; //SARGE: Weapon mod buttons
 var localized String UpgradeButtonLabel;
 var localized String PurchasedButtonLabel;
 var localized String UnobtainableButtonLabel;
@@ -24,6 +25,7 @@ var localized String UnobtainableButtonLabel;
 var localized String LaserLabel;
 var localized String ScopeLabel;
 var localized String SilencerLabel;
+var localized String FullAutoLabel;
 
 var Inventory                    assignThis;                                    //RSD: Added
 var DeusExWeapon                 modifyThis;                                    //SARGE: Added
@@ -393,6 +395,13 @@ function bool ButtonActivated( Window buttonPressed )
 	switch(buttonPressed)
 	{
         //SARGE: Weapon addon toggles.
+		case buttonAddRemoveFullAuto:
+            if (modifyThis != None)
+            {
+                modifyThis.ToggleAttachedFullAuto(player.inHand == modifyThis);
+                modifyThis.UpdateInventoryInfo();
+            }
+            break;
 		case buttonAddRemoveSilencer:
             if (modifyThis != None)
             {
@@ -597,6 +606,7 @@ function Clear()
     buttonAddRemoveSilencer = None;
     buttonAddRemoveLaser = None;
     buttonAddRemoveScope = None;
+    buttonAddRemoveFullAuto = None;
 	winTile.DestroyAllChildren();
 }
 
@@ -712,6 +722,11 @@ function UpdateWeaponModButtons(DeusExWeapon weapon)
 
     if (weapon != None)
     {
+        if (buttonAddRemoveFullAuto != None)
+        {
+            buttonAddRemoveFullAuto.SetButtonText(FullAutoLabel);
+            buttonAddRemoveFullAuto.SetSensitivity(weapon.bHadFullAuto);
+        }
         if (buttonAddRemoveLaser != None)
         {
             buttonAddRemoveLaser.SetButtonText(LaserLabel);
@@ -763,6 +778,7 @@ function AddWeaponModButtons(DeusExWeapon weapon)
         winActionButtonsWeaponMods.FillAllSpace(false);
 
         //Add mod buttons
+        buttonAddRemoveFullAuto = PersonaActionButtonWindow(winActionButtonsWeaponMods.NewChild(class'PersonaActionButtonWindow'));
         buttonAddRemoveLaser = PersonaActionButtonWindow(winActionButtonsWeaponMods.NewChild(class'PersonaActionButtonWindow'));
         buttonAddRemoveScope = PersonaActionButtonWindow(winActionButtonsWeaponMods.NewChild(class'PersonaActionButtonWindow'));
         buttonAddRemoveSilencer = PersonaActionButtonWindow(winActionButtonsWeaponMods.NewChild(class'PersonaActionButtonWindow'));
@@ -912,6 +928,7 @@ defaultproperties
      LaserLabel="Laser"
      ScopeLabel="Scope"
      SilencerLabel="Silencer"
+     FullAutoLabel="Auto"
      AccuracyPenaltyLabel="Accuracy"
      ReloadPenaltyLabel="Reload Speed"
      RecoilPenaltyLabel="Recoil"

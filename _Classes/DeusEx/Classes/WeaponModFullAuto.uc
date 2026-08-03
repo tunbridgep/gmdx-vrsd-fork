@@ -21,6 +21,8 @@ function ApplyMod(DeusExWeapon weapon)
         }
         else
 		    weapon.bFullAuto = True;
+
+        weapon.bHadFullAuto = true;
 	}
 }
 
@@ -31,7 +33,7 @@ function ApplyMod(DeusExWeapon weapon)
 simulated function bool CanUpgradeWeapon(DeusExWeapon weapon)
 {
 	if (weapon != None)
-		return (weapon.bCanHaveModFullAuto && !weapon.bFullAuto);
+		return (weapon.bCanHaveModFullAuto && !weapon.bHadFullAuto);
 	else
 		return False;
 }

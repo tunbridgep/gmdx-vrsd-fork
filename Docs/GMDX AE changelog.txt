@@ -45,6 +45,7 @@ Misc Changes:
 - Added Pride outfit.
 - Added Tiptoes info to the GMDX Help Menu.
 - Weapon Requirements Matter: Assault Gun changed from Master to Trained, Assault Shotgun changed from Trained to Advanced.
+- Full Auto weapon mod can now be toggled on/off per weapon in the Inventory screen alongside other attachments.
 
 Map Changes:
 - 03_NYC_BatteryPark:
