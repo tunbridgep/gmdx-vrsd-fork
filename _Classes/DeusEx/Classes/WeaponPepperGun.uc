@@ -36,6 +36,27 @@ function DisplayWeaponBlood(bool overlay)
     multiskins[2] = Texture'PinkMaskTex';
 }
 
+//Projectile speed is now based on Low Tech skill
+function OnProjectileFired(Projectile firedProjectile)
+{
+    local DeusExPlayer P;
+    local Perk pepperPerk;
+    P = DeusExPlayer(Owner);
+
+    if (P != None && P.PerkManager != None)
+    {
+        pepperPerk = P.PerkManager.GetPerkWithClass(class'PerkPepperPerfector');
+        if (pepperPerk.bPerkObtained)
+        {
+            //P.DebugMessage("SpeedMod: " $ speedMod);
+            //firedProjectile.speed += (speedAdd * level);
+            firedProjectile.Velocity *= pepperPerk.PerkValue;// *= speedAdd * Vector(firedProjectile.Rotation);
+            firedProjectile.Acceleration *= pepperPerk.PerkValue;// += speedAdd * Vector(firedProjectile.Rotation);
+            Cloud(firedProjectile).CloudRadius *= pepperPerk.PerkValue;
+        }
+    }
+}
+
 defaultproperties
 {
      weaponOffsets=(X=8.000000,Y=-10.000000,Z=-16.000000)

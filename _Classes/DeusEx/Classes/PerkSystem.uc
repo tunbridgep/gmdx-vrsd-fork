@@ -43,6 +43,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Lowtech Perks
 	AddPerk(Class'DeusEx.PerkSharpEyed');
 	AddPerk(Class'DeusEx.PerkPiercing');
+	AddPerk(Class'DeusEx.PerkPepperPerfector');
 	AddPerk(Class'DeusEx.PerkHemmorhage');
 	AddPerk(Class'DeusEx.PerkInventive');
 

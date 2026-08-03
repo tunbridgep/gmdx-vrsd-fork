@@ -11,6 +11,7 @@ New Features:
     - Fixed "Select" secondary mode being slower than the "Auto-Activate" mode in GMDX:AE v1.2.
     - Fixed a few secondary weapon bugs and inconsistencies, such as missing animations.
     - Pepper Spray can now be assigned as a secondary weapon.
+- Added "Pepper Perfector" perk (Low-Tech ADVANCED), which significantly improves pepper cloud movement speed and size.
 
 Bug Fixes:
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
