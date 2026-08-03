@@ -72,7 +72,6 @@ var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" 
 
 var(GMDX) const bool bDontOpenOnMissionComplete;                                    //SARGE: Don't open this door on mission completion.
 
-
 //SARGE: Do we have the key for this lock?
 function bool HasKey(DeusExPlayer Player)
 {
@@ -540,14 +539,14 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
     if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
        damage *= 2;
 
+
    //log("TakeDamage "@Damage@" "@instigatedBy@" "@bBreakable);
 	if (bBreakable)
 	{
-        /*
-        if (InstigatedBy.IsA('DeusExPlayer'))
-            DeusExPlayer(InstigatedBy).clientMessage("Damage:" @ Damage @ ", Threshold:" @ minDamageThreshold);
-        */
-		//log("dooStrength "@doorStrength); //CyberP: we don't need to log this
+        //if (InstigatedBy.IsA('DeusExPlayer'))
+        //    DeusExPlayer(InstigatedBy).DebugMessage("Damage:" @ Damage @ ", Threshold:" @ minDamageThreshold);
+		
+        //log("dooStrength "@doorStrength); //CyberP: we don't need to log this
       // add up the damage
 		if (Damage >= minDamageThreshold)
         {
