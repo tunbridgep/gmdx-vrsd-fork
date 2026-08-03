@@ -43,6 +43,7 @@ Misc Changes:
 - Slightly increased swimming stamina requirements in Hardcore mode.
 - Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
 - Added Pride outfit.
+- Added Tiptoes info to the GMDX Help Menu.
 
 Map Changes:
 - 03_NYC_BatteryPark:

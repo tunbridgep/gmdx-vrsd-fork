@@ -419,6 +419,8 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Trauma2.pcx"	                NAME="OBM_Trauma2"                  GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_FrobColKey1.pcx"	            NAME="OBM_FrobColKey1"              GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_FrobColKey2.pcx"	            NAME="OBM_FrobColKey2"              GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Tiptoes1.pcx"	            NAME="OBM_Tiptoes1"                 GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\OBM_Tiptoes2.pcx"	            NAME="OBM_Tiptoes2"                 GROUP="UserInterface"    FLAGS=2
 
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"
