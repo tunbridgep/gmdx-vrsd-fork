@@ -34,6 +34,7 @@ Bug Fixes:
 - Fixed Water Fountains and Water Coolers not respecting the Glutton perk, and various other food-related statuses (such as Traumas).
 - Fixed Medicine Skill information window listing wrong numbers.
 - Fixed Security Cameras being re-activated after being hacked while EMP'd.
+- Fixed searching carcasses not properly recharging the Dragons Tooth Sword like it should if the corpse contains a DTS.
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).

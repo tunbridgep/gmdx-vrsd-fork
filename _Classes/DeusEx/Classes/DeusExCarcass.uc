@@ -1408,6 +1408,10 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
             break;
         //== end
 
+        //If our weapon was picked up, get rid of it.
+        if (droppedWeapon.Owner != None)
+            droppedWeapon = None;
+
         if (item == droppedWeapon && droppedWeapon != None && droppedWeapon.Owner != player)
             nextItem = Inventory;
         else
@@ -1522,6 +1526,10 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                 // then just give the ammo and not the weapon.  Otherwise give
                 // the weapon normally.
                 W = DeusExWeapon(player.FindInventoryType(item.Class));
+
+                //SARGE: Charge our nanosword if we have one
+                if (W != None && item.IsA('WeaponNanoSword'))
+                    WeaponNanoSword(W).RechargeFrom(WeaponNanoSword(item));
 
                 //SARGE: Always show declined weapons, unless we already have a disposable weapon
                 if (bDeclined && (W == None || !DeusExWeapon(item).bDisposableWeapon))
