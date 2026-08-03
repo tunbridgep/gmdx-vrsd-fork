@@ -2995,7 +2995,7 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 		bDrawWeapon = true;
 
 	if (ShouldDropWeapon())
-		DropWeapon();
+		DropWeapon(false);
 	else if (bDrawWeapon)
 	{
 //		if (Weapon == None)
@@ -3010,12 +3010,12 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 // DropWeapon()
 // SARGE: This function needed a rewrite, so I rewrote it...
 // ----------------------------------------------------------------------
-function DropWeapon()
+function DropWeapon(bool bAllowRifle)
 {
 	local DeusExWeapon dxWeapon;
     local vector loc;
 
-	if (Weapon != None && !Weapon.IsA('WeaponRifle'))
+	if (Weapon != None && (!Weapon.IsA('WeaponRifle') || bAllowRifle))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
 		if (dxWeapon != None && !dxWeapon.bNativeAttack)
@@ -3033,6 +3033,8 @@ function DropWeapon()
                 if (!class'SpawnUtils'.static.CheckDropFrom(dxWeapon,loc,Location))
                     return;
             }
+
+            dxWeapon.PlayAnim('Still');
 			
             dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 			
@@ -4338,7 +4340,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     Velocity.Z = 6; //6
     bFixedRotationDir = True;
     if (FRand() < 0.3 && instigator != None && instigator != self && ShouldDropWeapon())
-       DropWeapon();
+       DropWeapon(false);
     }
     }
 
@@ -9234,7 +9236,7 @@ function bool SwitchToBestWeapon()
 
 	if (ShouldDropWeapon())
 	{
-		DropWeapon();
+		DropWeapon(false);
 		return false;
 	}
 
@@ -16946,7 +16948,7 @@ Begin:
     if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
     {
         droppedWeapon = Weapon;
-        DropWeapon();
+        DropWeapon(true);
     }
 
 	WaitForLanding();
