@@ -9805,6 +9805,17 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         
         if (bCanPickup)
         {
+
+            //SARGE: Hack. If it's a weapon, we need to unlink it from any carcasses or scriptedpawns that currently have it as their dropped weapon
+            if (FrobTarget.IsA('Weapon'))
+            {
+                foreach AllActors(class'DeusExCarcass', linkedCarc)
+                {
+                    if (linkedCarc.droppedWeapon == Weapon(FrobTarget))
+                        linkedCarc.droppedWeapon = none;
+                }
+            }
+
             DoFrob(Self, inHand);
             /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
             {
