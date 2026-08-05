@@ -1331,6 +1331,12 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
     local Inventory newItem;                                                    //SARGE: An item that was spawned in the players inventory.
     local Actor previousFrobTarget;                                             //SARGE: For holding the previous frob target.
 
+    //Clear our dropped weapon of it's no longer valid
+    if (droppedWeapon.IsInState('Sleeping') || droppedWeapon.Owner == player)
+        droppedWeapon = None;
+    
+    if (droppedWeapon != None)
+        player.DebugMessage("DroppedWeapon: " $ droppedWeapon);
 
     /*
     //SARGE: Before searching the inventory, try to pick up our dropped weapon
@@ -1380,15 +1386,12 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
             break;
     }
 
-    if (droppedWeapon != None && droppedWeapon.Owner != player)
+    if (droppedWeapon != None)
         item = droppedWeapon;
     else
         item = Inventory;
 
     startItem = item;
-            
-    if (droppedWeapon != None)
-        player.DebugMessage("DroppedWeapon: " $ droppedWeapon @ item);
 
     do
     {
@@ -1511,8 +1514,7 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                     //if (player.PerkNamesArray[33]==1)                 //RSD: No more Neat Hack perk
                     //   Credits(item).numCredits *= 1.5;
                     AddReceivedItem(player, carcassID, item, Credits(item).numCredits);
-                    player.Credits += Credits(item).numCredits;
-                    player.ClientMessage(Sprintf(Credits(item).msgCreditsAdded, Credits(item).numCredits));
+                    player.AddCredits(Credits(item).numCredits,true,false);
                     DeleteInventory(item);
                     item.Destroy();
                     item = None;

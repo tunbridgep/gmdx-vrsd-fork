@@ -16947,8 +16947,11 @@ Begin:
     //SARGE: Drop weapons on death.
     if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
     {
-        droppedWeapon = Weapon;
-        DropWeapon(true);
+        if (DeusExWeapon(Weapon) == None || !DeusExWeapon(Weapon).bNativeAttack)
+        {
+            droppedWeapon = Weapon;
+            DropWeapon(true);
+        }
     }
 
 	WaitForLanding();
