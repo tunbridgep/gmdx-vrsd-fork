@@ -146,7 +146,9 @@ event DrawWindow(GC gc)
             //Setup prefix
             if (weapon != None && !weapon.bDisposableWeapon)
             {
-                if (weapon.bPerShellReload)
+                if (weapon.IsInState('Reload'))
+                    label = "";
+                else if (weapon.bPerShellReload)
                     label = Sprintf(InvAmmoLabel,weapon.AmmoLeftInClip(),weapon.NumRounds());
                 else
                     label = Sprintf(InvAmmoLabel,weapon.AmmoLeftInClip(),weapon.NumClips());
@@ -160,7 +162,7 @@ event DrawWindow(GC gc)
             gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
             gc.SetTextColor(colText);
 
-            if (amount > 0)
+            if (amount > 0 && label != "")
                 gc.DrawText(offset-3, 56, 64, 8, label); //Position below icon
             //gc.DrawText(15+offset, 48, 32, 8, label); //Position at bottom of icon
         
