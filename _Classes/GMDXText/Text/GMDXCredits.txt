@@ -24,6 +24,7 @@
 <P>Popmechanics - Augmentique weapon skins
 <P>NG+ - Discord server organization and community management.
 <P>Kisskills - Fixed Combat Knife textures.
+<P>PancakeTaicho - Collectible Pickup and other sound effects.
 <P>
 <B>Testing and QA
 <P>Julian, Georg, the1truepickaxe, Xriborg, domitomi,
@@ -37,3 +38,4 @@
 <P>Totalitarian for making the original Give Me Deus Ex mod,
 <P>RoSoDude for his amazing GMDXvRSD fork, which this mod is based on
 <P>This version would not have been possible without either of them!
+<P>The amazing people on the Mods4Ever/DXRando discord.
