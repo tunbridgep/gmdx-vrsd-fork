@@ -1058,6 +1058,10 @@ var const localized String TooSick;
 
 var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
 
+//Credits update/refactoring
+var localized string msgCreditsAdded;
+var localized string msgCreditsDeducted;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -9900,6 +9904,39 @@ function NanoKeyInfo CreateNanoKeyInfo()
 	newKey = new(Self) Class'NanoKeyInfo';
 
 	return newKey;
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Add a new function for adding credits, since we now do some
+// fancy displaying and such when adding credits
+// ----------------------------------------------------------------------
+
+function bool AddCredits(int amount, bool bShowMessage, bool bShowWindow)
+{
+    if (Credits + amount < 0 && amount < 0) //Not enough credits to remove
+        return false;
+    Credits += amount;
+
+    if (bShowMessage)
+    {
+        if (amount >= 0)
+            ClientMessage(Sprintf(msgCreditsAdded, amount));
+        else
+            ClientMessage(Sprintf(msgCreditsDeducted, -amount));
+    }
+
+    //PlaySound(Sound'objpickup',SLOT_None);
+
+    //Show the window (if we received only, for now)
+    if (amount > 0 && bCreditsShowReceivedItemsWindow && bShowWindow)
+        if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
+            DeusExRootWindow(rootWindow).hud.receivedItems.AddCredits(amount);
+
+    //Last minute check for credits going below zero.
+    //Probably not necessary.
+    Credits = MAX(Credits,0);
+
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -20945,4 +20982,6 @@ defaultproperties
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
      fGlobalAmmoMod=1.0;
+     msgCreditsAdded="%d credits added"
+     msgCreditsDeducted="%d credits deducted from your account"
 }
