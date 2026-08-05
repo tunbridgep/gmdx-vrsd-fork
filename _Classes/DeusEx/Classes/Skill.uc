@@ -48,6 +48,14 @@ replication
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Init()
+// Called every time we setup a skill, NOT once per playthrough
+// ----------------------------------------------------------------------
+function Init()
+{
+}
+
+// ----------------------------------------------------------------------
 // PreBeginPlay()
 // ----------------------------------------------------------------------
 simulated function PreBeginPlay()
@@ -312,5 +320,5 @@ defaultproperties
      NetUpdateFrequency=5.000000
      PerkMenuTitle="Perks - %s"
      SkillPointsToMaster="Total skill points to master: %n"
-     smartSkillMult = 100;
+     smartSkillMult=100
 }

@@ -5,6 +5,7 @@ New Features:
 - Ballistic Vests and HazMat Suits will now be auto-equipped when picked up if nothing else is equipped.
 - Left-Clicking can now be used to instantly equip Augmentique outfits found in the world.
 - Added sounds for picking up Collectibles.
+- Data Cubes and other information devices are now highlighted when using Tech Goggles.
 - Added sounds when acquiring Traumas.
 - Complete remake of GMDX's secondary weapon system
     - Added a new general perk "Tactical Rigging" which significantly increases secondary swapping speed.
@@ -12,8 +13,12 @@ New Features:
     - Fixed a few secondary weapon bugs and inconsistencies, such as missing animations.
     - Pepper Spray can now be assigned as a secondary weapon.
 - Added "Pepper Perfector" perk (Low-Tech ADVANCED), which significantly improves pepper cloud movement speed and size.
+- LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
+- Edible Items now show the players current hunger level in the Inventory screen.
 
 Bug Fixes:
+- Fixed Laser Sight being left enabled when using the Spy Drone.
+- Fixed Repair Bots giving the DTS extra charge with the Field Repair perk.
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
 - Various fixes for red borders when hovering over some items in certain circumstances.
 - Fixed Female JC not displaying overlays in the Augmentation screen when Augs are installed.
@@ -76,6 +81,8 @@ Map Changes:
     - "Russian Sailors" renamed to "Russian Sailor"
 - 09_NYC_Graveyard:
     - Keypad behind the painting now has a hack strength of 5%, so that nobody can ever softlock on it, even at untrained Electronics.
+- 10_Paris_Catacombs_Tunnels:
+    - No longer distribute GEP Guns on Hardcore mode, as this is an indoor map where they don't make sense.
 - 14_OceanLab_Lab:
     - All Greasels and Karkians are now killed when Walton Simons arrives, rather than simply being deleted.
 

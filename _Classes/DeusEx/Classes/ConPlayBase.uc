@@ -1098,7 +1098,7 @@ log("  event.toActor    = " $ event.toActor );
 			else
 				DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItemFrom(event.fromActor,invItemTo, Credits(invItemTo).numCredits);
 
-			player.Credits += Credits(invItemTo).numCredits;
+			player.AddCredits(Credits(invItemTo).numCredits,false,false);
 
 			invItemTo.Destroy();
 
@@ -1482,7 +1482,7 @@ function EEventAction SetupEventAddSkillPoints( ConEventAddSkillPoints event, ou
 function EEventAction SetupEventAddCredits( ConEventAddCredits event, out String nextLabel )
 {
     local bool bPlaySound;
-	player.credits += event.creditsToAdd;
+	player.AddCredits(event.creditsToAdd,false,false);
 	
     //SARGE: Add credits taken/given display
     if (conWinThird != None && player.bConversationShowCredits)
@@ -1499,9 +1499,6 @@ function EEventAction SetupEventAddCredits( ConEventAddCredits event, out String
 
     if (bPlaySound)
         player.PlayItemTransferSound();
-
-	// Make sure we haven't gone into the negative
-	player.credits = Max(player.credits, 0);
 
 	nextLabel = "";
 	return EA_NextEvent;

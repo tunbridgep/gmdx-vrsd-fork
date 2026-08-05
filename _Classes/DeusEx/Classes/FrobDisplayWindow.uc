@@ -37,6 +37,7 @@ var const Color colJustEnough;
 var const Color colWireless;
 var const Color colHasKey;
 var const Color colBadAug;
+var const Color colSkin;
 
 var localized string msgDoorThreshold; //CyberP: these two vars are for damage threshold display
 var localized string msgObjThreshold;
@@ -129,7 +130,6 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     local int capacity, myammo;
     local Inventory Inv;
     local Inventory playerInv;
-    local string _dontUse; //Used to hold an out variable that we don't use.
     
     //Aug Can stuff
     local AugmentationCannister A;
@@ -149,14 +149,22 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     TP = ThrownProjectile(frobTarget);
     Inv = Inventory(frobTarget);
     
+    //First, check for weapon skins
+    //if (WE != None && WE.currentWeaponSkin != "default" && WE.currentWeaponSkin != "")
+    //    return colSkin;
+
     //Carcass Searched
-    if (Carc != None && player.iSearchedCorpseText >= 2 && Carc.bSearched && !Carc.bAnimalCarcass)
+    if (Carc != None && player.iSearchedCorpseText >= 2 && Carc.bSearched)
         return colWireless;
     
     //Duplicate Keys
     else if (player.iToolWindowShowDuplicateKeys >= 2 && N != None && player.KeyRing != None && player.KeyRing.HasKey(N.KeyID))
-        return colBadAug;
-        //return colWireless;
+    {
+        if (!player.PerkManager.GetPerkWithClass(class'PerkVigilantRecycler').bPerkObtained)
+            return colBadAug;
+        else
+            return colWireless;
+    }
     
     //Wireless Perk
     else if (frobTarget == player.HackTarget)
@@ -199,6 +207,15 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     //This has to go pretty late in the list because most other things are Inventory items as well
     if (player.bToolWindowShowInvalidPickup && Inv != None)
     {
+        playerInv = player.FindInventoryType(Inv.Class);
+
+        //If we find a DTS, and ours is refillable, show it as blue
+        if (WE != None && WE.IsA('WeaponNanoSword'))
+        {
+            if (playerInv != None && !WeaponNanoSword(playerInv).ChargeManager.IsFull())
+                return colWireless;
+        }
+
         //Some items need special handling
         if (Inv.IsA('Credits') || Inv.IsA('NanoKey'))
         {
@@ -211,14 +228,13 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             //Stack is full and we can recharge
             if (Inv.IsA('ChargedPickup'))
             {
-		        playerInv = player.FindInventoryType(Inv.Class);
                 if (ChargedPickup(playerInv) != None && ChargedPickup(playerInv).GetCurrentCharge() <= 99)
                     return colWireless;
             }
 
             //Stack is full but we can still left-frob
             if (player.bEnableLeftFrob && Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player))
-                    return colWireless;
+                return colWireless;
 
             return colBadAug;
         }
@@ -228,7 +244,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         else if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1 && player.FindInventoryType(Inv.Class) == None)
         {
             //If it's a food item and we can use it where it stands, then show it blue instead
-            if (Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player,_dontUse))
+            if (Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player))
                 return colWireless;
             return colBadAug;
         }
@@ -1004,6 +1020,7 @@ defaultproperties
     colWireless=(B=255,G=50,R=50)
     colHasKey=(B=50,G=150,R=50)
     colBadAug=(B=50,G=50,R=255)
+    colSkin=(B=255,G=50,R=255)
 	msgDisabled="Rebooting"
 	msgTrackAll="Target: All"
 	msgTrackAllies="Target: Allies"

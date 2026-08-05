@@ -79,6 +79,9 @@ function ToggleStandbyMode(bool standby)
             Player.ConfigBigDroneView(false);
             Player.UpdateCrosshairStyle();
             Player.UpdateHUD();
+    
+            if (DeusExWeapon(player.Weapon) != None && DeusExWeapon(player.Weapon).bLaserToggle)
+                DeusExWeapon(player.Weapon).LaserOn(true);
         }
         Player.bSpyDroneSet = True;                                            //RSD: Allows the user to toggle between moving and controlling the drone
     }
@@ -95,6 +98,9 @@ function ToggleStandbyMode(bool standby)
             Player.ConfigBigDroneView(true);
             Player.UpdateCrosshairStyle();
             Player.UpdateHUD();
+    
+            if (DeusExWeapon(player.Weapon) != None)
+                DeusExWeapon(player.Weapon).LaserOff(true);
         }
     }
 }
@@ -116,6 +122,8 @@ Begin:
     player.bSpyDroneSet = False;
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
 	SetTimer(0.4,False);
+    if (DeusExWeapon(player.Weapon) != None)
+        DeusExWeapon(player.Weapon).LaserOff(true);
 }
 
 function ActivateKeyPressed()

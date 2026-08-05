@@ -753,6 +753,7 @@ function string GetString(string text, bool bClosed)
 
 defaultproperties
 {
+     bVisionImportant=True
      bAltGrab=True
      TextPackage="DeusExText"
      msgNoText="It is blank"

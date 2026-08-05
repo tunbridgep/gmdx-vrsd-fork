@@ -70,18 +70,18 @@ function RechargeFrom(ChargeManager other)
 }
 
 //Gets the recharge amount per biocell
-function float GetRechargeAmount()
+function float GetRechargeAmount(bool bBiocell)
 {
-    if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
+    if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true && bBiocell)                         //RSD: New Repairman perk
         return (1.5 * chargeMult);
     else 
         return chargeMult;
 }
 
 //Gets the recharge amount per biocell in a nice format
-function int GetRechargeAmountDisplay()
+function int GetRechargeAmountDisplay(bool bBiocell)
 {
-    return int(GetRechargeAmount() * 100);
+    return int(GetRechargeAmount(bBiocell) * 100);
 }
 
 function Setup(DeusExPlayer newOwner, Inventory newTarget)
@@ -92,14 +92,14 @@ function Setup(DeusExPlayer newOwner, Inventory newTarget)
 }
 
 //Recharges the item, and returns a relevant charge message
-function bool Recharge(optional out string msg)
+function bool Recharge(bool bBiocell,optional out string msg)
 {
     local float mult;
 
     if (target == None)
         return false;
 
-    mult = GetRechargeAmount();
+    mult = GetRechargeAmount(bBiocell);
     charge += mult * maxCharge;
     if (charge >= maxCharge)
     {
@@ -108,7 +108,7 @@ function bool Recharge(optional out string msg)
     }
     else
     {
-        msg = sprintf(msgRecharged,target.itemName,GetRechargeAmountDisplay());
+        msg = sprintf(msgRecharged,target.itemName,GetRechargeAmountDisplay(bBiocell));
     }
     //ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
     unDimIcon();                                      //RSD

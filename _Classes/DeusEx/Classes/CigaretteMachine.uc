@@ -28,7 +28,7 @@ function Frob(actor Frobber, Inventory frobWith)
 			return;
 		}
 
-		if (player.Credits >= 8)
+		if (player.AddCredits(-8,true,true))
 		{
 			PlaySound(sound'VendingCoin', SLOT_None);
 			loc = Vector(Rotation) * CollisionRadius * 0.8;
@@ -46,9 +46,6 @@ function Frob(actor Frobber, Inventory frobWith)
 				product.RotationRate.Yaw = (32768 - Rand(65536)) * 4.0;
                 product.RandomiseSkin(player);
 			}
-
-			player.Credits -= 8;
-			player.ClientMessage(msgDispensed);
 			numUses--;
 		}
 		else
@@ -58,7 +55,6 @@ function Frob(actor Frobber, Inventory frobWith)
 
 defaultproperties
 {
-     msgDispensed="8 credits deducted from your account"
      msgNoCredits="Costs 8 credits..."
      numUses=10
      msgEmpty="It's empty"

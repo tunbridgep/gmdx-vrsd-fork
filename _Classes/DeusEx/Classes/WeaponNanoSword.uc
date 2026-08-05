@@ -94,7 +94,7 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
         return "";
 
 	winInfo.SetText(sprintf(chargeManager.ChargeRemainingLabel,chargeManager.GetCurrentCharge()));
-    winInfo.SetText(sprintf(chargeManager.BiocellRechargeAmountLabel,chargeManager.GetRechargeAmountDisplay()));
+    winInfo.SetText(sprintf(chargeManager.BiocellRechargeAmountLabel,chargeManager.GetRechargeAmountDisplay(true)));
     winInfo.AddLine();
 }
 
