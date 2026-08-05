@@ -6188,7 +6188,7 @@ function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 // CalculateSkillHealAmount()
 // ----------------------------------------------------------------------
 
-function int CalculateSkillHealAmount(int baseHealPoints)
+function int CalculateSkillHealAmount(int baseHealPoints, optional out int deduction)
 {
 	local float mult;
 	local int adjustedHealAmount;
@@ -6214,9 +6214,11 @@ function int CalculateSkillHealAmount(int baseHealPoints)
         {
             wound = WoundManager.GetWoundByType(class'WoundBurning');
             if (wound != None && wound.HasWound())
-                adjustedHealAmount -= wound.woundData[0];
+                deduction += wound.woundData[0];
         }
 	}
+                
+    adjustedHealAmount -= deduction;
 
 	return adjustedHealAmount;
 }
