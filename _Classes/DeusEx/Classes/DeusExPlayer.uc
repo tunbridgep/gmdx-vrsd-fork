@@ -2807,8 +2807,8 @@ function HoldAug(int num, bool bRelease)
     
     aug = AugmentationSystem.FindAugByKey(num);
     
-    //Active augs only
-    if (aug == None || aug.AugmentationType != Aug_Active)
+    //Active and Auto augs only
+    if (aug == None || (aug.AugmentationType != Aug_Active && aug.AugmentationType != Aug_Automatic))
         return;
     
     //Only activate with button down, only deactivate with release.
