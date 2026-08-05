@@ -28,8 +28,8 @@ var bool bAlarmedOnce;                    //SARGE: Don't re-activate movers afte
 exec function UpdateHDTPsettings()
 {
     //if (MultiSkins[1] == Texture'PinkMaskTex' && MultiSkins[2] == Texture'PinkMaskTex')
-        SetHDTPTex(1);
     super.UpdateHDTPsettings();
+    SetHDTPTex(1);
 }
 
 
@@ -84,7 +84,6 @@ function HackAction(Actor Hacker, bool bHacked)
 		{
 			UnTrigger(Hacker, Pawn(Hacker));
 			bDisabled = True;
-			LightType = LT_None;
             SetHDTPTex(1);
 
 		}
@@ -147,7 +146,6 @@ function Tick(float deltaTime)
 		{
 			if(LightType != LT_Steady)  //I see no reason to do this _every_ tick that the above is valid
 			{
-				LightType = LT_Steady;
                 SetHDTPTex(2);
 				//if(bMaster)
 				//	deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
@@ -157,7 +155,6 @@ function Tick(float deltaTime)
 		{
 			if(LightType != LT_None)
 			{
-				LightType = LT_None;
                 SetHDTPTex(1);
 				//if(bMaster)
 				//		deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
@@ -195,7 +192,6 @@ function Trigger(Actor Other, Pawn Instigator)
 		SoundRadius = 112; //CyberP: larger radius
 		SoundVolume = 96;  //CyberP: less volume
 		curTime = 0;
-		LightType = LT_Steady;
         SetHDTPTex(2);
 		//if(bMaster)
 		//	deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
@@ -240,7 +236,6 @@ function UnTrigger(Actor Other, Pawn Instigator)
 		SoundRadius = 16;
 		SoundVolume = 192;
 		curTime = 0;
-		LightType = LT_None;
         SetHDTPTex(1);
 		//if(bMaster)
 		//	deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
@@ -288,22 +283,24 @@ function SetHDTPTex(int texID)
     switch (texID)
     {
         case 1:
+			LightType = LT_None;
             if (IsHDTP())
             {
-                MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex1");
+                MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPAlarmUnittex1");
                 MultiSkins[2] = Texture'PinkMaskTex';
             }
             else
             {
-                MultiSkins[1] = Texture'BlackMaskTex';
+                MultiSkins[1] = Texture'PinkMaskTex';
                 MultiSkins[2] = Texture'PinkMaskTex';
             }
             break;
         case 2:
+            LightType = LT_Steady;
             if (IsHDTP())
             {
-                MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex2");
-                MultiSkins[2] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex2");
+                MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPAlarmUnittex2");
+                MultiSkins[2] = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPAlarmUnittex2");
             }
             else
             {
