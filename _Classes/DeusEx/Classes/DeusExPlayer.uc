@@ -9950,9 +9950,15 @@ function bool AddCredits(int amount, bool bShowMessage, bool bShowWindow)
 
 function bool PickupNanoKey(NanoKey newKey)
 {
+    local Perk vigilantRecycler;
     if (KeyRing.HasKey(newKey.KeyID))
     {
         ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+
+        vigilantRecycler = PerkManager.GetPerkWithClass(class'PerkVigilantRecycler');
+        if (vigilantRecycler.bPerkObtained)
+            AddCredits(vigilantRecycler.PerkValue,true,true);
+
         return false;
     }
     else
