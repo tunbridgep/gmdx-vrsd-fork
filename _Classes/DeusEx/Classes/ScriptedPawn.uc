@@ -1944,7 +1944,7 @@ function HandleSighting(Pawn pawnSighted)
     //rather than standing around waiting to be headshotted.
     player = DeusExPlayer(pawnSighted);
     
-    if (IsActuallyValidEnemy(pawnSighted) && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
+    if (IsActuallyValidEnemy(pawnSighted) && pawnSighted == player && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
     {
         //player.DebugMessage("High Alert!");
         SetEnemy(player);
@@ -11840,28 +11840,45 @@ Patrol:
 	PickDestination();
 
 Moving:
-	// Move from pathnode to pathnode until we get where we're going
-	if (destPoint != None)
-	{
-		if (!IsPointInCylinder(self, destPoint.Location, 16-CollisionRadius))
-		{
-			EnableCheckDestLoc(true);
-			MoveTarget = FindPathToward(destPoint);
-			while (MoveTarget != None)
-			{
-				if (ShouldPlayWalk(MoveTarget.Location))
-					PlayWalking();
-				MoveToward(MoveTarget, GetWalkingSpeed());
-				CheckDestLoc(MoveTarget.Location, true);
-				if (MoveTarget == destPoint)
-					break;
-				MoveTarget = FindPathToward(destPoint);
-			}
-			EnableCheckDestLoc(false);
-		}
-	}
-	else
-		Goto('Patrol');
+    bCrouching = False;
+    
+    // Move from PathNode to PathNode until we get where we're going
+    if(DestPoint != None)
+    {
+        if (!IsPointInCylinder(self, DestPoint.Location, 16-CollisionRadius))
+        {
+            EnableCheckDestLoc(true);
+            MoveTarget = FindPathToward(DestPoint);
+            
+            if (MoveTarget != None)
+            {
+                while (MoveTarget != None)
+                {
+                    if (ShouldPlayWalk(MoveTarget.Location))
+                        PlayWalking();
+                    MoveToward(MoveTarget, GetWalkingSpeed());
+                    CheckDestLoc(MoveTarget.Location, true);
+                    if (MoveTarget == DestPoint)
+                        break;
+                    MoveTarget = FindPathToward(DestPoint);
+                }
+                if ((MoveTarget != None) && (MoveTarget != DestPoint))
+                {
+                    SetOrders('Standing', 'None', False);
+                    GoToState('Standing');
+                }
+            }
+            else 
+            {
+                if(ShouldPlayWalk(DestPoint.Location))
+                    PlayWalking();
+                MoveToward(DestPoint, GetWalkingSpeed());
+            }
+            EnableCheckDestLoc(false);
+        }
+    }
+    else
+        Goto('Patrol');
 
 Pausing:
 	if (!bAlwaysPatrol)

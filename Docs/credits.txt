@@ -22,6 +22,7 @@ This fork is possible thanks to the following awesome people:
 - WCCC - for the masked GM_Trench model, left-hand models, and other help/support.
 - Diva - for the masked models (except GM_Trench)
 - TheAstropath - for the new more readable HUD Fonts.
+- The amazing people on the Mods4Ever/DXRando discord, for numerous bug fixes and other programming help.
 - The Scummiest of them All - for the GMDX AE logos, splash screens, and other promotional artwork.
 - Popmechanics - Augmentique weapon skins
 - NG+ - Discord server organization and community management.

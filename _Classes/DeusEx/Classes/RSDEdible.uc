@@ -10,6 +10,7 @@ var localized string msgConsumed;                                   //SARGE: Mes
 
 //Add fullness amount to the description field
 var localized String HungerLabel;
+var localized String playerHungerLabel;
 
 var const bool bGluttonous;                                         //SARGE: Is this edible affected by gluttony
 
@@ -61,6 +62,9 @@ function string GetDescription2(DeusExPlayer player)
 
     if (fullness > 0 && (player.bHardcoreMode || player.bRestrictedMetabolism) && (!isA('Vice') || !player.bAddictionSystem))
         str = AddLine(str,sprintf(HungerLabel,fullness));
+
+    if (player.bHardCoreMode || player.bRestrictedMetabolism)
+        str = AddLine(str,player.GetHungerString());
 
     return str;
 }
