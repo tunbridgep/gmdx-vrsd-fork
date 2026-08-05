@@ -1045,6 +1045,8 @@ var transient bool bTookBumpDamage;                   //SARGE: Set when we take 
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
 
+var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
+
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 var const localized string msgSaveName;
