@@ -16950,17 +16950,7 @@ state Dying
 Begin:
     //SARGE: Drop weapons on death.
     if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
-<<<<<<< Updated upstream
         DropWeapon();
-=======
-    {
-        if (DeusExWeapon(Weapon) == None || !DeusExWeapon(Weapon).bNativeAttack)
-        {
-            droppedWeapon = Weapon;
-            DropWeapon(true);
-        }
-    }
->>>>>>> Stashed changes
 
 	WaitForLanding();
 	MoveFallingBody();
