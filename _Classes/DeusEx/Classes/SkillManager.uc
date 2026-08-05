@@ -54,7 +54,7 @@ function CreateSkills(DeusExPlayer newPlayer)
 		{
 			aSkill = Spawn(skillClasses[skillIndex], Self);
 			aSkill.Player = player;
-            aSkill.Init();
+            aSkill.Refresh();
 
 			// Manage our linked list
 			if (aSkill != None)
@@ -71,6 +71,24 @@ function CreateSkills(DeusExPlayer newPlayer)
 				LastSkill  = aSkill;
 			}
 		}
+	}
+}
+
+// ----------------------------------------------------------------------
+// RefreshSkills()
+// SARGE: Calls Refresh() on every Skill.
+// Normally called as part of skill setup (done every reload), but can be
+// manually called too for when skills need to update
+// ----------------------------------------------------------------------
+
+simulated function RefreshSkills()
+{
+	local Skill aSkill;
+	aSkill = FirstSkill;
+	while(aSkill != None)
+	{
+        aSkill.Refresh();
+		aSkill = aSkill.next;
 	}
 }
 
@@ -214,7 +232,7 @@ function SetPlayer(DeusExPlayer newPlayer)
 	while(aSkill != None)
 	{
 		aSkill.player = newPlayer;
-        aSkill.Init();
+        aSkill.Refresh();
 		aSkill = aSkill.next;
 	}
 }

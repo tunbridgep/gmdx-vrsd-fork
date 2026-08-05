@@ -32,13 +32,13 @@ simulated function PreBeginPlay()
 	}
 }
 
-function Init()
+function Refresh()
 {
-    super.Init();
+    super.Refresh();
 
     //SARGE: Have to assign these individually,
     //because UnrealScript doesn't support assigning arrays
-    if (player.bHardcoreMode)
+    if (player.bHardcoreMode || player.bHarderLockpicking)
     {
         LevelValues[0] = LevelValuesHardcore[0];
         LevelValues[1] = LevelValuesHardcore[1];
@@ -51,6 +51,13 @@ function Init()
         LevelValues[1] = LevelValuesEasy[1];
         LevelValues[2] = LevelValuesEasy[2];
         LevelValues[3] = LevelValuesEasy[3];
+    }
+    else
+    {
+        LevelValues[0] = default.LevelValues[0];
+        LevelValues[1] = default.LevelValues[1];
+        LevelValues[2] = default.LevelValues[2];
+        LevelValues[3] = default.LevelValues[3];
     }
 }
 

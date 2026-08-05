@@ -48,14 +48,6 @@ replication
 }
 
 // ----------------------------------------------------------------------
-// SARGE: Init()
-// Called every time we setup a skill, NOT once per playthrough
-// ----------------------------------------------------------------------
-function Init()
-{
-}
-
-// ----------------------------------------------------------------------
 // PreBeginPlay()
 // ----------------------------------------------------------------------
 simulated function PreBeginPlay()
@@ -305,6 +297,16 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 	winInfo.CreatePerkButtons(self);
 	return True;
 }
+
+// ----------------------------------------------------------------------
+// SARGE: Refresh()
+// Called every time we reload the game, and at some other times manually too.
+// Does general skill refresh stuff, like updating values.
+// ----------------------------------------------------------------------
+function Refresh()
+{
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
