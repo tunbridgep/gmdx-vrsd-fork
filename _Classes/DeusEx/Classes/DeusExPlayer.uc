@@ -1051,6 +1051,12 @@ var const localized string msgSaveName;
 
 var const localized String TooSick;
 
+//SARGE: Moved the hunger string text from PersonaScreenHealth
+var const localized String HungerStr;
+var const localized String SatiatedStr;
+var const localized String StarvingStr;
+var const localized String HungryStr;
+
 var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
 
 //Credits update/refactoring
@@ -20667,6 +20673,23 @@ function bool HungerCheck(out string RestrictedMsg)
     return true;
 }
 
+function string GetHungerString(optional string prefix)
+{
+    local string suffix;
+
+    if (prefix == "")
+        prefix = HungerStr;
+
+    if (fullUp >= 100)
+        suffix = SatiatedStr;
+    else if (fullUp < 20) //SARGE: Added starving string
+        suffix = StarvingStr;
+    else if (fullUp < 50)
+        suffix = HungryStr;
+        
+    return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -20988,4 +21011,8 @@ defaultproperties
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"
      msgCreditsDeducted="%d credits deducted from your account"
+     HungerStr="Current Hunger: "
+     SatiatedStr="(Satiated)"
+     HungryStr="(Hungry)"
+     StarvingStr="(Starving)"
 }
