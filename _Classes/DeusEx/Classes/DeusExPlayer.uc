@@ -629,11 +629,6 @@ var travel bool bNoStartingWeaponChoices;                                      /
 //hardcore+
 var travel bool bExtraHardcore;
 
-//Autosave Stuff
-var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
-var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
-var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
-
 //Menu Overhaul stuff
 var localized String RechargedPointLabel;
 var localized String RechargedPointsLabel;
@@ -1054,6 +1049,20 @@ var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip
 
 var const localized string msgSaveName;
 
+var const localized String TooSick;
+
+//SARGE: Moved the hunger string text from PersonaScreenHealth
+var const localized String HungerStr;
+var const localized String SatiatedStr;
+var const localized String StarvingStr;
+var const localized String HungryStr;
+
+var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
+
+//Credits update/refactoring
+var localized string msgCreditsAdded;
+var localized string msgCreditsDeducted;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1401,9 +1410,9 @@ function DebugMessage(coerce string msg)
 }
 
 //SARGE: Allow logging when debug mode is enabled
-function DebugLog(coerce string msg)
+function static DebugLog(coerce string msg)
 {
-    if (bGMDXDebug)
+    if (default.bGMDXDebug)
         Log(msg);
 }
 
@@ -3041,6 +3050,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
     //root.show();
 
     ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
+    SaveConfig();
     return saveIndex;
 }
 
@@ -5503,8 +5513,10 @@ simulated function PlayFootStep()
 
 function bool IsHighlighted(actor A)
 {
-	if (bBehindView)
-		return False;
+    //SARGE: Removed for DXRando compatibility.
+    //Doesn't seem to break anything... For now.
+	//if (bBehindView)
+	//	return False;
 
 	if (A != None)
 	{
@@ -5666,6 +5678,7 @@ function HighlightCenterObject()
     local float rnd;
     local PerkWirelessStrength perk;
     local HackableDevices hackable;
+    local bool bCheckLOSType;
 
     if (IsInState('Dying'))
 		return;
@@ -5723,7 +5736,8 @@ function HighlightCenterObject()
 		foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
 		{
             //SARGE: Stop being able to frob things through walls
-            if (target.IsA('DeusExDecoration') && !DeusExDecoration(target).bSkipLOSFrobCheck && !LineOfSightTo(target))
+            bCheckLOSType = (target.IsA('DeusExDecoration') && !DeusExDecoration(target).bSkipLOSFrobCheck) || target.IsA('DeusExCarcass') /*|| target.IsA('DeusExPickup') || target.IsA('DeusExWeapon')*/;
+            if (bCheckLOSType && !LineOfSightTo(target))
                 continue;
 
 			if (IsFrobbable(target) && (target != CarriedDecoration))
@@ -9796,7 +9810,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     
             //Auto-equip chargedpickups if we have nothing else equipped
             cp = ChargedPickup(FrobTarget);
-            if (cp != None && !bLeftClicked && !cp.bUnequipWhenDrained && bAutoUseChargedPickups && cp.IsTorsoFree())
+            if (cp.Owner == self && cp != None && !bLeftClicked && !cp.bUnequipWhenDrained && bAutoUseChargedPickups && cp.IsTorsoFree())
                 cp.Activate();
         }
 	}
@@ -9907,6 +9921,39 @@ function NanoKeyInfo CreateNanoKeyInfo()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Add a new function for adding credits, since we now do some
+// fancy displaying and such when adding credits
+// ----------------------------------------------------------------------
+
+function bool AddCredits(int amount, bool bShowMessage, bool bShowWindow)
+{
+    if (Credits + amount < 0 && amount < 0) //Not enough credits to remove
+        return false;
+    Credits += amount;
+
+    if (bShowMessage)
+    {
+        if (amount >= 0)
+            ClientMessage(Sprintf(msgCreditsAdded, amount));
+        else
+            ClientMessage(Sprintf(msgCreditsDeducted, -amount));
+    }
+
+    //PlaySound(Sound'objpickup',SLOT_None);
+
+    //Show the window (if we received only, for now)
+    if (amount > 0 && bCreditsShowReceivedItemsWindow && bShowWindow)
+        if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
+            DeusExRootWindow(rootWindow).hud.receivedItems.AddCredits(amount);
+
+    //Last minute check for credits going below zero.
+    //Probably not necessary.
+    Credits = MAX(Credits,0);
+
+    return true;
+}
+
+// ----------------------------------------------------------------------
 // PickupNanoKey()
 //
 // Picks up a NanoKey
@@ -9917,9 +9964,15 @@ function NanoKeyInfo CreateNanoKeyInfo()
 
 function bool PickupNanoKey(NanoKey newKey)
 {
+    local Perk vigilantRecycler;
     if (KeyRing.HasKey(newKey.KeyID))
     {
         ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+
+        vigilantRecycler = PerkManager.GetPerkWithClass(class'PerkVigilantRecycler');
+        if (vigilantRecycler.bPerkObtained)
+            AddCredits(vigilantRecycler.PerkValue,true,true);
+
         return false;
     }
     else
@@ -12035,8 +12088,9 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
                                 if (bAlwaysDropCarcasses)
                                 {
                                     loc = Location;
-                                    loc.z -= CollisionHeight / 2;
-                                    loc.z -= carc.CollisionHeight / 2;
+                                    //loc.z -= CollisionHeight / 2;
+                                    //loc.z -= carc.CollisionHeight / 2;
+                                    loc.z -= 10;
                                     carc.bCollideWorld = false;
                                     carc.SetLocation(loc);
                                     carc.bCollideWorld = true;
@@ -12852,6 +12906,14 @@ exec function AttachLaser()
     W = DeusExWeapon(Weapon);
     if (W != None)
         W.ToggleAttachedLaser(true);
+}
+
+exec function AttachFullAuto()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedFullAuto(true);
 }
 
 // ----------------------------------------------------------------------
@@ -20216,7 +20278,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
         if (lawfare != None && lawfare.bPerkObtained)
             return lawfare.PerkValue;
         else
-            return 1;
+            return 1 * fGlobalAmmoMod;
     }
     
     //SARGE: Special case for HE Rockets
@@ -20225,8 +20287,8 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     {
         cap = AugAmmoCap(AugmentationSystem.GetAug(class'AugAmmoCap'));
         if (cap != None)
-            return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + cap.CurrentLevel;
-        return DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy');
+            return (DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') + cap.CurrentLevel) * fGlobalAmmoMod;
+        return (DXammotype.default.MaxAmmo + SkillSystem.GetSkillLevel(class'SkillWeaponHeavy')) * fGlobalAmmoMod;
     }
 
 
@@ -20260,7 +20322,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
         adjustedMaxAmmo *= 1.5;
 
     //BroadcastMessage(adjustedMaxAmmo);
-    return adjustedMaxAmmo;
+    return adjustedMaxAmmo * fGlobalAmmoMod;
 }
 
 exec function AllAmmo()                                                         //RSD: Function to override PlayerPawn in Engine classes for adjusted ammo counts
@@ -20591,6 +20653,61 @@ function LipSynch(float deltaTime)
 	LoopBaseConvoAnim();
 }
 
+//SARGE: Check if we can consume something
+function bool HungerCheck(out string RestrictedMsg)
+{
+    local float maxFullness;
+    local Wound wound, wound2;
+    local Perk glutton;
+    
+    //SARGE: Radiation sickness and poisoning now stop eating entirely
+    if (WoundManager != None)
+    {
+        wound = WoundManager.GetWoundByType(class'WoundRadiation');
+        wound2 = WoundManager.GetWoundByType(class'WoundPoison');
+        if ((wound != None && wound.HasWound()) || (wound2 != None && wound2.HasWound()))
+        {
+            RestrictedMsg = TooSick;
+            return false;
+        }
+    }
+    
+    //Don't check for hunger outside of hardcore mode, or without the option
+    if (!bHardCoreMode && !bRestrictedMetabolism)
+        return true;
+
+    glutton = PerkManager.GetPerkWithClass(class'PerkGlutton');
+
+    maxFullness = 100;
+
+    if (glutton != None && glutton.bPerkObtained)
+        maxFullness *= glutton.PerkValue;
+
+    //Check if we're too full
+    if (int(fullUp) >= int(maxFullness))
+    {
+        RestrictedMsg = fatty;
+        return false;
+    }
+    return true;
+}
+
+function string GetHungerString(optional string prefix)
+{
+    local string suffix;
+
+    if (prefix == "")
+        prefix = HungerStr;
+
+    if (fullUp >= 100)
+        suffix = SatiatedStr;
+    else if (fullUp < 20) //SARGE: Added starving string
+        suffix = StarvingStr;
+    else if (fullUp < 50)
+        suffix = HungryStr;
+        
+    return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
+}
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -20909,4 +21026,12 @@ defaultproperties
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
+     TooSick="You feel too nauseous to consume anything"
+     fGlobalAmmoMod=1.0;
+     msgCreditsAdded="%d credits added"
+     msgCreditsDeducted="%d credits deducted from your account"
+     HungerStr="Current Hunger: "
+     SatiatedStr="(Satiated)"
+     HungryStr="(Hungry)"
+     StarvingStr="(Starving)"
 }

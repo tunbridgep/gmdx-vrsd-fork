@@ -29,6 +29,7 @@ var localized string PerkMenuTitle;
 var localized string SkillPointsToMaster; //SARGE: This is now separated out
 
 var const bool bSmartSkillString;           //SARGE: If enabled, will use sprintf for the skill values, rather than printing the description directly.
+var float smartSkillMult;                  //SARGE: What our skill values are multiplied by for display.
 
 // ----------------------------------------------------------------------
 // network replication
@@ -44,6 +45,14 @@ replication
     reliable if (Role < ROLE_Authority)
         IncLevel, Use, DecLevel;
 
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Init()
+// Called every time we setup a skill, NOT once per playthrough
+// ----------------------------------------------------------------------
+function Init()
+{
 }
 
 // ----------------------------------------------------------------------
@@ -267,10 +276,10 @@ function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
     local int s0, s1, s2, s3;
     if (bSmartSkillString)
     {
-        s0 = levelValues[0] * 100;
-        s1 = levelValues[1] * 100;
-        s2 = levelValues[2] * 100;
-        s3 = levelValues[3] * 100;
+        s0 = levelValues[0] * smartSkillMult;
+        s1 = levelValues[1] * smartSkillMult;
+        s2 = levelValues[2] * smartSkillMult;
+        s3 = levelValues[3] * smartSkillMult;
         return sprintf(Description,s0,s1,s2,s3);
     }
     else
@@ -285,7 +294,7 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 	if (winInfo == None)
 		return False;
 
-	winInfo.Clear();
+	//winInfo.Clear();
 	winInfo.SetTitle(sprintf(PerkMenuTitle,SkillName));
 	/*winInfo.SetText(PerksDescription);
 	winInfo.SetText(LineBreaker);
@@ -311,4 +320,5 @@ defaultproperties
      NetUpdateFrequency=5.000000
      PerkMenuTitle="Perks - %s"
      SkillPointsToMaster="Total skill points to master: %n"
+     smartSkillMult=100
 }

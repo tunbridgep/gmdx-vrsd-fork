@@ -226,7 +226,7 @@ function WithdrawCredits(optional bool bWithdrawAll)
 			else
 				atmOwner.ModBalance(winTerm.GetUserIndex(), numCredits, True);
 
-			player.Credits += numCredits;
+			player.AddCredits(numCredits,true,false);
 			winInfo.SetText(String(numCredits) @ CreditsWithdrawnLabel);
 
 			// If the user withdrew *ALL* the money and this ATM machine

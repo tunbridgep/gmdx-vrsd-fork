@@ -34,14 +34,11 @@ var localized String StatusTitle;
 var localized String AvgHealthStr;
 var localized String StaminaStr;
 var localized String HungerStr;
-var localized String SatiatedStr;
 var localized String MoralityStr;
 var localized String PacifistStr;
 var localized String KillerStr;
 var localized String MassMurdererStr;
 var localized String LocStr;
-var localized String HungryStr;
-var localized String StarvingStr;
 var localized String stepsStr;
 var localized String distStr;
 var localized String heartStr;
@@ -453,26 +450,6 @@ function PushHealth()
 	playerHealth[5] = player.HealthLegLeft;
 }
 
-simulated function String FormatFloatString(float value, float precision)
-{
-	local string str;
-
-	if (precision == 0.0)
-		return "ERR";
-
-	// build integer part
-	str = String(Int(value));
-
-	// build decimal part
-	if (precision < 1.0)
-	{
-		value -= Int(value);
-		str = str $ "." $ String(Int((0.5 * precision) + value * (1.0 / precision)));
-	}
-
-	return str;
-}
-
 function Tick(float deltaTime)
 {
     local string conc;
@@ -538,14 +515,7 @@ function DisplayCommonInfo()
      */
     if (player.bHardCoreMode || player.bRestrictedMetabolism)                   //RSD: Added menu option
     {
-        if (player.fullUp >= 100)
-            suffix = SatiatedStr;
-        else if (player.fullUp < 20) //SARGE: Added starving string
-            suffix = StarvingStr;
-        else if (player.fullUp < 50)
-            suffix = HungryStr;
-        
-        winInfo.SetText(HungerStr $ FormatFloatString(player.fullUp,1.0) $ "%" $ suffix );//RSD: Now FormatFloatString(fullUp) because it's now a float
+        winInfo.SetText(player.GetHungerString(HungerStr));
     }
 
     //Speed and Accuracy Penalty
@@ -594,7 +564,7 @@ function DisplayCommonInfo()
         if (speedPenalty % 1 == 0)
             winInfo.SetText(speedLabel $ "-" $ int(speedPenalty) $ "%");
         else
-            winInfo.SetText(speedLabel $ "-" $ FormatFloatString(speedPenalty,1.0) $ "%");
+            winInfo.SetText(speedLabel $ "-" $ class'StringUtils'.static.FormatFloatString(speedPenalty,1.0) $ "%");
      }
      else
         winInfo.SetText(speedLabel $ "N/A");
@@ -605,7 +575,7 @@ function DisplayCommonInfo()
         if (accuracyPenalty % 1 == 0)
             winInfo.SetText(accuracyLabel $ "-" $ int(accuracyPenalty) $ "%");
         else
-            winInfo.SetText(accuracyLabel $ "-" $ FormatFloatString(accuracyPenalty,1.0) $ "%");
+            winInfo.SetText(accuracyLabel $ "-" $ class'StringUtils'.static.FormatFloatString(accuracyPenalty,1.0) $ "%");
      }
      else
         winInfo.SetText(accuracyLabel $ "N/A");
@@ -654,8 +624,8 @@ function UpdateAddictionText()
         winInfo.AddLine();
         winInfo.SetText(drugLabels[i]);
         winInfo.AddLine();
-        winInfo.SetText(addictionLabel $ FormatFloatString(player.AddictionManager.addictions[i].level,1.0) $ "% ("
-                                    $ thresholdLabel $ FormatFloatString(player.AddictionManager.addictions[i].threshold,1.0) $ "%)");
+        winInfo.SetText(addictionLabel $ class'StringUtils'.static.FormatFloatString(player.AddictionManager.addictions[i].level,1.0) $ "% ("
+                                    $ thresholdLabel $ class'StringUtils'.static.FormatFloatString(player.AddictionManager.addictions[i].threshold,1.0) $ "%)");
         if (player.AddictionManager.addictions[i].drugTimer > 0.0)
         {
             winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
@@ -1375,14 +1345,11 @@ defaultproperties
      AvgHealthStr=" Health: "
      StaminaStr=" Fatigue: "
      HungerStr=" Hunger: "
-     SatiatedStr=" (Satiated)"
      MoralityStr=" Morality: "
      PacifistStr="Pacifist"
      killerStr=" Total Kills: "
      MassMurdererStr="Mass Murderer"
      LocStr=" Location: "
-     HungryStr=" (Hungry)"
-     StarvingStr=" (Starving)"
      stepsStr="Steps Taken: "
      distStr="Distance Travelled: "
      heartStr="Heart Rate: "

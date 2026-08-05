@@ -185,6 +185,9 @@ var localized String msgTimeUnit;
 var localized String msgMassUnit;
 var localized String msgNotWorking;
 
+var localized String msgFullAutoEnabled;
+var localized String msgFullAutoDisabled;
+
 //
 // strings for info display
 //
@@ -228,6 +231,7 @@ var bool bCanHaveModFullAuto;
 var travel float ModShotTime;
 var travel float ModDamage;
 var travel bool  bFullAuto; //CyberP: this is different to bAutomatic.
+var travel bool  bHadFullAuto; //SARGE: To store if we've actually literally got a full auto mod installed, disabled or not.
 var localized String msgInfoROF;
 var localized String msgInfoFullAuto;
 var localized String msgSemi;
@@ -370,6 +374,7 @@ var(GMDX) bool bDontRemoveOnMissionComplete;                                    
 var bool bSwitchingToLaser;
 var bool bSwitchingToSilencer;
 var bool bSwitchingToScope;
+var Sound AttachmentSound;      //SARGE: The sound we use when attaching/detatchin things
 
 //Penalties to accuracy and reload speed while using mods.
 enum EAddonPenaltyType
@@ -548,6 +553,27 @@ function float GetAddonPenalty(EAddonPenaltyType penaltyType)
 // SARGE: Functions for attaching/detaching addons
 // ----------------------------------------------------------------------
 
+//This one is much simpler as it has no animation.
+function ToggleAttachedFullAuto(bool bPlaySound)
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(Owner);
+
+    if (bHadFullAuto && player != None)
+    {
+        if (IsA('WeaponStealthPistol'))
+            bAutomatic = !bFullAuto;
+        bFullAuto = !bFullAuto;
+        if (bPlaySound)
+            PlaySound(CopyModsSound,SLOT_None,0.8);
+
+        if (bFullAuto)
+            player.ClientMessage(msgFullAutoEnabled);
+        else
+            player.ClientMessage(msgFullAutoDisabled);
+    }
+}
+
 function ToggleAttachedLaser(bool bRealtime)
 {
     if (bHadLaser)
@@ -567,6 +593,7 @@ function ToggleAttachedScope(bool bRealtime)
 {
     if (bHadScope)
     {
+        ScopeOff();
         if (bRealtime)
         {
             bSwitchingToScope = true;
@@ -616,6 +643,9 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     local class<Ammo> defAmmoClass;
     local int intj;
     local Texture overrideTexture;
+
+    if (bNativeAttack)
+        return false;
 
     if (P == None)
         return false;
@@ -1474,10 +1504,12 @@ function bool CopyModsFrom(DeusExWeapon W, optional bool bNotify)
         bHasScope = True;
         bCopied = true;
     }
-    if (W.bFullAuto)     //CyberP:
+    if (W.bHadFullAuto)     //CyberP:
     {
-        bFullAuto = True;
+        bHadFullAuto = True;
         bCopied = true;
+        //SARGE: Only enable full auto, never disable it.
+        bFullAuto = !bFullAuto && W.bFullAuto;
     }
 
     // copy the actual stats as well
@@ -6642,7 +6674,7 @@ simulated function bool UpdateInfo(Object winObject)
                 }
                 if (bCanHaveModFullAuto)
                 {
-	            if (bFullAuto)
+	            if (bHadFullAuto)
 	         	    winInfo.AddModInfo(msgInfoFullAuto, 1, (numMods == 1), 4);
                 else
                     winInfo.AddModInfo(msgInfoFullAuto, 0, (numMods == 1), 4);
@@ -7179,9 +7211,7 @@ ignores Fire, AltFire;
         bHasScope = !bHasScope;
     else if (bSwitchingToSilencer)
         bHasSilencer = !bHasSilencer;
-    else if (bSwitchingToLaser)
-        bHasLaser = !bHasLaser;
-    Owner.PlaySound(AltFireSound, SLOT_None,,, 1024);
+    Owner.PlaySound(AttachmentSound, SLOT_None,,, 1024);
     if(hasAnim('ReloadEnd'))
         PlayAnim('ReloadEnd',1.0-(ModReloadTime*0.8));
     FinishAnim();
@@ -7976,6 +8006,8 @@ defaultproperties
      msgDama="Damage:"
      msgRate="Rate of Fire:"
      msgRequires="Requires"
+     msgFullAutoEnabled="Full-Auto Enabled"
+     msgFullAutoDisabled="Full-Auto Disabled"
      negTime=0.765000
      attackSpeedMult=1.000000
      abridgedName="DEFAULT NAME - REPORT BUG"
@@ -8011,4 +8043,5 @@ defaultproperties
      currentWeaponSkin="default"
      totalScopeTime=0.41
      inertiaSpeed=30
+     AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
 }

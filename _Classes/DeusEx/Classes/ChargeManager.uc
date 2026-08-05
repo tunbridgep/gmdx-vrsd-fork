@@ -63,25 +63,25 @@ function RechargeFrom(ChargeManager other)
         target.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
         
         if (charge == maxCharge)
-            owner.ClientMessage(msgFullyCharged);
+            owner.ClientMessage(Sprintf(msgFullyCharged,target.itemName));
         else
-            owner.ClientMessage(Sprintf(msgRecharged,amount));
+            owner.ClientMessage(Sprintf(msgRecharged,target.itemName,amount));
     }
 }
 
 //Gets the recharge amount per biocell
-function float GetRechargeAmount()
+function float GetRechargeAmount(bool bBiocell)
 {
-    if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
+    if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true && bBiocell)                         //RSD: New Repairman perk
         return (1.5 * chargeMult);
     else 
         return chargeMult;
 }
 
 //Gets the recharge amount per biocell in a nice format
-function int GetRechargeAmountDisplay()
+function int GetRechargeAmountDisplay(bool bBiocell)
 {
-    return int(GetRechargeAmount() * 100);
+    return int(GetRechargeAmount(bBiocell) * 100);
 }
 
 function Setup(DeusExPlayer newOwner, Inventory newTarget)
@@ -92,14 +92,14 @@ function Setup(DeusExPlayer newOwner, Inventory newTarget)
 }
 
 //Recharges the item, and returns a relevant charge message
-function bool Recharge(optional out string msg)
+function bool Recharge(bool bBiocell,optional out string msg)
 {
     local float mult;
 
     if (target == None)
         return false;
 
-    mult = GetRechargeAmount();
+    mult = GetRechargeAmount(bBiocell);
     charge += mult * maxCharge;
     if (charge >= maxCharge)
     {
@@ -108,7 +108,7 @@ function bool Recharge(optional out string msg)
     }
     else
     {
-        msg = sprintf(msgRecharged,GetRechargeAmountDisplay());
+        msg = sprintf(msgRecharged,target.itemName,GetRechargeAmountDisplay(bBiocell));
     }
     //ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
     unDimIcon();                                      //RSD
@@ -242,8 +242,8 @@ defaultproperties
      ChargeRemainingLabel="Charge remaining: %d%%"
      ChargeRemainingLabelSmall="%d%%"
      BiocellRechargeAmountLabel="Biocell Recharge Amount: %d%%"
-     msgFullyCharged="Fully Recharged"
-     msgRecharged="Recharged by %d%%"
+     msgFullyCharged="%d Fully Recharged"
+     msgRecharged="%d Recharged by %d%%"
      charge=2000
      maxCharge=2000
      chargeMult=0.200000

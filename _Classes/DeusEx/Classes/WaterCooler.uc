@@ -15,22 +15,26 @@ function Timer()
 
 function Frob(Actor Frobber, Inventory frobWith)
 {
+    local string RestrictedMsg;
 	Super.Frob(Frobber, frobWith);
 
 	if (bUsing)
+    {
 		return;
-
-	if (numUses <= 0)
+    }
+	else if (numUses <= 0)
 	{
 		if (Pawn(Frobber) != None)
 			Pawn(Frobber).ClientMessage(msgEmpty);
 		return;
 	}
-	else if (Frobber.IsA('DeusExPlayer') && DeusExPlayer(Frobber).fullUp >= 100 && (DeusExPlayer(Frobber).bHardCoreMode || DeusExPlayer(Frobber).bRestrictedMetabolism)) //RSD: Added option stuff
-	{
-	    DeusExPlayer(Frobber).ClientMessage(DeusExPlayer(Frobber).fatty);
-	    return;
-	}
+    
+	if (DeusExPlayer(Frobber) != None && !DeusExPlayer(Frobber).HungerCheck(RestrictedMsg))
+    {
+        if (RestrictedMsg != "")
+            DeusExPlayer(Frobber).clientMessage(RestrictedMsg);
+        return;
+    }
 
 	SetTimer(2.0, False);
 	bUsing = True;

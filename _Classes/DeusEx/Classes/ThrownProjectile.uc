@@ -375,7 +375,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     {
         //SARGE: Cannot pick up grenades if we lack the skill
         if (!CanRearm(player))
-            Player.ClientMessage(sprintf(msgCannotRearm,itemName));
+            Player.ClientMessage(sprintf(msgCannotRearm,player.SkillSystem.GetSkillFromClass(class'SkillDemolition').GetLevelString(rearmSkillRequired),itemName));
         else
             Super.Frob(Frobber, frobWith);
     }
@@ -802,5 +802,5 @@ defaultproperties
      bBounce=True
      bFixedRotationDir=True
      disabledText="The internal circuitry is damaged."
-     msgCannotRearm="You lack the Demolitions skill to rearm the %d"
+     msgCannotRearm="You need a Demolitions skill of %d to rearm the %d"
 }

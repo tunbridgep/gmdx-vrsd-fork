@@ -30,16 +30,8 @@ auto state Pickup
 
 		if (player != None)
 		{
-		    //if (player.PerkNamesArray[33]==1)                                 //RSD: No more Neat Hack perk
-			//numCredits *= 1.5;
-			//PlaySound(Sound'objpickup',SLOT_None);
-			player.Credits += numCredits;
-			player.ClientMessage(Sprintf(msgCreditsAdded, numCredits));
+            player.AddCredits(numCredits,true,true);
 			player.FrobTarget = None;
-
-            if (player.bCreditsShowReceivedItemsWindow)
-                player.AddReceivedItem(string(self.name),self,numCredits);
-
 			Destroy();
 		}
 	}
@@ -48,7 +40,6 @@ auto state Pickup
 defaultproperties
 {
      numCredits=100
-     msgCreditsAdded="%d credits added"
      ItemName="Credit Chit"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
      PlayerViewMesh=LodMesh'DeusExItems.Credits'

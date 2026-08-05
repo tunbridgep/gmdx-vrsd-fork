@@ -136,9 +136,17 @@ function Timer()
                 //SARGE: We need to remove the remaining greasels/karkians
                 //otherwise Walton Simons does a T-pose
 				foreach AllActors(class'Karkian', K)
-                    K.LeaveWorld();
+                {
+                    K.Health = 0;
+                    K.HealthTorso = 0;
+                    K.TakeDamage(1,none,vect(0,0,0),vect(0,0,0),'Shot');
+                }
 				foreach AllActors(class'Greasel', G)
-                    G.LeaveWorld();
+                {
+                    G.Health = 0;
+                    G.HealthTorso = 0;
+                    G.TakeDamage(1,none,vect(0,0,0),vect(0,0,0),'Shot');
+                }
 
 				foreach AllActors(class'WaltonSimons', Walton)
 					Walton.EnterWorld();
