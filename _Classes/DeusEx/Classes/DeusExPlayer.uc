@@ -1130,39 +1130,39 @@ replication
 }
 
 //SARGE: Gets any adjustments to our head health. For now, just medical skill.
-function int GetHeadHealthAdjustment()
+function float GetHeadHealthAdjustment()
 {
-    local Skill sk;
-    local int re;
+    local SkillMedicine sk;
+    local float re;
     
     re = 0;
 
     if (SkillSystem!=None)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
 
     return re;
 }
 
 //SARGE: Gets any adjustments to our torso health, such as from medical skill, drunkenness or blood loss.
-function int GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
+function float GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
 {
-    local int re;
+    local float re;
     local Wound wound;
-    local Skill sk;
+    local SkillMedicine sk;
     
     re = 0;
 
     if (SkillSystem!=None && !bNoMedicineSkill)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
-
+    
     if (AddictionManager != None)
 		re += AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
 
@@ -1611,12 +1611,6 @@ local DeusExPickup     PU;                                                      
               DC.LightType=LT_None;
 	       }
         }
-        if (SkillSystem != None && CombatDifficulty <= 1)
-        {
-            SkillSystem.UpdateSkillLevelValues(class'SkillTech');               //RSD: This function now BUFFS the lockpicking/electronics skill for Easy
-            SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');        //RSD: From 10/15/25/50 -> 10/25/40/75
-        }
-
     }
     else
     {
@@ -1642,11 +1636,6 @@ local DeusExPickup     PU;                                                      
               DC.SetPhysics(PHYS_Flying);
               DC.LightType=LT_None;
 	       }
-       }
-       if (SkillSystem != None)
-       {
-        SkillSystem.UpdateSkillLevelValues(class'SkillTech');                   //RSD: This function still nerfs lockpicks/multitools on Hardcore, values altered
-        SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');            //RSD: used to give lockpicks values of 5/10/15/50, now 5/10/20/50
        }
     }
 
@@ -6204,29 +6193,18 @@ function int CalculateSkillHealAmount(int baseHealPoints)
 	local float mult;
 	local int adjustedHealAmount;
     local Wound wound;
+	local Skill sk;
 
 	// check skill use
 	if (SkillSystem != None)
 	{
-		/*mult = SkillSystem.GetSkillLevelValue(class'SkillMedicine');
-        //RSD: Unfortunately we have to hack in the new medkit level values (30/45/65/90) here so they don't mess things up elsewhere
-        if ((mult > 1.99)  && (mult < 2.01))
-        	mult = 1.500000;
-        else if ((mult > 2.49) && (mult < 2.51))
-        	mult = 2.166667;
-        else if ((mult > 2.99) && (mult < 3.01))
-        	mult = 3.000000;
-       	else mult = 1.000000;*/                                                 //RSD: this is dumb but I'd rather have the default be 30
+	    sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
 
-       	mult = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        //RSD: Still hacking medkit level values (30/45/65/90), but 30% less stupidly
-        if (mult == 1)
-        	mult = 1.500000;
-        else if (mult == 2)
-        	mult = 2.166667;
-        else if (mult == 3)
-        	mult = 3.000000;
-       	else mult = 1.000000;
+        //SARGE: This was horrible hardcoded before for vRSD, but no idea why - the
+        //medicine skill values weren't being used for anything? I have adjusted them accordingly
+        mult = sk.LevelValues[sk.CurrentLevel];
+        if (mult <= 0.0)
+            mult = 1.0;
 
 		// apply the skill
 		adjustedHealAmount = baseHealPoints * mult;
@@ -16348,9 +16326,9 @@ function GenerateTotalHealth()
 	local float headMult, torsoMult;
 
 	//SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
-    headMult = default.HealthHead/float(default.HealthHead+GetHeadHealthAdjustment());
-    torsoMult = default.HealthTorso/float(default.HealthTorso+GetTorsoHealthAdjustment());
-
+    headMult = default.HealthHead/(default.HealthHead+GetHeadHealthAdjustment());
+    torsoMult = default.HealthTorso/(default.HealthTorso+GetTorsoHealthAdjustment());
+    
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
 	if ((HealthHead <= 0) || (HealthTorso <= 0))

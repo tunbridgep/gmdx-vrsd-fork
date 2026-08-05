@@ -11,6 +11,11 @@ var float mpLevel1;
 var float mpLevel2;
 var float mpLevel3;
 
+//SARGE: Added special value arrays for HC and Easy
+//vRSD previously hardcoded these :laughing_emoji:
+var float LevelValuesHardcore[4];
+var float LevelValuesEasy[4];
+
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
@@ -27,41 +32,26 @@ simulated function PreBeginPlay()
 	}
 }
 
-//SARGE: This is absolutely abysmally awful!
-//We need to manually replace the text with the updated skill info
-//This is so that it works in the main menu
-//TODO: Tidy this up by using a centralised function for level values
-function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
+function Init()
 {
-    local int s0, s1, s2, s3;
-    if (bSmartSkillString)
+    super.Init();
+
+    //SARGE: Have to assign these individually,
+    //because UnrealScript doesn't support assigning arrays
+    if (player.bHardcoreMode)
     {
-        if (bHardCoreMode)
-        {
-            s0=5;
-            s1=10;
-            s2=20;
-            s3=50;
-        }
-        else if(CombatDifficulty <= 1.0)                                  //RSD: Repurposing for Easy mode (original lockpick/multitool strengths)
-        {
-            s0=10;
-            s1=25;
-            s2=40;
-            s3=75;
-        }
-        else
-        {
-	        s0 = default.LevelValues[0] * 100;
-	        s1 = default.LevelValues[1] * 100;
-	        s2 = default.LevelValues[2] * 100;
-	        s3 = default.LevelValues[3] * 100;
-        }
-        
-        return sprintf(Description,s0,s1,s2,s3);
+        LevelValues[0] = LevelValuesHardcore[0];
+        LevelValues[1] = LevelValuesHardcore[1];
+        LevelValues[2] = LevelValuesHardcore[2];
+        LevelValues[3] = LevelValuesHardcore[3];
     }
-    else
-        return Description;
+    else if (player.CombatDifficulty <= 1)
+    {
+        LevelValues[0] = LevelValuesEasy[0];
+        LevelValues[1] = LevelValuesEasy[1];
+        LevelValues[2] = LevelValuesEasy[2];
+        LevelValues[3] = LevelValuesEasy[3];
+    }
 }
 
 defaultproperties
@@ -85,4 +75,12 @@ defaultproperties
      LevelValues(3)=0.500000
      itemNeeded=Class'DeusEx.Lockpick'
      bSmartSkillString=true
+     LevelValuesHardcore(0)=0.050000
+     LevelValuesHardcore(1)=0.100000
+     LevelValuesHardcore(2)=0.200000
+     LevelValuesHardcore(3)=0.50000
+	 LevelValuesEasy(0)=0.100000
+     LevelValuesEasy(1)=0.250000
+     LevelValuesEasy(2)=0.400000
+     LevelValuesEasy(3)=0.750000
 }
