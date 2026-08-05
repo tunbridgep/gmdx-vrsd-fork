@@ -1996,7 +1996,7 @@ function FinishButtonDrag()
 		{
             if (!WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.IsFull())
             {
-                WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.Recharge(msg);
+                WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.Recharge(true,msg);
                 winStatus.AddText(msg);
                 Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
                 //WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.unDimIcon(); //SARGE: May crash the game, IDK???!!!

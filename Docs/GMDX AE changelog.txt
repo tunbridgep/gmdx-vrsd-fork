@@ -11,6 +11,7 @@ New Features:
 
 Bug Fixes:
 - Fixed Laser Sight being left enabled when using the Spy Drone.
+- Fixed Repair Bots giving the DTS extra charge with the Field Repair perk.
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
 - Various fixes for red borders when hovering over some items in certain circumstances.
 - Fixed Female JC not displaying overlays in the Augmentation screen when Augs are installed.
