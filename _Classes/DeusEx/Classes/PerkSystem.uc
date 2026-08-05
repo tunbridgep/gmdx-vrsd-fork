@@ -104,6 +104,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkTurretDomination');
 
     //General Perks
+	AddPerk(Class'DeusEx.PerkVigilantRecycler');
 	AddPerk(Class'DeusEx.PerkFirefighter');
 	AddPerk(Class'DeusEx.PerkLawfare');
 	AddPerk(Class'DeusEx.PerkGlutton');
