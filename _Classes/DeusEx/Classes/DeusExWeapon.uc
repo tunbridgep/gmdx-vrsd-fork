@@ -592,6 +592,7 @@ function ToggleAttachedScope(bool bRealtime)
 {
     if (bHadScope)
     {
+        ScopeOff();
         if (bRealtime)
         {
             bSwitchingToScope = true;
@@ -641,6 +642,9 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     local class<Ammo> defAmmoClass;
     local int intj;
     local Texture overrideTexture;
+
+    if (bNativeAttack)
+        return false;
 
     if (P == None)
         return false;

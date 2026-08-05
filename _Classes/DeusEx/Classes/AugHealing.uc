@@ -14,22 +14,6 @@ state Active
 	Begin:
 	Loop:
 		Sleep(2.0);
-		/*adj_med=100.0;
-		if (sk_med==None)
-		{
-		  if (Player.SkillSystem!=None)
-		  {
-			 sk_med = Player.SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
-			 if (sk_med!=None)
-				adj_med=(200+sk_med.CurrentLevel*10)/2.0;
-		  }
-	   } else
-		  adj_med=(200+sk_med.CurrentLevel*10)/2.0;
-		if (player.DrugsTimerArray[1] > 0.0)                                        //RSD: Get 5 bonus health for every 2 min on timer
-			adj_med += 5.0*int(player.DrugsTimerArray[1]/120.0+1.0)/2.0;
-		if (player.DrugsWithdrawalArray[2] == 1)                                    //RSD: 10 health penalty for zyme withdrawal
-			adj_med -= 10.0/2.0;
-		if (Player.Health < adj_med)  //GMDX + current med skill*/
         //player.GenerateTotalHealth(); //SARGE: Added so we take into account health changes (like from alcohol, traumas, etc).
 
         max = Player.GenerateTotalMaxHealth(); //RSD: New formula, needed to properly account for additive health bonuses/penalties (don't function properly over averaging)
