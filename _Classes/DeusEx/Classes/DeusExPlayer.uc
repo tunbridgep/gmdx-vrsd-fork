@@ -629,11 +629,6 @@ var travel bool bNoStartingWeaponChoices;                                      /
 //hardcore+
 var travel bool bExtraHardcore;
 
-//Autosave Stuff
-var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
-var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
-var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
-
 //Menu Overhaul stuff
 var localized String RechargedPointLabel;
 var localized String RechargedPointsLabel;
@@ -1409,9 +1404,9 @@ function DebugMessage(coerce string msg)
 }
 
 //SARGE: Allow logging when debug mode is enabled
-function DebugLog(coerce string msg)
+function static DebugLog(coerce string msg)
 {
-    if (bGMDXDebug)
+    if (default.bGMDXDebug)
         Log(msg);
 }
 
@@ -3039,6 +3034,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
     //root.show();
 
     ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
+    SaveConfig();
     return saveIndex;
 }
 
@@ -5501,8 +5497,10 @@ simulated function PlayFootStep()
 
 function bool IsHighlighted(actor A)
 {
-	if (bBehindView)
-		return False;
+    //SARGE: Removed for DXRando compatibility.
+    //Doesn't seem to break anything... For now.
+	//if (bBehindView)
+	//	return False;
 
 	if (A != None)
 	{
@@ -20633,7 +20631,7 @@ function LipSynch(float deltaTime)
 //SARGE: Check if we can consume something
 function bool HungerCheck(out string RestrictedMsg)
 {
-    local int maxFullness;
+    local float maxFullness;
     local Wound wound, wound2;
     local Perk glutton;
     
@@ -20661,7 +20659,7 @@ function bool HungerCheck(out string RestrictedMsg)
         maxFullness *= glutton.PerkValue;
 
     //Check if we're too full
-    if (fullUp >= maxFullness)
+    if (int(fullUp) >= int(maxFullness))
     {
         RestrictedMsg = fatty;
         return false;
