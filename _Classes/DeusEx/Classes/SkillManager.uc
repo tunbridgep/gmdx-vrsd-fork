@@ -54,6 +54,7 @@ function CreateSkills(DeusExPlayer newPlayer)
 		{
 			aSkill = Spawn(skillClasses[skillIndex], Self);
 			aSkill.Player = player;
+            aSkill.Init();
 
 			// Manage our linked list
 			if (aSkill != None)
@@ -241,6 +242,7 @@ function SetPlayer(DeusExPlayer newPlayer)
 	while(aSkill != None)
 	{
 		aSkill.player = newPlayer;
+        aSkill.Init();
 		aSkill = aSkill.next;
 	}
 }

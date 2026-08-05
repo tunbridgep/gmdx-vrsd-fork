@@ -9,6 +9,7 @@ New Features:
 - Added sounds when acquiring Traumas.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
 - Added a new "Sturdy Construction" modifier, which only breakables to be broken using Explosive attacks.
+- Edible Items now show the players current hunger level in the Inventory screen.
 
 Bug Fixes:
 - Fixed Laser Sight being left enabled when using the Spy Drone.

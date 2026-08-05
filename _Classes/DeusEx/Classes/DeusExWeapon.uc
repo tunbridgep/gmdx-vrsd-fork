@@ -374,6 +374,7 @@ var(GMDX) bool bDontRemoveOnMissionComplete;                                    
 var bool bSwitchingToLaser;
 var bool bSwitchingToSilencer;
 var bool bSwitchingToScope;
+var Sound AttachmentSound;      //SARGE: The sound we use when attaching/detatchin things
 
 //Penalties to accuracy and reload speed while using mods.
 enum EAddonPenaltyType
@@ -592,6 +593,7 @@ function ToggleAttachedScope(bool bRealtime)
 {
     if (bHadScope)
     {
+        ScopeOff();
         if (bRealtime)
         {
             bSwitchingToScope = true;
@@ -641,6 +643,9 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     local class<Ammo> defAmmoClass;
     local int intj;
     local Texture overrideTexture;
+
+    if (bNativeAttack)
+        return false;
 
     if (P == None)
         return false;
@@ -7241,9 +7246,7 @@ ignores Fire, AltFire;
         bHasScope = !bHasScope;
     else if (bSwitchingToSilencer)
         bHasSilencer = !bHasSilencer;
-    else if (bSwitchingToLaser)
-        bHasLaser = !bHasLaser;
-    Owner.PlaySound(AltFireSound, SLOT_None,,, 1024);
+    Owner.PlaySound(AttachmentSound, SLOT_None,,, 1024);
     if(hasAnim('ReloadEnd'))
         PlayAnim('ReloadEnd',1.0-(ModReloadTime*0.8));
     FinishAnim();
@@ -8075,4 +8078,5 @@ defaultproperties
      currentWeaponSkin="default"
      totalScopeTime=0.41
      inertiaSpeed=30
+     AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
 }
