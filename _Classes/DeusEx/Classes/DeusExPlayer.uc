@@ -6885,12 +6885,9 @@ state PlayerWalking
 				// opportunity for client to translate movement to server
 				MoveDrone( DeltaTime, loc );
 
-				// freeze the player
-				Velocity = vect(0,0,0);
-                
                 //SARGE: Stop player from sliding along the ground very slowly while the drone is active
-                SetPhysics(PHYS_None);
-                SetPhysics(PHYS_Walking);
+                Velocity = Velocity * vect(0,0,1);
+                Acceleration = Acceleration * vect(0,0,1);
 			}
 			return;
 		}
