@@ -9590,19 +9590,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     if (FromCorpse != None)
         source = FromCorpse.carcassID;
     else
-    {
-        foreach AllActors(class'DeusExCarcass', linkedCarc)
-        {
-            if (linkedCarc.droppedWeapon == Weapon(FrobTarget))
-            {
-                source = linkedCarc.carcassID;
-                break;
-            }
-        }
-
-        if (source == "")
-            source = string(self.Class.name);
-    }
+        source = string(self.Class.name);
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
