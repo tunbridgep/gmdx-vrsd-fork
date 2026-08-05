@@ -1909,6 +1909,7 @@ simulated function float GetWeaponSkill()
 //and for picking a melee weapon to use for left-frobbing.
 //It has absolutely no bearing on actually doing any damage,
 //which is why it needs a rework.
+//TODO: Make this actually calculate damage for real, so we can then use that in TakeDamage functions.
 function int CalculateTrueDamage()
 {
 	local int trueDamage;
@@ -1933,17 +1934,51 @@ function int CalculateTrueDamage()
         if (P.AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
             mult += 0.5;
 	}
-
+    
     //SARGE: I have no idea why the crossbow is so fucked...
     if (IsA('WeaponMiniCrossbow'))
         hit = HitDamage - 2;
     else
         hit = HitDamage;
 
+    //Stupid special cases...
+    if (IsA('WeaponGEPGun') && AmmoType.IsA('AmmoRocketWP'))
+        hit = 15;
+
+    if (IsA('WeaponAssaultGun') && AmmoType.IsA('Ammo20mm'))
+        hit = 200;
+
     trueDamage = int(hit * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage));
 
     //P.ClientMessage("Damage: " $ hit $ " - " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")" $ ", AmmoType is " $ ammoType.Class);
 	return trueDamage;
+}
+
+//SARGE: TODO: Write a proper function that simulates damaging something else properly, this is just guesswork.
+function bool BreaksDamageThreshold(Actor target)
+{
+    local Name damageType;
+    local float dmg;
+
+    if (target == None)
+        return false;
+
+    //HACKS upon HACKS
+    if (governingSkill == class'SkillDemolition' || Ammo20mm(AmmoType) != None)
+        damageType = 'Exploded';
+    else
+        damageType = 'Shot';
+
+    dmg = CalculateTrueDamage();
+
+    if (IsA('WeaponCrowbar') && target.IsA('DeusExMover') || target.IsA('DeusExDecoration'))
+        dmg *= 2;
+
+    if (target.IsA('DeusExMover'))
+        return DeusExMover(target).GetDamageSimple(dmg,DeusExPlayer(Owner),damageType) >= DeusExMover(target).minDamageThreshold;
+    else if (target.IsA('DeusExDecoration'))
+        return dmg > DeusExDecoration(target).minDamageThreshold;
+    return true;
 }
 
 // calculate the accuracy for this weapon and the owner's damage

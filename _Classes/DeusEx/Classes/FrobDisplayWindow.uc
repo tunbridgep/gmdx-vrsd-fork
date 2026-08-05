@@ -524,7 +524,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 
 		//Draw the info Door Damage Threshold number
 		if ( !dxMover.bBreakable || ( player.bToolWindowShowQuantityColours && dxMover.bBreakable &&
-				( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),dxMover.minDamageThreshold) ) ) ) )							
+				( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !DeusExWeapon(player.Weapon).BreaksDamageThreshold(dxMover) ) ) ) )							
 		{
 			gc.SetTextColor(colNotEnough);
 		}
@@ -698,7 +698,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	
 	// Draw the Device Damage Threshold
 	if ( device.bInvincible || ( player.bToolWindowShowQuantityColours && !device.bInvincible &&
-			( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),device.minDamageThreshold) ) ) ) )
+			( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !DeusExWeapon(player.Weapon).BreaksDamageThreshold(device) ) ) ) )
 	{
 		gc.SetTextColor(colNotEnough);
 	}
