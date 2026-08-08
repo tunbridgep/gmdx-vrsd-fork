@@ -36,6 +36,24 @@ function DisplayWeaponBlood(bool overlay)
     multiskins[2] = Texture'PinkMaskTex';
 }
 
+//Projectile speed is now based on Low Tech skill
+function OnProjectileFired(Projectile firedProjectile)
+{
+    local DeusExPlayer P;
+    local int level, speedAdd;
+    P = DeusExPlayer(Owner);
+
+    if (P != None && P.SkillSystem != None)
+    {
+        level = P.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech');
+        speedAdd = 60 * level;
+        P.DebugMessage("SpeedAdd: " $ speedAdd);
+        //firedProjectile.speed += (speedAdd * level);
+        firedProjectile.Velocity += speedAdd * Vector(firedProjectile.Rotation);
+        firedProjectile.Acceleration += speedAdd * Vector(firedProjectile.Rotation);
+    }
+}
+
 defaultproperties
 {
      weaponOffsets=(X=8.000000,Y=-10.000000,Z=-16.000000)
@@ -78,6 +96,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.PepperGunSelect'
      InventoryGroup=18
      ItemName="Pepper Gun"
+     OldPlayerViewOffset=(X=16.000000,Y=-10.000000,Z=-16.000000)
      PlayerViewOffset=(X=16.000000,Y=-10.000000,Z=-16.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPPepperGun"
      HDTPPickupViewMesh="HDTPItems.HDTPpeppergunpickup"

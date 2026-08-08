@@ -314,12 +314,14 @@ function Display(bool overlay)
 
 defaultproperties
 {
+     weaponOffsets=(X=14.00,Y=15.00,Z=-18.00)
      NoKeys="No Nano Keys Available!"
      KeysAvailableLabel="Nano Keys Available:"
      UseSound=Sound'DeusExSounds.Generic.KeysRattling'
      bDisplayableInv=False
      ItemName="Nanokey Ring"
      ItemArticle="the"
+     OldPlayerViewOffset=(X=16.000000,Y=15.000000,Z=-16.000000)
      PlayerViewOffset=(X=16.000000,Y=15.000000,Z=-16.000000)
      PlayerViewMesh=LodMesh'DeusExItems.NanoKeyRingPOV'
      PickupViewMesh=LodMesh'DeusExItems.NanoKeyRing'

@@ -1,7 +1,14 @@
 1.3:
 
 New Features:
+- Added a new perk VIGILANT RECYCLER (General, 100 points): An agent learns how to restructure the nanite composites within nanokeys, allowing them to transform duplicated NanoKeys into 45 credits each.
+- Added a new perk TARGETING ROUTINES (Demolitions Advanced, 300 points): An agent is able to program the targeting routines of proximity grenades, ensuring placed EMP and Scrambler grenades only explode in the presence of robots, and placed gas grenades only explode in the presence of organics.
+    - Additionally prevents medical, repair and cleaner bots from setting off placed grenades.
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
+- Weapon FOV is now properly detected, instead of using preset weapon positions.
+    - Weapons should now feel a lot more consistent with their on-screen positions at different resolutions and aspect ratios.
+    - A new Weapon FOV setting has been added to accommodate this
+    - The old "Alternate Weapon Offsets" setting has been updated to no longer have the "Automatic" setting.
 - Ballistic Vests and HazMat Suits will now be auto-equipped when picked up if nothing else is equipped.
 - Left-Clicking can now be used to instantly equip Augmentique outfits found in the world.
 - Added sounds for picking up Collectibles.
@@ -10,6 +17,11 @@ New Features:
 - Added new "Hold" bindings for active autmentations.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
 - Edible Items now show the players current hunger level in the Inventory screen.
+- Upgraded to the newest DeusExe by @flippers
+- Datacubes, Books etc are now visible using Tech Goggles
+- The number of Lockpicks and Multitools can now show under the NanoKey icon.
+    - Disabled by default. Enable it in the QoL menu.
+- Current hunger level now shows on edibles, not just the health screen
 
 Bug Fixes:
 - Fixed Laser Sight being left enabled when using the Spy Drone.
@@ -25,19 +37,23 @@ Bug Fixes:
 - Minor typo and text fixes
 - Minor fixes for Weapon Skin selection.
 - Minor Music loop fixes, now it should update more reliably.
+- Fixed quickloading not loading the correct saves in some circumstances.
 - Fixed "Drop Item" and "Use Secondary" keybindings not being reflected in the Inventory screen.
 - Fixed Ammo Display not showing Cyan for full weapons in some cases.
 - Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 - Fixed the player taking damage after moving down ramps at high framerates.
 - Fixed GEP Gun scope being disabled when fired rockets leave the players line of sight.
+- Fixed the Combat Medics Bag Perk giving it's medkit/biocell carry bonus without taking the perk.
 - Fixed climbing ladders at different speeds based on whether you're running or walking.
 - Fixed Randomized Weapon Mods not reflecting the physics state of the replaced mods when creating replacement mods.
 - Fixed Traumas list not properly updating when curing using a a MedBot
+- Fixed Shock Trauma only applying to energy drain over time, and not applying to energy bursts such as jumping or detonating the spy drone.
 - Fixed hidden codes (such as Maggie Chow's "insurgent" password) being autofilled.
 - Fixed Grenade Traps not actually working due to wrong cooldown timers.
 - Fixed Water Fountains and Water Coolers not respecting the Glutton perk, and various other food-related statuses (such as Traumas).
 - Fixed Medicine Skill information window listing wrong numbers.
 - Fixed Security Cameras being re-activated after being hacked while EMP'd.
+- Fixes for phones not properly displaying "Line disconnected" and other frob sounds.
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
@@ -50,6 +66,7 @@ Misc Changes:
 - "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
 - Slightly decreased enemy footstep detection on higher difficulties.
 - Slightly increased swimming stamina requirements in Hardcore mode.
+- Adds a fixed Lockpick model to work better at higher FOV values.
 - Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
 - Added Pride outfit.
 - When using the Firefighter perk, Fire Extinguishers now deal 15 damage 10 times, rather than 40 damage 4 times, to better match the perk description and to be more consistent with mover damage.
@@ -80,6 +97,8 @@ Map Changes:
     - No longer distribute GEP Guns on Hardcore mode, as this is an indoor map where they don't make sense.
 - 14_OceanLab_Lab:
     - All Greasels and Karkians are now killed when Walton Simons arrives, rather than simply being deleted.
+- 15_Area51_Bunker
+    - Fixed an erroneous damage trigger in the watchtower that could result in taking damage even after disabling the poison gas.
 
 1.22 (Hotfix Release):
 

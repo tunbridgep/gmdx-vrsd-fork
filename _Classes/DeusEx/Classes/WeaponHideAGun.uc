@@ -56,6 +56,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.HideAGunSelect'
      InventoryGroup=205
      ItemName="PS20"
+     OldPlayerViewOffset=(X=20.000000,Y=-10.000000,Z=-16.000000)
      PlayerViewOffset=(X=20.000000,Y=-10.000000,Z=-16.000000)
      PlayerViewMesh=LodMesh'DeusExItems.HideAGun'
      PickupViewMesh=LodMesh'DeusExItems.HideAGunPickup'

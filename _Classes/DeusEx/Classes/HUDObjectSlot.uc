@@ -67,9 +67,12 @@ var localized String RoundLabel;
 var localized String RoundsLabel;
 var localized String CountLabel;
 
-//GMDX
 
+//GMDX
 var string beltText;            //SARGE: The number printed on the belt. Set to - and = for belt slots 11 and 12.
+
+var localized String LockpicksLabel; //SARGE: L prefix for NanoKey slot
+var localized String MultitoolsLabel; //SARGE: M prefix for NanoKey slot
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -179,13 +182,26 @@ function UpdateItemText()
 {
 	local DeusExWeapon weapon;
 	local ChargedPickup CP;
+    local DeusExPickup playerInv;
 
 	itemText = "";
 
 	if (item != None)
 	{
+        //SARGE: Show Lockpicks and Multitools on the NanoKey icon
+        if (item.IsA('NanoKeyRing') && player.bNanoKeyShowsTools)
+        {
+            //Show Lockpicks
+            itemText = LockpicksLabel $ "x" $ player.GetInventoryCount('Lockpick');
+
+            //Add a space
+            itemText = itemText $ " ";
+            
+            //Show Multitools
+            itemText = itemText $ MultitoolsLabel $ "x" $ player.GetInventoryCount('Multitool');
+        }
 		//Show Dragons Tooth charge
-		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None && (player.bNanoswordEnergyUse || player.bHardcoreMode))
+		else if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None && (player.bNanoswordEnergyUse || player.bHardcoreMode))
 		{
 			itemText = Sprintf(WeaponNanoSword(item).ChargeManager.ChargeRemainingLabelSmall,WeaponNanoSword(item).ChargeManager.GetCurrentCharge());
 		}
@@ -695,4 +711,6 @@ defaultproperties
      RoundLabel="%d Rd"
      RoundsLabel="%d Rds"
      CountLabel="x"
+     LockpicksLabel="L"
+     MultitoolsLabel="M"
 }

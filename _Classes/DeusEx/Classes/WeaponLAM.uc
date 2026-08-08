@@ -175,6 +175,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.LAMSelect'
      InventoryGroup=20
      ItemName="Lightweight Attack Munitions (LAM)"
+     OldPlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-17.000000)
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-17.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPLAM"
      HDTPPickupViewMesh="HDTPItems.HDTPLAMPickup"

@@ -256,6 +256,7 @@ defaultproperties
      InventoryGroup=4
      ItemName="Assault Rifle"
      ItemArticle="an"
+     OldPlayerViewOffset=(X=12.500000,Y=-5.000000,Z=-12.000000)
      PlayerViewOffset=(X=12.500000,Y=-5.000000,Z=-12.000000)
      //HDTPPlayerViewMesh="RSDCrap.HDTPAssaultGunRSD"
      HDTPPlayerViewMesh="HDTPItems.HDTPAssaultGun"

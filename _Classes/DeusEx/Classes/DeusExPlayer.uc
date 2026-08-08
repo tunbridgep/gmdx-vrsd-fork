@@ -653,7 +653,7 @@ var bool bUsingComputer;                                                        
 var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
 //Sarge: Allow Enhanced Weapon Offsets
-var globalconfig int iEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -1050,6 +1050,9 @@ var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip
 var const localized string msgSaveName;
 
 var const localized String TooSick;
+
+//Show Lockpicks and Tools on the NanoKey icon
+var globalconfig bool bNanoKeyShowsTools;
 
 //SARGE: Moved the hunger string text from PersonaScreenHealth
 var const localized String HungerStr;
@@ -3074,15 +3077,19 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
     //We don't ever want to get here, but it's still better than not saving!
     if (saveIndex >= 1000)
     {
-        DebugMessage("WARNING: Using hacky save index");
-        saveIndex = iHackySaveIndex++;
-        
+        saveIndex = iHackySaveIndex;
+        DebugMessage("WARNING: Using hacky save index: " $ iLastSave);
+
+        iHackySaveIndex++;
+
         if (iHackySaveIndex >= 1000)
             iHackySaveIndex = 1;
-
-        SaveConfig();
     }
-    
+        
+    //SARGE: Set last save to the new index
+    iLastSave = saveIndex;
+    SaveConfig();
+
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
         dataLinkPlay.AbortAndSaveHistory();
@@ -3093,13 +3100,11 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDesc = GetDefaultSaveName();
 
     root.GenerateSnapshot(True);
-    DebugLog("Save Game: " $ saveIndex @ saveDesc);
+    DebugMessage("Save Game: " $ saveIndex @ saveDesc @ iLastSave);
     SaveGame(saveIndex, saveDesc);
     root.HideSnapshot();
     //root.show();
 
-    ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
-    SaveConfig();
     return saveIndex;
 }
 
@@ -3225,7 +3230,7 @@ exec function QuickLoad()
 
     //Confirm the save exists before trying to do anything
     saveDir = GetSaveGameDirectory();
-    info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
+    info = saveDir.GetSaveInfo(iLastSave);
     CriticalDelete(saveDir);
 
 	if (info != None && DeusExRootWindow(rootWindow) != None)
@@ -3241,7 +3246,9 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-    LoadGame(int(ConsoleCommand("get DeusExPlayer iLastSave"))); //changed so now selects last saved game, even if from menu
+    DebugLog("Loading Quicksave: " $ iLastSave);
+
+    LoadGame(iLastSave); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
@@ -5816,7 +5823,7 @@ function HighlightCenterObject()
         if (FrobTarget == None)
         {
             perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
-            if (perk != None && perk.bPerkObtained)
+            if (perk != None && perk.bPerkObtained && GetInventoryCount('Multitool') > 0)
             {
                 EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
                 EndTrace.Z += BaseEyeHeight;
@@ -9182,7 +9189,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
         return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
-    if (target.isA('ElevatorMover'))
+    if (target.isA('Mover'))
         return false;
     return true;
 }
@@ -9267,10 +9274,10 @@ exec function ParseRightClick()
     
     dxInfo=GetLevelInfo();
 
-    if (RestrictInput() && dxInfo.missionNumber > 0)
+    if (RestrictInput())
     {
         //SARGE: Allow speeding up cutscenes
-        if (IsInState('Interpolating') && bEnableCutsceneSpeedup)
+        if (dxInfo.missionNumber > 0 && IsInState('Interpolating') && bEnableCutsceneSpeedup)
         {
             interp = InterpolationPoint(Target);
             while (interp != None && interp.Next.position != 0)
@@ -9631,7 +9638,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
 
         //GMDX Exclusive Code
-        if (bTransfer)
+        if (bTransfer && DeusExWeapon(Weapon) != None)
         {
             DeusExWeapon(Weapon).UpdateHDTPSettings();
             Weapon.PlaySound(DeusExWeapon(Weapon).CopyModsSound,SLOT_None,0.8);
@@ -9794,6 +9801,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	
 	if (bSlotSearchNeeded && bCanPickup)
 	{
+        //If it's a weapon, unrotate it first
+        if (DeusExWeapon(FrobTarget) != None)
+            DeusExWeapon(FrobTarget).Unrotate();
+
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
 		if (FindInventorySlot(Inventory(FrobTarget), true) == False)
 		{
@@ -9992,8 +10003,13 @@ function bool AddCredits(int amount, bool bShowMessage, bool bShowWindow)
 
     //Show the window (if we received only, for now)
     if (amount > 0 && bCreditsShowReceivedItemsWindow && bShowWindow)
+    {
+        if (ConPlay != None && conPlay.GetDisplayMode() == DM_ThirdPerson && ConPlay.conWinThird != None)
+            ConPlay.conWinThird.ShowGenericIcon(class'Credits'.default.Icon, class'Credits'.default.beltDescription, amount);
+
         if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
             DeusExRootWindow(rootWindow).hud.receivedItems.AddCredits(amount);
+    }
 
     //Last minute check for credits going below zero.
     //Probably not necessary.
@@ -11246,7 +11262,7 @@ exec function ToggleScope()
     else if (Binoculars(inHand) != None)
         Binoculars(inHand).Activate();
 
-	else if (W != None)
+	else if (W != None && W.bHasScope)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -12221,8 +12237,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
         DeusExWeapon(item).SetBloodyWeapon(false);
         DeusExWeapon(item).SetBloodyHands(false);
     }
+    
+    UpdateHUD();
 
-	  return bDropped;
+    return bDropped;
 }
 
 // ----------------------------------------------------------------------
@@ -13320,6 +13338,9 @@ function private _UpdateHUD()
 
     //DebugMessage("UpdateHUD");
     bUpdateHud = false;
+
+    //SARGE: Also update the keyring slot.
+    UpdateBeltText(KeyRing);
 }
 
 function UpdateGoalsWindow()
@@ -13358,6 +13379,8 @@ exec function ShowInventoryWindow()
 	  ClientMessage("Inventory screen disabled in multiplayer");
 	  return;
 	}
+
+    UpdateHUD();
 
 	InvokeUIScreen(Class'PersonaScreenInventory');
 }
@@ -19361,6 +19384,10 @@ simulated event Destroyed()
 	  CloseThisComputer(ActiveComputer);
 	ActiveComputer = None;
 
+    //AUGMENTIQUE: Destroy the managers, always
+    //outfitManager = None;
+    //weaponSkinManager = None;
+
 	Super.Destroyed();
 }
 
@@ -20940,7 +20967,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     iEnhancedWeaponOffsets=1
+     bEnhancedWeaponOffsets=true
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
@@ -21044,7 +21071,7 @@ defaultproperties
      iBloodyWeapons=1
      iWeaponWallDistance=504
      bAutofillPasswords=true
-     iHackySaveIndex=1
+     iHackySaveIndex=0
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
@@ -21063,10 +21090,12 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bPickupsUseFOV=true
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"
      msgCreditsDeducted="%d credits deducted from your account"
