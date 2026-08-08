@@ -1,6 +1,7 @@
 1.3:
 
 New Features:
+- Added a new perk VIGILANT RECYCLER (General, 100 points): An agent learns how to restructure the nanite composites within nanokeys, allowing them to transform duplicated NanoKeys into 45 credits each.
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
 - Ballistic Vests and HazMat Suits will now be auto-equipped when picked up if nothing else is equipped.
 - Left-Clicking can now be used to instantly equip Augmentique outfits found in the world.
@@ -9,6 +10,9 @@ New Features:
 - Added sounds when acquiring Traumas.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
 - Edible Items now show the players current hunger level in the Inventory screen.
+- Upgraded to the newest DeusExe by @flippers
+- Datacubes, Books etc are now visible using Tech Goggles
+- Current hunger level now shows on edibles, not just the health screen
 
 Bug Fixes:
 - Fixed Laser Sight being left enabled when using the Spy Drone.
