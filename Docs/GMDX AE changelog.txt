@@ -35,6 +35,7 @@ Bug Fixes:
 - Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 - Fixed the player taking damage after moving down ramps at high framerates.
 - Fixed GEP Gun scope being disabled when fired rockets leave the players line of sight.
+- Fixed the Combat Medics Bag Perk giving it's medkit/biocell carry bonus without taking the perk.
 - Fixed climbing ladders at different speeds based on whether you're running or walking.
 - Fixed Randomized Weapon Mods not reflecting the physics state of the replaced mods when creating replacement mods.
 - Fixed Traumas list not properly updating when curing using a a MedBot
