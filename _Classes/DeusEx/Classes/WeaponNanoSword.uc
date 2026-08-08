@@ -94,7 +94,7 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
         return "";
 
 	winInfo.SetText(sprintf(chargeManager.ChargeRemainingLabel,chargeManager.GetCurrentCharge()));
-    winInfo.SetText(sprintf(chargeManager.BiocellRechargeAmountLabel,chargeManager.GetRechargeAmountDisplay()));
+    winInfo.SetText(sprintf(chargeManager.BiocellRechargeAmountLabel,chargeManager.GetRechargeAmountDisplay(true)));
     winInfo.AddLine();
 }
 
@@ -276,6 +276,7 @@ defaultproperties
      InventoryGroup=14
      ItemName="Dragon's Tooth Sword"
      ItemArticle="the"
+     OldPlayerViewOffset=(X=21.000000,Y=-16.000000,Z=-27.000000)
      PlayerViewOffset=(X=21.000000,Y=-16.000000,Z=-27.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPDragonTooth"
      HDTPPickupViewMesh="HDTPItems.HDTPDragonToothPickup"

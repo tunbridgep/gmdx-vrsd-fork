@@ -62,7 +62,7 @@ State QuickSaver
 
         if (player.bExtraHardcore)
         {
-            player.Credits -= 100;
+            player.AddCredits(-100,false,true);
             player.ClientMessage(msgDeducted);
         }
         bUsedSavePoint=true;

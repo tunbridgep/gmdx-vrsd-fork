@@ -133,6 +133,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.NanoVirusGrenadeSelect'
      InventoryGroup=23
      ItemName="Scramble Grenade"
+     OldPlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPNanovirusGrenade"
      HDTPPickupViewMesh="HDTPItems.HDTPNanovirusGrenadePickup"

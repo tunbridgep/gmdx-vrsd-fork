@@ -301,10 +301,10 @@ var travel int invSlotsYtravel;                                                 
 var travel float previousAccuracy;                                              //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
 
 //SARGE: Weapon Offset Stuff
-//TODO: Replace this with a generic implementation
-var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
-var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
-var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
+var transient ViewmodelFOVManager FOVManager;                                   //SARGE: Manage Viewmodel FOV
+var vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
+var vector OldPlayerViewOffset;                                                 //SARGE: Remember old weapon offsets even when the defaults change.
+
 var travel bool givenFreeReload;                                                //Sarge: Give a free reload when selecting the weapon for the first time, otherwise it starts empty
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
@@ -374,6 +374,7 @@ var(GMDX) bool bDontRemoveOnMissionComplete;                                    
 var bool bSwitchingToLaser;
 var bool bSwitchingToSilencer;
 var bool bSwitchingToScope;
+var Sound AttachmentSound;      //SARGE: The sound we use when attaching/detatchin things
 
 //Penalties to accuracy and reload speed while using mods.
 enum EAddonPenaltyType
@@ -592,6 +593,7 @@ function ToggleAttachedScope(bool bRealtime)
 {
     if (bHadScope)
     {
+        ScopeOff();
         if (bRealtime)
         {
             bSwitchingToScope = true;
@@ -641,6 +643,9 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     local class<Ammo> defAmmoClass;
     local int intj;
     local Texture overrideTexture;
+
+    if (bNativeAttack)
+        return false;
 
     if (P == None)
         return false;
@@ -812,44 +817,6 @@ function ResizeHeavyWeapon(DeusExPlayer player)
     }
 }
 
-//Function to fix weapon offsets
-function DoWeaponOffset(DeusExPlayer player)
-{
-    local bool bDoOffsets;
-        
-    if (player == None)
-        return;
-
-    if ((weaponOffsets.x != 0.0 || weaponOffsets.y != 0.0 || weaponOffsets.z != 0.0))
-    {
-    
-        //Remember our old weapon offsets
-        if (!bOldOffsetsSet)
-        {
-            //player.ClientMessage("Setting old offsets");
-            oldOffsets.x = default.PlayerViewOffset.x;
-            oldOffsets.y = default.PlayerViewOffset.y;
-            oldOffsets.z = default.PlayerViewOffset.z;
-            bOldOffsetsSet = true;
-        }
-
-        bDoOffsets = player.iEnhancedWeaponOffsets == 2 || (player.iEnhancedWeaponOffsets == 1 && player.defaultFOV >= 110);
-
-        if (bDoOffsets && !IsClyzmModel())
-        {
-            default.PlayerViewOffset.x = weaponOffsets.x;
-            default.PlayerViewOffset.y = weaponOffsets.y;
-            default.PlayerViewOffset.z = weaponOffsets.z;
-        }
-        else if (bOldOffsetsSet)
-        {
-            default.PlayerViewOffset.x = oldOffsets.x;
-            default.PlayerViewOffset.y = oldOffsets.y;
-            default.PlayerViewOffset.z = oldOffsets.z;
-        }
-    }
-}
-
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
@@ -867,7 +834,7 @@ function Draw(DeusExPlayer frobber)
     //Reset weapon inertia
     cachedDrawOffset = Vect(0,0,0);
 
-    DoWeaponOffset(frobber);
+    DoWeaponOffset();
 }
 
 // ---------------------------------------------------------------------
@@ -1002,8 +969,6 @@ function PreBeginPlay()
 	}
 
     UpdateHDTPSettings();
-    if (Owner != None && Owner.IsA('DeusExPlayer'))
-        DoWeaponOffset(DeusExPlayer(Owner));
 }
 
 function SupportActor( actor StandingActor )
@@ -2591,9 +2556,6 @@ simulated function bool NearWallCheck()
 	// Scripted pawns can't place LAMs
 	if (ScriptedPawn(Owner) != None)
 		return False;
-
-    if (IsA('WeaponHideAGun')) //CyberP
-        return False;
 
 	/*// Don't let players place grenades when they have something highlighted
 	if ( Level.NetMode != NM_Standalone )
@@ -4809,11 +4771,13 @@ simulated function Vector ComputeProjectileStart(Vector X, Vector Y, Vector Z)
         //SARGE: Filthy. dirty hack!!
         //We need to reset our offsets because otherwise projectiles can
         //spawn too close to the player, and collide with him!
-        if (bOldOffsetsSet && Owner != None && Owner.IsA('DeusExPlayer'))
-            default.PlayerViewOffset = oldOffsets;
+        if (Owner != None && Owner.IsA('DeusExPlayer') && FOVManager != None && ProjectileClass != None)
+        {
+            default.PlayerViewOffset = FOVManager.GetDefaultWeaponOffsets(Self);
+            default.FireOffset = -(FOVManager.GetDefaultWeaponOffsets(Self));
+        }
 		Start = Owner.Location + CalcDrawOffset() + FireOffset.X * X + FireOffset.Y * Y + FireOffset.Z * Z;
-        if (Owner != None && Owner.IsA('DeusExPlayer'))
-            DoWeaponOffset(DeusExPlayer(Owner));
+        DoWeaponOffset();
     }
 
 	return Start;
@@ -5647,6 +5611,8 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 
         if (DeusExPlayer(Owner) != None && dist >= AccurateRangeMod)               //RSD: != none instead of IsA
 		{
+            if (DeusExPlayer(Owner) != None)
+                DeusExPlayer(Owner).DebugMessage("mult (pre): " $ mult);
 			//RSD: Linear damage falloff up to MaxRange for the player
             alpha = (dist - AccurateRangeMod) / (MaxRangeMod - AccurateRangeMod);
             mult = (1-alpha)*mult;
@@ -6978,8 +6944,7 @@ exec function UpdateHDTPsettings()
     UpdateLargeIcon();
     CheckWeaponSkins();
     UpdateSkin();
-    if (Owner != None && Owner.IsA('DeusExPlayer'))
-        DoWeaponOffset(DeusExPlayer(Owner));
+    DoWeaponOffset();
 }
 
 function SelectNextSkin()
@@ -7010,6 +6975,22 @@ function UpdateSkin()
 
     if (pl != None && pl.WeaponSkinManager != None)
         pl.WeaponSkinManager.UpdateWeaponSkinTextures(self);
+}
+
+//Do funky things with offsets here
+function ResetWeaponOffsets()
+{
+    OldPlayerViewOffset=default.OldPlayerViewOffset;
+    weaponOffsets=default.weaponOffsets;
+}
+
+function DoWeaponOffset()
+{
+    ResetWeaponOffsets();
+    if (FOVManager == None)
+        FOVManager = new(Self) class'ViewmodelFOVManager';
+
+    FOVManager.SetViewmodelOffset(Self);
 }
 
 //
@@ -7206,9 +7187,7 @@ ignores Fire, AltFire;
         bHasScope = !bHasScope;
     else if (bSwitchingToSilencer)
         bHasSilencer = !bHasSilencer;
-    else if (bSwitchingToLaser)
-        bHasLaser = !bHasLaser;
-    Owner.PlaySound(AltFireSound, SLOT_None,,, 1024);
+    Owner.PlaySound(AttachmentSound, SLOT_None,,, 1024);
     if(hasAnim('ReloadEnd'))
         PlayAnim('ReloadEnd',1.0-(ModReloadTime*0.8));
     FinishAnim();
@@ -7912,6 +7891,13 @@ function DestroyMe()
     Destroy();
 }
 
+function Destroyed()
+{
+    CriticalDelete(FOVManager);
+    FOVManager = None;
+	Super.Destroyed();
+}
+
 defaultproperties
 {
      bReadyToFire=True
@@ -8040,4 +8026,5 @@ defaultproperties
      currentWeaponSkin="default"
      totalScopeTime=0.41
      inertiaSpeed=30
+     AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
 }

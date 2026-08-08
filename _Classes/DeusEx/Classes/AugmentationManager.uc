@@ -904,7 +904,6 @@ simulated function Float CalcEnergyUse(float deltaTime)
 {
 	local float energyUse;
 	local Augmentation anAug;
-    local Wound wound;
 
 	energyUse = 0;
 
@@ -915,14 +914,6 @@ simulated function Float CalcEnergyUse(float deltaTime)
             energyUse += ((anAug.GetAdjustedEnergyRate()/60) * deltaTime);
 		anAug = anAug.next;
 	}
-
-    //SARGE: Shock now increases bioenergy use by 25%
-    if (player.WoundManager != None)
-    {
-        wound = player.WoundManager.GetWoundByType(class'WoundShock');
-        if (wound != None && wound.HasWound())
-            energyUse = energyUse * wound.woundData[0];
-    }
 
 	return energyUse;
 }
@@ -1012,6 +1003,26 @@ function IncreaseAllAugs(int Amount)
 }
 
 // ----------------------------------------------------------------------
+// FindAugByKey()
+// ----------------------------------------------------------------------
+
+function Augmentation FindAugByKey(int keyNum)
+{
+
+	local Augmentation anAug;
+	anAug = FirstAug;
+	while(anAug != None)
+	{
+		if ((anAug.HotKeyNum - 3 == keyNum) && (anAug.bHasIt))
+			break;
+
+		anAug = anAug.next;
+	}
+
+    return anAug;
+}
+
+// ----------------------------------------------------------------------
 // ActivateAugByKey()
 // ----------------------------------------------------------------------
 
@@ -1025,15 +1036,7 @@ function bool ActivateAugByKey(int keyNum)
 	if ((keyNum < 0) || (keyNum > 10))
 		return False;
 
-	anAug = FirstAug;
-	while(anAug != None)
-	{
-		if ((anAug.HotKeyNum - 3 == keyNum) && (anAug.bHasIt))
-			break;
-
-		anAug = anAug.next;
-	}
-
+    anAug = FindAugByKey(keyNum);
 	if (anAug == None)
 	{
 		player.ClientMessage(NoAugInSlot);

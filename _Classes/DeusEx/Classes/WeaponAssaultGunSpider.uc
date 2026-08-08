@@ -114,6 +114,7 @@ defaultproperties
      InventoryGroup=149
      ItemName=""
      ItemArticle="an"
+     OldPlayerViewOffset=(X=16.000000,Y=-5.000000,Z=-11.500000)
      PlayerViewOffset=(X=16.000000,Y=-5.000000,Z=-11.500000)
      HDTPPlayerViewMesh="RSDCrap.HDTPAssaultGunRSD"
      HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"

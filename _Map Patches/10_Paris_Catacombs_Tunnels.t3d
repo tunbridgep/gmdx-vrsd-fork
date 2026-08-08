@@ -31067,6 +31067,8 @@ Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo5
     Script=Class'DeusEx.Mission10'
     startupMessage(0)="Les catacombes de Paris"
     bNoSpawnFlies=True
+    bDistributeGEP=False
+    bDistributeLAW=False
     LastRenderTime=263.049774
     DistanceFromPlayer=3948.976807
     Level=LevelInfo'MyLevel.LevelInfo0'

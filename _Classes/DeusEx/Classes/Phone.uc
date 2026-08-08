@@ -46,6 +46,8 @@ var private bool bPickedUp;             //SARGE: Set to true after the first tim
 
 var private float startedSound;     //SARGE: Add a maximum time each sound can play for, like 10 seconds, since some can go forever.
 
+var private float ringCooldown;     //After ringing once, wait a small amount before ringing again.
+
 //SARGE: Some of the phones in the game have weird bools set, instead of using the enum (stupid original devs!)
 //Lets fix that!
 function PostBeginPlay()
@@ -78,7 +80,7 @@ function Tick(float deltaTime)
 {
 	Super.Tick(deltaTime);
 
-    if (numRings > 0)
+    if (numRings > 0 && ringCooldown == 0)
         Ring();
 
     //Add a maximum timer for each sound
@@ -91,6 +93,8 @@ function Tick(float deltaTime)
             StopSound(pSoundID);
         }
     }
+
+    ringCooldown = FMAX(ringCooldown - deltaTime,0);
 
     if (!bScriptedPhone)
     {
@@ -119,6 +123,7 @@ function Ring()
             case RS_Office1:	PlaySound(sound'PhoneRing1', SLOT_Misc,,, 256); break;
             case RS_Office2:	PlaySound(sound'PhoneRing2', SLOT_Misc,,, 256); break;
         }
+        ringCooldown = 1;
     }
     else
     {
@@ -131,13 +136,16 @@ function Timer()
 	bUsing = False;
 }
 
-function private PlayAnswerSound(EAnswerSound snd)
+function private PlayAnswerSound(EAnswerSound snd, optional float answertime)
 {
 	local float rnd;
-	if (bPayphone)
+    if (answertime != 0)
+        startedSound = answertime;
+	else if (bPayphone)
         startedSound = 2;
     else
         startedSound = 5;
+    
     switch (snd)
     {
         case AS_DialTone:
@@ -194,7 +202,7 @@ function Frob(actor Frobber, Inventory frobWith)
 
     if (bScriptedPhone)
     {
-        P.DebugMessage("InConversation: " $ P.InConversation());
+        //P.DebugMessage("InConversation: " $ P.InConversation());
         //no re-frobbing in conversation
         if (InConversation(P,true))
             return;
@@ -225,17 +233,30 @@ function Frob(actor Frobber, Inventory frobWith)
                     K.Frob(Frobber,None);
                 }
             }
+            snd = AnswerSound;
         }
         else
             snd = OfflineSound;
+        SetTimer(1.0, False);
     }
     else
+    {
         Super.Frob(Frobber, frobWith);
-
-    if (bTrigger)
-        SetTimer(1.0, False);
-    else
         SetTimer(3.0, False);
+    }
+
+    //Allow answering machines once.
+    //Or forever...
+    if (BindName != "")
+    {
+        //BindName = "";
+        //ConBindEvents();
+    }
+    else if (!bTrigger)
+        PlayAnswerSound(snd);
+    else
+        PlayAnswerSound(snd,1);
+
     numRings = 0;
 	bUsing = True;
     bPickedUp = True;
@@ -243,7 +264,7 @@ function Frob(actor Frobber, Inventory frobWith)
 
 defaultproperties
 {
-     ringFreq=0.040000
+     ringFreq=0.080000
      bInvincible=False
      FragType=Class'DeusEx.MetalFragment'
      bCanBeBase=True

@@ -629,11 +629,6 @@ var travel bool bNoStartingWeaponChoices;                                      /
 //hardcore+
 var travel bool bExtraHardcore;
 
-//Autosave Stuff
-var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
-var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
-var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
-
 //Menu Overhaul stuff
 var localized String RechargedPointLabel;
 var localized String RechargedPointsLabel;
@@ -658,7 +653,7 @@ var bool bUsingComputer;                                                        
 var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
 //Sarge: Allow Enhanced Weapon Offsets
-var globalconfig int iEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -1056,7 +1051,20 @@ var const localized string msgSaveName;
 
 var const localized String TooSick;
 
+//Show Lockpicks and Tools on the NanoKey icon
+var globalconfig bool bNanoKeyShowsTools;
+
+//SARGE: Moved the hunger string text from PersonaScreenHealth
+var const localized String HungerStr;
+var const localized String SatiatedStr;
+var const localized String StarvingStr;
+var const localized String HungryStr;
+
 var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
+
+//Credits update/refactoring
+var localized string msgCreditsAdded;
+var localized string msgCreditsDeducted;
 
 //////////END GMDX
 
@@ -1405,9 +1413,9 @@ function DebugMessage(coerce string msg)
 }
 
 //SARGE: Allow logging when debug mode is enabled
-function DebugLog(coerce string msg)
+function static DebugLog(coerce string msg)
 {
-    if (bGMDXDebug)
+    if (default.bGMDXDebug)
         Log(msg);
 }
 
@@ -2800,6 +2808,65 @@ exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
 exec function Flashlight() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(10); }
 
+//SARGE: Allow "hold" versions of Aug Keys as well
+function HoldAug(int num, bool bRelease)
+{
+    local Augmentation aug;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.FindAugByKey(num);
+    
+    //Active and Auto augs only
+    if (aug == None || (aug.AugmentationType != Aug_Active && aug.AugmentationType != Aug_Automatic))
+        return;
+    
+    //Only activate with button down, only deactivate with release.
+    if (aug.bIsActive == bRelease)
+        AugmentationSystem.ActivateAugByKey(num);
+}
+
+//Smart Sprint - use the Speed aug if we have it, otherwise run.
+exec function SmartSprint(bool bRelease)
+{
+    local Augmentation aug;
+    local string _unused;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.GetAug(class'AugSpeed');
+    if (aug == None)
+        aug = AugmentationSystem.GetAug(class'AugStealth');
+    
+    if (bRelease)
+    {
+        if (aug != None && aug.bHasIt)
+            aug.DeActivate();
+        bRun = 0;
+    }
+    else if (aug != None && aug.bHasIt && aug.CanActivate(_unused))
+    {
+        aug.Activate();
+    }
+    else //No leg aug - Just run normally
+    {
+        bRun = 1;
+    }
+
+}
+
+exec function HoldMapF3(bool bRelease) { HoldAug(0,bRelease); }
+exec function HoldMapF4(bool bRelease) { HoldAug(1,bRelease); }
+exec function HoldMapF5(bool bRelease) { HoldAug(2,bRelease); }
+exec function HoldMapF6(bool bRelease) { HoldAug(3,bRelease); }
+exec function HoldMapF7(bool bRelease) { HoldAug(4,bRelease); }
+exec function HoldMapF8(bool bRelease) { HoldAug(5,bRelease); }
+exec function HoldMapF9(bool bRelease) { HoldAug(6,bRelease); }
+exec function HoldMapF10(bool bRelease) { HoldAug(7,bRelease); }
+exec function HoldMapF11(bool bRelease) { HoldAug(8,bRelease); }
+exec function HoldMapF12(bool bRelease) { HoldAug(9,bRelease); }
+exec function HoldFlashlight(bool bRelease) { HoldAug(10,bRelease); }
+
 //SARGE: Let the player dual-map belt slots.
 exec function AltBelt0() { ActivateBelt(0); }
 exec function AltBelt1() { ActivateBelt(1); }
@@ -3010,15 +3077,19 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
     //We don't ever want to get here, but it's still better than not saving!
     if (saveIndex >= 1000)
     {
-        DebugMessage("WARNING: Using hacky save index");
-        saveIndex = iHackySaveIndex++;
-        
+        saveIndex = iHackySaveIndex;
+        DebugMessage("WARNING: Using hacky save index: " $ iLastSave);
+
+        iHackySaveIndex++;
+
         if (iHackySaveIndex >= 1000)
             iHackySaveIndex = 1;
-
-        SaveConfig();
     }
-    
+        
+    //SARGE: Set last save to the new index
+    iLastSave = saveIndex;
+    SaveConfig();
+
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
         dataLinkPlay.AbortAndSaveHistory();
@@ -3029,12 +3100,11 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDesc = GetDefaultSaveName();
 
     root.GenerateSnapshot(True);
-    DebugLog("Save Game: " $ saveIndex @ saveDesc);
+    DebugMessage("Save Game: " $ saveIndex @ saveDesc @ iLastSave);
     SaveGame(saveIndex, saveDesc);
     root.HideSnapshot();
     //root.show();
 
-    ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
     return saveIndex;
 }
 
@@ -3160,7 +3230,7 @@ exec function QuickLoad()
 
     //Confirm the save exists before trying to do anything
     saveDir = GetSaveGameDirectory();
-    info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
+    info = saveDir.GetSaveInfo(iLastSave);
     CriticalDelete(saveDir);
 
 	if (info != None && DeusExRootWindow(rootWindow) != None)
@@ -3176,7 +3246,9 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-    LoadGame(int(ConsoleCommand("get DeusExPlayer iLastSave"))); //changed so now selects last saved game, even if from menu
+    DebugLog("Loading Quicksave: " $ iLastSave);
+
+    LoadGame(iLastSave); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
@@ -5497,8 +5569,10 @@ simulated function PlayFootStep()
 
 function bool IsHighlighted(actor A)
 {
-	if (bBehindView)
-		return False;
+    //SARGE: Removed for DXRando compatibility.
+    //Doesn't seem to break anything... For now.
+	//if (bBehindView)
+	//	return False;
 
 	if (A != None)
 	{
@@ -5749,7 +5823,7 @@ function HighlightCenterObject()
         if (FrobTarget == None)
         {
             perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
-            if (perk != None && perk.bPerkObtained)
+            if (perk != None && perk.bPerkObtained && GetInventoryCount('Multitool') > 0)
             {
                 EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
                 EndTrace.Z += BaseEyeHeight;
@@ -9115,7 +9189,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
         return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
-    if (target.isA('ElevatorMover'))
+    if (target.isA('Mover'))
         return false;
     return true;
 }
@@ -9200,10 +9274,10 @@ exec function ParseRightClick()
     
     dxInfo=GetLevelInfo();
 
-    if (RestrictInput() && dxInfo.missionNumber > 0)
+    if (RestrictInput())
     {
         //SARGE: Allow speeding up cutscenes
-        if (IsInState('Interpolating') && bEnableCutsceneSpeedup)
+        if (dxInfo.missionNumber > 0 && IsInState('Interpolating') && bEnableCutsceneSpeedup)
         {
             interp = InterpolationPoint(Target);
             while (interp != None && interp.Next.position != 0)
@@ -9564,7 +9638,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
 
         //GMDX Exclusive Code
-        if (bTransfer)
+        if (bTransfer && DeusExWeapon(Weapon) != None)
         {
             DeusExWeapon(Weapon).UpdateHDTPSettings();
             Weapon.PlaySound(DeusExWeapon(Weapon).CopyModsSound,SLOT_None,0.8);
@@ -9727,6 +9801,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	
 	if (bSlotSearchNeeded && bCanPickup)
 	{
+        //If it's a weapon, unrotate it first
+        if (DeusExWeapon(FrobTarget) != None)
+            DeusExWeapon(FrobTarget).Unrotate();
+
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
 		if (FindInventorySlot(Inventory(FrobTarget), true) == False)
 		{
@@ -9903,6 +9981,44 @@ function NanoKeyInfo CreateNanoKeyInfo()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Add a new function for adding credits, since we now do some
+// fancy displaying and such when adding credits
+// ----------------------------------------------------------------------
+
+function bool AddCredits(int amount, bool bShowMessage, bool bShowWindow)
+{
+    if (Credits + amount < 0 && amount < 0) //Not enough credits to remove
+        return false;
+    Credits += amount;
+
+    if (bShowMessage)
+    {
+        if (amount >= 0)
+            ClientMessage(Sprintf(msgCreditsAdded, amount));
+        else
+            ClientMessage(Sprintf(msgCreditsDeducted, -amount));
+    }
+
+    //PlaySound(Sound'objpickup',SLOT_None);
+
+    //Show the window (if we received only, for now)
+    if (amount > 0 && bCreditsShowReceivedItemsWindow && bShowWindow)
+    {
+        if (ConPlay != None && conPlay.GetDisplayMode() == DM_ThirdPerson && ConPlay.conWinThird != None)
+            ConPlay.conWinThird.ShowGenericIcon(class'Credits'.default.Icon, class'Credits'.default.beltDescription, amount);
+
+        if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
+            DeusExRootWindow(rootWindow).hud.receivedItems.AddCredits(amount);
+    }
+
+    //Last minute check for credits going below zero.
+    //Probably not necessary.
+    Credits = MAX(Credits,0);
+
+    return true;
+}
+
+// ----------------------------------------------------------------------
 // PickupNanoKey()
 //
 // Picks up a NanoKey
@@ -9913,9 +10029,15 @@ function NanoKeyInfo CreateNanoKeyInfo()
 
 function bool PickupNanoKey(NanoKey newKey)
 {
+    local Perk vigilantRecycler;
     if (KeyRing.HasKey(newKey.KeyID))
     {
         ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+
+        vigilantRecycler = PerkManager.GetPerkWithClass(class'PerkVigilantRecycler');
+        if (vigilantRecycler.bPerkObtained)
+            AddCredits(vigilantRecycler.PerkValue,true,true);
+
         return false;
     }
     else
@@ -11140,7 +11262,7 @@ exec function ToggleScope()
     else if (Binoculars(inHand) != None)
         Binoculars(inHand).Activate();
 
-	else if (W != None)
+	else if (W != None && W.bHasScope)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -12115,8 +12237,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
         DeusExWeapon(item).SetBloodyWeapon(false);
         DeusExWeapon(item).SetBloodyHands(false);
     }
+    
+    UpdateHUD();
 
-	  return bDropped;
+    return bDropped;
 }
 
 // ----------------------------------------------------------------------
@@ -13214,6 +13338,9 @@ function private _UpdateHUD()
 
     //DebugMessage("UpdateHUD");
     bUpdateHud = false;
+
+    //SARGE: Also update the keyring slot.
+    UpdateBeltText(KeyRing);
 }
 
 function UpdateGoalsWindow()
@@ -13252,6 +13379,8 @@ exec function ShowInventoryWindow()
 	  ClientMessage("Inventory screen disabled in multiplayer");
 	  return;
 	}
+
+    UpdateHUD();
 
 	InvokeUIScreen(Class'PersonaScreenInventory');
 }
@@ -19255,6 +19384,10 @@ simulated event Destroyed()
 	  CloseThisComputer(ActiveComputer);
 	ActiveComputer = None;
 
+    //AUGMENTIQUE: Destroy the managers, always
+    //outfitManager = None;
+    //weaponSkinManager = None;
+
 	Super.Destroyed();
 }
 
@@ -20590,7 +20723,7 @@ function LipSynch(float deltaTime)
 //SARGE: Check if we can consume something
 function bool HungerCheck(out string RestrictedMsg)
 {
-    local int maxFullness;
+    local float maxFullness;
     local Wound wound, wound2;
     local Perk glutton;
     
@@ -20618,12 +20751,29 @@ function bool HungerCheck(out string RestrictedMsg)
         maxFullness *= glutton.PerkValue;
 
     //Check if we're too full
-    if (fullUp >= maxFullness)
+    if (int(fullUp) >= int(maxFullness))
     {
         RestrictedMsg = fatty;
         return false;
     }
     return true;
+}
+
+function string GetHungerString(optional string prefix)
+{
+    local string suffix;
+
+    if (prefix == "")
+        prefix = HungerStr;
+
+    if (fullUp >= 100)
+        suffix = SatiatedStr;
+    else if (fullUp < 20) //SARGE: Added starving string
+        suffix = StarvingStr;
+    else if (fullUp < 50)
+        suffix = HungryStr;
+        
+    return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
 }
 
 // ----------------------------------------------------------------------
@@ -20817,7 +20967,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     iEnhancedWeaponOffsets=1
+     bEnhancedWeaponOffsets=true
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
@@ -20921,7 +21071,7 @@ defaultproperties
      iBloodyWeapons=1
      iWeaponWallDistance=504
      bAutofillPasswords=true
-     iHackySaveIndex=1
+     iHackySaveIndex=0
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
@@ -20940,9 +21090,17 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bPickupsUseFOV=true
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;
+     msgCreditsAdded="%d credits added"
+     msgCreditsDeducted="%d credits deducted from your account"
+     HungerStr="Current Hunger: "
+     SatiatedStr="(Satiated)"
+     HungryStr="(Hungry)"
+     StarvingStr="(Starving)"
 }
