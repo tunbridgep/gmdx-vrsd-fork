@@ -136,8 +136,7 @@ simulated function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation,
 
 defaultproperties
 {
-     //weaponOffsets=(X=16.000000,Y=-13.000000,Z=-20.000000)
-     weaponOffsets=(X=18.000000,Y=-15.000000,Z=-20.000000) //Sarge: Use EMP grenade offset instead, it looks better
+     weaponOffsets=(X=26.000000,Y=-15.000000,Z=-18.000000)
      LowAmmoWaterMark=2
      GoverningSkill=Class'DeusEx.SkillDemolition'
      EnemyEffective=ENMEFF_Organic
@@ -173,7 +172,8 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.GasGrenadeSelect'
      InventoryGroup=21
      ItemName="Gas Grenade"
-     PlayerViewOffset=(Y=-13.000000,Z=-19.000000)
+     OldPlayerViewOffset=(X=30.0000,Y=-14.000000,Z=-16.000000)
+     PlayerViewOffset=(X=30.0000,Y=-14.000000,Z=-16.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPGasGrenade"
      HDTPPickupViewMesh="HDTPItems.HDTPGasGrenadePickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPGasGrenade3rd"
