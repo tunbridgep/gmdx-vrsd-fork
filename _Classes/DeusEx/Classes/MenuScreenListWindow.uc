@@ -614,7 +614,14 @@ event bool ListRowActivated(window list, int rowId)
     lstItems.SetField(rowId, 1, GetValueString(id));
     //RefreshChoices();
 
+    OnValueSet();
+
 	return True;
+}
+
+//Called whenever we set a valud
+function OnValueSet()
+{
 }
 
 // ----------------------------------------------------------------------

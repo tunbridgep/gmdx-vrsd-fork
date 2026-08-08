@@ -28,6 +28,12 @@ function SaveSettings()
         player.weaponSkinManager.SaveConfig();
 }
 
+//Called whenever we set a valud
+function OnValueSet()
+{
+    player.HDTP();
+}
+
 //We need to change options depending on Augmentique
 function BuildModifierList()
 {

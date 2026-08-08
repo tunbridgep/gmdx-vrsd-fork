@@ -147050,7 +147050,6 @@ Begin Actor Class=ComputerSecurity Name=ComputerSecurity0
     Location=(X=175.973724,Y=-1612.441650,Z=853.105103)
     Rotation=(Yaw=16344)
     OldLocation=(X=-252.912720,Y=-1585.349731,Z=883.910217)
-    CollisionRadius=6.000000
     Name=ComputerSecurity0
 End Actor
 Begin Actor Class=MIB Name=MIB2

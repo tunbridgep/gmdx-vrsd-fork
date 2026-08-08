@@ -1124,6 +1124,8 @@ function UpdateRegionsMaxHealth()                                               
    local Skill sk;
    local int TorsoAdd, HeadAdd;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	
+    if (player == None)
+        return;
 
     TorsoAdd = player.GetTorsoHealthAdjustment();                  //RSD: Get 5 bonus health for every 2 min on timer
     HeadAdd = player.GetHeadHealthAdjustment();
