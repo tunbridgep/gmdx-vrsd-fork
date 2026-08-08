@@ -3469,8 +3469,7 @@ function ResetPlayer(optional bool bTraining)
     killswitchTimer = default.killswitchTimer;
 
     // Reset Belt Memory
-    for(i = 0;i < 12;i++)
-        ClearPlaceholder(i);
+    ClearAllBeltPlaceholders();
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
@@ -10859,6 +10858,13 @@ function SetPlaceholder(int objectNum, Inventory item)
         else
             beltInfos[objectNum].defaultIcon = item.icon;
     }
+}
+
+function ClearAllBeltPlaceholders()
+{
+    local int i;
+    for (i = 0; i < ArrayCount(beltInfos); i++)
+        ClearPlaceholder(i);
 }
 
 function ClearPlaceholder(int objectNum)
