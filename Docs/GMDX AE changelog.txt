@@ -39,6 +39,7 @@ Bug Fixes:
 - Fixed Security Cameras being re-activated after being hacked while EMP'd.
 
 Misc Changes:
+- NPCs will no longer track targets with the GEP gun.
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
 - It is now significantly less likely to be unable to drop a carcass when in a tight space, such as a vent.
 - Minor internal changes to make translations easier, such as localizing a few strings.
