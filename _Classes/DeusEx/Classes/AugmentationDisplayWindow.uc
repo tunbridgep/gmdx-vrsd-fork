@@ -2047,7 +2047,7 @@ function DrawVisionAugmentation(GC gc)
 				{
 					dist = VSize(A.Location - loc);
                     //SARGE: Added a new condition for detecting items and security systems only
-                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('Containers') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('Shuriken') || A.IsA('AlarmUnit')))
+                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('InformationDevices') || A.IsA('Inventory') || A.IsA('Containers') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('Shuriken') || A.IsA('AlarmUnit')))
                     {
 						VisionTargetStatus = GetVisionTargetStatus(A);
 						SetSkins(A, oldSkins);
@@ -2272,6 +2272,9 @@ function bool IsHeatSource(Actor A)
     //SARGE: And crates
     else if (A.IsA('CrateBreakableMedCombat') || A.IsA('CrateBreakableMedGeneral') || A.IsA('CrateBreakableMedMedical') || A.IsA('BoxSmall'))
         return true;
+    //SARGE: And InformationDevices
+    else if (A.IsA('InformationDevices'))
+        return true;
 	else
 		return False;
 }
@@ -2320,7 +2323,7 @@ function SetSkins(Actor actor, out Texture oldSkins[9])
 
 	for (i=0; i<8; i++)
 		oldSkins[i] = actor.MultiSkins[i];
-	oldSkins[i] = actor.Skin;
+	oldSkins[8] = actor.Skin;
 
 	for (i=0; i<8; i++)
 	{
@@ -2342,7 +2345,7 @@ function ResetSkins(Actor actor, Texture oldSkins[9])
 
 	for (i=0; i<8; i++)
 		actor.MultiSkins[i] = oldSkins[i];
-	actor.Skin = oldSkins[i];
+	actor.Skin = oldSkins[8];
 	//actor.Texture = oldSkins[i+1];
     //actor.Style = ERenderStyle(oldStyle); //SARGE: Doesn't compile???
     //So we have to do this fucking bullshit...
@@ -2388,7 +2391,7 @@ function int GetVisionTargetStatus(Actor Target)
 		return VISIONNEUTRAL;
 	
     //SARGE: Added. Show items as a different colour
-    if (target.IsA('Inventory') || target.IsA('CrateBreakableMedCombat') || target.IsA('CrateBreakableMedGeneral') || target.IsA('Shuriken') || target.IsA('CrateBreakableMedMedical') || target.IsA('BoxSmall'))
+    if (target.IsA('Inventory') || target.IsA('CrateBreakableMedCombat') || target.IsA('InformationDevices') || target.IsA('CrateBreakableMedGeneral') || target.IsA('Shuriken') || target.IsA('CrateBreakableMedMedical') || target.IsA('BoxSmall'))
         return VISIONITEM;
 
 	if (player.Level.NetMode == NM_Standalone)

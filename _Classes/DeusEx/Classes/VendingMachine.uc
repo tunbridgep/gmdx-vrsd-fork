@@ -65,7 +65,7 @@ function Frob(actor Frobber, Inventory frobWith)
 			return;
 		}
 
-		if (player.Credits >= 2)
+		if (player.AddCredits(-2,true,true))
 		{
 			PlaySound(sound'VendingCoin', SLOT_None);
 			loc = Vector(Rotation) * CollisionRadius * 0.8;
@@ -101,7 +101,6 @@ function Frob(actor Frobber, Inventory frobWith)
 			}
 
 			player.Credits -= 2;
-			player.ClientMessage(msgDispensed);
 			numUses--;
 		}
 		else
@@ -111,7 +110,6 @@ function Frob(actor Frobber, Inventory frobWith)
 
 defaultproperties
 {
-     msgDispensed="2 credits deducted from your account"
      msgNoCredits="Costs 2 credits..."
      numUses=10
      msgEmpty="It's empty"

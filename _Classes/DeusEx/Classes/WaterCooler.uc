@@ -28,7 +28,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 			Pawn(Frobber).ClientMessage(msgEmpty);
 		return;
 	}
-    else if (DeusExPlayer(Frobber) != None && !DeusExPlayer(Frobber).HungerCheck(RestrictedMsg))
+    
+	if (DeusExPlayer(Frobber) != None && !DeusExPlayer(Frobber).HungerCheck(RestrictedMsg))
     {
         if (RestrictedMsg != "")
             DeusExPlayer(Frobber).clientMessage(RestrictedMsg);

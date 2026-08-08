@@ -209,7 +209,7 @@ function ChargeEquipment(inventory EquipToCharge, DeusExPlayer EquipOwner) //RSD
         else if (N != None)
         {
             if (N.ChargeManager != None)
-                N.ChargeManager.Recharge();
+                N.ChargeManager.Recharge(false);
         }
         else
             return;

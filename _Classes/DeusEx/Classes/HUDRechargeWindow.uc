@@ -813,7 +813,7 @@ function UpdateEquipmentWindows()
                 if (winEquipBarText[i] != none)                                     //RSD: accessed none?
                     winEquipBarText[i].SetText(percentText);
            		
-                outText = EquipRechargeLabel3 @ int(100*nanoSword.ChargeManager.GetRechargeAmount())$"%";
+                outText = EquipRechargeLabel3 @ int(100*nanoSword.ChargeManager.GetRechargeAmount(false))$"%";
            	
                 if (winEquipRechargeText[i] != none)                                //RSD: accessed none?
                     winEquipRechargeText[i].SetText(outText);

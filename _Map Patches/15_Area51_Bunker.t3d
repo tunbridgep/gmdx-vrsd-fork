@@ -243749,7 +243749,7 @@ Begin Actor Class=DamageTrigger Name=DamageTrigger48
     DistanceFromPlayer=4458.690918
     InitialState=OtherTriggerToggles
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=DamageTrigger
+    Tag=HotHazard
     Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=6010,ZoneNumber=1)
     Location=(X=-1416.360474,Y=93.217979,Z=110.000000)
     OldLocation=(X=-1272.327271,Y=150.706909,Z=134.000000)

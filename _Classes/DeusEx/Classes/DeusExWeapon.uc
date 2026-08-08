@@ -374,6 +374,7 @@ var(GMDX) bool bDontRemoveOnMissionComplete;                                    
 var bool bSwitchingToLaser;
 var bool bSwitchingToSilencer;
 var bool bSwitchingToScope;
+var Sound AttachmentSound;      //SARGE: The sound we use when attaching/detatchin things
 
 //Penalties to accuracy and reload speed while using mods.
 enum EAddonPenaltyType
@@ -592,6 +593,7 @@ function ToggleAttachedScope(bool bRealtime)
 {
     if (bHadScope)
     {
+        ScopeOff();
         if (bRealtime)
         {
             bSwitchingToScope = true;
@@ -641,6 +643,9 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     local class<Ammo> defAmmoClass;
     local int intj;
     local Texture overrideTexture;
+
+    if (bNativeAttack)
+        return false;
 
     if (P == None)
         return false;
@@ -2551,9 +2556,6 @@ simulated function bool NearWallCheck()
 	// Scripted pawns can't place LAMs
 	if (ScriptedPawn(Owner) != None)
 		return False;
-
-    if (IsA('WeaponHideAGun')) //CyberP
-        return False;
 
 	/*// Don't let players place grenades when they have something highlighted
 	if ( Level.NetMode != NM_Standalone )
@@ -5609,6 +5611,8 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 
         if (DeusExPlayer(Owner) != None && dist >= AccurateRangeMod)               //RSD: != none instead of IsA
 		{
+            if (DeusExPlayer(Owner) != None)
+                DeusExPlayer(Owner).DebugMessage("mult (pre): " $ mult);
 			//RSD: Linear damage falloff up to MaxRange for the player
             alpha = (dist - AccurateRangeMod) / (MaxRangeMod - AccurateRangeMod);
             mult = (1-alpha)*mult;
@@ -7183,9 +7187,7 @@ ignores Fire, AltFire;
         bHasScope = !bHasScope;
     else if (bSwitchingToSilencer)
         bHasSilencer = !bHasSilencer;
-    else if (bSwitchingToLaser)
-        bHasLaser = !bHasLaser;
-    Owner.PlaySound(AltFireSound, SLOT_None,,, 1024);
+    Owner.PlaySound(AttachmentSound, SLOT_None,,, 1024);
     if(hasAnim('ReloadEnd'))
         PlayAnim('ReloadEnd',1.0-(ModReloadTime*0.8));
     FinishAnim();
@@ -8024,4 +8026,5 @@ defaultproperties
      currentWeaponSkin="default"
      totalScopeTime=0.41
      inertiaSpeed=30
+     AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
 }

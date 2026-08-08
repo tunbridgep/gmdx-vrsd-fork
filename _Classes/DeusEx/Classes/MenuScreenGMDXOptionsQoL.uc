@@ -205,6 +205,7 @@ defaultproperties
      items(148)=(HelpText="Sets viewmodel FOV. Requires the Alternate Weapon Offsets setting to be enabled.",actionText="HUD: Viewmodel FOV",consoleTarget="ViewmodelFOVManager",variable="weaponFOV",realValue0=60,realValue1=75,realValue2=80,realValue3=90,realValue4=100,realValue5=110,valueText0="60 FOV",valueText1="75 FOV",valueText2="80 FOV",valueText3="90 FOV",valueText4="100 FOV",valueText5="110 FOV",defaultValue=1)
      items(149)=(HelpText="Automatically equip Ballistic Armor and HazMat Suits when picking them up if you don't have anything equipped.",actionText="Interaction: Auto-Use Armor Items",variable="bAutoUseChargedPickups",defaultValue=1)
      items(150)=(HelpText="Drop carcasses at your feet when dropping would otherwise fail, such as in tight corridoors or vents.",actionText="Interaction: Always Drop Carcasses",variable="bAlwaysDropCarcasses",defaultValue=1)
+     items(152)=(HelpText="The NanoKey icon on the belt will show available Lockpicks and Multitools",actionText="HUD: NanoKey Slot shows Tools",variable="bNanoKeyShowsTools",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214
