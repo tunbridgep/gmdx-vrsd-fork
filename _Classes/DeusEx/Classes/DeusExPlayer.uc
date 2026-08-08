@@ -3018,15 +3018,19 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
     //We don't ever want to get here, but it's still better than not saving!
     if (saveIndex >= 1000)
     {
-        DebugMessage("WARNING: Using hacky save index");
-        saveIndex = iHackySaveIndex++;
-        
+        saveIndex = iHackySaveIndex;
+        DebugMessage("WARNING: Using hacky save index: " $ iLastSave);
+
+        iHackySaveIndex++;
+
         if (iHackySaveIndex >= 1000)
             iHackySaveIndex = 1;
-
-        SaveConfig();
     }
-    
+        
+    //SARGE: Set last save to the new index
+    iLastSave = saveIndex;
+    SaveConfig();
+
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
         dataLinkPlay.AbortAndSaveHistory();
@@ -3037,13 +3041,11 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDesc = GetDefaultSaveName();
 
     root.GenerateSnapshot(True);
-    DebugLog("Save Game: " $ saveIndex @ saveDesc);
+    DebugMessage("Save Game: " $ saveIndex @ saveDesc @ iLastSave);
     SaveGame(saveIndex, saveDesc);
     root.HideSnapshot();
     //root.show();
 
-    ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
-    SaveConfig();
     return saveIndex;
 }
 
@@ -3169,7 +3171,7 @@ exec function QuickLoad()
 
     //Confirm the save exists before trying to do anything
     saveDir = GetSaveGameDirectory();
-    info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
+    info = saveDir.GetSaveInfo(iLastSave);
     CriticalDelete(saveDir);
 
 	if (info != None && DeusExRootWindow(rootWindow) != None)
@@ -3185,7 +3187,9 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-    LoadGame(int(ConsoleCommand("get DeusExPlayer iLastSave"))); //changed so now selects last saved game, even if from menu
+    DebugLog("Loading Quicksave: " $ iLastSave);
+
+    LoadGame(iLastSave); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
@@ -20988,7 +20992,7 @@ defaultproperties
      iBloodyWeapons=1
      iWeaponWallDistance=504
      bAutofillPasswords=true
-     iHackySaveIndex=1
+     iHackySaveIndex=0
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
