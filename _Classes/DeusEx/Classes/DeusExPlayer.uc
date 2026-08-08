@@ -20675,6 +20675,12 @@ function string GetHungerString(optional string prefix)
     return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
 }
 
+function RefreshSkills()
+{
+    if (SkillSystem != None)
+        SkillSystem.RefreshSkills();
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
