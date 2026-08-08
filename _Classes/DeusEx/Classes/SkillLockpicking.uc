@@ -11,11 +11,6 @@ var float mpLevel1;
 var float mpLevel2;
 var float mpLevel3;
 
-//SARGE: Added special value arrays for HC and Easy
-//vRSD previously hardcoded these :laughing_emoji:
-var float LevelValuesHardcore[4];
-var float LevelValuesEasy[4];
-
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
@@ -32,33 +27,14 @@ simulated function PreBeginPlay()
 	}
 }
 
-function Refresh()
+function bool UseHardcoreSkillValues(int index)
 {
-    super.Refresh();
+    return (player.bHarderLockpicking || player.bHardcoreMode) && LevelValuesHardcore[index] != -1;
+}
 
-    //SARGE: Have to assign these individually,
-    //because UnrealScript doesn't support assigning arrays
-    if (player.bHardcoreMode || player.bHarderLockpicking)
-    {
-        LevelValues[0] = LevelValuesHardcore[0];
-        LevelValues[1] = LevelValuesHardcore[1];
-        LevelValues[2] = LevelValuesHardcore[2];
-        LevelValues[3] = LevelValuesHardcore[3];
-    }
-    else if (player.CombatDifficulty <= 1)
-    {
-        LevelValues[0] = LevelValuesEasy[0];
-        LevelValues[1] = LevelValuesEasy[1];
-        LevelValues[2] = LevelValuesEasy[2];
-        LevelValues[3] = LevelValuesEasy[3];
-    }
-    else
-    {
-        LevelValues[0] = default.LevelValues[0];
-        LevelValues[1] = default.LevelValues[1];
-        LevelValues[2] = default.LevelValues[2];
-        LevelValues[3] = default.LevelValues[3];
-    }
+function bool UseEasySkillValues(int index)
+{
+    return !player.bHarderLockpicking && player.CombatDifficulty <= 1 && LevelValuesEasy[index] != -1;
 }
 
 defaultproperties
