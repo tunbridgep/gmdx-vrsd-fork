@@ -9944,8 +9944,13 @@ function bool AddCredits(int amount, bool bShowMessage, bool bShowWindow)
 
     //Show the window (if we received only, for now)
     if (amount > 0 && bCreditsShowReceivedItemsWindow && bShowWindow)
+    {
+        if (ConPlay != None && conPlay.GetDisplayMode() == DM_ThirdPerson && ConPlay.conWinThird != None)
+            ConPlay.conWinThird.ShowGenericIcon(class'Credits'.default.Icon, class'Credits'.default.beltDescription, amount);
+
         if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
             DeusExRootWindow(rootWindow).hud.receivedItems.AddCredits(amount);
+    }
 
     //Last minute check for credits going below zero.
     //Probably not necessary.
