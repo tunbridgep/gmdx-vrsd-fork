@@ -1330,17 +1330,22 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
     local bool bShowReceived;                                                   //SARGE: Show the Received Items Window for new pickups
     local Inventory newItem;                                                    //SARGE: An item that was spawned in the players inventory.
     local Actor previousFrobTarget;                                             //SARGE: For holding the previous frob target.
+    
+    //SARGE: We need to change our frob target temporarily...
+    //This SHOULD store us, but you never know...
+    previousFrobTarget = player.FrobTarget;
 
     //Clear our dropped weapon of it's no longer valid
-    if (droppedWeapon.IsInState('Sleeping') || droppedWeapon.Owner == player)
+    if (droppedWeapon.IsInState('Sleeping') || droppedWeapon.Owner != None || VSize(Location - droppedWeapon.Location) >= 150)
         droppedWeapon = None;
     
     if (droppedWeapon != None)
         player.DebugMessage("DroppedWeapon: " $ droppedWeapon);
 
-    /*
     //SARGE: Before searching the inventory, try to pick up our dropped weapon
     //TODO: Refactor this into the normal inventory searching.
+    //SARGE: I tried, it breaks everyting, including deleting the entire players inventory,
+    //so lets just leave it here for now and not fuck around with it too much.
     if (droppedWeapon != None)
     {
         item = droppedWeapon;
@@ -1348,27 +1353,23 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
         found = player.FindInventoryType(item.class);
         bDeclined = player.declinedItemsManager.IsDeclined(item.Class,true);
         player.FrobTarget = item;
-        if (player.HandleItemPickup(item,false,false,Self,true,true))
+        if (!DeusExWeapon(item).bDisposableWeapon || found != None)
+            bPickedSomethingUp = LootAmmo(player,DeusExWeapon(droppedWeapon),!bSearched,true);
+                
+        if (player.HandleItemPickup(item,false,false,Self,false,false))
         {
-            bPickedSomethingUp = True;
             droppedWeapon = None;
-            if (found == None)
-            {
-                //player.DebugMessage("Adding good item: " $ item);
-                AddReceivedItem(player, item, 1);
-            }
-            else
-            {
-                bFoundInvalid=True;
-                source.AddBadItem(player,found);
-                if (!bSearched)
-                    player.ClientMessage(found.PickupMessage @ found.itemArticle @ found.itemName @ IgnoredString);
-            }
+            bPickedSomethingUp = True;
+            //player.DebugMessage("Adding good item: " $ item);
+            if (found == None && !DeusExWeapon(item).bDisposableWeapon)
+                AddReceivedItem(player, carcassID, item, 1);
+            //else
+                //source.AddBadItem(player,self,found);
         }
         else
         {
             //player.DebugMessage("Adding bad item: " $ item);
-            source.AddBadItem(player,item);
+            source.AddBadItem(player,self,item);
         }
 
         if (bDeclined && !bSearched)
@@ -1377,7 +1378,6 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
             player.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ DeclinedString);
         }
     }
-    */
 
     while(Inventory.Owner == player)
     {
@@ -1386,11 +1386,7 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
             break;
     }
 
-    if (droppedWeapon != None)
-        item = droppedWeapon;
-    else
-        item = Inventory;
-
+    item = Inventory;
     startItem = item;
 
     do
@@ -1410,15 +1406,8 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
         if(item == None)
             break;
         //== end
-
-        //If our weapon was picked up, get rid of it.
-        if (droppedWeapon.Owner != None)
-            droppedWeapon = None;
-
-        if (item == droppedWeapon && droppedWeapon != None && droppedWeapon.Owner != player)
-            nextItem = Inventory;
-        else
-            nextItem = item.Inventory;
+        
+        nextItem = item.Inventory;
 
         //== start
         if(nextItem != None)
@@ -1740,28 +1729,19 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                     // check if the pawn is allowed to pick this up
                     if ((player.Inventory == None) || (Level.Game.PickupQuery(player, item)))
                     {
-                        previousFrobTarget = player.FrobTarget;
                         player.FrobTarget = item;
                         if (!bDeclined)
                         {
                             bFoundSomething = True;
                             if (player.HandleItemPickup(Item,false,true,self,!bLootedAmmo,false) != False)
                             {
-                                if (item == droppedWeapon)
-                                {
-                                    newItem = item;
-                                    droppedWeapon = none;
-                                }
-                                else
-                                {
-                                    DeleteInventory(item);
+                                DeleteInventory(item);
 
-                                    // DEUS_EX AMSD Belt info isn't always getting cleaned up.  Clean it up.
-                                    item.bInObjectBelt=False;
-                                    item.BeltPos=-1;
-                                    
-                                    newItem = item.SpawnCopy(player);
-                                }
+                                // DEUS_EX AMSD Belt info isn't always getting cleaned up.  Clean it up.
+                                item.bInObjectBelt=False;
+                                item.BeltPos=-1;
+                                
+                                newItem = item.SpawnCopy(player);
 
                                 //PlaySound(Item.PickupSound);
                                     
@@ -1785,7 +1765,6 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
                                 bAddBad = true;
                             }
                         }
-                        player.FrobTarget = previousFrobTarget;
                     }
                     else
                     {
@@ -1810,6 +1789,9 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
         item = nextItem;
     }
     until ((item == None) || (item == startItem));
+                        
+    //SARGE: Reset out frob target, since we messed with it...
+    player.FrobTarget = previousFrobTarget;
 
     //Unreal sucks and doesn't allow bools as out variables
     _bPickedSomethingUp = int(bPickedSomethingUp);

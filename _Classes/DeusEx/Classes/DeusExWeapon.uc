@@ -641,8 +641,9 @@ function class<Ammo> GetPrimaryAmmoType()
 function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional bool bOverflowWindow, optional string owner)
 {
     local class<Ammo> defAmmoClass;
-    local int intj;
+    local int intj, i;
     local Texture overrideTexture;
+    local DeusExCarcass carc;
 
     if (bNativeAttack)
         return false;
@@ -650,6 +651,23 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (P == None)
         return false;
 			
+    if (owner == string(P.Class.name))
+    {
+        //SARGE: A bit of a hack!
+        //If we're a dropped weapon, use the carcassID for it
+        //so that we don't get duplicate entries in the received window
+        foreach AllActors(class'DeusExCarcass', carc)
+        {
+            //P.DebugMessage("Surely you can't be serious..." $ carc.carcassID);
+            if (carc.droppedWeapon == self)
+            {
+                //P.DebugMessage("using carcassID: " $ carc.carcassID);
+                owner = carc.carcassID;
+                break;
+            }
+        }
+    }
+
     if (owner == "")
         owner = string(self.name);
 

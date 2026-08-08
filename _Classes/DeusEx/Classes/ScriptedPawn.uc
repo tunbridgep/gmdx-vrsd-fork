@@ -3015,6 +3015,10 @@ function DropWeapon(bool bAllowRifle)
 	local DeusExWeapon dxWeapon;
     local vector loc;
 
+    //SARGE: This is just fucking annoying when it happens...
+    if (IsA('ScubaDiver'))
+        return;
+
 	if (Weapon != None && (!Weapon.IsA('WeaponRifle') || bAllowRifle))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
@@ -3033,9 +3037,10 @@ function DropWeapon(bool bAllowRifle)
                 if (!class'SpawnUtils'.static.CheckDropFrom(dxWeapon,loc,Location))
                     return;
             }
+            
+            droppedWeapon = dxWeapon;
 
             dxWeapon.PlayAnim('Still');
-			
             dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 			
             SetWeapon(None);
@@ -16965,10 +16970,7 @@ Begin:
     if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
     {
         if (DeusExWeapon(Weapon) == None || !DeusExWeapon(Weapon).bNativeAttack)
-        {
-            droppedWeapon = Weapon;
             DropWeapon(true);
-        }
     }
 
 	WaitForLanding();

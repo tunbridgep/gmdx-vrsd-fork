@@ -9800,7 +9800,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         {
 
             //SARGE: Hack. If it's a weapon, we need to unlink it from any carcasses or scriptedpawns that currently have it as their dropped weapon
-            if (FrobTarget.IsA('Weapon'))
+            if (Weapon(FrobTarget) != None)
             {
                 foreach AllActors(class'DeusExCarcass', linkedCarc)
                 {
