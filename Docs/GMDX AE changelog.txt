@@ -79,6 +79,8 @@ Map Changes:
     - No longer distribute GEP Guns on Hardcore mode, as this is an indoor map where they don't make sense.
 - 14_OceanLab_Lab:
     - All Greasels and Karkians are now killed when Walton Simons arrives, rather than simply being deleted.
+- 15_Area51_Bunker
+    - Fixed an erroneous damage trigger in the watchtower that could result in taking damage even after disabling the poison gas.
 
 1.22 (Hotfix Release):
 
