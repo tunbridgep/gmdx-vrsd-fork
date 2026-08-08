@@ -1003,6 +1003,26 @@ function IncreaseAllAugs(int Amount)
 }
 
 // ----------------------------------------------------------------------
+// FindAugByKey()
+// ----------------------------------------------------------------------
+
+function Augmentation FindAugByKey(int keyNum)
+{
+
+	local Augmentation anAug;
+	anAug = FirstAug;
+	while(anAug != None)
+	{
+		if ((anAug.HotKeyNum - 3 == keyNum) && (anAug.bHasIt))
+			break;
+
+		anAug = anAug.next;
+	}
+
+    return anAug;
+}
+
+// ----------------------------------------------------------------------
 // ActivateAugByKey()
 // ----------------------------------------------------------------------
 
@@ -1016,15 +1036,7 @@ function bool ActivateAugByKey(int keyNum)
 	if ((keyNum < 0) || (keyNum > 10))
 		return False;
 
-	anAug = FirstAug;
-	while(anAug != None)
-	{
-		if ((anAug.HotKeyNum - 3 == keyNum) && (anAug.bHasIt))
-			break;
-
-		anAug = anAug.next;
-	}
-
+    anAug = FindAugByKey(keyNum);
 	if (anAug == None)
 	{
 		player.ClientMessage(NoAugInSlot);

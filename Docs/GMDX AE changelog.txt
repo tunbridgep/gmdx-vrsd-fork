@@ -14,6 +14,7 @@ New Features:
 - Added sounds for picking up Collectibles.
 - Data Cubes and other information devices are now highlighted when using Tech Goggles.
 - Added sounds when acquiring Traumas.
+- Added new "Hold" bindings for active autmentations.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
 - Edible Items now show the players current hunger level in the Inventory screen.
 - Upgraded to the newest DeusExe by @flippers

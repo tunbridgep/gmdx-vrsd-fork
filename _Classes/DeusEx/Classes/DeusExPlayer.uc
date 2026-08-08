@@ -2808,6 +2808,65 @@ exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
 exec function Flashlight() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(10); }
 
+//SARGE: Allow "hold" versions of Aug Keys as well
+function HoldAug(int num, bool bRelease)
+{
+    local Augmentation aug;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.FindAugByKey(num);
+    
+    //Active and Auto augs only
+    if (aug == None || (aug.AugmentationType != Aug_Active && aug.AugmentationType != Aug_Automatic))
+        return;
+    
+    //Only activate with button down, only deactivate with release.
+    if (aug.bIsActive == bRelease)
+        AugmentationSystem.ActivateAugByKey(num);
+}
+
+//Smart Sprint - use the Speed aug if we have it, otherwise run.
+exec function SmartSprint(bool bRelease)
+{
+    local Augmentation aug;
+    local string _unused;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.GetAug(class'AugSpeed');
+    if (aug == None)
+        aug = AugmentationSystem.GetAug(class'AugStealth');
+    
+    if (bRelease)
+    {
+        if (aug != None && aug.bHasIt)
+            aug.DeActivate();
+        bRun = 0;
+    }
+    else if (aug != None && aug.bHasIt && aug.CanActivate(_unused))
+    {
+        aug.Activate();
+    }
+    else //No leg aug - Just run normally
+    {
+        bRun = 1;
+    }
+
+}
+
+exec function HoldMapF3(bool bRelease) { HoldAug(0,bRelease); }
+exec function HoldMapF4(bool bRelease) { HoldAug(1,bRelease); }
+exec function HoldMapF5(bool bRelease) { HoldAug(2,bRelease); }
+exec function HoldMapF6(bool bRelease) { HoldAug(3,bRelease); }
+exec function HoldMapF7(bool bRelease) { HoldAug(4,bRelease); }
+exec function HoldMapF8(bool bRelease) { HoldAug(5,bRelease); }
+exec function HoldMapF9(bool bRelease) { HoldAug(6,bRelease); }
+exec function HoldMapF10(bool bRelease) { HoldAug(7,bRelease); }
+exec function HoldMapF11(bool bRelease) { HoldAug(8,bRelease); }
+exec function HoldMapF12(bool bRelease) { HoldAug(9,bRelease); }
+exec function HoldFlashlight(bool bRelease) { HoldAug(10,bRelease); }
+
 //SARGE: Let the player dual-map belt slots.
 exec function AltBelt0() { ActivateBelt(0); }
 exec function AltBelt1() { ActivateBelt(1); }
