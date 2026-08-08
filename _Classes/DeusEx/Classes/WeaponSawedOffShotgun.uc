@@ -98,17 +98,29 @@ function DisplayWeapon(bool overlay)
     }
 }
 
+//SARGE: Hack to make Clyzm model work properly with good offsets
+function ResetWeaponOffsets()
+{
+    super.ResetWeaponOffsets();
+    if (IsHDTP() && iHDTPModelToggle == 2)
+    {
+        OldPlayerViewOffset.X += 4;
+        OldPlayerViewOffset.Z += 14;
+        if (class'DeusExPlayer'.default.bEnhancedWeaponOffsets)
+        {
+            weaponOffsets = OldPlayerViewOffset;
+            weaponOffsets.X += -10;
+            weaponOffsets.Z += 1;
+        }
+    }
+}
+
 exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
 {
-    if (IsHDTP())
-    {
-        if (iHDTPModelToggle == 2)
-        {
-            HDTPPlayerViewMesh="FOMOD.sawed1st";
-        }
-        else if (iHDTPModelToggle == 1)
-            HDTPPlayerViewMesh="HDTPItems.HDTPShotgun";
-    }
+    if (iHDTPModelToggle == 2)
+        HDTPPlayerViewMesh="FOMOD.sawed1st";
+    else if (iHDTPModelToggle == 1)
+        HDTPPlayerViewMesh="HDTPItems.HDTPShotgun";
     Super.UpdateHDTPsettings();
 }
 

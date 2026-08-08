@@ -11,11 +11,11 @@ var globalconfig float weaponFOV;
 function private vector GetDefaultWeaponOffsets(Inventory item)
 {
     if (SkilledTool(item) != None)
-        return SkilledTool(item).default.OldPlayerViewOffset;
+        return SkilledTool(item).OldPlayerViewOffset;
     else if (POVCorpse(item) != None)
-        return POVCorpse(item).default.OldPlayerViewOffset;
+        return POVCorpse(item).OldPlayerViewOffset;
     else if (DeusExWeapon(item) != None)
-        return DeusExWeapon(item).default.OldPlayerViewOffset;
+        return DeusExWeapon(item).OldPlayerViewOffset;
 }
 
 function private vector GetWeaponOffsets(Inventory item)
@@ -65,6 +65,9 @@ function private float GetRatio(Inventory item)
 	local int resX;
 	local int resWidth, resHeight;
 	local string CurrentRes;
+
+    if (item == None || item.GetPlayerPawn() == None)
+        return 1.777;
 
 	CurrentRes   = item.GetPlayerPawn().ConsoleCommand("GetCurrentRes");
 

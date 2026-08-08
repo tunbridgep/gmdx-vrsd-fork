@@ -302,7 +302,8 @@ var travel float previousAccuracy;                                              
 
 //SARGE: Weapon Offset Stuff
 var transient ViewmodelFOVManager FOVManager;                                   //SARGE: Manage Viewmodel FOV
-var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
+var vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
+var vector OldPlayerViewOffset;                                                 //SARGE: Remember old weapon offsets even when the defaults change.
 
 var travel bool givenFreeReload;                                                //Sarge: Give a free reload when selecting the weapon for the first time, otherwise it starts empty
 
@@ -395,9 +396,6 @@ struct BloodTex
 };
 
 var travel BloodTex BloodTextures[8];
-
-//SARGE: Remember old weapon offsets even when the defaults change.
-var const vector OldPlayerViewOffset;
 
 //AUGMENTIQUE: Weapon Skin system
 var(Augmentique) travel string currentWeaponSkin;
@@ -6975,10 +6973,19 @@ function UpdateSkin()
         pl.WeaponSkinManager.UpdateWeaponSkinTextures(self);
 }
 
+//Do funky things with offsets here
+function ResetWeaponOffsets()
+{
+    OldPlayerViewOffset=default.OldPlayerViewOffset;
+    weaponOffsets=default.weaponOffsets;
+}
+
 function DoWeaponOffset()
 {
+    ResetWeaponOffsets();
     if (FOVManager == None)
         FOVManager = new(Self) class'ViewmodelFOVManager';
+
     FOVManager.SetViewmodelOffset(Self);
 }
 
