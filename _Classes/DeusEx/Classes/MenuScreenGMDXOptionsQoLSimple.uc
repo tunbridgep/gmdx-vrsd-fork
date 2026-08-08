@@ -104,6 +104,7 @@ defaultproperties
      items(38)=(HelpText="With Restricted Saving enabled, save points will fade out when far away from the player. Increases immersion at the cost of visibility.",actionText="Game: Fade Out Save Points",variable="bFadeOutSavePoints",image1="Qol_SaveFade2",image2="Qol_SaveFade1")
      items(39)=(HelpText="If enabled, conversations will play in first-person rather than using a third-person camera",actionText="Player: First Person Conversations",variable="bFirstPersonConversation",image1="Qol_FPConv1",image2="Qol_FPConv2")
      items(40)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Weapon Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1,image1="Qol_AutoSkins1",image2="Qol_AutoSkins2")
+     items(41)=(HelpText="If enabled, dots will show augmentation levels on the HUD.",actionText="HUD: Show Aug Levels",variable="bShowAugLevelsInHUD",defaultValue=1,image1="Qol_AugLevels1",image2="Qol_AugLevels2")
 
      Title="GMDX Quality of Life Options"
      actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Advanced Settings",Key="ADVANCED")

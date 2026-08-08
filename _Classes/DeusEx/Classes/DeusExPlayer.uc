@@ -1059,6 +1059,8 @@ var const localized String HungryStr;
 
 var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
 
+var globalconfig bool bShowAugLevelsInHUD;              //SARGE: Show aug levels in HUD. Blatandly stolen from DXRando
+
 //Credits update/refactoring
 var localized string msgCreditsAdded;
 var localized string msgCreditsDeducted;
@@ -20985,6 +20987,7 @@ defaultproperties
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bShowAugLevelsInHUD=true
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"
      msgCreditsDeducted="%d credits deducted from your account"

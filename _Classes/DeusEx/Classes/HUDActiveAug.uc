@@ -11,6 +11,25 @@ var String hotKeyString;
 
 var bool bHasChargeBar;
 
+var PersonaLevelIconWindow winLevels;
+
+//SARGE: Added
+var bool bShowDots;
+var int augLevel;
+
+// ----------------------------------------------------------------------
+// InitWindow()
+// ----------------------------------------------------------------------
+
+event InitWindow()
+{
+	Super.InitWindow();
+    winLevels = PersonaLevelIconWindow(NewChild(Class'PersonaLevelIconWindow'));
+    winLevels.Hide();
+    winLevels.SetPos(4, 29);
+    winLevels.SetSelected(true);
+}
+
 // ----------------------------------------------------------------------
 // DrawHotKey()
 // ----------------------------------------------------------------------
@@ -24,9 +43,23 @@ function DrawHotKey(GC gc)
 	gc.SetTextColor(colBlack);
 	gc.DrawText(-16, 1, 47, 40, hotKeyString);
 
-	// Draw Dropshadow
+	// Draw Text
 	gc.SetTextColor(colText);
 	gc.DrawText(-15, 0, 47, 40, hotKeyString);
+
+    //SARGE: Draw Aug Levels
+    if (winLevels != None)
+    {
+        if (bShowDots)
+        {
+            winLevels.Show();
+            winLevels.SetLevel(augLevel);
+        }
+        else
+        {
+            winLevels.Hide();
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -92,7 +125,10 @@ event Tick(float deltaSeconds)
     local Augmentation aug;
     aug = Augmentation(GetClientObject());
 
-	if (aug != None && bHasChargeBar)
+    if (aug == None)
+        return;
+
+	if (bHasChargeBar)
     {
         if (aug.IsCharging())
             winEnergy.SetCurrentValue(((aug.chargeTime - aug.currentChargeTime) / aug.chargeTime) * 100);
@@ -101,8 +137,18 @@ event Tick(float deltaSeconds)
     }
 
     //SARGE: Update the aug icon colour when it's active.
-    if (aug != None && aug.displayAsActiveTime + deltaSeconds >= player.saveTime)
+    if (aug.displayAsActiveTime + deltaSeconds >= player.saveTime)
         colItemIcon = aug.GetAugColor(true);
+    
+    //Update info for the dots display
+    augLevel = aug.CurrentLevel;
+    bShowDots = class'DeusExPlayer'.default.bShowAugLevelsInHUD && !aug.IsCharging();
+}
+
+event DestroyWindow()
+{
+    DestroyAllChildren();
+    super.DestroyWindow();
 }
 
 // ----------------------------------------------------------------------
