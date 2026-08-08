@@ -37,6 +37,7 @@ Bug Fixes:
 - Fixed Water Fountains and Water Coolers not respecting the Glutton perk, and various other food-related statuses (such as Traumas).
 - Fixed Medicine Skill information window listing wrong numbers.
 - Fixed Security Cameras being re-activated after being hacked while EMP'd.
+- Fixes for phones not properly displaying "Line disconnected" and other frob sounds.
 
 Misc Changes:
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
