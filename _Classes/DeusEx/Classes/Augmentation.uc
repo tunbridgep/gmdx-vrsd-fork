@@ -575,6 +575,7 @@ simulated function bool CanDrainEnergy()
 function float GetAdjustedEnergy(float amount)
 {    
     local float bonus, penalty, mult;
+    local Wound wound;
 
 	if(amount > 0.0)
 	{
@@ -592,6 +593,14 @@ function float GetAdjustedEnergy(float amount)
 			mult = bonus;
 		else if (penalty > 0)
 			mult = penalty;
+
+        //SARGE: Shock now increases bioenergy use by 25%
+        if (player.WoundManager != None)
+        {
+            wound = player.WoundManager.GetWoundByType(class'WoundShock');
+            if (wound != None && wound.HasWound())
+                mult = mult * wound.woundData[0];
+        }
 
 		return amount * mult;
 	}

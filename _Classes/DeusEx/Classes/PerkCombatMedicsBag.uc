@@ -3,25 +3,6 @@
 //=============================================================================
 class PerkCombatMedicsBag extends Perk;
 
-function OnMapLoadAndPurchase()
-{
-    class'BioelectricCell'.default.MaxCopies = 20;
-    class'Medkit'.default.MaxCopies = 15;
-}
-
-/*
-function OnMapLoadAndPurchase()
-{
-    local Medkit MK;
-    local BioelectricCell BE;
-
-    foreach PerkOwner.AllActors(class'Medkit',MK)
-        MK.MaxCopies = MK.default.MaxCopies;
-    foreach PerkOwner.AllActors(class'BioelectricCell',BE)
-        BE.MaxCopies = BE.default.MaxCopies;
-}
-*/
-
 defaultproperties
 {
     PerkName="COMBAT MEDIC'S BAG"

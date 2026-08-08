@@ -412,7 +412,8 @@ function RemoveObjectFromBelt(Inventory item, optional bool Placeholder, optiona
 function UpdateObjectText(int pos)
 {
 	// First find the object
-	if (IsValidPos(pos))
+	//if (IsValidPos(pos))
+    //Log("Updating Belt at pos " $ pos @ "(" $ objects[pos].item $ ")");
 		objects[pos].UpdateItemText();
 }
 

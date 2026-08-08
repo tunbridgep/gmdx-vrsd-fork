@@ -40,6 +40,55 @@ replication
 		bDoExplode, team, bDisabled, skillAtSet;
 }
 
+//SARGE: Routine to detect if we should explode, based on target priorities
+//FALSE means ignore this target
+function bool GetTargetPriority(ScriptedPawn target)
+{
+    //Failsafe
+    if (target == None)
+        return false;
+
+    // only "heavy" pawns will set this off
+    if (target.Mass < 40)
+        return false;
+    
+    // the owner won't set it off, either
+    if (target == Owner)
+        return false;
+    
+    //Disabled bots won't set off grenades
+    if (target.IsA('Robot') && Robot(target).EMPHitPoints == 0)
+        return false;
+    
+    //Now check the perk
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'PerkTargetPriorities').bPerkObtained)
+    {
+        //Ignore medical and repair bots.
+        if (target.IsA('MedicalBot') || target.IsA('RepairBot'))
+            return false;
+        
+        //Ignore cleaner bots.
+        if (target.IsA('CleanerBot'))
+            return false;
+        
+        //Ignore non-hostile animals.
+        if (target.IsA('Animal') && (target.GetPawnAllianceType(Pawn(Owner)) != ALLIANCE_Hostile))
+            return false;
+        
+        //If we're a gas grenade, ignore robots
+        if (IsA('GasGrenade') && target.IsA('Robot'))
+            return false;
+        
+        if (IsA('EMPGrenade') && !target.IsA('Robot'))
+            return false;
+        
+        if (IsA('NanoVirusGrenade') && !target.IsA('Robot'))
+            return false;
+    }
+
+    return true;
+}
+
 //
 // The player won't hear these unless their outisde the simulated function
 //
@@ -294,23 +343,15 @@ simulated function Tick(float deltaTime)
 						{
 							foreach RadiusActors(class'ScriptedPawn', P, proxRadius*4)
 							{
-
-                                //SARGE: Disabled bots won't set off grenades
-                                if (P != None && P.IsA('Robot') && Robot(P).EMPHitPoints == 0)
+                                //SARGE: Check target priorities for player grenades
+                                //If we fail, don't detonate.
+                                if (!GetTargetPriority(P))
                                     continue;
 
-								// only "heavy" pawns will set this off
-								if ((P != None) && (P.Mass >= 40))
-								{
-									// the owner won't set it off, either
-									if (P != Owner)
-									{
-										dist = P.Location - Location;
-										if (VSize(dist) < proxRadius)
-											if (skillTime == 0)
-												skillTime = 1.0;
-									}
-								}
+                                dist = P.Location - Location;
+                                if (VSize(dist) < proxRadius)
+                                    if (skillTime == 0)
+                                        skillTime = 1.0;
 							}
 						}
 					}

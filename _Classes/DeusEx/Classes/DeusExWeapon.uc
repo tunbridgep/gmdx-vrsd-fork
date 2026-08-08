@@ -2615,9 +2615,6 @@ simulated function bool NearWallCheck()
 	if (ScriptedPawn(Owner) != None)
 		return False;
 
-    if (IsA('WeaponHideAGun')) //CyberP
-        return False;
-
 	/*// Don't let players place grenades when they have something highlighted
 	if ( Level.NetMode != NM_Standalone )
 	{
@@ -5670,6 +5667,8 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 
         if (DeusExPlayer(Owner) != None && dist >= AccurateRangeMod)               //RSD: != none instead of IsA
 		{
+            if (DeusExPlayer(Owner) != None)
+                DeusExPlayer(Owner).DebugMessage("mult (pre): " $ mult);
 			//RSD: Linear damage falloff up to MaxRange for the player
             alpha = (dist - AccurateRangeMod) / (MaxRangeMod - AccurateRangeMod);
             mult = (1-alpha)*mult;
