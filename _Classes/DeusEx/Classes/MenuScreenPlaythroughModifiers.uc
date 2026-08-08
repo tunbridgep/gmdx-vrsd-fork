@@ -39,6 +39,10 @@ function BuildModifierList()
     if (!player.bHardcoreUnlocked)
         RemoveItem("bShenanigans");
 	
+    //Remove NG+ Option
+    if (player.iNewGamePlusReached == 0)
+        RemoveItem("iNewGamePlusCycle");
+
     CreateChoices();
 }
 

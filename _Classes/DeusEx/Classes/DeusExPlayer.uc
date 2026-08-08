@@ -1045,6 +1045,9 @@ var transient bool bTookBumpDamage;                   //SARGE: Set when we take 
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
 
+var travel int iNewGamePlusCycle;                     //SARGE: New Game+ Cycle. Starts at 0 and goes up by 1 every time you finish the game.
+var globalconfig int iNewGamePlusReached;            //SARGE: The highest NG+ Cycle that's been reached in any game so far.
+
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 var const localized string msgSaveName;
@@ -3222,9 +3225,10 @@ function BuySkillSound( int code )
 // StartNewGame()
 //
 // Starts a new game given the map passed in
+// SARGE: Now supports NewGamePlus (keep augs and etc)
 // ----------------------------------------------------------------------
 
-exec function StartNewGame(String startMap)
+exec function StartNewGame(String startMap, optional bool bNewGamePlus)
 {
     local Inventory item, nextItem;
 
@@ -3247,7 +3251,7 @@ exec function StartNewGame(String startMap)
 	flagBase.SetBool('PlayerTraveling', True, True, 0);
 
 	SaveSkillPoints();
-	ResetPlayer();
+	ResetPlayer(false,bNewGamePlus);
 	DeleteSaveGameFiles();
 
 	bStartingNewGame = True;
@@ -3452,7 +3456,7 @@ function ShowMultiplayerWin( String winnerName, int winningTeam, String Killer, 
 // 3) Restore any other defaults
 // ----------------------------------------------------------------------
 
-function ResetPlayer(optional bool bTraining)
+function ResetPlayer(optional bool bTraining, optional bool bNewGamePlus)
 {
 	local inventory anItem;
 	local inventory nextItem;
@@ -3460,23 +3464,26 @@ function ResetPlayer(optional bool bTraining)
 
 	ResetPlayerToDefaults();
 
-	// Reset Augmentations
-	if (AugmentationSystem != None)
-	{
-		AugmentationSystem.ResetAugmentations();
-		AugmentationSystem.Destroy();
-		AugmentationSystem = None;
-	}
-
-    //SARGE: Remove perks
-    if (PerkManager != None)
+    if (!bNewGamePlus)
     {
-        PerkManager.ResetPerks();
-        PerkManager = None;
-    }
+        // Reset Augmentations
+        if (AugmentationSystem != None)
+        {
+            AugmentationSystem.ResetAugmentations();
+            AugmentationSystem.Destroy();
+            AugmentationSystem = None;
+        }
 
-    //SARGE: Remove secondary weapon
-    AssignSecondary(None);
+        //SARGE: Remove perks
+        if (PerkManager != None)
+        {
+            PerkManager.ResetPerks();
+            PerkManager = None;
+        }
+
+        //SARGE: Remove secondary weapon
+        AssignSecondary(None);
+    }
 
     //SARGE: Reset collectibles
     collectiblesFound = 0;
@@ -20715,6 +20722,32 @@ function string GetHungerString(optional string prefix)
         suffix = HungryStr;
         
     return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
+}
+
+// ----------------------------------------------------------------------
+// StartNewGamePlus()
+// SARGE: Pop up a message to confirm NewGamePlus, and unlock the next level of NG+
+// ----------------------------------------------------------------------
+function StartNewGamePlus()
+{
+    iNewGamePlusCycle++;
+    if (iNewGamePlusCycle > iNewGamePlusReached)
+    {
+        iNewGamePlusReached = iNewGamePlusCycle;
+        SaveConfig();
+    }
+	if (DeusExRootWindow(rootWindow) != None)
+		DeusExRootWindow(rootWindow).ConfirmNewGamePlus();
+}
+
+//Actually move to New Game Plus by loading Liberty Island
+function ConfirmNewGamePlus(int cycle)
+{
+    if (cycle == -1)
+        cycle = iNewGamePlusCycle;
+    //Level.Game.SendPlayer(Self, strStartMap$"?Difficulty=" $ combatDifficulty);
+    StartNewGame(strStartMap$"?Difficulty=" $ combatDifficulty,true);
+
 }
 
 // ----------------------------------------------------------------------

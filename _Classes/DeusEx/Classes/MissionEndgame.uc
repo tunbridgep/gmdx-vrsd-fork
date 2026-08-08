@@ -238,7 +238,9 @@ function FinishCinematic()
 
 	flags.SetBool('EndgameExplosions', False);
 	SetTimer(0, False);
-	Player.ShowCredits(True);
+    //SARGE: Start New Game Plus
+    Player.StartNewGamePlus();
+	//Player.ShowCredits(True); //SARGE: Now done as part of the New Game Plus system.
 }
 
 // ----------------------------------------------------------------------
