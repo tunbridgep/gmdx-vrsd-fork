@@ -59,6 +59,7 @@ defaultproperties
      InventoryGroup=24
      ItemName="Baton"
      HDTPPlayerViewMesh="HDTPItems.HDTPWeaponBaton"
+     OldPlayerViewOffset=(X=24.000000,Y=-14.000000,Z=-17.000000)
      PlayerViewOffset=(X=24.000000,Y=-14.000000,Z=-17.000000)
      PlayerViewMesh=LodMesh'DeusExItems.Baton'
      PickupViewMesh=LodMesh'DeusExItems.BatonPickup'

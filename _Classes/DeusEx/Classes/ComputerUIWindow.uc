@@ -87,7 +87,7 @@ var bool bNotFirstTick;             //SARGE: Added
 
 function SetNotesPos()
 {
-    if (winNotes == None)
+    if (winNotes == None || winClient == None)
         return;
 
     winNotes.SetPos(x + winClient.x + winClient.width,y + winClient.y - 8);

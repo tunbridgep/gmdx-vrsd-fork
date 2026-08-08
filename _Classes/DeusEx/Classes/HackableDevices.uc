@@ -210,6 +210,7 @@ function StopHacking(optional bool aborted)
 		curTool.bBeingUsed = false;
 		if (!aborted && !(initialHackStrength <= perkCracked.PerkValue && perkCracked.bPerkObtained)) //RSD: Changed CRACKED perk to hack <=5% devices for free
             curTool.UseOnce();
+        hackPlayer.UpdateHUD();
 	}
 	curTool = None;
 	SetTimer(0.1, false);

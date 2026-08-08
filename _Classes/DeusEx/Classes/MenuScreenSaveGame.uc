@@ -526,8 +526,6 @@ function PerformSave()
 
     if (gameIndex == 0)
       gameIndex=newgameIndex;//GetLastSave();
-
-    localPlayer.iLastSave=gameIndex; //GMDX update quick load key to this
 	
     localRoot.Show();
 }
