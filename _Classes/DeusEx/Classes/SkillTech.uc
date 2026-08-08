@@ -13,11 +13,6 @@ var float mpLevel3;
 
 var localized String MultitoolString;
 
-//SARGE: Added special value arrays for HC and Easy
-//vRSD previously hardcoded these :laughing_emoji:
-var float LevelValuesHardcore[4];
-var float LevelValuesEasy[4];
-
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
