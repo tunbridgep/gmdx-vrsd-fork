@@ -5764,7 +5764,7 @@ function HighlightCenterObject()
         if (FrobTarget == None)
         {
             perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
-            if (perk != None && perk.bPerkObtained)
+            if (perk != None && perk.bPerkObtained && GetInventoryCount('Multitool') > 0)
             {
                 EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
                 EndTrace.Z += BaseEyeHeight;
@@ -9130,7 +9130,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
         return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
-    if (target.isA('ElevatorMover'))
+    if (target.isA('Mover'))
         return false;
     return true;
 }
@@ -9215,10 +9215,10 @@ exec function ParseRightClick()
     
     dxInfo=GetLevelInfo();
 
-    if (RestrictInput() && dxInfo.missionNumber > 0)
+    if (RestrictInput())
     {
         //SARGE: Allow speeding up cutscenes
-        if (IsInState('Interpolating') && bEnableCutsceneSpeedup)
+        if (dxInfo.missionNumber > 0 && IsInState('Interpolating') && bEnableCutsceneSpeedup)
         {
             interp = InterpolationPoint(Target);
             while (interp != None && interp.Next.position != 0)
@@ -9579,7 +9579,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
 
         //GMDX Exclusive Code
-        if (bTransfer)
+        if (bTransfer && DeusExWeapon(Weapon) != None)
         {
             DeusExWeapon(Weapon).UpdateHDTPSettings();
             Weapon.PlaySound(DeusExWeapon(Weapon).CopyModsSound,SLOT_None,0.8);
@@ -9742,6 +9742,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	
 	if (bSlotSearchNeeded && bCanPickup)
 	{
+        //If it's a weapon, unrotate it first
+        if (DeusExWeapon(FrobTarget) != None)
+            DeusExWeapon(FrobTarget).Unrotate();
+
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
 		if (FindInventorySlot(Inventory(FrobTarget), true) == False)
 		{
@@ -11194,7 +11198,7 @@ exec function ToggleScope()
     else if (Binoculars(inHand) != None)
         Binoculars(inHand).Activate();
 
-	else if (W != None)
+	else if (W != None && W.bHasScope)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -12169,8 +12173,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
         DeusExWeapon(item).SetBloodyWeapon(false);
         DeusExWeapon(item).SetBloodyHands(false);
     }
+    
+    UpdateHUD();
 
-	  return bDropped;
+    return bDropped;
 }
 
 // ----------------------------------------------------------------------
@@ -13268,6 +13274,9 @@ function private _UpdateHUD()
 
     //DebugMessage("UpdateHUD");
     bUpdateHud = false;
+
+    //SARGE: Also update the keyring slot.
+    UpdateBeltText(KeyRing);
 }
 
 function UpdateGoalsWindow()
@@ -13306,6 +13315,8 @@ exec function ShowInventoryWindow()
 	  ClientMessage("Inventory screen disabled in multiplayer");
 	  return;
 	}
+
+    UpdateHUD();
 
 	InvokeUIScreen(Class'PersonaScreenInventory');
 }
@@ -19308,6 +19319,10 @@ simulated event Destroyed()
 	if (Role == ROLE_Authority)
 	  CloseThisComputer(ActiveComputer);
 	ActiveComputer = None;
+
+    //AUGMENTIQUE: Destroy the managers, always
+    //outfitManager = None;
+    //weaponSkinManager = None;
 
 	Super.Destroyed();
 }
