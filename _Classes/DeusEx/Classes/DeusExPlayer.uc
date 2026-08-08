@@ -1051,6 +1051,9 @@ var const localized string msgSaveName;
 
 var const localized String TooSick;
 
+//Show Lockpicks and Tools on the NanoKey icon
+var globalconfig bool bNanoKeyShowsTools;
+
 //SARGE: Moved the hunger string text from PersonaScreenHealth
 var const localized String HungerStr;
 var const localized String SatiatedStr;
@@ -21008,6 +21011,7 @@ defaultproperties
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"
      msgCreditsDeducted="%d credits deducted from your account"

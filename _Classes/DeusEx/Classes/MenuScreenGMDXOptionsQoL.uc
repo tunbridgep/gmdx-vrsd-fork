@@ -198,6 +198,7 @@ defaultproperties
      items(146)=(HelpText="Always show the Stamina bar, even when the Stamina system is disabled.",actionText="HUD: Always Show Stamina Bar",variable="bAlwaysShowStamina")
      items(149)=(HelpText="Automatically equip Ballistic Armor and HazMat Suits when picking them up if you don't have anything equipped.",actionText="Interaction: Auto-Use Armor Items",variable="bAutoUseChargedPickups",defaultValue=1)
      items(150)=(HelpText="Drop carcasses at your feet when dropping would otherwise fail, such as in tight corridoors or vents.",actionText="Interaction: Always Drop Carcasses",variable="bAlwaysDropCarcasses",defaultValue=1)
+     items(152)=(HelpText="The NanoKey icon on the belt will show available Lockpicks and Multitools",actionText="HUD: NanoKey Slot shows Tools",variable="bNanoKeyShowsTools",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

@@ -12,6 +12,8 @@ New Features:
 - Edible Items now show the players current hunger level in the Inventory screen.
 - Upgraded to the newest DeusExe by @flippers
 - Datacubes, Books etc are now visible using Tech Goggles
+- The number of Lockpicks and Multitools can now show under the NanoKey icon.
+    - Disabled by default. Enable it in the QoL menu.
 - Current hunger level now shows on edibles, not just the health screen
 
 Bug Fixes:

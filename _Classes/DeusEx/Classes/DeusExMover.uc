@@ -695,6 +695,7 @@ function StopPicking(optional bool aborted)
         //Sarge: Only take a pick if we didn't abort.
         if (!aborted)
     		curPick.UseOnce();
+        pickPlayer.UpdateHUD();
 	}
 	curPick = None;
 	SetTimer(0.1, False);
