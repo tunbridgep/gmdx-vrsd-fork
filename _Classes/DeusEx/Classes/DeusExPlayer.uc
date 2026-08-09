@@ -1540,242 +1540,45 @@ function UpdateHDTPsettings()
 	}
 }
 
-function setupDifficultyMod() //CyberP: scale things based on difficulty. To find all things modified by
-{                             //CyberP: difficulty level in GMDX, search CombatDifficulty & bHardCoreMode.
-local ScriptedPawn P;         //CyberP: WARNING: is called every login.
-local ThrownProjectile TP;
-local AutoTurret       T;
-local SecurityCamera   SC;
-local DeusExWeapon     WP;
-local DeusExAmmo       AM;
-local DeusExMover      MV;
-local Keypad           KP;
-local Medkit           MK;
-local BioelectricCell  BC;
-local inventory        anItem;
-local int              i;
-local DeusExDecoration DC;
-local actor            AR;
-local DeusExLevelInfo dxInfo;                                                   //RSD: Added
-local name flagName;                                                            //RSD: Added
-local bool bFirstLevelLoad;                                                     //RSD: Added
-local AlarmUnit        AU;                                                      //RSD: Added
-local Perk perkDoorsman;
-local DeusExPickup     PU;                                                      //SARGE: Added
+//SARGE: TODO: Convert this horrid mess into usable code.
+//TT shit the bed once again...
+//SARGE: Okay, it's kind of clean now...
+//lets just call off to the individual objects instead, let them
+//sort it out.
+function setupDifficultyMod()
+{
+    local ScriptedPawn P;
+    local DeusExPickup PU;
+    local DeusExProjectile PR;
+    local DeusExDecoration DC;
+    local DeusExAmmo AM;
+    local DeusExMover MV;
+    local DeusExWeapon WP;
 
-//log("bHardCoreMode =" @bHardCoreMode);
-//log("CombatDifficulty =" @CombatDifficulty);
-
-     dxInfo=GetLevelInfo();
-     flagName = rootWindow.StringToName("M"$Caps(dxInfo.mapName)$"_NotFirstTime");
-   	 bFirstLevelLoad = !flagBase.GetBool(flagName);                             //RSD: Tells us if this is the first time loading a map
-//log("flagName =" @flagName);
-//log("bFirstLevelLoad =" @bFirstLevelLoad);
-
-
-    //SARGE: Set up shenanigans
-    if (bFirstLevelLoad)
-    {
-        ForEach AllActors(class'ScriptedPawn', P)
-        {
-            P.Shenanigans(bShenanigans);
-            P.SmartWeaponDraw(self);
-        }
-        ForEach AllActors(class'DeusExPickup', PU)
-            PU.Shenanigans(bShenanigans);
-    }
+    Foreach AllActors(class'DeusExPickup', PU)
+        PU.Shenanigans(bShenanigans);
     
-
-     bStunted = False; //CyberP: failsafe
-     if (CarriedDecoration != None && CarriedDecoration.IsA('Barrel1'))
-         Barrel1(CarriedDecoration).StupidBugfix();
-     ForEach AllActors(class'ScriptedPawn', P)
+     Foreach AllActors(class'ScriptedPawn', P)
      {
-      if (P.bHardcoreOnly == True && bHardCoreMode == False && bHardcoreFilterOption == False)  //CyberP: remove this pawn if we are not hardcore
-          P.Destroy();
-      else if (P.bHardcoreRemove && (bHardCoreMode == True || bHardcoreFilterOption == True))
-          P.Destroy();
-      P.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad); //RSD: Replaced ALL NPC stat modulation with a compact function implementation
-    }
-
-    if (bHardCoreMode == False)
-    {
-        ForEach AllActors(class'ThrownProjectile', TP)
-        {
-       	    if (TP.bNoHardcoreFilter == True && !bHardcoreFilterOption) //CyberP: destroy this bomb if we are not hardcore
-	       	    TP.Destroy();
-            else
-                TP.proxRadius=156.000000;  //Also lower radius if not hardcore
-        }
-        ForEach AllActors(class'DeusExDecoration', DC)
-        {
-           if ((DC.bLowDifficultyOnly && CombatDifficulty >= 3.0) || DC.bHardcoreOnly)
-           {
-              DC.DrawScale = 0.00001;
-              DC.SetCollision(false,false,false);
-              DC.SetCollisionSize(0,0);
-              DC.LightType=LT_None;
-	       }
-        }
-        if (SkillSystem != None && CombatDifficulty <= 1)
-        {
-            SkillSystem.UpdateSkillLevelValues(class'SkillTech');               //RSD: This function now BUFFS the lockpicking/electronics skill for Easy
-            SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');        //RSD: From 10/15/25/50 -> 10/25/40/75
-        }
-
-    }
-    else
-    {
-       ForEach AllActors(class'DeusExAmmo', AM)
-       {
-           if (AM.Owner == None && !AM.bLooted)                                 //RSD: Added !bLooted so we don't add free ammo to containers we've partially looted
-           {
-        	/*if (AM.IsA('AmmoDartTaser'))
-	         AM.AmmoAmount = 3;                                                 //RSD: Was 1, now 3
-	        else */if (AM.IsA('Ammo20mm'))
-	         AM.AmmoAmount = 2;
-	        else if (AM.IsA('AmmoRocket'))
-             AM.AmmoAmount = 3;
-           }
-       }
-       ForEach AllActors(class'DeusExDecoration', DC)
-       {
-           if (DC.bLowDifficultyOnly || DC.bHardcoreRemoveIt)
-           {
-              DC.DrawScale = 0.00001;
-              DC.SetCollision(false,false,false);
-              DC.SetCollisionSize(0,0);
-              DC.SetPhysics(PHYS_Flying);
-              DC.LightType=LT_None;
-	       }
-       }
-       if (SkillSystem != None)
-       {
-        SkillSystem.UpdateSkillLevelValues(class'SkillTech');                   //RSD: This function still nerfs lockpicks/multitools on Hardcore, values altered
-        SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');            //RSD: used to give lockpicks values of 5/10/15/50, now 5/10/20/50
-       }
-    }
-
-    if (PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-    {
-    ForEach AllActors(class'Medkit', MK)
-    {
-		       MK.MaxCopies = 20;
-    }
-    ForEach AllActors(class'BioelectricCell', BC)
-    {
-		       BC.MaxCopies = 25;
-    }
-    }
-
-	perkDoorsman = PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman');
-
-     ForEach AllActors(class'DeusExMover', MV)
-     {
-         if (!MV.bPerkApplied && perkDoorsman.bPerkObtained == true)
-         {
-		       MV.bPerkApplied = True;
-		       MV.minDamageThreshold -= perkDoorsman.PerkValue;
-		       if (MV.minDamageThreshold <= 0)
-                MV.minDamageThreshold = 1;
-		 }
-		 if (MV.lockStrength == 0.050000)
-		     MV.lockStrength = 0.100000;
+        P.SetupDifficultyMod(self);
+        P.Shenanigans(bShenanigans);
+        P.SmartWeaponDraw(self);
      }
 
-    //if (bLaserRifle == False)
-    //{
-    //ForEach AllActors(class'DeusExWeapon', WP)
-    //{
-    //    	if (WP.ItemName == "Laser Rifle") //CyberP: destroy it
-	//        	WP.Destroy();
-    //}
-    //}
+    Foreach AllActors(class'DeusExProjectile', PR)
+        PR.SetupDifficultyMod(self);
 
-    //if (bUSP == False)
-    //{
-    ForEach AllActors(class'DeusExWeapon', WP)
-    {
-          if (WP.Owner == None)
-          {
-	         if (WP.default.ItemName == "Laser Rifle") //CyberP: destroy it
-	        	WP.Destroy();
-             if (WP.default.ItemName == "USP.10")
-                WP.Destroy();
-             if (WP.default.ItemName == "UMP7.62c")
-	        	WP.Destroy();
-          }
-          if (bHardCoreMode && bExtraHardcore && Owner != None && Owner == self)
-              WP.BaseAccuracy = WP.default.BaseAccuracy + 0.2;
-    }
-    //}
+    Foreach AllActors(class'DeusExDecoration', DC)
+        DC.SetupDifficultyMod(self);
+    
+    Foreach AllActors(class'DeusExWeapon', WP)
+        WP.SetupDifficultyMod(self);
+       
+    Foreach AllActors(class'DeusExAmmo', AM)
+        AM.SetupDifficultyMod(self);
 
-    ForEach AllActors(class'AutoTurret', T)
-    {
-        	if (CombatDifficulty < 3.0)
-	        {
-	        	if (T.gun.hackStrength > 0.25)                                  //RSD: limiting hack strength with failsafe
-	        	   T.gun.hackStrength = 0.250000;
-                T.maxRange=1400;
-	            T.default.maxRange=1400;
-            }
-            else
-            {
-                if (T.gun.hackStrength > 0.50)                                  //RSD: limiting hack strength with failsafe
-	        	   T.gun.hackStrength = 0.500000;
-                T.maxRange=4000;
-	            T.default.maxRange=4000;
-	            if (bHardCoreMode && bExtraHardcore)
-	                T.pitchLimit = 31000.0;
-	        }
-    }
-
-    ForEach AllActors(class'SecurityCamera', SC)
-    {
-        	if (CombatDifficulty < 3.0)
-	        {
-	            if (SC.hackStrength > 0.1)
-	        	   SC.hackStrength = 0.100000;
-	        	if (SC.HitPoints > 40)
-                   SC.HitPoints = 40;
-	            SC.cameraRange = 1024;
-	            SC.default.cameraRange = 1024;
-	            if (SC.swingPeriod < 9.0)
-	              SC.swingPeriod+=3.0;
-            }
-            else if (bHardCoreMode)
-            {
-                //SC.hackStrength=0.200000;                                     //RSD: This was commented for some reason
-                if (SC.hackStrength > 0.2)                                      //RSD: Reinstating but with failsafe logic
-	        	   SC.hackStrength = 0.200000;
-                if (SC.cameraFOV<6144)
-                    SC.cameraFOV=6144;
-            }
-            else
-            {
-            //    SC.hackStrength=0.150000;                                     //RSD: This was commented for some reason
-                if (SC.hackStrength > 0.15)                                     //RSD: Reinstating but with failsafe logic
-	        	   SC.hackStrength = 0.150000;
-            }
-
-            if (bA51Camera && SC.minDamageThreshold != 70)
-            {
-                if (!SC.bDiffProperties)
-                {
-                if (SC.hackStrength>0.300000)
-                    SC.hackStrength=0.300000;
-                if (SC.HitPoints>60)
-                    SC.HitPoints=60;
-                SC.minDamageThreshold=70;
-                SC.bDiffProperties = True;
-                }
-            }
-    }
-    ForEach AllActors(class'AlarmUnit', AU)                                     //RSD: Alarm Units are 5% hack strength now
-    {
-        if (AU.hackStrength > 0.050000)
-            AU.hackStrength = 0.050000;
-    }
+     ForEach AllActors(class'DeusExMover', MV)
+        AM.SetupDifficultyMod(self);
 }
 
 // ----------------------------------------------------------------------
@@ -2458,7 +2261,6 @@ event TravelPostAccept()
     if (bDisableConsoleAccess)
 	  bCheatsEnabled=false;
 
-    setupDifficultyMod(); //CyberP: set difficulty modifiers
 //set gep tracking
 	if (RocketTarget==none)
 	   RocketTarget=spawn(class'DeusEx.GEPDummyTarget');
@@ -3483,6 +3285,12 @@ function ResetPlayer(optional bool bTraining, optional bool bNewGamePlus)
 
         //SARGE: Remove secondary weapon
         AssignSecondary(None);
+    }
+    else
+    {
+        //If we used a drone or soemthing, recharge it fully.
+        if (AugmentationSystem != None)
+            AugmentationSystem.RechargeAugmentations();
     }
 
     //SARGE: Reset collectibles

@@ -3,6 +3,8 @@
 //=============================================================================
 class AmmoRocket extends DeusExAmmo;
 
+var bool bSetupAmmo;
+
 function PostPostBeginPlay()
 {
     local DeusExPlayer player;
@@ -13,8 +15,11 @@ function PostPostBeginPlay()
 
     if ((player != none) && (player.bHardCoreMode == True))
     {
-        if (Owner == None)
-            AmmoAmount = 2;  //SARGE: Less ammo on hardcore. Copied from Ammo20mm
+        if (Owner == None && !bSetupAmmo)
+        {
+            bSetupAmmo = true;
+            AmmoAmount = 2;  //CyberP: less ammo on hardcore
+        }
     }
 }
 

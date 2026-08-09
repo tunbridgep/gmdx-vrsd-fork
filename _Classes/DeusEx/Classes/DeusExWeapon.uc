@@ -398,6 +398,13 @@ struct BloodTex
 
 var travel BloodTex BloodTextures[8];
 
+//SARGE: Filters
+var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var(Spawning) bool bHardcoreRemove; //Remove on hardcore only
+var(Spawning) bool bHardcoreOnly; //Keep on hardcore only
+var(Spawning) int minimumNewGamePlusCycle;
+var(Spawning) int maximumNewGamePlusCycle;
+
 //AUGMENTIQUE: Weapon Skin system
 var(Augmentique) travel string currentWeaponSkin;
 var transient Texture skinTextures[9]; //SARGE: Holds the textures for our current weapon skin.
@@ -441,7 +448,31 @@ replication
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
 }
-	
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //New Game Plus handling
+    if (minimumNewGamePlusCycle > P.iNewGamePlusCycle)
+        Destroy();
+    else if (maximumNewGamePlusCycle > -1 && maximumNewGamePlusCycle < P.iNewGamePlusCycle)
+        Destroy();
+
+    //Hardcore Filters
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOption)
+        Destroy();
+    else if (bHardcoreRemove && (P.bHardCoreMode || P.bHardcoreFilterOption))
+        Destroy();
+    
+    //Difficulty Filters
+    if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
+        Destroy();
+    
+    if (P.bHardCoreMode && P.bExtraHardcore && Owner == P)
+        BaseAccuracy = default.BaseAccuracy + 0.2;
+}
 
 function Frob(Actor Other, Inventory frobWith)
 {
@@ -8043,4 +8074,6 @@ defaultproperties
      totalScopeTime=0.41
      inertiaSpeed=30
      AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
+     minimumNewGamePlusCycle=0
+     maximumNewGamePlusCycle=-1
 }

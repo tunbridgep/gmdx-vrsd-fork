@@ -307,12 +307,6 @@ function Tick(float deltaTime)
 	if ((aReader != None) && (infoWindow != None))
 		if (aReader.FrobTarget != Self)
 			DestroyWindow();
-    
-    //If we shouldn't be created, abort
-    if (!bFirstTickDone && !ShouldCreate(player))
-        Destroy();
-
-    bFirstTickDone = true;
 }
 
 // ----------------------------------------------------------------------

@@ -25,56 +25,51 @@ function SetupSkin()
     }
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-    Super.DifficultyMod(CombatDifficulty, bHardCoreMode, bExtraHardcore, bFirstLevelLoad);
+    //SARGE: Warning, shitty TT code follows!
+    //Read at your own risk!
+    super.SetupDifficultyMod(P);
 
-    if (!bHardCoreMode)
+    if (!P.bHardCoreMode)
     {
-        if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-        {
-            default.Health=150;
-            default.HealthHead=150;
-            default.HealthTorso=150;
-            default.HealthLegLeft=130;
-            default.HealthLegRight=130;
-            default.HealthArmLeft=130;
-            default.HealthArmRight=130;
-            Health=150;
-            HealthHead=150;
-            HealthTorso=150;
-            HealthLegLeft=150;
-            HealthLegRight=150;
-            HealthArmLeft=150;
-            HealthArmRight=150;
-        }
+        default.Health=150;
+        default.HealthHead=150;
+        default.HealthTorso=150;
+        default.HealthLegLeft=130;
+        default.HealthLegRight=130;
+        default.HealthArmLeft=130;
+        default.HealthArmRight=130;
+        Health=150;
+        HealthHead=150;
+        HealthTorso=150;
+        HealthLegLeft=150;
+        HealthLegRight=150;
+        HealthArmLeft=150;
+        HealthArmRight=150;
         CloakThreshold=100;
         GroundSpeed=220.000000;
         //SurprisePeriod=1.000000;
     }
     else
     {
-        if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-        {
-            default.Health=200;
-            default.HealthHead=200;
-            default.HealthTorso=200;
-            default.HealthLegLeft=150;
-            default.HealthLegRight=150;
-            default.HealthArmLeft=150;
-            default.HealthArmRight=150;
-            Health=200;
-            HealthHead=200;
-            HealthTorso=200;
-            HealthLegLeft=150;
-            HealthLegRight=150;
-            HealthArmLeft=150;
-            HealthArmRight=150;
-        }
+        default.Health=200;
+        default.HealthHead=200;
+        default.HealthTorso=200;
+        default.HealthLegLeft=150;
+        default.HealthLegRight=150;
+        default.HealthArmLeft=150;
+        default.HealthArmRight=150;
+        Health=200;
+        HealthHead=200;
+        HealthTorso=200;
+        HealthLegLeft=150;
+        HealthLegRight=150;
+        HealthArmLeft=150;
+        HealthArmRight=150;
         CloakThreshold=140;
         //GroundSpeed=220.000000;
     }
-    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

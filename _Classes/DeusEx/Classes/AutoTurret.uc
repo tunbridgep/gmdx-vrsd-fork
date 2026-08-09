@@ -64,6 +64,21 @@ replication
 	  safeTarget, bDisabled, bActive, team, titleString;
 }
 
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    super.SetupDifficultyMod(P);
+    if (P.CombatDifficulty < 3.0)
+    {
+        maxRange=1400;
+    }
+    else
+    {
+        maxRange=4000;
+        if (P.bHardCoreMode && P.bExtraHardcore)
+            pitchLimit = 31000.0;
+    }
+}
+
 // if we are triggered, turn us on
 function Trigger(Actor Other, Pawn Instigator)
 {

@@ -3,6 +3,8 @@
 //=============================================================================
 class Ammo20mm extends DeusExAmmo;
 
+var bool bSetupAmmo;
+
 function PostPostBeginPlay()
 {
     local DeusExPlayer player;
@@ -13,8 +15,11 @@ function PostPostBeginPlay()
 
     if ((player != none) && (player.bHardCoreMode == True))
     {
-        if (Owner == None)
+        if (Owner == None && !bSetupAmmo)
+        {
+            bSetupAmmo = true;
             AmmoAmount = 1;  //CyberP: less ammo on hardcore
+        }
     }
 }
 

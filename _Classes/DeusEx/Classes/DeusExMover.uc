@@ -72,6 +72,17 @@ var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" 
 
 var(GMDX) const bool bDontOpenOnMissionComplete;                                    //SARGE: Don't open this door on mission completion.
 
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    if (lockStrength == 0.050000)
+        lockStrength = 0.100000;
+
+    //Increase hack strength by 15% per NG Cycle
+    lockStrength = FMAX(1.0,lockStrength + (0.15 * P.iNewGamePlusCycle));
+}
 
 //SARGE: Do we have the key for this lock?
 function bool HasKey(DeusExPlayer Player)

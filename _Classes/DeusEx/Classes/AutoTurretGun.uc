@@ -12,6 +12,16 @@ replication
 	reliable if (Role==ROLE_Authority)
 		team, titleString;
 }
+
+//Sarge: All turrets are at 20% strength
+//(one multitool at Advanced on all difficulties)
+//Was previously 75%, which was fucking stupid.
+//Can now increase up to 75% with additional NG+ cycles.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    super.SetupDifficultyMod(P);
+    hackStrength = FMAX(0.75,0.2 + (0.15 * P.iNewGamePlusCycle));
+}
     
 //For cameras and turrets which can be turned off at a computer, we want to display them
 //as BYPASSED if they are disabled at a computer
@@ -181,12 +191,6 @@ function PostBeginPlay()
     super.PostBeginPlay();
 
 	turret = AutoTurret(Owner);
-    /*
-    hackStrength = 0.75;     //CyberP: all turrets 0.75 (one multitool at master level + perk) //SARGE: No, that's fucking stupid.
-    if (FRand() < 0.5)
-    hackStrength = 0.5;   //CyberP: sometimes they are 0.5
-    */
-    hackStrength = 0.20;   //Sarge: All turrets are at 20% strength (one multitool at Advanced on all difficulties)
 	if (turret.bUnlit)
 	{
 	 bUnlit=True;

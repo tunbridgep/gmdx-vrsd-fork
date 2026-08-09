@@ -57,6 +57,14 @@ var class<DeusExWeapon> hdtpReference;                                          
 //SARGE: Explode on destroy
 var bool bExplodeOnDestroy;
 
+//SARGE: Which NG+ cycles will this decoration appear on
+//Mainly used for wall-mines.
+var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var(Spawning) bool bHardcoreRemove; //Remove on hardcore only
+var(Spawning) bool bHardcoreOnly; //Keep on hardcore only
+var(Spawning) int minimumNewGamePlusCycle;
+var(Spawning) int maximumNewGamePlusCycle;
+
 //AUGMENTIQUE: The skin of the weapon that fired this projectile
 //By storing it, we allow things like wall grenades to persist skins over
 //game loads.
@@ -69,6 +77,28 @@ replication
 	//server to client
 	reliable if (Role == ROLE_Authority)
 	  bTracking, Target, bAggressiveExploded, bHasNetworkTarget, NetworkTargetLoc;
+}
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //New Game Plus handling
+    if (minimumNewGamePlusCycle > P.iNewGamePlusCycle)
+        Destroy();
+    else if (maximumNewGamePlusCycle > -1 && maximumNewGamePlusCycle < P.iNewGamePlusCycle)
+        Destroy();
+
+    //Hardcore Filters
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOption)
+        Destroy();
+    else if (bHardcoreRemove && (P.bHardCoreMode || P.bHardcoreFilterOption))
+        Destroy();
+    
+    //Difficulty Filters
+    if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
+        Destroy();
 }
 
 function PreBeginPlay()
@@ -1241,4 +1271,6 @@ defaultproperties
      RemoteRole=ROLE_SimulatedProxy
      LifeSpan=60.000000
      RotationRate=(Pitch=65536,Yaw=65536)
+     minimumNewGamePlusCycle=0
+     maximumNewGamePlusCycle=-1
 }

@@ -50,7 +50,7 @@ function FirstFrame()
 
 	if (Player != None)
 	{
-        player.DeactivateAllAugs(true);
+        player.DeactivateAllAugs();
 
 		// Make sure all the flags are deleted
 		TarEndgameConvo = 'Barf';

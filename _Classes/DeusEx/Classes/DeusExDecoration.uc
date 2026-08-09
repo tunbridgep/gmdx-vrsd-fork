@@ -58,13 +58,6 @@ var bool bAltGrab;                //Sarge: Can this object be picked up with alt
 var bool bEMPHitMarkers;          //Sarge: Show hitmarkers for all EMP damage, for things like cameras
 var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For things like glass panes
 
-var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
-
-//SARGE: Moved from Containers, now affects all DeusExDecorations
-var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
-var() bool bHardcoreRemoveIt; //Remove on hardcore only
-var() bool bHardcoreOnly; //Keep on hardcore only
-
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var string HDTPSkin;
@@ -88,23 +81,12 @@ var(GMDX) bool bSmallFragments;                                                 
 //SARGE: Prevent entering into conversation with this decoration. Used for scripted conversations only.
 var(GMDX) bool bNoConversations;
 
-// ----------------------------------------------------------------------
-// ShouldCreate()
-// If this returns FALSE, the object will be deleted on it's first tick
-// ----------------------------------------------------------------------
-
-function bool ShouldCreate(DeusExPlayer player)
-{
-    local bool maleDelete;
-    local bool femaleDelete;
-    local bool extraDelete;
-
-    maleDelete = !player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfMale;
-    femaleDelete = player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfFemale;
-    extraDelete = LDDPExtra && !player.bMoreLDDPNPCs;
-
-    return !maleDelete && !femaleDelete && !extraDelete && (player.FemaleEnabled() || !requiresLDDP);
-}
+//SARGE: Filters. Moved from Containers, now affects all DeusExDecorations
+var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var(Spawning) bool bHardcoreRemoveIt; //Remove on hardcore only //SARGE: This was called bHardcoreRemoveIt before, and I'm too lazy to change it in every map/t3d file, so it gets that same name here.
+var(Spawning) bool bHardcoreOnly; //Keep on hardcore only
+var(Spawning) int minimumNewGamePlusCycle;
+var(Spawning) int maximumNewGamePlusCycle;
 
 native(2101) final function ConBindEvents();
 
@@ -129,6 +111,60 @@ replication
 	reliable if( Role==ROLE_Authority )
 		ClientAdjustGlow, ClientTravel, ClientSetMusic, SetDesiredFOV;
 */
+}
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //New Game Plus handling
+    if (minimumNewGamePlusCycle > P.iNewGamePlusCycle)
+        LowKeyDestroy();
+    else if (maximumNewGamePlusCycle > -1 && maximumNewGamePlusCycle < P.iNewGamePlusCycle)
+        LowKeyDestroy();
+
+    //Hardcore Filters
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOption)
+        LowKeyDestroy();
+    else if (bHardcoreRemoveIt && (P.bHardCoreMode || P.bHardcoreFilterOption))
+        LowKeyDestroy();
+
+    //Difficulty Filters
+    if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
+        LowKeyDestroy();
+
+    //Check for LDDP
+    if (!ShouldCreate(P))
+        LowKeyDestroy();
+}
+
+// ----------------------------------------------------------------------
+// ShouldCreate()
+// If this returns FALSE, the object will be deleted on it's first tick
+// ----------------------------------------------------------------------
+
+function bool ShouldCreate(DeusExPlayer player)
+{
+    local bool maleDelete;
+    local bool femaleDelete;
+    local bool extraDelete;
+
+    maleDelete = !player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfMale;
+    femaleDelete = player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfFemale;
+    extraDelete = LDDPExtra && !player.bMoreLDDPNPCs;
+
+    return !maleDelete && !femaleDelete && !extraDelete && (player.FemaleEnabled() || !requiresLDDP);
+}
+
+//SARGE: For now we just hide stuff.
+//TODO: Actually destroy it.
+function LowKeyDestroy()
+{
+    DrawScale = 0.00001;
+    SetCollision(false,false,false);
+    SetCollisionSize(0,0);
+    LightType=LT_None;
 }
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
@@ -621,10 +657,6 @@ simulated function Tick(float deltaTime)
 		
     player = DeusExPlayer(GetPlayerPawn());
 
-    //If we shouldn't be created, abort
-    if (!bFirstTickDone && !ShouldCreate(player))
-        Destroy();
-
 	Super.Tick(deltaTime);
 
 	if (bFloating)
@@ -674,8 +706,6 @@ simulated function Tick(float deltaTime)
 	{
 	  Velocity *= 0;
 	}
-    
-    bFirstTickDone = true;
 }
 
 // ----------------------------------------------------------------------
@@ -1880,4 +1910,6 @@ defaultproperties
      bHDTPFailsafe=True
      bSkipLOSFrobCheck=False
      msgCantUseWhileSwimming="You can't pick this up while swimming."
+     minimumNewGamePlusCycle=0
+     maximumNewGamePlusCycle=-1
 }

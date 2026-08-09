@@ -36,7 +36,7 @@ var byte savedSpeechVolume;
 		
  function DoAcademyGraduateSkills()
  {
-    if (!flags.GetBool('GMDXUpfrontSkills') && player.bSkillsSetAtStart /*&& player.bPrisonStart*/)
+    if (!flags.GetBool('GMDXUpfrontSkills') && player.bSkillsSetAtStart /*&& player.bPrisonStart*/ && player.iNewGamePlusCycle == 0)
     {
         player.SkillPointsAdd(12000,true);
         flags.SetBool('GMDXUpfrontSkills', True,, 6);
@@ -95,8 +95,8 @@ function TriggerUNATCOTakeover(optional bool bAlwaysRemoveSkillTriggers)
         }
 
         //Shut down bots
-        else if (P.IsA('SecurityBot3') && SecurityBot3(P).EMPHitPoints > 0)
-            SecurityBot3(P).DoEMPEffect(100);
+        else if (P.IsA('Robot') && Robot(P).EMPHitPoints > 0 && P.GetPawnAllianceType(Player) == ALLIANCE_Hostile)
+            Robot(P).DoEMPEffect(100);
     }
     
     //Delete all tagged turrets //SARGE: Just shut them off
@@ -523,7 +523,7 @@ function FirstFrame()
         Player.Randomizer.Seed(Player.seed + seed);
 
 		//Player.BroadcastMessage("Loading this map for the first time");
-		//Player.setupDifficultyMod();
+		Player.setupDifficultyMod();
 		InitializeRandomAmmoCounts();
 
         bRandomItems = player.bRandomizeMods; //(player.bRandomizeModsHandling || player.bRandomizeModsAmmo || player.bRandomizeModsBallistics || player.bRandomizeModsAttachments);
