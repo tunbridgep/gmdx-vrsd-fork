@@ -1050,8 +1050,9 @@ var globalconfig int iNewGamePlusReached;            //SARGE: The highest NG+ Cy
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
-var const localized string msgSaveName;
 
+var const localized string msgSaveName;
+var const localized string msgNewGamePlusString;
 var const localized String TooSick;
 
 //Show Lockpicks and Tools on the NanoKey icon
