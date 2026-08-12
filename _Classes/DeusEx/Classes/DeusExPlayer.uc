@@ -2165,12 +2165,16 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.RocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.Rocket';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.RocketWP';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocket';
             GEP.ProjectileNames[0]=Class'DeusEx.RocketWP';
             GEP.ProjectileNames[1]=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
     else
@@ -2179,12 +2183,17 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.Rocket';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.Rocket';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocket';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
             GEP.ProjectileNames[0]=Class'DeusEx.Rocket';
             GEP.ProjectileNames[1]=Class'DeusEx.RocketWP';
+            GEP.ProjectileClass=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
 }
