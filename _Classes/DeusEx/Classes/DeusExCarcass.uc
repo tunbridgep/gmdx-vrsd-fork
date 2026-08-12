@@ -1336,18 +1336,19 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
     previousFrobTarget = player.FrobTarget;
 
     //Clear our dropped weapon of it's no longer valid
-    if (droppedWeapon.IsInState('Sleeping') || droppedWeapon.Owner != None || VSize(Location - droppedWeapon.Location) >= 150)
-        droppedWeapon = None;
-    
     if (droppedWeapon != None)
-        player.DebugMessage("DroppedWeapon: " $ droppedWeapon);
-
+    {
+        if (droppedWeapon.IsInState('Sleeping') || droppedWeapon.Owner != None || VSize(Location - droppedWeapon.Location) >= 150)
+            droppedWeapon = None;
+    }
+    
     //SARGE: Before searching the inventory, try to pick up our dropped weapon
     //TODO: Refactor this into the normal inventory searching.
     //SARGE: I tried, it breaks everyting, including deleting the entire players inventory,
     //so lets just leave it here for now and not fuck around with it too much.
-    if (droppedWeapon != None)
+    if (DeusExWeapon(droppedWeapon) != None)
     {
+        player.DebugMessage("DroppedWeapon: " $ droppedWeapon);
         item = droppedWeapon;
         bFoundSomething = True;
         found = player.FindInventoryType(item.class);
@@ -1379,7 +1380,7 @@ function private SearchCarcass(DeusExPlayer player, DeusExCarcass source, out in
         }
     }
 
-    while(Inventory.Owner == player)
+    while(Inventory != None && Inventory.Owner == player)
     {
         Inventory = Inventory.Inventory;
         if(Inventory == None)
@@ -1856,7 +1857,7 @@ function AddSearchedString(DeusExPlayer player)
 
 function string GetFrobString(DeusExPlayer player)
 {
-    if (!bAnimalCarcass && player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
+    if (/*!bAnimalCarcass &&*/ player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
         return SearchedString @ itemName;
     else
         return itemName;
