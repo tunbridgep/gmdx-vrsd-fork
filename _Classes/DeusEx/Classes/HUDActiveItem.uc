@@ -4,6 +4,7 @@
 
 class HUDActiveItem extends HUDActiveItemBase;
 
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -38,6 +39,7 @@ event Tick(float deltaSeconds)
 
 	if ((item != None) && (winEnergy != None))
 	{
+        winEnergy.Show();
         if (item.bDrained && !item.bUnequipWhenDrained) //SARGE: If it's drained, don't show the power level for the next one.
             winEnergy.SetCurrentValue(0);
         else

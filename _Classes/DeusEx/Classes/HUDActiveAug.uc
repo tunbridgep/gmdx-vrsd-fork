@@ -9,9 +9,7 @@ var Color colBlack;
 var int    hotKeyNum;
 var String hotKeyString;
 
-var bool bHasChargeBar;
-
-var PersonaLevelIconWindow winLevels;
+var transient PersonaLevelIconWindow winLevels;
 
 //SARGE: Added
 var bool bShowDots;
@@ -70,14 +68,12 @@ function DrawHotKey(GC gc)
 
 function SetObject(object newClientObject)
 {
-	if (newClientObject.IsA('Augmentation'))
+	if (Augmentation(newClientObject) != None)
 	{
 		// Get the function key and set the text
 		SetKeyNum(Augmentation(newClientObject).GetHotKey());
         bHasChargeBar = Augmentation(newClientObject).bHasChargeBar;
 
-        if (bHasChargeBar)
-            CreateEnergyBar();
         bTickEnabled = bHasChargeBar || Augmentation(newClientObject).AugmentationType == AUG_Automatic;
 		UpdateAugIconStatus();
 	}
@@ -128,8 +124,9 @@ event Tick(float deltaSeconds)
     if (aug == None)
         return;
 
-	if (bHasChargeBar)
+	if (bHasChargeBar && winEnergy != None)
     {
+        winEnergy.Show();
         if (aug.IsCharging())
             winEnergy.SetCurrentValue(((aug.chargeTime - aug.currentChargeTime) / aug.chargeTime) * 100);
         else
@@ -147,7 +144,8 @@ event Tick(float deltaSeconds)
 
 event DestroyWindow()
 {
-    DestroyAllChildren();
+    winLevels = None;
+    //DestroyAllChildren();
     super.DestroyWindow();
 }
 
