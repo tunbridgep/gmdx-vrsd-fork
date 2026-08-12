@@ -72,6 +72,8 @@ var localized String OnboardingMessage;
 var localized String NewGamePlusTitle;
 var localized String NewGamePlusMessage;
 
+var transient bool bNewGamePlusHack;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -591,11 +593,12 @@ function MenuUIMessageBoxWindow MessageBox
 
 // ----------------------------------------------------------------------
 // ConfirmNewGamePlus()
-// SARGE: Talen from ConfirmQuickLoad
+// SARGE: Taken from ConfirmQuickLoad
 // ----------------------------------------------------------------------
 
-function ConfirmNewGamePlus()
+function ConfirmNewGamePlus(bool bFromCube)
 {
+    bNewGamePlusHack = bFromCube;
 	newGamePlusBox = MessageBox(NewGamePlusTitle, NewGamePlusMessage, 0, False, Self);
 	newGamePlusBox.SetDeferredKeyPress(True);
 }
@@ -632,9 +635,10 @@ event bool BoxOptionSelected(Window msgWindow, int buttonNumber)
     if (msgWindow == newGamePlusBox)
     {
         if (buttonNumber == 0)
-            DeusExPlayer(parentPawn).ConfirmNewGamePlus(-1);
-        else
+            DeusExPlayer(parentPawn).ConfirmNewGamePlus(-1,bNewGamePlusHack);
+        else if (!bNewGamePlusHack)
             DeusExPlayer(parentPawn).ShowCredits(True);
+        bNewGamePlusHack = false;
     }
     else if (msgWindow == onboardingBox)
     {

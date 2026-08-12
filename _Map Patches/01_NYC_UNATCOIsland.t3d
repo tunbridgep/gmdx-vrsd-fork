@@ -43803,6 +43803,8 @@ Begin Actor Class=CrateBreakableMedMedical Name=CrateBreakableMedMedical2
     Name=CrateBreakableMedMedical2
 End Actor
 Begin Actor Class=CrateExplosiveSmall Name=CrateExplosiveSmall9
+    maximumNewGamePlusCycle=0
+    bHardcoreRemoveIt=true
     LastRenderTime=32.428009
     DistanceFromPlayer=8381.476563
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -260863,7 +260865,6 @@ Begin Actor Class=Brush Name=Brush97
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-2912.000000,Y=4736.000000,Z=-144.000000)
     OldLocation=(X=-2544.000000,Y=4688.000000,Z=-144.000000)
-    bSelected=True
     Begin Brush Name=Model1284
        Begin PolyList
           Begin Polygon Texture=NgrassB Flags=8388616 Link=0
@@ -260902,7 +260903,6 @@ Begin Actor Class=DeusExMover Name=DeusExMover28
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=8553,ZoneNumber=1)
     Location=(X=-3488.000488,Y=3792.000000,Z=-96.000000)
     OldLocation=(X=-1008.000000,Y=5456.000000,Z=-32.000000)
-    bSelected=True
     Begin Brush Name=Model1244
        Begin PolyList
           Begin Polygon Item=OUTSIDE Texture=Heli_LiftMetl_A Flags=8388640 Link=57
@@ -270265,7 +270265,6 @@ Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode38
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7696,ZoneNumber=2)
     Location=(X=1693.178833,Y=-9887.477539,Z=-281.900787)
     OldLocation=(X=1693.178833,Y=-9883.477539,Z=-281.900787)
-    bSelected=True
     Name=SplashyFeetIgnoreNode38
 End Actor
 Begin Actor Class=SplashyFeetIgnoreNode Name=SplashyFeetIgnoreNode39
@@ -270354,6 +270353,7 @@ Begin Actor Class=SecurityCamera Name=SecurityCamera6
     Name=SecurityCamera6
 End Actor
 Begin Actor Class=AutoTurret Name=AutoTurret0
+    bActive=False
     minimumNewGamePlusCycle=1
     bDynamicLight=True
     LastRenderTime=1439.780029
@@ -270390,20 +270390,6 @@ Begin Actor Class=GasGrenade Name=GasGrenade2
     Location=(X=2795.600098,Y=1.220276,Z=2050.243164)
     OldLocation=(X=2795.600098,Y=1.220276,Z=2050.243164)
     Name=GasGrenade2
-End Actor
-Begin Actor Class=LAM Name=LAM0
-    minimumNewGamePlusCycle=1
-    bProximityTriggered=True
-    Physics=PHYS_None
-    bDynamicLight=True
-    LastRenderTime=1439.780029
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=LAM
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=8507,ZoneNumber=2)
-    Location=(X=-2368.348145,Y=33.399994,Z=-62.897419)
-    Rotation=(Yaw=16404)
-    OldLocation=(X=-2553.348145,Y=132.399994,Z=-62.897419)
-    Name=LAM0
 End Actor
 Begin Actor Class=ThugMale2 Name=ThugMale1
     minimumNewGamePlusCycle=1
@@ -270501,7 +270487,7 @@ Begin Actor Class=Terrorist Name=Terrorist17
     UnfamiliarName="NSF Terrorist"
     Name=Terrorist17
 End Actor
-Begin Actor Class=Terrorist Name=Terrorist19
+Begin Actor Class=TerroristElite Name=Terrorist19
     minimumNewGamePlusCycle=1
     BaseAccuracy=0.000000
     maxRange=900.000000
@@ -270550,11 +270536,9 @@ Begin Actor Class=Terrorist Name=Terrorist19
     SoundRadius=12
     RotationRate=(Yaw=90000)
     BarkBindName="Terrorist"
-    FamiliarName="NSF Terrorist"
-    UnfamiliarName="NSF Terrorist"
     Name=Terrorist19
 End Actor
-Begin Actor Class=Terrorist Name=Terrorist23
+Begin Actor Class=TerroristElite Name=Terrorist23
     minimumNewGamePlusCycle=1
     maxRange=4000.000000
     MinHealth=0.500000
@@ -270576,8 +270560,8 @@ Begin Actor Class=Terrorist Name=Terrorist23
     InitialAlliances(2)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(3)=(AllianceName=NSFRobots,AllianceLevel=1.000000,bPermanent=True)
     InitialAlliances(4)=(AllianceName=Filben,bPermanent=True)
-    InitialInventory(0)=(Inventory=Class'DeusEx.WeaponPistol')
-    InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=24)
+    InitialInventory(0)=(Inventory=Class'DeusEx.WeaponAssaultShotgun')
+    InitialInventory(1)=(Inventory=Class'DeusEx.AmmoShell',Count=24)
     InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2497,ZoneNumber=2)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2497,ZoneNumber=2)
@@ -270596,11 +270580,9 @@ Begin Actor Class=Terrorist Name=Terrorist23
     OldLocation=(X=32.192570,Y=4936.822266,Z=-87.707497)
     RotationRate=(Yaw=90000)
     BarkBindName="Terrorist"
-    FamiliarName="NSF Terrorist"
-    UnfamiliarName="NSF Terrorist"
     Name=Terrorist23
 End Actor
-Begin Actor Class=Terrorist Name=Terrorist25
+Begin Actor Class=TerroristElite Name=Terrorist25
     minimumNewGamePlusCycle=1
     maxRange=4000.000000
     MinHealth=0.500000
@@ -270642,11 +270624,9 @@ Begin Actor Class=Terrorist Name=Terrorist25
     OldLocation=(X=48.192570,Y=5679.822266,Z=-87.707497)
     RotationRate=(Yaw=90000)
     BarkBindName="Terrorist"
-    FamiliarName="NSF Terrorist"
-    UnfamiliarName="NSF Terrorist"
     Name=Terrorist25
 End Actor
-Begin Actor Class=Terrorist Name=Terrorist26
+Begin Actor Class=TerroristElite Name=Terrorist26
     minimumNewGamePlusCycle=1
     maxRange=4000.000000
     MinHealth=0.500000
@@ -270688,11 +270668,9 @@ Begin Actor Class=Terrorist Name=Terrorist26
     OldLocation=(X=-2635.807373,Y=2130.822266,Z=-87.707497)
     RotationRate=(Yaw=90000)
     BarkBindName="Terrorist"
-    FamiliarName="NSF Terrorist"
-    UnfamiliarName="NSF Terrorist"
     Name=Terrorist26
 End Actor
-Begin Actor Class=Terrorist Name=Terrorist28
+Begin Actor Class=TerroristElite Name=Terrorist28
     minimumNewGamePlusCycle=1
     maxRange=4000.000000
     MinHealth=0.500000
@@ -270714,8 +270692,8 @@ Begin Actor Class=Terrorist Name=Terrorist28
     InitialAlliances(2)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(3)=(AllianceName=NSFRobots,AllianceLevel=1.000000,bPermanent=True)
     InitialAlliances(4)=(AllianceName=Filben,bPermanent=True)
-    InitialInventory(0)=(Inventory=Class'DeusEx.WeaponAssaultGun')
-    InitialInventory(1)=(Inventory=Class'DeusEx.Ammo762mm',Count=24)
+    InitialInventory(0)=(Inventory=Class'DeusEx.WeaponRifle')
+    InitialInventory(1)=(Inventory=Class'DeusEx.Ammo3006',Count=24)
     InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=8647,ZoneNumber=2)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=8654,ZoneNumber=2)
@@ -270734,11 +270712,9 @@ Begin Actor Class=Terrorist Name=Terrorist28
     OldLocation=(X=-2619.807373,Y=-1117.177734,Z=-87.707497)
     RotationRate=(Yaw=90000)
     BarkBindName="Terrorist"
-    FamiliarName="NSF Terrorist"
-    UnfamiliarName="NSF Terrorist"
     Name=Terrorist28
 End Actor
-Begin Actor Class=Terrorist Name=Terrorist32
+Begin Actor Class=TerroristElite Name=Terrorist32
     minimumNewGamePlusCycle=1
     maxRange=4000.000000
     MinHealth=0.500000
@@ -270780,11 +270756,9 @@ Begin Actor Class=Terrorist Name=Terrorist32
     OldLocation=(X=-1278.807373,Y=-1290.177734,Z=-87.707497)
     RotationRate=(Yaw=90000)
     BarkBindName="Terrorist"
-    FamiliarName="NSF Terrorist"
-    UnfamiliarName="NSF Terrorist"
     Name=Terrorist32
 End Actor
-Begin Actor Class=Terrorist Name=Terrorist37
+Begin Actor Class=TerroristElite Name=Terrorist37
     minimumNewGamePlusCycle=1
     maxRange=4000.000000
     MinHealth=0.500000
@@ -270828,8 +270802,6 @@ Begin Actor Class=Terrorist Name=Terrorist37
     OldLocation=(X=650.192627,Y=-120.177734,Z=-87.707497)
     RotationRate=(Yaw=90000)
     BarkBindName="Terrorist"
-    FamiliarName="NSF Terrorist"
-    UnfamiliarName="NSF Terrorist"
     Name=Terrorist37
 End Actor
 Begin Actor Class=Doberman Name=Doberman1
@@ -270895,7 +270867,6 @@ Begin Actor Class=ThugMale2 Name=ThugMale2
     Location=(X=6725.838867,Y=-2587.296387,Z=-85.172646)
     Rotation=(Yaw=49408)
     OldLocation=(X=9759.838867,Y=340.703766,Z=-85.172646)
-    bSelected=True
     RotationRate=(Yaw=90000)
     BindName="Thug1"
     BarkBindName="Terrorist"
@@ -270926,5 +270897,81 @@ Begin Actor Class=SecurityBot4 Name=SecurityBot4
     OldLocation=(X=-495.161377,Y=422.269867,Z=-111.399788)
     ScaleGlow=0.800000
     Name=SecurityBot4
+End Actor
+Begin Actor Class=DatacubeNGPlus Name=DatacubeNGPlus0
+    bDynamicLight=True
+    LastRenderTime=231.183548
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=DatacubeNGPlus
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=5167,ZoneNumber=2)
+    Location=(X=-3576.824219,Y=10605.318359,Z=-230.629944)
+    Rotation=(Yaw=-3692)
+    OldLocation=(X=-2949.474365,Y=5627.112305,Z=-78.629951)
+    Name=DatacubeNGPlus0
+End Actor
+Begin Actor Class=TerroristElite Name=TerroristElite0
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo4',iLeaf=9184,ZoneNumber=4)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo4',iLeaf=9184,ZoneNumber=4)
+    ViewRotation=(Yaw=12716)
+    bDynamicLight=True
+    InitialAlliances(0)=(AllianceName=NSF,AllianceLevel=1.000000)
+    InitialAlliances(1)=(AllianceName=UNATCO,AllianceLevel=-1.000000,bPermanent=True)
+    InitialAlliances(2)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
+    InitialInventory(0)=(Inventory=Class'DeusEx.WeaponFlamethrower',Count=1)
+    InitialInventory(1)=(Inventory=Class'DeusEx.AmmoNapalm',Count=24)
+    LastRenderTime=143.072571
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    minimumNewGamePlusCycle=1
+    Alliance=NSF
+    Tag=TerroristElite
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo4',iLeaf=9184,ZoneNumber=4)
+    Location=(X=2957.397705,Y=310.354309,Z=1087.593506)
+    Rotation=(Yaw=12716)
+    OldLocation=(X=2941.503906,Y=220.935455,Z=1087.593506)
+    Name=TerroristElite0
+End Actor
+Begin Actor Class=TerroristElite Name=TerroristElite1
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7783,ZoneNumber=2)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7783,ZoneNumber=2)
+    ViewRotation=(Yaw=15304)
+    bDynamicLight=True
+    LastRenderTime=148.472549
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    InitialAlliances(0)=(AllianceName=NSF,AllianceLevel=1.000000)
+    InitialAlliances(1)=(AllianceName=UNATCO,AllianceLevel=-1.000000,bPermanent=True)
+    InitialAlliances(2)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
+    InitialInventory(0)=(Inventory=Class'DeusEx.WeaponAssaultGun',Count=1)
+    InitialInventory(1)=(Inventory=Class'DeusEx.Ammo762mm',Count=24)
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    minimumNewGamePlusCycle=1
+    Alliance=NSF
+    Tag=TerroristElite
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7783,ZoneNumber=2)
+    Location=(X=2558.302734,Y=-8334.651367,Z=-256.397461)
+    Rotation=(Yaw=15304)
+    OldLocation=(X=2567.174561,Y=-8357.174805,Z=-256.397461)
+    Name=TerroristElite1
+End Actor
+Begin Actor Class=TerroristElite Name=TerroristElite2
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7814,ZoneNumber=2)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7814,ZoneNumber=2)
+    ViewRotation=(Yaw=15136)
+    bDynamicLight=True
+    InitialAlliances(0)=(AllianceName=NSF,AllianceLevel=1.000000)
+    InitialAlliances(1)=(AllianceName=UNATCO,AllianceLevel=-1.000000,bPermanent=True)
+    InitialAlliances(2)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
+    InitialInventory(0)=(Inventory=Class'DeusEx.WeaponRifle',Count=1)
+    InitialInventory(1)=(Inventory=Class'DeusEx.Ammo3006',Count=24)
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    minimumNewGamePlusCycle=1
+    Alliance=NSF
+    LastRenderTime=148.472549
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=TerroristElite
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7814,ZoneNumber=2)
+    Location=(X=2866.416992,Y=-8382.513672,Z=-256.399597)
+    Rotation=(Yaw=15136)
+    OldLocation=(X=2865.774902,Y=-8386.220703,Z=-256.399597)
+    Name=TerroristElite2
 End Actor
 End Map

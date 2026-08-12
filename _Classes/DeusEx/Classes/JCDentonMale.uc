@@ -249,12 +249,15 @@ function Timer()
 // ResetPlayerToDefaults()
 // SARGE: When we start a new game, throw away our outfit manager
 // ----------------------------------------------------------------------
-function ResetPlayerToDefaults()
+
+///AUGMENTIQUE
+function ResetPlayer(optional bool bTraining)
 {
     outfitManager = None;
     weaponSkinManager = None;
-    Super.ResetPlayerToDefaults();
+    Super.ResetPlayer(bTraining);
 }
+
 
 // ----------------------------------------------------------------------
 // SetupOutfitManager()

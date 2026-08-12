@@ -81,7 +81,8 @@ function SetupDifficultyMod(DeusExPlayer P)
         lockStrength = 0.100000;
 
     //Increase hack strength by 15% per NG Cycle
-    lockStrength = FMAX(1.0,lockStrength + (0.15 * P.iNewGamePlusCycle));
+    if (lockStrength > 0.0)
+        lockStrength = FMIN(1.0,lockStrength + (0.15 * P.iNewGamePlusCycle));
 }
 
 //SARGE: Do we have the key for this lock?

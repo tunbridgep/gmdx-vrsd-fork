@@ -3,12 +3,15 @@
 //=============================================================================
 class PerkDoorsman extends Perk;
 
-function OnPerkPurchase()
+function OnMapLoadAndPurchase()
 {
     local DeusExMover mov;
 
     foreach PerkOwner.AllActors(class'DeusExMover',mov)
     {
+        if (mov.bPerkApplied)
+            continue;
+
         mov.minDamageThreshold -= PerkValue;
         if (mov.minDamageThreshold <= 0)
         mov.minDamageThreshold = 1;

@@ -45,7 +45,6 @@ var float carcassTriggerTimer;
 var float carcassCheckTimer;
 var bool bTrigSound; //CyberP
 var() bool bAlarmEvent;  //CyberP: optionally send event if triggered.
-var bool bDiffProperties; //CyberP:
 var bool bSkillApplied; //CyberP:
 
 //Sarge: Hacking disable time
@@ -74,8 +73,7 @@ replication
 //But caps at 30%
 function SetupDifficultyMod(DeusExPlayer P)
 {
-    super.SetupDifficultyMod(P);
-    hackStrength = FMAX(0.3,0.1 + (0.1 * P.iNewGamePlusCycle));
+    hackStrength = FMIN(0.3,0.1 + (0.1 * P.iNewGamePlusCycle));
         	
     //TT's shitty code follows
     if (P.CombatDifficulty < 3.0)
@@ -94,14 +92,11 @@ function SetupDifficultyMod(DeusExPlayer P)
 
     if (P.bA51Camera && minDamageThreshold != 70)
     {
-        if (!bDiffProperties)
-        {
-            if (HitPoints>60)
-                HitPoints=60;
-            minDamageThreshold=70;
-            bDiffProperties = True;
-        }
+        if (HitPoints>60)
+            HitPoints=60;
+        minDamageThreshold=70;
     }
+    super.SetupDifficultyMod(P);
 }
 
 

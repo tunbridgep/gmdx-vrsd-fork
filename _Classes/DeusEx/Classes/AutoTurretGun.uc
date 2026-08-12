@@ -20,7 +20,7 @@ replication
 function SetupDifficultyMod(DeusExPlayer P)
 {
     super.SetupDifficultyMod(P);
-    hackStrength = FMAX(0.75,0.2 + (0.15 * P.iNewGamePlusCycle));
+    hackStrength = FMIN(0.75,0.2 + (0.15 * P.iNewGamePlusCycle));
 }
     
 //For cameras and turrets which can be turned off at a computer, we want to display them

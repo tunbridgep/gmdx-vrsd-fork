@@ -537,4 +537,6 @@ defaultproperties
      MaxAmmoString="[Ammo at Maximum]"
      PickupSound=sound'objpickup2'
      bVisionImportant=true
+     minimumNewGamePlusCycle=0
+     maximumNewGamePlusCycle=-1
 }

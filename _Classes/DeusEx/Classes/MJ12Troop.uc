@@ -9,8 +9,6 @@ var float burnAmount;
 function SetupSkin()
 {
     Super.SetupSkin();
-
-    bHasHelmet = MultiSkins[6] !=Texture'DeusExItems.Skins.PinkMaskTex';
     
     if (!IsHDTP())
     {

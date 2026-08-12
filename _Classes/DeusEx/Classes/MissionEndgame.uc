@@ -239,8 +239,11 @@ function FinishCinematic()
 	flags.SetBool('EndgameExplosions', False);
 	SetTimer(0, False);
     //SARGE: Start New Game Plus
-    Player.StartNewGamePlus();
-	//Player.ShowCredits(True); //SARGE: Now done as part of the New Game Plus system.
+    Player.UnlockNextNewGamePlusCycle();
+    
+    //SARGE: We should be using the DisplayNewGamePlus message function instead, but it causes ammo transfer issues.
+    //Player.ConfirmNewGamePlus(-1);
+    Player.DisplayNewGamePlusMessage(false);
 }
 
 // ----------------------------------------------------------------------

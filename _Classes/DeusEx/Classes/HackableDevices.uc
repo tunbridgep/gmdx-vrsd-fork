@@ -35,12 +35,19 @@ var float               previousStrength;        //Sarge: What was the strength 
 var const bool          bShiftRightClickToolSelection; //Sarge: Used to prevent right-click tool selection on keypads without shift held
 
 var const localized string msgNeedMultitool;        //SARGE: Tell the user that they need a tool (Wireless Strength perk)
+
+//SARGE: We can just literally destroy these, they leave no trace...
+function LowKeyDestroy()
+{
+    Destroy();
+}
                     
 //Increase hack strength by 15% per NG Cycle
 function SetupDifficultyMod(DeusExPlayer P)
 {
+    if (hackStrength > 0.0)
+        hackStrength = FMIN(1.0,hackStrength + (0.15 * P.iNewGamePlusCycle));
     super.SetupDifficultyMod(P);
-    hackStrength = FMAX(1.0,hackStrength + (0.15 * P.iNewGamePlusCycle));
 }
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support

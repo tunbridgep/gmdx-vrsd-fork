@@ -64,6 +64,14 @@ replication
 	  safeTarget, bDisabled, bActive, team, titleString;
 }
 
+//SARGE: We can just literally destroy these, they leave no trace...
+function LowKeyDestroy()
+{
+    if (gun != None)
+        gun.Destroy(); //SARGE: Not sure why this is necessary...
+    Destroy();
+}
+
 function SetupDifficultyMod(DeusExPlayer P)
 {
     super.SetupDifficultyMod(P);

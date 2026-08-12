@@ -36,4 +36,6 @@ class AllText expands Object abstract;
 #exec DEUSEXTEXT IMPORT FILE=Text\Datacube27.txt
 #exec DEUSEXTEXT IMPORT FILE=Text\Datacube28.txt
 
+#exec DEUSEXTEXT IMPORT FILE=Text\DatacubeNGPlus.txt
+
 #exec DEUSEXTEXT IMPORT FILE=Text\Clipboard02.txt

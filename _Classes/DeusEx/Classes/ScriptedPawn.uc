@@ -3766,6 +3766,11 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 	local int   actualDamage;
 	local float headOffsetZ, headOffsetY, armOffset;
 
+    //SARGE: Reduce damage by 10% per NewGamePlus level, down to 40% (NG+4)
+    if (DeusExPlayer(instigatedBy) != None)
+        actualDamage *= 1.0 + FMIN(0.4,0.1 * DeusExPlayer(instigatedBy).iNewGamePlusCycle);
+
+
 	actualDamage = Damage;
 
 	// calculate our hit extents
@@ -3930,7 +3935,7 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
     local bool bBroken;
     local Texture tex;
     
-    if (IsA('MJ12Troop') || IsA('MJ12Elite'))
+    if (IsA('MJ12Troop') || IsA('MJ12Elite') || IsA('TerroristElite'))
         return false;
 
     if (bHasHelmet && (actualDamage >= 25 || FRand() < 0.08 || bForced))
@@ -3947,6 +3952,8 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
                 tex = Texture'GMDXSFX.Skins.hSoldierTex3';
             else if (IsA('Mechanic'))
                 tex = Texture'GMDXSFX.Skins.hMechanicTex3';
+            else if (IsA('TerroristElite'))
+                tex = Texture'RSDCrap.Skins.hTerroristTex3';
             HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy, tex);
         }
 
@@ -4832,6 +4839,12 @@ function SetupSkin()
     //Also fix glasses on holograms
     class'SkinUtils'.static.GlassesFix(Self);
     //FixAllTextureMasks();
+    
+    //SARGE: Determine if we have a helmet here (since some characters such as mechanics can randomise with or without them in Augmentique)
+    bHasHelmet = default.mesh == LodMesh'RSDCrap.Fixed_Jumpsuit' && 
+        MultiSkins[6] != Texture'DeusExCharacters.Skins.PinkMaskTex' &&
+        MultiSkins[6] != Texture'DeusExCharacters.Skins.GogglesTex1' &&
+        MultiSkins[6] != Texture'DeusExCharacters.Skins.ThugMale3Tex3';
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
