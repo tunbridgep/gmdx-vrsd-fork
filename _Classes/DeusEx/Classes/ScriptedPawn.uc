@@ -646,8 +646,6 @@ function bool IsActuallyValidEnemy(Pawn TestEnemy, optional EAllianceCheckType c
 
 function SetupCloakManager()
 {
-    if (!bHasCloak)
-        return;
 
 	// install the Perk Manager if not found
 	if (CloakManager == None)
@@ -865,8 +863,6 @@ function PostPostBeginPlay()
         
     //SARGE: Make Pawns have random heights
     SetupRandomHeight(FRandomHeightBaseMult + FRand()*fRandomHeightMult);
-
-    SetupCloakManager();
 
 	//bCloakOn = True;                                                            //RSD: Failsafe
 	//EnableCloak(False);
@@ -4757,12 +4753,13 @@ function Bool HasTwoHandedWeapon()
 
 function EnableCloak(bool bEnable)  // beware! called from C++
 {
+    SetupCloakManager();
+
 	if (!bHasCloak || (CloakEMPTimer > 0) || (Health <= 0) || bOnFire)
 		bEnable = false;
 
 	if (bEnable && !bCloakOn)
 	{
-        CloakManager.SetCloaked(true,true);
 		bCloakOn = bEnable;
 	}
 	else if (!bEnable && bCloakOn && !bForcedCloak)
