@@ -2422,7 +2422,7 @@ event TravelPostAccept()
 	// If the player was carrying a decoration, make sure
 	// it's placed back in his hand (since the location
 	// info won't properly travel)
-	PutCarriedDecorationInHand();
+	PutCarriedDecorationInHand(true);
 
 	// Reset FOV
 	SetFOVAngle(Default.DesiredFOV);

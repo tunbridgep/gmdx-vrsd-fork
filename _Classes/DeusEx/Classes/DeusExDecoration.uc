@@ -600,8 +600,6 @@ singular function BaseChange()
     //SARGE: If this is the players carried decoration, put it back in our hand
     //This is a hack to deal with vanilla shenanigans!
     p = DeusExPlayer(base);
-    if (p == none)
-        p = DeusExPlayer(GetPlayerPawn());
 
     if (p != None && p.carriedDecoration == self)
         p.PutCarriedDecorationInHand(true);
