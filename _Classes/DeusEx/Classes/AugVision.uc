@@ -47,6 +47,12 @@ function float GetVisionRange()
     return visionRange * (levelValues[3-CurrentLevel]);
 }
 
+//SARGE: Energy Rate decreases with level
+simulated function float GetEnergyRate()
+{
+    return EnergyRate * LevelValues[CurrentLevel];
+}
+
 function Deactivate()
 {
 	local bool bWasActive;
