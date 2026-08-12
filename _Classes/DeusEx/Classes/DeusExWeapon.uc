@@ -368,6 +368,9 @@ var travel bool bHadLaser;
 var travel bool bHadScope;
 var travel bool bHadSilencer;
 
+//SARGE: Added a variable, rather than hardcoding it
+var const float fExtraHardcoreAccuracyPenalty;
+
 var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
 
 //Used during the new "SwitchAttachment" state so we can change attachments during the animation
@@ -470,8 +473,6 @@ function SetupDifficultyMod(DeusExPlayer P)
     if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
         Destroy();
     
-    if (P.bHardCoreMode && P.bExtraHardcore && Owner == P)
-        BaseAccuracy = default.BaseAccuracy + 0.2;
 }
 
 function Frob(Actor Other, Inventory frobWith)
@@ -1347,9 +1348,6 @@ local DeusExPlayer playa;
 		 bNeedToSetMPPickupAmmo = False;
 	  }
 	}
-    playa = DeusExPlayer(GetPlayerPawn());
-    if (playa != None && playa.bExtraHardcore && playa.bHardCoreMode && Owner == None)
-            BaseAccuracy = default.BaseAccuracy + 0.2;
 
     //RSD: Failsafe in case we don't have these set; use the original ranges for NPC AI
 	if (NPCmaxRange == 0)
@@ -2001,6 +1999,10 @@ simulated function float CalculateAccuracy()
 
 	if (player != None)
 	{
+        //SARGE: Hardcore+ Inaccuracy
+        if (player.bHardCoreMode && player.bExtraHardcore)
+            accuracy += fExtraHardcoreAccuracyPenalty;
+
 		// check the player's skill
 		// 0.0 = dead on, 1.0 = way off
 		accuracy += weapskill;
@@ -6392,6 +6394,8 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		str = Int((2.0 - Default.BaseAccuracy)*50.0) $ "%";
 		mod = (Default.BaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
+        if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).bExtraHardcore)
+            mod -= fExtraHardcoreAccuracyPenalty;
 
 		if (mod != 0.0)
 		{
@@ -7949,6 +7953,7 @@ defaultproperties
 {
      bReadyToFire=True
      LowAmmoWaterMark=10
+     fExtraHardcoreAccuracyPenalty=0.1
      FireAnim(0)=Shoot
      FireAnim(1)=Shoot
      NoiseLevel=1.000000
