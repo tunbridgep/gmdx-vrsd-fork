@@ -514,7 +514,7 @@ function int RetMaxCopies()
     if (player == None)
         return 1;
 
-	skval = Player.SkillSystem.GetSkillLevel(skillNeeded)+MaxCopies;
+	skval = Player.SkillSystem.GetSkillLevel(skillNeeded)+1;
 
 	return skval;
 }
@@ -651,5 +651,4 @@ defaultproperties
      EquipWhenEmptyLabel="Remains Equipped when drained."
      Charge=2000
      bUnequipWhenDrained=true
-	 MaxCopies=1
 }
