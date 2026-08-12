@@ -44,8 +44,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 	{
 		DeusExPlayer(Frobber).HealPlayer(2); //CyberP:Extra HP
 		DeusExPlayer(Frobber).fullUp += 3;
-		if (DeusExPlayer(Frobber).fullUp > 100)                                 //RSD: Capped at 100
-    		DeusExPlayer(Frobber).fullUp = 100;
+		if (DeusExPlayer(Frobber).fullUp > 200)
+    		DeusExPlayer(Frobber).fullUp = 200;
     }
 	PlayAnim('Bubble');
 	//AmbientSound = sound'WaterBubbling';
