@@ -3934,6 +3934,9 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
     local bool bHelmetSoundHack;                                                //SARGE: Added
 
     origDamageType = damageType;                                                //RSD: For distinct helmet hit sounds
+    
+    //SARGE: Chair/Swimming fix???
+    Offset.Z += PrePivot.Z;
 
 	// calculate our hit extents
 	headOffsetZ = CollisionHeight * 0.7;
