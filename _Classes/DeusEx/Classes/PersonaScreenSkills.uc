@@ -17,19 +17,26 @@ var PersonaSkillButtonWindow  skillButtons[15];
 var localized String SkillsTitleText;
 var localized String UpgradeButtonLabel;
 var localized String PerksButtonLabel;  //CyberP: perks
-var localized String PerksButtonLabel2;  //SARGE: general perks
 var localized String LevelsButtonLabel;                                         //RSD: Added
 var localized String PointsNeededHeaderText;
 var localized String SkillLevelHeaderText;
 var localized String SkillPointsHeaderText;
 var localized String SkillUpgradedLevelLabel;
 
+var localized String SwitchToGeneralPerks;
+var localized String SwitchToSkillPerks;
+    
+var PersonaActionButtonWindow winPerkBtn;
+
+var bool bGeneralPerks;
+
 //SARGE: Replaced bPerksMenu with an enum
+//SARGE: Now this just looks bad...no more 3 way buttons
 enum EDisplayType
 {
     Info,
     Perks,
-    PerksGeneral
+    //PerksGeneral
 };
 
 var EDisplayType displayType;
@@ -226,22 +233,20 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		switch(buttonPressed)
 		{
+			case winPerkBtn:
+                bGeneralPerks = !bGeneralPerks;
+                InvokePerksWindow();
+                break;
 			case btnUpgrade:
                 UpgradeSkill();
 				break;
 
             case btnPerks:         //CyberP: perks
-                if (displayType == Perks)                                                 //RSD: Dynamically swap between perks and levels button //SARGE: Also General Perks
-                {
-                    displayType = PerksGeneral;
-                    InvokeGeneralPerksWindow();
-            	    btnPerks.SetButtonText(LevelsButtonLabel);
-                }
-                else if (displayType == Info)
+                if (displayType == Info)
                 {
                     displayType = Perks;
                     InvokePerksWindow();
-                    btnPerks.SetButtonText(PerksButtonLabel2);
+                    btnPerks.SetButtonText(LevelsButtonLabel);
                 }
                 else
                 {
@@ -305,12 +310,15 @@ function SelectSkillButton(PersonaSkillButtonWindow buttonPressed)
 		selectedSkill       = selectedSkillButton.GetSkill();
 
         if(displayType == Info)                                                         //RSD: Remembers if you were navigating Levels or Perks Menu
+        {
         	selectedSkill.UpdateInfo(winInfo);
-       	else if (displayType == Perks || displayType == PerksGeneral)
+            btnPerks.SetButtonText(PerksButtonLabel);
+        }
+       	else if (displayType == Perks)
         {
             displayType = Perks;
        		InvokePerksWindow();
-            btnPerks.SetButtonText(PerksButtonLabel2);
+            btnPerks.SetButtonText(LevelsButtonLabel);
         }
 
 		selectedSkillButton.SelectButton(True);
@@ -391,29 +399,36 @@ function int GetSkillButtonCount()
 	return buttonIndex;
 }
 
-function InvokeGeneralPerksWindow()
-{
-	winInfo.CreateGeneralPerkButtons();
-	EnableButtons();
-}
-
+//Invoke the correct perks window based on whether or not we're dealing with the perks window
 function InvokePerksWindow()
 {
-	// First make sure we have a skill selected
-	if ( selectedSkill == None )
-		return;
+    local PersonaButtonBarWindow winPerkBtnContainer;
+    
+    winInfo.Clear();
+    
+    winInfo.AddLine();
 
-    selectedSkill.UpdatePerksInfo(winInfo);
-	//selectedSkill.IncLevel();
-	//selectedSkillButton.RefreshSkillInfo();
+    winPerkBtnContainer = PersonaButtonBarWindow(winInfo.winTile.NewChild(class'PersonaButtonBarWindow'));
+    winPerkBtnContainer.SetWidth(32); //149
+    winPerkBtnContainer.FillAllSpace(false);
+    winPerkBtn = PersonaActionButtonWindow(winPerkBtnContainer.NewChild(class'PersonaActionButtonWindow'));
+    
+    winInfo.AddLine();
 
-	// Send status message
-	//winStatus.AddText(Sprintf(SkillUpgradedLevelLabel, selectedSkill.SkillName));
-
-	//winSkillPoints.SetText(player.SkillPointsAvail);
-
+    if (bGeneralPerks)
+    {
+        winPerkBtn.SetButtonText(SwitchToSkillPerks);
+        winInfo.CreateGeneralPerkButtons();
+    }
+	else if ( selectedSkill != None )
+    {
+        winPerkBtn.SetButtonText(SwitchToGeneralPerks);
+        selectedSkill.UpdatePerksInfo(winInfo);
+    }
+	
 	EnableButtons();
 }
+
 // ----------------------------------------------------------------------
 // UpgradeSkill()
 // ----------------------------------------------------------------------
@@ -494,7 +509,6 @@ defaultproperties
      SkillsTitleText="Skills"
      UpgradeButtonLabel="|&Upgrade"
      PerksButtonLabel="|&Perks"
-     PerksButtonLabel2="Perks (|&G)"
      LevelsButtonLabel="|&Info"
      PointsNeededHeaderText="Points Needed"
      SkillLevelHeaderText="Skill Level"
@@ -521,4 +535,6 @@ defaultproperties
      clientTextureCols=3
      clientBorderTextureRows=2
      clientBorderTextureCols=3
+     SwitchToGeneralPerks="Switch to General Perks"
+     SwitchToSkillPerks="Switch to Skill Perks"
 }

@@ -301,7 +301,7 @@ var travel int invSlotsYtravel;                                                 
 var travel float previousAccuracy;                                              //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
 
 //SARGE: Weapon Offset Stuff
-var transient ViewmodelFOVManager FOVManager;                                   //SARGE: Manage Viewmodel FOV
+var ViewmodelFOVManager FOVManager;                                   //SARGE: Manage Viewmodel FOV
 var vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
 var vector OldPlayerViewOffset;                                                 //SARGE: Remember old weapon offsets even when the defaults change.
 
@@ -967,6 +967,9 @@ function PreBeginPlay()
 	{
 		Default.mpPickupAmmoCount = Default.PickupAmmoCount;
 	}
+
+    if (FOVManager == None)
+        FOVManager = new(Self) class'ViewmodelFOVManager';
 
     UpdateHDTPSettings();
 }
@@ -6987,8 +6990,6 @@ function ResetWeaponOffsets()
 function DoWeaponOffset()
 {
     ResetWeaponOffsets();
-    if (FOVManager == None)
-        FOVManager = new(Self) class'ViewmodelFOVManager';
 
     FOVManager.SetViewmodelOffset(Self);
 }
