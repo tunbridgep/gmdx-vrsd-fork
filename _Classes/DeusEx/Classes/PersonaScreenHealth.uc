@@ -582,7 +582,7 @@ function DisplayCommonInfo()
 
      //winInfo.SetText(StaminaStr $ int(player.swimTimer*100) $ "/" $ int(player.swimDuration*100));
      //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.GetMaxEnergy()));
-     winInfo.SetText(LocStr $ player.retInfo());
+     winInfo.SetText(LocStr $ player.retInfo() $ player.GetNewGamePlusString(true));
     
     winInfo.SetText(KillerStr $ player.Killercount); //SARGE: We don't want the morality stuff, but we do want to track kills
 
