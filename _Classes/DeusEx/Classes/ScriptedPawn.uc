@@ -1000,7 +1000,7 @@ function InitializeInventory()
 
     player = DeusExPlayer(GetPlayerPawn());
 
-    if (player.bRandomizeMods)
+    if (player != None && player.bRandomizeMods)
     	RandomizeMods();                                                        //RSD: Before we do anything, check for random loot
 
 	// Add initial inventory items
@@ -8754,10 +8754,6 @@ function Tick(float deltaTime)
 
 	player = DeusExPlayer(GetPlayerPawn());
     
-    //If we shouldn't be created, abort
-    if (!bFirstTickDone && !ShouldCreate(player))
-        Destroy();
-
     //SARGE: Prevent going into stasis ever for predictable enemies
     if (IsInState('Patrolling') || IsInState('Seeking'))
         LastRenderTime = Level.TimeSeconds;
