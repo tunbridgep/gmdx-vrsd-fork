@@ -72,7 +72,6 @@ var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" 
 
 var(GMDX) const bool bDontOpenOnMissionComplete;                                    //SARGE: Don't open this door on mission completion.
 
-
 //SARGE: Do we have the key for this lock?
 function bool HasKey(DeusExPlayer Player)
 {
@@ -550,7 +549,7 @@ function float GetDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vect
 
     if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
        damage *= 2;
-
+  
     return Damage;
 }
 
