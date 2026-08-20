@@ -813,6 +813,11 @@ function PostBeginPlay()
 {
 
 	Super.PostBeginPlay();
+    
+    //SARGE: Prevent going into stasis ever for predictable enemies
+    LastRenderTime = Level.TimeSeconds;
+    
+    SetupCloakManager();
 
 	//sort out HDTP settings
 	UpdateHDTPSettings();
@@ -4771,16 +4776,15 @@ function Bool HasTwoHandedWeapon()
 
 function EnableCloak(bool bEnable)  // beware! called from C++
 {
-    SetupCloakManager();
-
 	if (!bHasCloak || (CloakEMPTimer > 0) || (Health <= 0) || bOnFire)
 		bEnable = false;
 
 	if (bEnable && !bCloakOn)
 	{
+        CloakManager.SetCloaked(true,false);
 		bCloakOn = bEnable;
 	}
-	else if (!bEnable && bCloakOn && !bForcedCloak)
+	else if (!bEnable && bCloakOn && (!bForcedCloak || IsInState('Dying')))
 	{
         CloakManager.SetCloaked(false,true);
 		bCloakOn = bEnable;
