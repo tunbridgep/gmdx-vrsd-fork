@@ -803,7 +803,7 @@ function AddWeaponModDrawbacks(DeusExWeapon weapon)
     if (bDrawLaser)
     {
         SetText(LaserLabel $ ":");
-        SetText("  " $ RecoilPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Laser) * 100, 0.1) $ "%");
+        SetText("  " $ ReloadPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Scope), 0.1) $ " sec");
     }
     if (bDrawScope)
     {
@@ -930,7 +930,7 @@ defaultproperties
      SilencerLabel="Silencer"
      FullAutoLabel="Auto"
      AccuracyPenaltyLabel="Accuracy"
-     ReloadPenaltyLabel="Reload Speed"
+     ReloadPenaltyLabel="Reload and Equip Speed"
      RecoilPenaltyLabel="Recoil"
      RangePenaltyLabel="Range"
      DamagePenaltyLabel="Damage"

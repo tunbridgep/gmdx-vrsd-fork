@@ -471,7 +471,7 @@ function float GetMaxRange()
 // ----------------------------------------------------------------------
 function float GetRecoilPenaltyMod()
 {
-    return GetAddonPenalty(Laser) + GetAddonPenalty(Scope);
+    return GetAddonPenalty(Scope);
 }
 
 // ----------------------------------------------------------------------
@@ -1776,6 +1776,13 @@ function PlaySelect()
             }
         }
 
+        //SARGE: Addon Penalties
+        p -= GetAddonPenalty(Scope); //SARGE: Penalties for addons
+        p -= GetAddonPenalty(Laser); //SARGE: Penalties for addons
+        
+        //SARGE: Can't go below zero
+        p = FMAX(0.0,p);
+
         PlayAnim('Select',p,0.0);
         bAimingDown=False;
         Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
@@ -2957,7 +2964,11 @@ simulated function Tick(float deltaTime)
 		else
 		   recoil = recoilStrength;
 
-        recoil += GetRecoilPenaltyMod(); //SARGE: Penalties for addons
+        //SARGE: Lets make recoil actually mean something
+        //if (player.bHardcoreMode)
+        //    recoil *= 1.1;
+
+        recoil *= (1.0 + GetRecoilPenaltyMod()); //SARGE: Penalties for addons
 
 		if (recoil < 0.0)
 			recoil = 0.0;
@@ -6292,6 +6303,7 @@ simulated function bool UpdateInfo(Object winObject)
 	}
 
     mod = GetAddonPenalty(Scope); //SARGE: Penalties for addons
+    mod += GetAddonPenalty(Laser); //SARGE: Penalties for addons
 	if (HasReloadMod() || mod > 0.0)
 	{
 		str = str @ BuildPercentString(ModReloadTime + mod);
@@ -6309,7 +6321,7 @@ simulated function bool UpdateInfo(Object winObject)
 	if (HasRecoilMod() || mod > 0.0)
 	{
 		str = str @ BuildPercentString(ModRecoilStrength + mod);
-		str = str @ "=" @ FormatFloatString(recoilStrength + mod, 0.01);
+		str = str @ "=" @ FormatFloatString(recoilStrength * (1.0 + mod), 0.01);
 	}
     if (!bHandToHand)
 	winInfo.AddInfoItem(msgInfoRecoil, str, HasRecoilMod() || mod > 0.0);
@@ -7225,6 +7237,7 @@ ignores Fire, AltFire;
 			val = ReloadTime + (val*ReloadTime);
  
             val += GetAddonPenalty(Scope); //SARGE: Penalties for addons
+            val += GetAddonPenalty(Laser); //SARGE: Penalties for addons
 
 			/*if (AmmoType.IsA('AmmoRubber'))                                   //RSD: Rubber rounds no longer load more quickly (huh?)
 			   val *= 0.75;*/
@@ -8039,7 +8052,7 @@ defaultproperties
      bVanillaModelAttachments=true
      addonPenalties(0)=0.1 //Scope
      addonPenalties(1)=0.2 //Silencer
-     addonPenalties(2)=0.075 //Laser
+     addonPenalties(2)=0.15 //Laser
      currentWeaponSkin="default"
      totalScopeTime=0.41
      inertiaSpeed=30
