@@ -733,8 +733,11 @@ function UpdateModifiersText()
         winInfo.winScroll.EnableWindow(true);
     }
 
-    winInfo.SetText(GetSeedString());
-    winInfo.AddLine();
+    if (player.bRandomizeCrap || player.bRandomizeMods || player.bRandomizeEnemies || player.bRandomizeAugs || player.bRandomizeCrates)
+    {
+        winInfo.SetText(GetSeedString());
+        winInfo.AddLine();
+    }
     winInfo.SetText(class'MenuScreenPlaythroughModifiers'.default.Title);
     winInfo.AddLine();
 
