@@ -601,7 +601,7 @@ singular function BaseChange()
     //This is a hack to deal with vanilla shenanigans!
     p = DeusExPlayer(base);
 
-    if (p != None && p.carriedDecoration == self)
+    if (p != None && p.carriedDecoration == self && !p.Region.Zone.bWaterZone)
         p.PutCarriedDecorationInHand(true);
 }
 
