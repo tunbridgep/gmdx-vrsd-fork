@@ -234,6 +234,7 @@ function Tick(float deltaTime)
 	local bool bSwitched;
 	local Vector X,Y,Z;
     local float remainingTime;
+    local DeusExPlayer P;
 
 	Super.Tick(deltaTime);
 
@@ -245,7 +246,9 @@ function Tick(float deltaTime)
 		return;
 	}
     
-    remainingTime = disableTime - DeusExPlayer(GetPlayerPawn()).saveTime;
+    P = DeusExPlayer(GetPlayerPawn());
+    if (P != None)
+        remainingTime = disableTime - P.saveTime;
         
     if (gun.hackStrength == 0.0)
         bRebooting = false;
