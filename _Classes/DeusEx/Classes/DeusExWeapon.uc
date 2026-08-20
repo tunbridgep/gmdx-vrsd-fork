@@ -7927,7 +7927,7 @@ state ADSToggle                                                                 
 
 simulated function bool TestMPBeltSpot(int BeltSpot)
 {
-	return ((BeltSpot <= 3) && (BeltSpot >= 1));
+	return ((BeltSpot <= 3) && (BeltSpot >= 0));
 }
 
 //SARGE: Destroys the object, and makes sure if it's in our belt, it becomes a placeholder

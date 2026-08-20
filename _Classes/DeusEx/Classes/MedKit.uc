@@ -54,7 +54,7 @@ function int GetHealAmount(DeusExPlayer player)
 
 simulated function bool TestMPBeltSpot(int BeltSpot)
 {
-   return (BeltSpot == 9);
+   return (BeltSpot == 8);
 }
 
 //SARGE: Max number is increased with CombatMedicsBag

@@ -1143,6 +1143,15 @@ replication
 
 }
 
+//SARGE: GMDX Multiplayer Stuff!
+
+function bool AutofillBelt()
+{
+    return bBeltAutofill || bForceBeltAutofill || Level.NetMode != NM_Standalone;
+}
+
+//=========================================================
+
 //SARGE: Gets any adjustments to our head health. For now, just medical skill.
 function float GetHeadHealthAdjustment()
 {
@@ -10816,7 +10825,7 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 		 {
 			if ( (DeusExRootWindow(rootWindow).hud.belt.objects[beltpos].item == None) && (anItem.TestMPBeltSpot(beltpos)) )
 			{
-			   bPositionFound = True;
+                bPositionFound = True;
 			}
 		 }
 	  }
@@ -11992,7 +12001,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -12028,7 +12037,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
         }
 		else
@@ -12041,7 +12050,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+            RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping

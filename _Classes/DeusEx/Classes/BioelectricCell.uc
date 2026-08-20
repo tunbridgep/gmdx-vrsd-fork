@@ -40,7 +40,7 @@ function OnActivate(DeusExPlayer player)
 
 simulated function bool TestMPBeltSpot(int BeltSpot)
 {
-   return (BeltSpot == 0);
+   return (BeltSpot == 9);
 }
 
 //SARGE: Max number is increased with CombatMedicsBag

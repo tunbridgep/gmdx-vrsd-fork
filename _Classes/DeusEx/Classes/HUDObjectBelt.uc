@@ -33,9 +33,14 @@ event InitWindow()
     RecreateBelt(!bInteractive);
 }
 
+function bool IsBiggerBelt()
+{
+    return player.iBiggerBelt > 0 || player.Level.NetMode != NM_Standalone;
+}
+
 function RecreateBelt(optional bool bDontRecreateKeyring)
 {
-    if (player.iBiggerBelt > 0)
+    if (IsBiggerBelt())
     {
         extraSize = 100;
         numSlots = 12;
@@ -122,7 +127,7 @@ function ConfigureSlots()
     winRadio.SetPos(offset+10-extraSize, 6);
 
     //SARGE: DIRTY HACK!
-    if (player.iBiggerBelt > 0)
+    if (IsBiggerBelt())
     {
         // Last item is a little shorter
         objects[9].SetWidth(50);
@@ -204,7 +209,7 @@ function DrawBackground(GC gc)
 
 
     //SARGE: No idea why this needs adjusting...
-    if (player.iBiggerBelt > 0)
+    if (IsBiggerBelt())
         gc.DrawTexture(offset+2, 6, 8, 54, 0, 0, texBackgroundLeft);
     else
         gc.DrawTexture(offset+2, 6, 9, 54, 0, 0, texBackgroundLeft);
@@ -242,7 +247,7 @@ function DrawBorder(GC gc)
 			gc.SetTileColor(colBorder);
 
 		gc.DrawTexture(offset, 0, 256, 69, 0, 0, texBorder[0]);
-        if (player.iBiggerBelt > 0)
+        if (IsBiggerBelt())
         {
             gc.DrawTexture(offset+256, 0, 512, 69, 0, 0, texBorderBig);
             gc.DrawTexture(offset+612, 0,  29, 69, 0, 0, rightBorder);
@@ -342,7 +347,7 @@ function SetInteractive(bool bNewInteractive)
 function bool IsValidPos(int pos)
 {
 	// Don't allow NanoKeySlot to be used
-	if ((pos >= 0) && (pos < numSlots))
+	if ((pos >= 0 || player.Level.NetMode != NM_Standalone) && (pos < numSlots))
 		return true;
 	else
 		return false;
@@ -452,7 +457,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //only allow a position to be valid if the object in it is draggable.
             //Sarge: First, check for an existing placeholder slot
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
-                if (Player.Level.NetMode == NM_Standalone)
+                if (player.Level.NetMode == NM_Standalone)
                 {
                     for (i=0; IsValidPos(i); i++)
                     {
@@ -471,11 +476,17 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                 }
 			
             //No placeholder slot found, check for an empty one
-            if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))
+            if (!FoundPlaceholder && player.AutofillBelt())
             {
                 for (i=0; IsValidPos(i) && i < numSlots; i++)
                 {
-                    if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                    //For multiplayer belt mode, don't bother checking belt memory etc
+                    if (player.Level.NetMode != NM_Standalone && player.bBeltIsMPInventory)
+                    {
+                        if (newItem.TestMPBeltSpot(i) && objects[i].GetItem() == None)
+                            break;
+                    }
+                    else
                     {
                         //First, always allow empty slots if we have autofill turned on
                         if (objects[i].GetItem() == None && (!player.IsPlaceholder(i) || player.iBeltMemory == 0) && objects[i].bAllowDragging)

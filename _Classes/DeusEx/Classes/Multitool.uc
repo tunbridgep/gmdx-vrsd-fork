@@ -10,7 +10,7 @@ class Multitool extends SkilledTool;
 
 simulated function bool TestMPBeltSpot(int BeltSpot)
 {
-   return (BeltSpot == 8);
+   return (BeltSpot == 11);
 }
 
 function Display(bool overlay)
