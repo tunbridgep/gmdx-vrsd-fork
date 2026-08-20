@@ -12,6 +12,7 @@ New Features:
 - Data Cubes and other information devices are now highlighted when using Tech Goggles.
 - Added sounds when acquiring Traumas.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
+- Searching a single carcass will now also search nearby carcasses.
 - Edible Items now show the players current hunger level in the Inventory screen.
 - Upgraded to the newest DeusExe by @flippers
 - Datacubes, Books etc are now visible using Tech Goggles
