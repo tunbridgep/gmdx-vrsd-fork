@@ -61,6 +61,7 @@ Bug Fixes:
 - Fixes for phones not properly displaying "Line disconnected" and other frob sounds.
 
 Misc Changes:
+- Confix is now installed as a separate mod, due to recent DeusExe support for mod-added conversation files.
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
 - It is now significantly less likely to be unable to drop a carcass when in a tight space, such as a vent.
 - Minor internal changes to make translations easier, such as localizing a few strings.
