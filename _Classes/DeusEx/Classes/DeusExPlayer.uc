@@ -1577,6 +1577,8 @@ function setupDifficultyMod()
     local DeusExAmmo AM;
     local DeusExMover MV;
     local DeusExWeapon WP;
+    local BeamTrigger BT;
+    local LaserTrigger LT;
     
     if (rootWindow == None || GetLevelInfo() == None || flagBase == None)
         return;
@@ -1619,6 +1621,12 @@ function setupDifficultyMod()
 
     ForEach AllActors(class'DeusExMover', MV)
         MV.SetupDifficultyMod(self);
+    
+    ForEach AllActors(class'BeamTrigger', BT)
+        BT.SetupDifficultyMod(self);
+    
+    ForEach AllActors(class'LaserTrigger', LT)
+        LT.SetupDifficultyMod(self);
 }
 
 // ----------------------------------------------------------------------
