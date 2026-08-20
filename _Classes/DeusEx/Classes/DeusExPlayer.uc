@@ -1045,6 +1045,8 @@ var transient bool bTookBumpDamage;                   //SARGE: Set when we take 
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
 
+var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
+
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 var const localized string msgSaveName;
@@ -3808,7 +3810,7 @@ function RecoilEffectTick(float deltaTime)
 // SelectMeleePriority()
 // ----------------------------------------------------------------------
 
-function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+function bool SelectMeleePriority(Actor A)	// Trash: Used to automatically decide what to draw
 {
 	local Inventory anItem;
 	local DeusExWeapon meleeWeapon;
@@ -3832,16 +3834,15 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
 		return false;
 
-
-	if (crowbar != None && crowbar.CanUseWeapon(self,true) && (BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && crowbar.CanUseWeapon(self,true) && crowbar.BreaksDamageThreshold(A))
 		meleeWeapon = crowbar;
-	else if (sword != None && sword.CanUseWeapon(self,true) && (BreaksDamageThreshold(sword, damageThreshold)))
+	else if (sword != None && sword.CanUseWeapon(self,true) && sword.BreaksDamageThreshold(A))
 		meleeWeapon = sword;
-	else if (knife != None && knife.CanUseWeapon(self,true) && (BreaksDamageThreshold(knife, damageThreshold)))
+	else if (knife != None && knife.CanUseWeapon(self,true) && knife.BreaksDamageThreshold(A))
 		meleeWeapon = knife;
-	else if (baton != None && baton.CanUseWeapon(self,true) && (BreaksDamageThreshold(baton, damageThreshold)))
+	else if (baton != None && baton.CanUseWeapon(self,true) && baton.BreaksDamageThreshold(A))
 		meleeWeapon = baton;
-	else if (dts != None && dts.CanUseWeapon(self,true) && (BreaksDamageThreshold(dts, damageThreshold)))
+	else if (dts != None && dts.CanUseWeapon(self,true) && dts.BreaksDamageThreshold(A))
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
     {
@@ -3853,14 +3854,6 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	
     PutInHand(meleeWeapon,true);
     return true;
-}
-
-function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
-{
-	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects //SARGE: Now deals 2x damage, to scale with low-tech
-        return (weapon.CalculateTrueDamage() * 2) >= damageThreshold;
-    else
-        return (weapon.CalculateTrueDamage()) >= damageThreshold;
 }
 
 // ----------------------------------------------------------------------

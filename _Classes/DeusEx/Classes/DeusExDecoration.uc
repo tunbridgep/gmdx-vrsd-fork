@@ -152,7 +152,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
         }
     }
 
-    else*/ if (!bInvincible && frobber.SelectMeleePriority(minDamageThreshold))
+    else*/ if (!bInvincible && frobber.SelectMeleePriority(self))
         return false;
 
     //SARGE: Do this here, since we would otherwise need GMDX Exclusive code inside the OutfitSpawner class,
