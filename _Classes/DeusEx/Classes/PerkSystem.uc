@@ -59,6 +59,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkRemoteDetonation');
 	AddPerk(Class'DeusEx.PerkSonicTransducerSensor');
 	AddPerk(Class'DeusEx.PerkShortFuse');
+	AddPerk(Class'DeusEx.PerkTargetPriorities');
 	AddPerk(Class'DeusEx.PerkSensorBurnout');
 	AddPerk(Class'DeusEx.PerkKnockoutGas');
 	AddPerk(Class'DeusEx.PerkBreakdown');

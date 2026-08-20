@@ -79,6 +79,7 @@ defaultproperties
      Misc3Sound=Sound'DeusExSounds.Weapons.SwordHitSoft'
      InventoryGroup=13
      ItemName="Sword"
+     OldPlayerViewOffset=(X=25.000000,Y=-10.000000,Z=-24.000000)
      PlayerViewOffset=(X=25.000000,Y=-10.000000,Z=-24.000000)
      LandSound=Sound'DeusExSounds.Weapons.NanoSwordHitHard'
      Icon=Texture'DeusExUI.Icons.BeltIconSword'

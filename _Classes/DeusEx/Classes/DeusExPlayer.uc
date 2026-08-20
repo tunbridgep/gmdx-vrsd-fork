@@ -394,8 +394,8 @@ struct augBinary                                                                
 struct BeltInfo
 {
     var string      itemClass;              //SARGE: Note. This is set to "none" rather than "" when empty, so that it doesn't reset between map loads when it's none (the default value).
-    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
-    var texture		defaultIcon;			//Sarge. This probably isn't necessary, but it's still a hell of a lot better than trying to fuck around with DynamicLoadObject just to get the default icon...
+    var string		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
+    var string		defaultIcon;			//Sarge. This probably isn't necessary, but it's still a hell of a lot better than trying to fuck around with DynamicLoadObject just to get the default icon...
 };
 
 var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
@@ -653,7 +653,7 @@ var bool bUsingComputer;                                                        
 var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
 //Sarge: Allow Enhanced Weapon Offsets
-var globalconfig int iEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -739,7 +739,7 @@ var globalconfig bool bEnableBlinking; //Allows characters to blink
 var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
 
 //SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
-var globalconfig bool bBiggerBelt;
+var globalconfig int iBiggerBelt;
 
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
@@ -1041,15 +1041,27 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 /////////Version 1.3 Additions
 /////////June 2026
 
+var globalconfig bool bSearchCorpsePiles;   //SARGE: Allow searching multiple carcasses at once when they are stacked on top of each other.
+
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
+
+var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 var const localized string msgSaveName;
 
 var const localized String TooSick;
+
+//SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
+//passed on to the carcass.
+var bool bBloodyDeath;
+var globalconfig bool bSmartBloodPools;                 //SARGE: Enable or disable the smart blood pools system.
+
+//Show Lockpicks and Tools on the NanoKey icon
+var globalconfig bool bNanoKeyShowsTools;
 
 //SARGE: Moved the hunger string text from PersonaScreenHealth
 var const localized String HungerStr;
@@ -1058,6 +1070,8 @@ var const localized String StarvingStr;
 var const localized String HungryStr;
 
 var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
+
+var globalconfig bool bShowAugLevelsInHUD;              //SARGE: Show aug levels in HUD. Blatandly stolen from DXRando
 
 //Credits update/refactoring
 var localized string msgCreditsAdded;
@@ -1130,39 +1144,39 @@ replication
 }
 
 //SARGE: Gets any adjustments to our head health. For now, just medical skill.
-function int GetHeadHealthAdjustment()
+function float GetHeadHealthAdjustment()
 {
-    local Skill sk;
-    local int re;
+    local SkillMedicine sk;
+    local float re;
     
     re = 0;
 
     if (SkillSystem!=None)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
 
     return re;
 }
 
 //SARGE: Gets any adjustments to our torso health, such as from medical skill, drunkenness or blood loss.
-function int GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
+function float GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
 {
-    local int re;
+    local float re;
     local Wound wound;
-    local Skill sk;
+    local SkillMedicine sk;
     
     re = 0;
 
     if (SkillSystem!=None && !bNoMedicineSkill)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
-
+    
     if (AddictionManager != None)
 		re += AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
 
@@ -1431,17 +1445,18 @@ function AssignSecondary(Inventory item, optional bool bMessage)
     if (item == None)
     {
         assignedWeapon.itemClass = "none";
-        assignedWeapon.icon = None;
-        assignedWeapon.defaultIcon = None;
+        assignedWeapon.icon = "none";
+        assignedWeapon.defaultIcon = "none";
     }
     else
     {
+        Log("Assigned Icon: " $ item.Icon @ string(item.Icon) @ item.default.icon);
         assignedWeapon.itemClass = string(item.Class);
-        assignedWeapon.icon = item.Icon;
+        assignedWeapon.icon = string(item.Icon);
         if (item.IsA('DeusExPickup'))
-            assignedWeapon.defaultIcon = item.default.icon;
+            assignedWeapon.defaultIcon = string(item.default.icon);
         else
-            assignedWeapon.defaultIcon = item.icon;
+            assignedWeapon.defaultIcon = string(item.icon);
     }
 
     if (bMessage)
@@ -1470,10 +1485,19 @@ function Inventory GetSecondary()
 
 function Texture GetSecondaryIcon()
 {
+    local string nm;
+    local texture tx;
+
     if (bSkinnedBeltIcons)
-        return assignedWeapon.icon;
+        nm = assignedWeapon.Icon;
     else
-        return assignedWeapon.defaultIcon;
+        nm = assignedWeapon.defaultIcon;
+    
+    if (nm == "none")
+        return None;
+
+    tx = Texture(DynamicLoadObject(nm, class'Texture'));
+    return tx;
 }
 
 function Class<Inventory> GetSecondaryClass()
@@ -1611,12 +1635,6 @@ local DeusExPickup     PU;                                                      
               DC.LightType=LT_None;
 	       }
         }
-        if (SkillSystem != None && CombatDifficulty <= 1)
-        {
-            SkillSystem.UpdateSkillLevelValues(class'SkillTech');               //RSD: This function now BUFFS the lockpicking/electronics skill for Easy
-            SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');        //RSD: From 10/15/25/50 -> 10/25/40/75
-        }
-
     }
     else
     {
@@ -1642,11 +1660,6 @@ local DeusExPickup     PU;                                                      
               DC.SetPhysics(PHYS_Flying);
               DC.LightType=LT_None;
 	       }
-       }
-       if (SkillSystem != None)
-       {
-        SkillSystem.UpdateSkillLevelValues(class'SkillTech');                   //RSD: This function still nerfs lockpicks/multitools on Hardcore, values altered
-        SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');            //RSD: used to give lockpicks values of 5/10/15/50, now 5/10/20/50
        }
     }
 
@@ -2162,12 +2175,16 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.RocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.Rocket';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.RocketWP';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocket';
             GEP.ProjectileNames[0]=Class'DeusEx.RocketWP';
             GEP.ProjectileNames[1]=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
     else
@@ -2176,12 +2193,17 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.Rocket';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.Rocket';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocket';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
             GEP.ProjectileNames[0]=Class'DeusEx.Rocket';
             GEP.ProjectileNames[1]=Class'DeusEx.RocketWP';
+            GEP.ProjectileClass=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
 }
@@ -2410,7 +2432,7 @@ event TravelPostAccept()
 	// If the player was carrying a decoration, make sure
 	// it's placed back in his hand (since the location
 	// info won't properly travel)
-	PutCarriedDecorationInHand();
+	PutCarriedDecorationInHand(true);
 
 	// Reset FOV
 	SetFOVAngle(Default.DesiredFOV);
@@ -2805,6 +2827,65 @@ exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
 exec function Flashlight() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(10); }
 
+//SARGE: Allow "hold" versions of Aug Keys as well
+function HoldAug(int num, bool bRelease)
+{
+    local Augmentation aug;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.FindAugByKey(num);
+    
+    //Active and Auto augs only
+    if (aug == None || (aug.AugmentationType != Aug_Active && aug.AugmentationType != Aug_Automatic))
+        return;
+    
+    //Only activate with button down, only deactivate with release.
+    if (aug.bIsActive == bRelease)
+        AugmentationSystem.ActivateAugByKey(num);
+}
+
+//Smart Sprint - use the Speed aug if we have it, otherwise run.
+exec function SmartSprint(bool bRelease)
+{
+    local Augmentation aug;
+    local string _unused;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.GetAug(class'AugSpeed');
+    if (aug == None)
+        aug = AugmentationSystem.GetAug(class'AugStealth');
+    
+    if (bRelease)
+    {
+        if (aug != None && aug.bHasIt)
+            aug.DeActivate();
+        bRun = 0;
+    }
+    else if (aug != None && aug.bHasIt && aug.CanActivate(_unused))
+    {
+        aug.Activate();
+    }
+    else //No leg aug - Just run normally
+    {
+        bRun = 1;
+    }
+
+}
+
+exec function HoldMapF3(bool bRelease) { HoldAug(0,bRelease); }
+exec function HoldMapF4(bool bRelease) { HoldAug(1,bRelease); }
+exec function HoldMapF5(bool bRelease) { HoldAug(2,bRelease); }
+exec function HoldMapF6(bool bRelease) { HoldAug(3,bRelease); }
+exec function HoldMapF7(bool bRelease) { HoldAug(4,bRelease); }
+exec function HoldMapF8(bool bRelease) { HoldAug(5,bRelease); }
+exec function HoldMapF9(bool bRelease) { HoldAug(6,bRelease); }
+exec function HoldMapF10(bool bRelease) { HoldAug(7,bRelease); }
+exec function HoldMapF11(bool bRelease) { HoldAug(8,bRelease); }
+exec function HoldMapF12(bool bRelease) { HoldAug(9,bRelease); }
+exec function HoldFlashlight(bool bRelease) { HoldAug(10,bRelease); }
+
 //SARGE: Let the player dual-map belt slots.
 exec function AltBelt0() { ActivateBelt(0); }
 exec function AltBelt1() { ActivateBelt(1); }
@@ -3015,15 +3096,19 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
     //We don't ever want to get here, but it's still better than not saving!
     if (saveIndex >= 1000)
     {
-        DebugMessage("WARNING: Using hacky save index");
-        saveIndex = iHackySaveIndex++;
-        
+        saveIndex = iHackySaveIndex;
+        DebugMessage("WARNING: Using hacky save index: " $ iLastSave);
+
+        iHackySaveIndex++;
+
         if (iHackySaveIndex >= 1000)
             iHackySaveIndex = 1;
-
-        SaveConfig();
     }
-    
+        
+    //SARGE: Set last save to the new index
+    iLastSave = saveIndex;
+    SaveConfig();
+
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
         dataLinkPlay.AbortAndSaveHistory();
@@ -3034,13 +3119,11 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDesc = GetDefaultSaveName();
 
     root.GenerateSnapshot(True);
-    DebugLog("Save Game: " $ saveIndex @ saveDesc);
+    DebugMessage("Save Game: " $ saveIndex @ saveDesc @ iLastSave);
     SaveGame(saveIndex, saveDesc);
     root.HideSnapshot();
     //root.show();
 
-    ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
-    SaveConfig();
     return saveIndex;
 }
 
@@ -3166,7 +3249,7 @@ exec function QuickLoad()
 
     //Confirm the save exists before trying to do anything
     saveDir = GetSaveGameDirectory();
-    info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
+    info = saveDir.GetSaveInfo(iLastSave);
     CriticalDelete(saveDir);
 
 	if (info != None && DeusExRootWindow(rootWindow) != None)
@@ -3182,7 +3265,9 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-    LoadGame(int(ConsoleCommand("get DeusExPlayer iLastSave"))); //changed so now selects last saved game, even if from menu
+    DebugLog("Loading Quicksave: " $ iLastSave);
+
+    LoadGame(iLastSave); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
@@ -3478,8 +3563,7 @@ function ResetPlayer(optional bool bTraining)
     killswitchTimer = default.killswitchTimer;
 
     // Reset Belt Memory
-    for(i = 0;i < 12;i++)
-        ClearPlaceholder(i);
+    ClearAllBeltPlaceholders();
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
@@ -3733,7 +3817,7 @@ function RecoilEffectTick(float deltaTime)
 // SelectMeleePriority()
 // ----------------------------------------------------------------------
 
-function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+function bool SelectMeleePriority(Actor A)	// Trash: Used to automatically decide what to draw
 {
 	local Inventory anItem;
 	local DeusExWeapon meleeWeapon;
@@ -3757,16 +3841,15 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
 		return false;
 
-
-	if (crowbar != None && crowbar.CanUseWeapon(self,true) && (BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && crowbar.CanUseWeapon(self,true) && crowbar.BreaksDamageThreshold(A))
 		meleeWeapon = crowbar;
-	else if (sword != None && sword.CanUseWeapon(self,true) && (BreaksDamageThreshold(sword, damageThreshold)))
+	else if (sword != None && sword.CanUseWeapon(self,true) && sword.BreaksDamageThreshold(A))
 		meleeWeapon = sword;
-	else if (knife != None && knife.CanUseWeapon(self,true) && (BreaksDamageThreshold(knife, damageThreshold)))
+	else if (knife != None && knife.CanUseWeapon(self,true) && knife.BreaksDamageThreshold(A))
 		meleeWeapon = knife;
-	else if (baton != None && baton.CanUseWeapon(self,true) && (BreaksDamageThreshold(baton, damageThreshold)))
+	else if (baton != None && baton.CanUseWeapon(self,true) && baton.BreaksDamageThreshold(A))
 		meleeWeapon = baton;
-	else if (dts != None && dts.CanUseWeapon(self,true) && (BreaksDamageThreshold(dts, damageThreshold)))
+	else if (dts != None && dts.CanUseWeapon(self,true) && dts.BreaksDamageThreshold(A))
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
     {
@@ -3778,14 +3861,6 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	
     PutInHand(meleeWeapon,true);
     return true;
-}
-
-function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
-{
-	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects //SARGE: Now deals 2x damage, to scale with low-tech
-        return (weapon.CalculateTrueDamage() * 2) >= damageThreshold;
-    else
-        return (weapon.CalculateTrueDamage()) >= damageThreshold;
 }
 
 // ----------------------------------------------------------------------
@@ -5757,7 +5832,7 @@ function HighlightCenterObject()
         if (FrobTarget == None)
         {
             perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
-            if (perk != None && perk.bPerkObtained)
+            if (perk != None && perk.bPerkObtained && GetInventoryCount('Multitool') > 0)
             {
                 EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
                 EndTrace.Z += BaseEyeHeight;
@@ -6006,6 +6081,10 @@ function Carcass SpawnCarcass()
 	{
 	    if (bRemoveVanillaDeath)
 	        carc.DrawScale = 0.000050;
+        
+        if (!bBloodyDeath && bSmartBloodPools)
+            carc.bNoDefaultPools = true;
+
 		carc.Initfor(self);
 
 		// move it down to the ground
@@ -6199,34 +6278,23 @@ function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 // CalculateSkillHealAmount()
 // ----------------------------------------------------------------------
 
-function int CalculateSkillHealAmount(int baseHealPoints)
+function int CalculateSkillHealAmount(int baseHealPoints, optional out int deduction)
 {
 	local float mult;
 	local int adjustedHealAmount;
     local Wound wound;
+	local Skill sk;
 
 	// check skill use
 	if (SkillSystem != None)
 	{
-		/*mult = SkillSystem.GetSkillLevelValue(class'SkillMedicine');
-        //RSD: Unfortunately we have to hack in the new medkit level values (30/45/65/90) here so they don't mess things up elsewhere
-        if ((mult > 1.99)  && (mult < 2.01))
-        	mult = 1.500000;
-        else if ((mult > 2.49) && (mult < 2.51))
-        	mult = 2.166667;
-        else if ((mult > 2.99) && (mult < 3.01))
-        	mult = 3.000000;
-       	else mult = 1.000000;*/                                                 //RSD: this is dumb but I'd rather have the default be 30
+	    sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
 
-       	mult = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        //RSD: Still hacking medkit level values (30/45/65/90), but 30% less stupidly
-        if (mult == 1)
-        	mult = 1.500000;
-        else if (mult == 2)
-        	mult = 2.166667;
-        else if (mult == 3)
-        	mult = 3.000000;
-       	else mult = 1.000000;
+        //SARGE: This was horrible hardcoded before for vRSD, but no idea why - the
+        //medicine skill values weren't being used for anything? I have adjusted them accordingly
+        mult = sk.LevelValues[sk.CurrentLevel];
+        if (mult <= 0.0)
+            mult = 1.0;
 
 		// apply the skill
 		adjustedHealAmount = baseHealPoints * mult;
@@ -6236,9 +6304,11 @@ function int CalculateSkillHealAmount(int baseHealPoints)
         {
             wound = WoundManager.GetWoundByType(class'WoundBurning');
             if (wound != None && wound.HasWound())
-                adjustedHealAmount -= wound.woundData[0];
+                deduction += wound.woundData[0];
         }
 	}
+                
+    adjustedHealAmount -= deduction;
 
 	return adjustedHealAmount;
 }
@@ -6907,12 +6977,9 @@ state PlayerWalking
 				// opportunity for client to translate movement to server
 				MoveDrone( DeltaTime, loc );
 
-				// freeze the player
-				Velocity = vect(0,0,0);
-                
                 //SARGE: Stop player from sliding along the ground very slowly while the drone is active
-                SetPhysics(PHYS_None);
-                SetPhysics(PHYS_Walking);
+                Velocity = Velocity * vect(0,0,1);
+                Acceleration = Acceleration * vect(0,0,1);
 			}
 			return;
 		}
@@ -9146,7 +9213,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
         return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
-    if (target.isA('ElevatorMover'))
+    if (target.isA('Mover'))
         return false;
     return true;
 }
@@ -9231,10 +9298,10 @@ exec function ParseRightClick()
     
     dxInfo=GetLevelInfo();
 
-    if (RestrictInput() && dxInfo.missionNumber > 0)
+    if (RestrictInput())
     {
         //SARGE: Allow speeding up cutscenes
-        if (IsInState('Interpolating') && bEnableCutsceneSpeedup)
+        if (dxInfo.missionNumber > 0 && IsInState('Interpolating') && bEnableCutsceneSpeedup)
         {
             interp = InterpolationPoint(Target);
             while (interp != None && interp.Next.position != 0)
@@ -9573,6 +9640,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local WeaponNanoSword dts;
     local bool bDestroy;
     local string source;
+    local DeusExCarcass linkedCarc;
     local ChargedPickup cp;
     local bool bTransfer;
 
@@ -9595,7 +9663,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
 
         //GMDX Exclusive Code
-        if (bTransfer)
+        if (bTransfer && DeusExWeapon(Weapon) != None)
         {
             DeusExWeapon(Weapon).UpdateHDTPSettings();
             Weapon.PlaySound(DeusExWeapon(Weapon).CopyModsSound,SLOT_None,0.8);
@@ -9758,6 +9826,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	
 	if (bSlotSearchNeeded && bCanPickup)
 	{
+        //If it's a weapon, unrotate it first
+        if (DeusExWeapon(FrobTarget) != None)
+            DeusExWeapon(FrobTarget).Unrotate();
+
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
 		if (FindInventorySlot(Inventory(FrobTarget), true) == False)
 		{
@@ -9776,8 +9848,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
 
         //SARGE: Decline checking.
-        if (!bSkipDeclineCheck)
+        if (!bSkipDeclineCheck && FromCorpse != None)
+            bDeclined = DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class));
+        else if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
+
         if (!bDeclined && !bSearchOnly)
             FindInventorySlot(Inventory(FrobTarget), false);
     }
@@ -9806,6 +9881,17 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         
         if (bCanPickup)
         {
+
+            //SARGE: Hack. If it's a weapon, we need to unlink it from any carcasses or scriptedpawns that currently have it as their dropped weapon
+            if (Weapon(FrobTarget) != None)
+            {
+                foreach AllActors(class'DeusExCarcass', linkedCarc)
+                {
+                    if (linkedCarc.droppedWeapon == Weapon(FrobTarget))
+                        linkedCarc.droppedWeapon = none;
+                }
+            }
+
             DoFrob(Self, inHand);
             /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
             {
@@ -9813,7 +9899,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             //bLeftClicked = False;
             }*/
             // This is bad. We need to reset the number so restocking works
-            if ( Level.NetMode != NM_Standalone )
+            if ( Level.NetMode != NM_Standalone  && FromCorpse == None)
             {
                 if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
                 {
@@ -9884,7 +9970,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DebugLog("AddReceivedItem - Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
+        DebugLog("AddReceivedItem - Item is: " $ item $ ", owned by " $ owner $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
 
         DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 
@@ -9956,8 +10042,13 @@ function bool AddCredits(int amount, bool bShowMessage, bool bShowWindow)
 
     //Show the window (if we received only, for now)
     if (amount > 0 && bCreditsShowReceivedItemsWindow && bShowWindow)
+    {
+        if (ConPlay != None && conPlay.GetDisplayMode() == DM_ThirdPerson && ConPlay.conWinThird != None)
+            ConPlay.conWinThird.ShowGenericIcon(class'Credits'.default.Icon, class'Credits'.default.beltDescription, amount);
+
         if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
             DeusExRootWindow(rootWindow).hud.receivedItems.AddCredits(amount);
+    }
 
     //Last minute check for credits going below zero.
     //Probably not necessary.
@@ -10901,21 +10992,28 @@ function SetPlaceholder(int objectNum, Inventory item)
     if (item != None && item.Class != class'NanoKeyRing')
     {
         beltInfos[objectNum].itemClass = string(item.Class);
-        beltInfos[objectNum].icon = item.icon;
+        beltInfos[objectNum].icon = string(item.icon);
 
         //This is a HORRIBLE, DISGUSTING dirty hack, to make sure we get default icons for pickups,
         //but that HDTP belt icons for weapons stay how they should be.
         if (item.IsA('DeusExPickup'))
-            beltInfos[objectNum].defaultIcon = item.default.icon;
+            beltInfos[objectNum].defaultIcon = string(item.default.icon);
         else
-            beltInfos[objectNum].defaultIcon = item.icon;
+            beltInfos[objectNum].defaultIcon = string(item.icon);
     }
+}
+
+function ClearAllBeltPlaceholders()
+{
+    local int i;
+    for (i = 0; i < ArrayCount(beltInfos); i++)
+        ClearPlaceholder(i);
 }
 
 function ClearPlaceholder(int objectNum)
 {
-    beltInfos[objectNum].icon = None;
-    beltInfos[objectNum].defaultIcon = None;
+    beltInfos[objectNum].icon = "none";
+    beltInfos[objectNum].defaultIcon = "none";
     beltInfos[objectNum].itemClass = "none";
 }
 
@@ -10932,10 +11030,19 @@ function BeltInfo GetPlaceholder(int objectNum)
 //Gets a belt placeholder, while preserving the default icons setting
 function Texture GetPlaceholderIcon(int objectNum)
 {
+    local string nm;
+    local Texture tx;
+
     if (bSkinnedBeltIcons)
-        return beltInfos[objectNum].Icon;
+        nm = beltInfos[objectNum].Icon;
     else
-        return beltInfos[objectNum].defaultIcon;
+        nm = beltInfos[objectNum].defaultIcon;
+    
+    if (nm == "none")
+        return None;
+
+    tx = Texture(DynamicLoadObject(nm, class'Texture'));
+	return tx;
 }
 
 function int HasPlaceholderSlot(Class<inventory> obj)
@@ -11217,7 +11324,7 @@ exec function ToggleScope()
     else if (Binoculars(inHand) != None)
         Binoculars(inHand).Activate();
 
-	else if (W != None)
+	else if (W != None && W.bHasScope)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -12192,8 +12299,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
         DeusExWeapon(item).SetBloodyWeapon(false);
         DeusExWeapon(item).SetBloodyHands(false);
     }
+    
+    UpdateHUD();
 
-	  return bDropped;
+    return bDropped;
 }
 
 // ----------------------------------------------------------------------
@@ -13291,6 +13400,9 @@ function private _UpdateHUD()
 
     //DebugMessage("UpdateHUD");
     bUpdateHud = false;
+
+    //SARGE: Also update the keyring slot.
+    UpdateBeltText(KeyRing);
 }
 
 function UpdateGoalsWindow()
@@ -13329,6 +13441,8 @@ exec function ShowInventoryWindow()
 	  ClientMessage("Inventory screen disabled in multiplayer");
 	  return;
 	}
+
+    UpdateHUD();
 
 	InvokeUIScreen(Class'PersonaScreenInventory');
 }
@@ -13584,7 +13698,7 @@ exec function NextBeltItem()
     
     assigned = GetSecondary();
 
-    if (bBiggerBelt)
+    if (iBiggerBelt > 0)
         totalSlots = 12;
     else
         totalSlots = 10;
@@ -13648,9 +13762,9 @@ exec function NextBeltItem()
 			do
 			{
                 slot++;
-                if (bBiggerBelt && slot >= 12)
+                if (iBiggerBelt > 0 && slot >= 12)
                     slot = 0;
-                else if (!bBiggerBelt && slot >= 10)
+                else if (iBiggerBelt == 0 && slot >= 10)
                     slot = 0;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
@@ -13691,9 +13805,9 @@ exec function NextBeltItem()
 			{
                 //SARGE: UnrealScript doesn't short-circuit, aparrently
                 advBelt++;
-                if (bBiggerBelt && advBelt >= 12)
+                if (iBiggerBelt > 0 && advBelt >= 12)
                     advBelt = 0;
-                else if (!bBiggerBelt && advBelt >= 10)
+                else if (iBiggerBelt == 0 && advBelt >= 10)
                     advBelt = 0;
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
@@ -13782,7 +13896,7 @@ exec function PrevBeltItem()
                 slot--;
                 if (slot <= -1)
                 {
-                    if (bBiggerBelt)
+                    if (iBiggerBelt > 0)
                         slot = 11;
                     else
                         slot = 9;
@@ -13828,7 +13942,7 @@ exec function PrevBeltItem()
                 advBelt--;
                 if (advBelt <= -1)
                 {
-                    if (bBiggerBelt)
+                    if (iBiggerBelt > 0)
                         advBelt = 11;
                     else
                         advBelt = 9;
@@ -16378,9 +16492,9 @@ function GenerateTotalHealth()
 	local float headMult, torsoMult;
 
 	//SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
-    headMult = default.HealthHead/float(default.HealthHead+GetHeadHealthAdjustment());
-    torsoMult = default.HealthTorso/float(default.HealthTorso+GetTorsoHealthAdjustment());
-
+    headMult = default.HealthHead/(default.HealthHead+GetHeadHealthAdjustment());
+    torsoMult = default.HealthTorso/(default.HealthTorso+GetTorsoHealthAdjustment());
+    
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
 	if ((HealthHead <= 0) || (HealthTorso <= 0))
@@ -17710,6 +17824,9 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
+    
+    //SARGE: Store if the damage that killed us should make our carcass bleed.
+    bBloodyDeath = class'PawnUtils'.static.IsBloodyDamageType(damageType);
 
 	Super.Died(Killer, damageType, HitLocation);
 }
@@ -18038,7 +18155,7 @@ function MakePlayerIgnored(bool bNewIgnore)
 // CalculatePlayerVisibility()
 // ----------------------------------------------------------------------
 
-function float CalculatePlayerVisibility(ScriptedPawn P)                        //RSD: Ignore all of the changes below, they don't work reliably. Messed with stuff in ScriptedPawn instead
+function float CalculatePlayerVisibility(Actor P)                        //RSD: Ignore all of the changes below, they don't work reliably. Messed with stuff in ScriptedPawn instead
 {
 	local float vis, skillStealthMod, litelvl;//, litemult;                     //RSD: Added skillStealthMod, litelvl
 	local AdaptiveArmor armor;
@@ -18054,7 +18171,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
     //litemult = litelvl-0.031;                                                 //RSD: New formula to keep visibility constant during night vision (9.3%)
 	if ((P != None) && (AugmentationSystem != None))
 	{
-		if (P.IsA('Robot'))
+		if (P.IsA('Robot') || P.IsA('AutoTurret') || P.IsA('SecurityCamera'))
 		{
 			// if the aug is on, give the player full invisibility
 			if (AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') != -1.0)
@@ -19331,6 +19448,10 @@ simulated event Destroyed()
 	if (Role == ROLE_Authority)
 	  CloseThisComputer(ActiveComputer);
 	ActiveComputer = None;
+
+    //AUGMENTIQUE: Destroy the managers, always
+    //outfitManager = None;
+    //weaponSkinManager = None;
 
 	Super.Destroyed();
 }
@@ -20720,6 +20841,12 @@ function string GetHungerString(optional string prefix)
     return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
 }
 
+function RefreshSkills()
+{
+    if (SkillSystem != None)
+        SkillSystem.RefreshSkills();
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -20911,7 +21038,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     iEnhancedWeaponOffsets=1
+     bEnhancedWeaponOffsets=true
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
@@ -20943,7 +21070,7 @@ defaultproperties
      iEnhancedLipSync=1
      bEnableBlinking=True
      iDeathSoundMode=2
-     bBiggerBelt=True
+     iBiggerBelt=1
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
      bShowItemPickupCounts=True
@@ -21015,7 +21142,7 @@ defaultproperties
      iBloodyWeapons=1
      iWeaponWallDistance=504
      bAutofillPasswords=true
-     iHackySaveIndex=1
+     iHackySaveIndex=0
      bShortFuseEnabled=true
      ShortFuseEnabled="Short Fuse Enabled"
      ShortFuseDisabled="Short Fuse Disabled"
@@ -21034,10 +21161,15 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bSearchCorpsePiles=true
+     bPickupsUseFOV=true
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bShowAugLevelsInHUD=true
+     bSmartBloodPools=true
+     bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"
      msgCreditsDeducted="%d credits deducted from your account"

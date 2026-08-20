@@ -20,6 +20,12 @@ function bool CanAssignSecondary(DeusExPlayer player)
     return true;
 }
 
+//SARGE: Whether or not to show the hunger level in the inventory screen.
+function bool DisplayHungerLevel(DeusExPlayer player)
+{
+    return player.bHardCoreMode || player.bRestrictedMetabolism;
+}
+
 function int GetHealAmount(DeusExPlayer player)
 {
     local float amount;
@@ -60,11 +66,11 @@ function string GetDescription2(DeusExPlayer player)
 
     str = super.GetDescription2(player);
 
-    if (fullness > 0 && (player.bHardcoreMode || player.bRestrictedMetabolism) && (!isA('Vice') || !player.bAddictionSystem))
+    if (fullness > 0 && DisplayHungerLevel(player))
+    {
         str = AddLine(str,sprintf(HungerLabel,fullness));
-
-    if (player.bHardCoreMode || player.bRestrictedMetabolism)
         str = AddLine(str,player.GetHungerString());
+    }
 
     return str;
 }

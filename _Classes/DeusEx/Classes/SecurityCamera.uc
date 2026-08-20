@@ -386,14 +386,18 @@ function CheckPlayerVisibility(DeusExPlayer player)
 			// AcquireMultiplayerTarget
 			if (Level.Netmode == NM_Standalone)
 			{
-				if (player.AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') != -1.0)
+                //SARGE: replaced with proper visibility calculation so that adaptive armor works
+                if (player.CalculatePlayerVisibility(self) == 0.0)
+				//if (player.AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') != -1.0)
 					return;
 
+                /*
                 foreach AllActors(class'AdaptiveArmor', armor) //CyberP: thermoptic camo hides us from cameras
 				{
 					if ((armor.Owner == player) && armor.bActive)
 							return;
 				}
+                */
 			}
 
 			// figure out if we can see the player
@@ -830,7 +834,9 @@ function Actor AcquireMultiplayerTarget()
 			}
 			else
 			{
-				if (DeusExPlayer(prevtarget).AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') == -1.0)
+                //SARGE: replaced with proper visibility calculation so that adaptive armor works
+                if (DeusExPlayer(prevtarget).CalculatePlayerVisibility(self) == 0.0)
+				//if (DeusExPlayer(prevtarget).AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') == -1.0)
 				{
 					curtarget = prevtarget;
 					return curtarget;
@@ -860,7 +866,9 @@ function Actor AcquireMultiplayerTarget()
 						if (! ( (TeamDMGame(aplayer.DXGame) != None) &&	(safeTarget != None) &&	(TeamDMGame(aplayer.DXGame).ArePlayersAllied( DeusExPlayer(safeTarget),aplayer)) ) )
 						{
 							// If the player's RadarTrans aug is off, the turret can see him
-							if (aplayer.AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') == -1.0)
+                            //SARGE: replaced with proper visibility calculation so that adaptive armor works
+                            if (aPlayer.CalculatePlayerVisibility(self) > 0.0)
+							//if (aplayer.AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') == -1.0)
 							{
 								curTarget = apawn;
 								break;

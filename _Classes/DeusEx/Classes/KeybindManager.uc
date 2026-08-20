@@ -44,6 +44,21 @@ enum EKeybind
     KB_Aug9, //F12
     KB_Aug10, //Flashlight
 
+    //Hold Aug Keys
+    KB_Aug0H, //F3
+    KB_Aug1H, //F4
+    KB_Aug2H, //F5
+    KB_Aug3H, //F6
+    KB_Aug4H, //F7
+    KB_Aug5H, //F8
+    KB_Aug6H, //F9
+    KB_Aug7H, //F10
+    KB_Aug8H, //F11
+    KB_Aug9H, //F12
+    KB_Aug10H, //Flashlight
+
+    KB_SmartSprint, //Smart Sprint
+
     //Keyring button
     KB_Keyring,
 
@@ -227,10 +242,25 @@ function Setup(DeusExPlayer P)
         if (keyName != "")
         {
             alias = player.ConsoleCommand( "KEYBINDING "$ keyName );
+		
 
-            //Get the aug keys.
-            //Get the alternate keys first so they appear first
+            //Get the aug hold keys
+            //Get them first so they appear first
             //in the list
+            if (Left(alias,8) == "HoldMapF")
+            {
+			    augNum = int(Mid(alias,8));
+
+                //Go from F3 onwards.
+                //Aug F3 is ActivateAugmentation 0
+			    if (augNum >= 2 && augNum <= 12)
+                {
+                    AddBindingToArray(KB_Aug0,keyName,augNum - 3);
+                    AddBindingToArray(KB_Aug0H,keyName,augNum - 3);
+                }
+            }
+
+            //Get the alt aug keys.
 			if (Left(alias,8) == "DualMapF")
 			{
 			    augNum = int(Mid(alias,8));
@@ -251,10 +281,21 @@ function Setup(DeusExPlayer P)
 			    if (augNum >= 0 && augNum <= 9)
                     AddBindingToArray(KB_Aug0,keyName,augNum);
             }
+            
+            //And the new Hold Flashlight Aug key
+            if (Left(alias,14) == "HoldFlashlight")
+                AddBindingToArray(KB_Aug10H,keyName);
 
             //And the new Flashlight Aug key
             if (Alias == "Flashlight")
                 AddBindingToArray(KB_Aug10,keyName);
+
+            //And the new Flashlight Aug key
+            if (Left(alias,11) == "SmartSprint")
+            {
+                AddBindingToArray(KB_Aug5,keyName); //Add to leg aug slot too
+                AddBindingToArray(KB_SmartSprint,keyName);
+            }
             
             //Get the alt belt keys first so they appear before the regular ones.
 			if (Left(alias,7) == "AltBelt")
@@ -272,7 +313,7 @@ function Setup(DeusExPlayer P)
 			    if (beltNum >= 0 && beltNum <= 12)
                     AddBindingToArray(KB_Belt0,keyName,beltNum);
             }
-			
+            
             if (Left(alias,13) == "SelectNanoKey")
                 AddBindingToArray(KB_Keyring,keyName);
             if (Left(alias,8) == "LeanLeft")
@@ -364,6 +405,22 @@ function Setup(DeusExPlayer P)
     
     //Setup aug wheel key
     ReplaceAlias(KB_AugMenu_Hold,"HoldRadialAugMenu | ToggleRadialAugMenu 1 0 | OnRelease ToggleRadialAugMenu 1 1");
+    
+    //Setup hold aug keys
+    ReplaceAlias(KB_Aug0H,"HoldMapF3 0 | OnRelease HoldMapF3 1");
+    ReplaceAlias(KB_Aug1H,"HoldMapF4 0 | OnRelease HoldMapF4 1");
+    ReplaceAlias(KB_Aug2H,"HoldMapF5 0 | OnRelease HoldMapF5 1");
+    ReplaceAlias(KB_Aug3H,"HoldMapF6 0 | OnRelease HoldMapF6 1");
+    ReplaceAlias(KB_Aug4H,"HoldMapF7 0 | OnRelease HoldMapF7 1");
+    ReplaceAlias(KB_Aug5H,"HoldMapF8 0 | OnRelease HoldMapF8 1");
+    ReplaceAlias(KB_Aug6H,"HoldMapF9 0 | OnRelease HoldMapF9 1");
+    ReplaceAlias(KB_Aug7H,"HoldMapF10 0 | OnRelease HoldMapF10 1");
+    ReplaceAlias(KB_Aug8H,"HoldMapF11 0 | OnRelease HoldMapF11 1");
+    ReplaceAlias(KB_Aug9H,"HoldMapF12 0 | OnRelease HoldMapF12 1");
+    ReplaceAlias(KB_Aug10H,"HoldFlashlight 0 | OnRelease HoldFlashlight 1");
+    
+    //Smart Sprint
+    ReplaceAlias(KB_SmartSprint,"SmartSprint 0 | OnRelease SmartSprint 1");
     
     //Setup secondary key
     ReplaceAlias(KB_Secondary,"UseSecondary | OnRelease UseSecondary 1");

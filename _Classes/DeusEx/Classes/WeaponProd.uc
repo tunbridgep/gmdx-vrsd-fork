@@ -164,6 +164,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.ProdSelect'
      InventoryGroup=19
      ItemName="Riot Prod"
+     OldPlayerViewOffset=(X=21.000000,Y=-12.000000,Z=-19.000000)
      PlayerViewOffset=(X=21.000000,Y=-12.000000,Z=-19.000000)
      PlayerViewMesh=LodMesh'DeusExItems.Prod'
      PickupViewMesh=LodMesh'DeusExItems.ProdPickup'

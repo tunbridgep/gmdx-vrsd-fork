@@ -11,6 +11,18 @@ var float mpLevel1;
 var float mpLevel2;
 var float mpLevel3;
 
+var float limbMod; //SARGE: The amount of extra torso and head health we get per level.
+
+function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
+{
+    local int s0, s1, s2, s3;
+    s0=class'Medkit'.default.healAmount * LevelValues[0];
+    s1=class'Medkit'.default.healAmount * LevelValues[1];
+    s2=class'Medkit'.default.healAmount * LevelValues[2];
+    s3=class'Medkit'.default.healAmount * LevelValues[3];
+    return sprintf(Description,s0,s1,s2,s3);
+}
+
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
@@ -25,23 +37,6 @@ simulated function PreBeginPlay()
 		LevelValues[2] = mpLevel2;
 		LevelValues[3] = mpLevel3;
 	}
-}
-
-//SARGE: Lets make these look proper
-function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
-{
-    local float val;
-    local int s0,s1,s2,s3;
-    val = class'MedKit'.default.healAmount;
-    if (bSmartSkillString)
-    {
-        s0 = val * 1.0;
-        s1 = val * 1.5;
-        s2 = val * 2.166667;
-        s3 = val * 3.0;
-        return sprintf(Description,s0,s1,s2,s3);
-    }
-    return super.GetDescriptionText(bHardcoreMode,combatDifficulty);
 }
 
 // ----------------------------------------------------------------------
@@ -77,8 +72,8 @@ function bool IncLevel(optional DeusExPlayer usePlayer)
 				CurrentLevel++;
 				//GMDX !HACK give extra health to player
 				localPlayer.PlaySound(Sound'GMDXSFX.Generic.Select',SLOT_None);
-				localPlayer.HealthHead=Min(localPlayer.HealthHead+CurrentLevel*10.0,100.0+CurrentLevel*10.0);
-				localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+TorsoAdd,100.0+CurrentLevel*10.0+TorsoAdd); //RSD: Added drunk, zyme //SARGE: Added blood loss;
+				localPlayer.HealthHead=Min(localPlayer.HealthHead+CurrentLevel*limbMod,100.0+CurrentLevel*limbMod);
+				localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*limbMod+TorsoAdd,100.0+CurrentLevel*limbMod+TorsoAdd); //RSD: Added drunk, zyme //SARGE: Added blood loss;
                 localPlayer.GenerateTotalHealth();
 				return True;
 			}
@@ -87,8 +82,8 @@ function bool IncLevel(optional DeusExPlayer usePlayer)
 		{
 			CurrentLevel++;
 			//GMDX !HACK
-			localPlayer.HealthHead=Min(localPlayer.HealthHead+CurrentLevel*10.0,100.0+CurrentLevel*10.0);
-			localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+TorsoAdd,100.0+CurrentLevel*10.0+TorsoAdd); //RSD: Added drunk, zyme
+			localPlayer.HealthHead=Min(localPlayer.HealthHead+CurrentLevel*limbMod,100.0+CurrentLevel*limbMod);
+			localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*limbMod+TorsoAdd,100.0+CurrentLevel*limbMod+TorsoAdd); //RSD: Added drunk, zyme
 	      localPlayer.GenerateTotalHealth();
 			return True;
 		}
@@ -132,8 +127,8 @@ function bool DecLevel(
 			localPlayer.SkillPointsAvail += GetCost();
 
       //GMDX !HACK
-      localPlayer.HealthHead=Min(localPlayer.HealthHead,100.0+CurrentLevel*10.0);
-		localPlayer.HealthTorso=Min(localPlayer.HealthTorso,100.0+CurrentLevel*10.0);
+      localPlayer.HealthHead=Min(localPlayer.HealthHead,100.0+CurrentLevel*limbMod);
+		localPlayer.HealthTorso=Min(localPlayer.HealthTorso,100.0+CurrentLevel*limbMod);
       localPlayer.GenerateTotalHealth();
 		return True;
 	}
@@ -156,8 +151,9 @@ defaultproperties
      cost(1)=1800
      cost(2)=3600
      LevelValues(0)=1.000000
-     LevelValues(1)=2.000000
-     LevelValues(2)=2.500000
+     LevelValues(1)=1.5
+     LevelValues(2)=2.166667
      LevelValues(3)=3.000000
      bSmartSkillString=true
+     limbMod=10
 }

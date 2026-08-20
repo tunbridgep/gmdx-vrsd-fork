@@ -309,3 +309,16 @@ static function GetFloorMaterial(Pawn P, out name texGroup, out name texName)
             texGroup = 'Stucco';
     }
 }
+
+// ----------------------------------------------------------------------
+// SARGE: IsBloodyDamageType
+// Check if a certain damage type is bloody, anything that isn't internal damage like gas or drowning is considered bloody.
+// ----------------------------------------------------------------------
+static function bool IsBloodyDamageType(name DamageType)
+{
+    return damageType != 'Stunned' && damageType != 'TearGas' && damageType != 'HalonGas' &&
+		   damageType != 'PoisonGas' && damageType != 'Radiation' && damageType != 'EMP' &&
+		   damageType != 'NanoVirus' && damageType != 'Drowned' && damageType != 'KnockedOut' &&
+		   damageType != 'Poison' && damageType != 'PoisonEffect';
+}
+

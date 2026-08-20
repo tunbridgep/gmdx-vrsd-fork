@@ -99,6 +99,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.PepperGunSelect'
      InventoryGroup=18
      ItemName="Pepper Gun"
+     OldPlayerViewOffset=(X=16.000000,Y=-10.000000,Z=-16.000000)
      PlayerViewOffset=(X=16.000000,Y=-10.000000,Z=-16.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPPepperGun"
      HDTPPickupViewMesh="HDTPItems.HDTPpeppergunpickup"

@@ -43,25 +43,20 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
    return (BeltSpot == 0);
 }
 
-//SARGE: Max number is lowered on Hardcore
-/*
+//SARGE: Max number is increased with CombatMedicsBag
 function int RetMaxCopies()
 {
     local DeusExPlayer player;
     local int amount;
     player = DeusExPlayer(GetPlayerPawn());
-
-    if (player != None && player.bHardcoreMode)
-        amount = 5;
-    else
-        amount = default.maxCopies;
+    
+    amount = maxCopies;
 
     if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkCombatMedicsBag').bPerkObtained)
         amount += 5;
 
     return amount;
 }
-*/
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
