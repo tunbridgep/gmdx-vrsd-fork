@@ -7887,6 +7887,7 @@ simulated function TweenDown()
 		else
 			PlayAnim('Down', p, 0.02);
 	}
+	BobDamping=default.BobDamping;
 }
  //CyberP end
 Begin:
