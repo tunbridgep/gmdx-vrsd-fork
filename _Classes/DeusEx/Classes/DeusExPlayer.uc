@@ -1071,6 +1071,8 @@ var const localized String HungryStr;
 
 var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
 
+var globalconfig bool bShowAugLevelsInHUD;              //SARGE: Show aug levels in HUD. Blatandly stolen from DXRando
+
 //Credits update/refactoring
 var localized string msgCreditsAdded;
 var localized string msgCreditsDeducted;
@@ -1142,39 +1144,39 @@ replication
 }
 
 //SARGE: Gets any adjustments to our head health. For now, just medical skill.
-function int GetHeadHealthAdjustment()
+function float GetHeadHealthAdjustment()
 {
-    local Skill sk;
-    local int re;
+    local SkillMedicine sk;
+    local float re;
     
     re = 0;
 
     if (SkillSystem!=None)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
 
     return re;
 }
 
 //SARGE: Gets any adjustments to our torso health, such as from medical skill, drunkenness or blood loss.
-function int GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
+function float GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
 {
-    local int re;
+    local float re;
     local Wound wound;
-    local Skill sk;
+    local SkillMedicine sk;
     
     re = 0;
 
     if (SkillSystem!=None && !bNoMedicineSkill)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
-
+    
     if (AddictionManager != None)
 		re += AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
 
@@ -1623,12 +1625,6 @@ local DeusExPickup     PU;                                                      
               DC.LightType=LT_None;
 	       }
         }
-        if (SkillSystem != None && CombatDifficulty <= 1)
-        {
-            SkillSystem.UpdateSkillLevelValues(class'SkillTech');               //RSD: This function now BUFFS the lockpicking/electronics skill for Easy
-            SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');        //RSD: From 10/15/25/50 -> 10/25/40/75
-        }
-
     }
     else
     {
@@ -1654,11 +1650,6 @@ local DeusExPickup     PU;                                                      
               DC.SetPhysics(PHYS_Flying);
               DC.LightType=LT_None;
 	       }
-       }
-       if (SkillSystem != None)
-       {
-        SkillSystem.UpdateSkillLevelValues(class'SkillTech');                   //RSD: This function still nerfs lockpicks/multitools on Hardcore, values altered
-        SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');            //RSD: used to give lockpicks values of 5/10/15/50, now 5/10/20/50
        }
     }
 
@@ -3562,8 +3553,7 @@ function ResetPlayer(optional bool bTraining)
     killswitchTimer = default.killswitchTimer;
 
     // Reset Belt Memory
-    for(i = 0;i < 12;i++)
-        ClearPlaceholder(i);
+    ClearAllBeltPlaceholders();
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
@@ -6278,34 +6268,23 @@ function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 // CalculateSkillHealAmount()
 // ----------------------------------------------------------------------
 
-function int CalculateSkillHealAmount(int baseHealPoints)
+function int CalculateSkillHealAmount(int baseHealPoints, optional out int deduction)
 {
 	local float mult;
 	local int adjustedHealAmount;
     local Wound wound;
+	local Skill sk;
 
 	// check skill use
 	if (SkillSystem != None)
 	{
-		/*mult = SkillSystem.GetSkillLevelValue(class'SkillMedicine');
-        //RSD: Unfortunately we have to hack in the new medkit level values (30/45/65/90) here so they don't mess things up elsewhere
-        if ((mult > 1.99)  && (mult < 2.01))
-        	mult = 1.500000;
-        else if ((mult > 2.49) && (mult < 2.51))
-        	mult = 2.166667;
-        else if ((mult > 2.99) && (mult < 3.01))
-        	mult = 3.000000;
-       	else mult = 1.000000;*/                                                 //RSD: this is dumb but I'd rather have the default be 30
+	    sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
 
-       	mult = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        //RSD: Still hacking medkit level values (30/45/65/90), but 30% less stupidly
-        if (mult == 1)
-        	mult = 1.500000;
-        else if (mult == 2)
-        	mult = 2.166667;
-        else if (mult == 3)
-        	mult = 3.000000;
-       	else mult = 1.000000;
+        //SARGE: This was horrible hardcoded before for vRSD, but no idea why - the
+        //medicine skill values weren't being used for anything? I have adjusted them accordingly
+        mult = sk.LevelValues[sk.CurrentLevel];
+        if (mult <= 0.0)
+            mult = 1.0;
 
 		// apply the skill
 		adjustedHealAmount = baseHealPoints * mult;
@@ -6315,9 +6294,11 @@ function int CalculateSkillHealAmount(int baseHealPoints)
         {
             wound = WoundManager.GetWoundByType(class'WoundBurning');
             if (wound != None && wound.HasWound())
-                adjustedHealAmount -= wound.woundData[0];
+                deduction += wound.woundData[0];
         }
 	}
+                
+    adjustedHealAmount -= deduction;
 
 	return adjustedHealAmount;
 }
@@ -6986,12 +6967,9 @@ state PlayerWalking
 				// opportunity for client to translate movement to server
 				MoveDrone( DeltaTime, loc );
 
-				// freeze the player
-				Velocity = vect(0,0,0);
-                
                 //SARGE: Stop player from sliding along the ground very slowly while the drone is active
-                SetPhysics(PHYS_None);
-                SetPhysics(PHYS_Walking);
+                Velocity = Velocity * vect(0,0,1);
+                Acceleration = Acceleration * vect(0,0,1);
 			}
 			return;
 		}
@@ -10983,6 +10961,13 @@ function SetPlaceholder(int objectNum, Inventory item)
         else
             beltInfos[objectNum].defaultIcon = item.icon;
     }
+}
+
+function ClearAllBeltPlaceholders()
+{
+    local int i;
+    for (i = 0; i < ArrayCount(beltInfos); i++)
+        ClearPlaceholder(i);
 }
 
 function ClearPlaceholder(int objectNum)
@@ -16458,9 +16443,9 @@ function GenerateTotalHealth()
 	local float headMult, torsoMult;
 
 	//SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
-    headMult = default.HealthHead/float(default.HealthHead+GetHeadHealthAdjustment());
-    torsoMult = default.HealthTorso/float(default.HealthTorso+GetTorsoHealthAdjustment());
-
+    headMult = default.HealthHead/(default.HealthHead+GetHeadHealthAdjustment());
+    torsoMult = default.HealthTorso/(default.HealthTorso+GetTorsoHealthAdjustment());
+    
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
 	if ((HealthHead <= 0) || (HealthTorso <= 0))
@@ -20807,6 +20792,12 @@ function string GetHungerString(optional string prefix)
     return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
 }
 
+function RefreshSkills()
+{
+    if (SkillSystem != None)
+        SkillSystem.RefreshSkills();
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -21127,6 +21118,7 @@ defaultproperties
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bShowAugLevelsInHUD=true
      bSmartBloodPools=true
      bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;

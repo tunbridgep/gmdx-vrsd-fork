@@ -38,8 +38,6 @@ function BuildModifierList()
     //Remove Shenanigans until we finish the game
     if (!player.bHardcoreUnlocked)
         RemoveItem("bShenanigans");
-	
-    CreateChoices();
 }
 
 // ----------------------------------------------------------------------
@@ -81,4 +79,5 @@ defaultproperties
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true
+     bAutoBuildModifierList=false
 }

@@ -208,6 +208,7 @@ defaultproperties
      items(150)=(HelpText="Drop carcasses at your feet when dropping would otherwise fail, such as in tight corridoors or vents.",actionText="Interaction: Always Drop Carcasses",variable="bAlwaysDropCarcasses",defaultValue=1)
      items(151)=(HelpText="NPCs and the Player will not create blood pools if killed in non-bloody ways, such as through poison gas or radiation.",actionText="Game: Smarter Blood Pools",variable="bSmartBloodPools",defaultValue=1)
      items(152)=(HelpText="The NanoKey icon on the belt will show available Lockpicks and Multitools",actionText="HUD: NanoKey Slot shows Tools",variable="bNanoKeyShowsTools",defaultValue=1)
+     items(153)=(HelpText="If enabled, dots will show augmentation levels on the HUD.",actionText="HUD: Show Aug Levels",variable="bShowAugLevelsInHUD",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

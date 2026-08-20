@@ -66,6 +66,7 @@ Bug Fixes:
 - Fixes for phones not properly displaying "Line disconnected" and other frob sounds.
 
 Misc Changes:
+- NPCs will no longer track targets with the GEP gun.
 - Minor changes to explosives to properly account for mover DT checks.
 - Confix is now installed as a separate mod, due to recent DeusExe support for mod-added conversation files.
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).

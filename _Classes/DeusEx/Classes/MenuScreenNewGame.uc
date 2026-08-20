@@ -127,7 +127,7 @@ function InvokePlaythroughModifiersMenu(optional bool bCheck)
     if (mods != None)
     {
         mods.bHardcoreSelected = bHardCoreMode;
-        mods.BuildModifierList();
+        mods.RebuildModifierList();
     }
 }
 

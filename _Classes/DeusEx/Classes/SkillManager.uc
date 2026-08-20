@@ -54,7 +54,7 @@ function CreateSkills(DeusExPlayer newPlayer)
 		{
 			aSkill = Spawn(skillClasses[skillIndex], Self);
 			aSkill.Player = player;
-            aSkill.Init();
+            aSkill.Refresh();
 
 			// Manage our linked list
 			if (aSkill != None)
@@ -71,6 +71,24 @@ function CreateSkills(DeusExPlayer newPlayer)
 				LastSkill  = aSkill;
 			}
 		}
+	}
+}
+
+// ----------------------------------------------------------------------
+// RefreshSkills()
+// SARGE: Calls Refresh() on every Skill.
+// Normally called as part of skill setup (done every reload), but can be
+// manually called too for when skills need to update
+// ----------------------------------------------------------------------
+
+simulated function RefreshSkills()
+{
+	local Skill aSkill;
+	aSkill = FirstSkill;
+	while(aSkill != None)
+	{
+        aSkill.Refresh();
+		aSkill = aSkill.next;
 	}
 }
 
@@ -166,34 +184,6 @@ simulated function float GetSkillLevelValue(class SkillClass)
 	return retval;
 }
 
-simulated function UpdateSkillLevelValues(class SkillClass)
-{
-	local Skill aSkill;
-	local float retval;
-
-	retval = 0;
-
-	aSkill = GetSkillFromClass(SkillClass);
-
-	if (aSkill != None && (aSkill.IsA('SkillLockpicking') || aSkill.IsA('SkillTech') ))
-	{
-	    if (player.bHardCoreMode || player.bHarderLockpicking)
-	    {
-	        aSkill.LevelValues[0]=0.050000;
-	        aSkill.LevelValues[1]=0.100000;
-	        aSkill.LevelValues[2]=0.200000;                                     //RSD: Was 0.150000
-	        aSkill.LevelValues[3]=0.50000;
-        }
-        else if(player.CombatDifficulty <=1.0)                                  //RSD: Repurposing for Easy mode (original lockpick/multitool strengths)
-        {
-	        aSkill.LevelValues[0]=0.100000;
-	        aSkill.LevelValues[1]=0.250000;
-	        aSkill.LevelValues[2]=0.400000;
-	        aSkill.LevelValues[3]=0.750000;
-	    }
-    }
-}
-
 // ----------------------------------------------------------------------
 // GetSkillLevel()
 //
@@ -242,7 +232,7 @@ function SetPlayer(DeusExPlayer newPlayer)
 	while(aSkill != None)
 	{
 		aSkill.player = newPlayer;
-        aSkill.Init();
+        aSkill.Refresh();
 		aSkill = aSkill.next;
 	}
 }

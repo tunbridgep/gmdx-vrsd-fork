@@ -41,6 +41,8 @@ var const bool bShortHeaderButtons;                 //SARGE: The vanilla lists h
 var const bool bShowDefaults;                       //SARGE: Shows "(Default: <Value>)" text in the help area when looking at an item in the list.
 var localized string DefaultValueString;
 
+var bool bAutoBuildModifierList;                    //SARGE: Automatically builds the modified list when we open the menu. Turn this off to delay it until after some values are set.
+
 Struct ObjectPos
 {
     var int X;
@@ -116,6 +118,23 @@ struct S_ListItem
 };
 
 var localized S_ListItem items[255];
+
+///This exists because UnrealScript sucks ass and doesn't let you access arrays of structs
+function static string GetActionTextAt(int index)
+{
+    return default.items[index].actionText;
+}
+
+function static int GetMenuEntries()
+{
+    local int i;
+    for (i = 0;i < 255;i++)
+    {
+        if (default.items[i].actionText == "")
+            return i;
+    }
+    return 255;
+}
 
 event InitWindow()
 {
@@ -240,6 +259,9 @@ function CreateChoices()
 {
 	local int i;
 
+    if (bAutoBuildModifierList)
+        BuildModifierList();
+
     if (lstItems == None)
     {
         log("lstItems is none!");
@@ -284,6 +306,16 @@ function CreateChoices()
     }
 
     RefreshChoices();
+}
+
+function RebuildModifierList()
+{
+    BuildModifierList();
+    CreateChoices();
+}
+
+function BuildModifierList()
+{
 }
 
 function RefreshChoices()
@@ -825,4 +857,5 @@ defaultproperties
      defaultSearchText="Search... (Ctrl-F)"
      filterString="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:. "
      bTickEnabled=true
+     bAutoBuildModifierList=true
 }

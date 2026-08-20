@@ -2815,7 +2815,7 @@ simulated function Tick(float deltaTime)
 
 	  if ( (Level.Netmode == NM_Standalone) || ( (Player != None) && (Player.PlayerIsClient()) ) )
 	  {
-         if (bCanTrack)
+         if (bCanTrack && Owner.IsA('DeusExPlayer')) //SARGE: Added Player check to disable NPCs from tracking.
 		 {
 		    if (bZoomed || bLasing || (player != none && player.IsInState('Conversation'))) //RSD Added player != none for accessed none
 		    {

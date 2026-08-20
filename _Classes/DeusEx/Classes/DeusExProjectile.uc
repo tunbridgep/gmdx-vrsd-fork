@@ -158,7 +158,7 @@ function GrabProjectile(DeusExPlayer player)
 	{
 		if (spawnWeaponClass != None)		// spawn the weapon
 		{
-			item = Spawn(spawnWeaponClass);
+			item = Inventory(class'SpawnUtils'.static.SpawnSafe(spawnWeaponClass,self));
 			if (item != None)
 			{
                 //AUGMENTIQUE: Give our created weapon the right skin.
@@ -178,7 +178,7 @@ function GrabProjectile(DeusExPlayer player)
 		}
 		else if (spawnAmmoClass != None)	// or spawn the ammo
 		{
-			item = Spawn(spawnAmmoClass);
+			item = Inventory(class'SpawnUtils'.static.SpawnSafe(spawnAmmoClass,self));
 			if (item != None)
 			{
 				if ( (Level.NetMode != NM_Standalone ) && Self.IsA('Dart'))
