@@ -8700,6 +8700,9 @@ function Tick(float deltaTime)
     if (!bFirstTickDone && !ShouldCreate(player))
         Destroy();
 
+    //SARGE: Prevent going into stasis ever for predictable enemies
+    if (IsInState('Patrolling') || IsInState('Seeking'))
+        LastRenderTime = Level.TimeSeconds;
     
     //SARGE: tick down high alert state
     fHighAlertState = FMAX(0,fHighAlertState - deltaTime);
