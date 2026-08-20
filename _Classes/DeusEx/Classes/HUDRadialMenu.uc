@@ -460,12 +460,19 @@ function AddItem(Augmentation aug) {
 function UpdateItemStatus(Augmentation aug) {
 	local int i;
 
-	if (itemCount == 0) return;
+	if (itemCount == 0 || aug == None) return;
+
+    if (player.AugmentationSystem == None)
+        return;
 
 	for (i = 1; i < itemCount; i++) {
 		if (orderedItems[i].augmentation == aug)
 			break;
 	}
+
+    if (orderedItems[i] == None)
+        return;
+
 	if (aug.IsActive() && !orderedItems[i].isActive) {
         orderedItems[i].Activate();
         activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to incrementing. Now that we aren't deactivating toggled augs, we need to re-read the number
