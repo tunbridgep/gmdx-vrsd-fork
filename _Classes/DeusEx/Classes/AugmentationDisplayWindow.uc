@@ -638,6 +638,9 @@ function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, in
 		mult = VSize(threat.Location - Player.Location);
 		str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits $ CR() $ IFFLabel1 @ threatT $ CR() $ IFFLabel2 @ sprintf("%d",threatD) $ CR();
 
+        if (class'DeusExPlayer'.default.bGMDXDebug)
+            str = str $ string(threat.Name) $ CR() ;
+
 		if (!ConvertVectorToCoordinates(threat.Location, boxCX, boxCY))
 			str = "";//str @ msgBehind;
 
@@ -2320,6 +2323,9 @@ function SetSkins(Actor actor, out Texture oldSkins[9])
 {
 	local int     i;
 	local texture curSkin;
+    
+    //SARGE: Wake it up first
+    actor.lastRendertime = actor.Level.TimeSeconds;
 
 	for (i=0; i<8; i++)
 		oldSkins[i] = actor.MultiSkins[i];

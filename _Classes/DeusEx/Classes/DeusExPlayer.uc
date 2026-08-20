@@ -653,7 +653,7 @@ var bool bUsingComputer;                                                        
 var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
 //Sarge: Allow Enhanced Weapon Offsets
-var globalconfig int iEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -739,7 +739,7 @@ var globalconfig bool bEnableBlinking; //Allows characters to blink
 var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
 
 //SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
-var globalconfig bool bBiggerBelt;
+var globalconfig int iBiggerBelt;
 
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
@@ -1046,6 +1046,8 @@ var globalconfig bool bSearchCorpsePiles;   //SARGE: Allow searching multiple ca
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
+
+var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
@@ -2172,12 +2174,16 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.RocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.Rocket';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.RocketWP';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocket';
             GEP.ProjectileNames[0]=Class'DeusEx.RocketWP';
             GEP.ProjectileNames[1]=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
     else
@@ -2186,12 +2192,17 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.Rocket';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.Rocket';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocket';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
             GEP.ProjectileNames[0]=Class'DeusEx.Rocket';
             GEP.ProjectileNames[1]=Class'DeusEx.RocketWP';
+            GEP.ProjectileClass=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
 }
@@ -2420,7 +2431,7 @@ event TravelPostAccept()
 	// If the player was carrying a decoration, make sure
 	// it's placed back in his hand (since the location
 	// info won't properly travel)
-	PutCarriedDecorationInHand();
+	PutCarriedDecorationInHand(true);
 
 	// Reset FOV
 	SetFOVAngle(Default.DesiredFOV);
@@ -2814,6 +2825,65 @@ exec function DualmapF10() { if ( AugmentationSystem != None) AugmentationSystem
 exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(8); }
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
 exec function Flashlight() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(10); }
+
+//SARGE: Allow "hold" versions of Aug Keys as well
+function HoldAug(int num, bool bRelease)
+{
+    local Augmentation aug;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.FindAugByKey(num);
+    
+    //Active and Auto augs only
+    if (aug == None || (aug.AugmentationType != Aug_Active && aug.AugmentationType != Aug_Automatic))
+        return;
+    
+    //Only activate with button down, only deactivate with release.
+    if (aug.bIsActive == bRelease)
+        AugmentationSystem.ActivateAugByKey(num);
+}
+
+//Smart Sprint - use the Speed aug if we have it, otherwise run.
+exec function SmartSprint(bool bRelease)
+{
+    local Augmentation aug;
+    local string _unused;
+    if (AugmentationSystem == None)
+        return;
+    
+    aug = AugmentationSystem.GetAug(class'AugSpeed');
+    if (aug == None)
+        aug = AugmentationSystem.GetAug(class'AugStealth');
+    
+    if (bRelease)
+    {
+        if (aug != None && aug.bHasIt)
+            aug.DeActivate();
+        bRun = 0;
+    }
+    else if (aug != None && aug.bHasIt && aug.CanActivate(_unused))
+    {
+        aug.Activate();
+    }
+    else //No leg aug - Just run normally
+    {
+        bRun = 1;
+    }
+
+}
+
+exec function HoldMapF3(bool bRelease) { HoldAug(0,bRelease); }
+exec function HoldMapF4(bool bRelease) { HoldAug(1,bRelease); }
+exec function HoldMapF5(bool bRelease) { HoldAug(2,bRelease); }
+exec function HoldMapF6(bool bRelease) { HoldAug(3,bRelease); }
+exec function HoldMapF7(bool bRelease) { HoldAug(4,bRelease); }
+exec function HoldMapF8(bool bRelease) { HoldAug(5,bRelease); }
+exec function HoldMapF9(bool bRelease) { HoldAug(6,bRelease); }
+exec function HoldMapF10(bool bRelease) { HoldAug(7,bRelease); }
+exec function HoldMapF11(bool bRelease) { HoldAug(8,bRelease); }
+exec function HoldMapF12(bool bRelease) { HoldAug(9,bRelease); }
+exec function HoldFlashlight(bool bRelease) { HoldAug(10,bRelease); }
 
 //SARGE: Let the player dual-map belt slots.
 exec function AltBelt0() { ActivateBelt(0); }
@@ -3747,7 +3817,7 @@ function RecoilEffectTick(float deltaTime)
 // SelectMeleePriority()
 // ----------------------------------------------------------------------
 
-function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+function bool SelectMeleePriority(Actor A)	// Trash: Used to automatically decide what to draw
 {
 	local Inventory anItem;
 	local DeusExWeapon meleeWeapon;
@@ -3771,16 +3841,15 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
 		return false;
 
-
-	if (crowbar != None && crowbar.CanUseWeapon(self,true) && (BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && crowbar.CanUseWeapon(self,true) && crowbar.BreaksDamageThreshold(A))
 		meleeWeapon = crowbar;
-	else if (sword != None && sword.CanUseWeapon(self,true) && (BreaksDamageThreshold(sword, damageThreshold)))
+	else if (sword != None && sword.CanUseWeapon(self,true) && sword.BreaksDamageThreshold(A))
 		meleeWeapon = sword;
-	else if (knife != None && knife.CanUseWeapon(self,true) && (BreaksDamageThreshold(knife, damageThreshold)))
+	else if (knife != None && knife.CanUseWeapon(self,true) && knife.BreaksDamageThreshold(A))
 		meleeWeapon = knife;
-	else if (baton != None && baton.CanUseWeapon(self,true) && (BreaksDamageThreshold(baton, damageThreshold)))
+	else if (baton != None && baton.CanUseWeapon(self,true) && baton.BreaksDamageThreshold(A))
 		meleeWeapon = baton;
-	else if (dts != None && dts.CanUseWeapon(self,true) && (BreaksDamageThreshold(dts, damageThreshold)))
+	else if (dts != None && dts.CanUseWeapon(self,true) && dts.BreaksDamageThreshold(A))
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
     {
@@ -3792,14 +3861,6 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	
     PutInHand(meleeWeapon,true);
     return true;
-}
-
-function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
-{
-	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects //SARGE: Now deals 2x damage, to scale with low-tech
-        return (weapon.CalculateTrueDamage() * 2) >= damageThreshold;
-    else
-        return (weapon.CalculateTrueDamage()) >= damageThreshold;
 }
 
 // ----------------------------------------------------------------------
@@ -20937,7 +20998,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     iEnhancedWeaponOffsets=1
+     bEnhancedWeaponOffsets=true
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
@@ -20969,7 +21030,7 @@ defaultproperties
      iEnhancedLipSync=1
      bEnableBlinking=True
      iDeathSoundMode=2
-     bBiggerBelt=True
+     iBiggerBelt=1
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
      bShowItemPickupCounts=True
@@ -21061,6 +21122,7 @@ defaultproperties
      precipMaxDensity=14.0
      precipMinDensity=0.0
      bSearchCorpsePiles=true
+     bPickupsUseFOV=true
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"

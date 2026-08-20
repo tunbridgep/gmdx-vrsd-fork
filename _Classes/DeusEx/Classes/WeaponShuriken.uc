@@ -101,6 +101,7 @@ defaultproperties
      InventoryGroup=12
      ItemName="Throwing Knives"
      ItemArticle="some"
+     OldPlayerViewOffset=(X=24.000000,Y=-12.000000,Z=-21.000000)
      PlayerViewOffset=(X=24.000000,Y=-12.000000,Z=-21.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPShuriken"
      HDTPPickupViewMesh="HDTPItems.HDTPShurikenPickup"

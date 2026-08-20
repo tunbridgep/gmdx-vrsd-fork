@@ -144,6 +144,7 @@ defaultproperties
      InventoryGroup=22
      ItemName="Electromagnetic Pulse (EMP) Grenade"
      ItemArticle="an"
+     OldPlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPEMPGrenade"
      HDTPPickupViewMesh="HDTPItems.HDTPEMPgrenadePickup"

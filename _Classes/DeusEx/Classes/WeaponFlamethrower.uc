@@ -209,6 +209,7 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.FlamethrowerSelect'
      InventoryGroup=15
      ItemName="Flamethrower"
+     OldPlayerViewOffset=(X=15.000000,Y=-16.000000,Z=-12.000000)
      PlayerViewOffset=(X=15.000000,Y=-16.000000,Z=-12.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPFlamethrower"
      HDTPPickupViewMesh="HDTPItems.HDTPflamethrowerPickup"

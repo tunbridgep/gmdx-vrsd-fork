@@ -315,6 +315,7 @@ defaultproperties
      InventoryGroup=2
      ItemName="Pistol"
      BobDamping=0.640000
+     OldPlayerViewOffset=(X=16.000000,Y=-10.000000,Z=-16.000000)
      PlayerViewOffset=(X=22.000000,Y=-10.000000,Z=-14.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPWeaponPistol"
      HDTPPickupViewMesh="HDTPItems.HDTPGlockPickUp"
