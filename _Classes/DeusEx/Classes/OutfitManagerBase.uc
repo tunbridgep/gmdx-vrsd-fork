@@ -56,6 +56,8 @@ function AddPart(PartSlot slot,string name,bool isAccessory,string id, optional 
 function GroupAddParts(PartSlot bodySlot) {}
 function GroupTranspose(PartSlot bodySlot,optional int slot0,optional int slot1,optional int slot2,optional int slot3,optional int slot4,optional int slot5,optional int slot6,optional int slot7,optional int slot8) {}
 function GroupTranspose2(PartSlot bodySlot, PartSlot bodySlot2,optional int slot0,optional int slot1,optional int slot2,optional int slot3,optional int slot4,optional int slot5,optional int slot6,optional int slot7,optional int slot8) {}
+function AddPartFlag(string flag) {}
+function AddGroupFlag(string flag) {}
 
 //Outfit Functions
 function bool GetPartsGroup(string mesh) {}
