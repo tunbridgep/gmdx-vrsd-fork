@@ -2,8 +2,8 @@ Section "ConFix"
 
 SectionIn RO
 
-SetOutPath $INSTDIR\System
-File game\System\ConSys.u
+SetOutPath $INSTDIR\Mods\Confix\System
+;File game\System\ConSys.u
 ;File game\System\DeusExConAudioAIBarks.u
 ;File game\System\DeusExConAudioEndGame.u
 ;File game\System\DeusExConAudioHK_Shared.u
@@ -12,8 +12,9 @@ File game\System\ConSys.u
 ;File game\System\DeusExConAudioNYShared.u
 ;File game\System\DeusExConText.u
 ;File game\System\DeusExConversations.u
-File game\System\DeusExText.u
-File /x DeusExConAudioFemJC* /x DeusExConAudioLDDP* game\System\DeusExCon*.u
+;File game\System\DeusExText.u
+File game\Confix\System\*.u
+;File /x DeusExConAudioFemJC* /x DeusExConAudioLDDP* game\System\DeusExCon*.u
 SetOutPath $INSTDIR
 
 SectionEnd

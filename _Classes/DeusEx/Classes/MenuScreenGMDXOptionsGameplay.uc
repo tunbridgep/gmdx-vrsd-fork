@@ -27,6 +27,9 @@ function SaveSettings()
     player.UpdateCrosshairStyle();
     player.UpdateHUD();
 
+    //Re-init the Lockpick and Tech skills, since their values might change.
+    player.RefreshSkills();
+
     //Update security cameras to force-refresh their ambient sounds
     ForEach player.AllActors(class'SecurityCamera', cam)
         cam.SetDefaultAmbientSound();

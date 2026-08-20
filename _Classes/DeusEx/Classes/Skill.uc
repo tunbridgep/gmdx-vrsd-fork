@@ -31,6 +31,11 @@ var localized string SkillPointsToMaster; //SARGE: This is now separated out
 var const bool bSmartSkillString;           //SARGE: If enabled, will use sprintf for the skill values, rather than printing the description directly.
 var float smartSkillMult;                  //SARGE: What our skill values are multiplied by for display.
 
+//SARGE: Added special value arrays for HC and Easy
+//vRSD previously hardcoded these for Tech and Lockpicking :laughing_emoji:
+var float LevelValuesHardcore[4];
+var float LevelValuesEasy[4];
+
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -45,14 +50,6 @@ replication
     reliable if (Role < ROLE_Authority)
         IncLevel, Use, DecLevel;
 
-}
-
-// ----------------------------------------------------------------------
-// SARGE: Init()
-// Called every time we setup a skill, NOT once per playthrough
-// ----------------------------------------------------------------------
-function Init()
-{
 }
 
 // ----------------------------------------------------------------------
@@ -305,6 +302,43 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 	winInfo.CreatePerkButtons(self);
 	return True;
 }
+
+// ----------------------------------------------------------------------
+// SARGE: Refresh()
+// Called every time we reload the game, and at some other times manually too.
+// Does general skill refresh stuff, like updating values.
+// ----------------------------------------------------------------------
+function Refresh()
+{
+    local int i;
+    
+    for (i = 0; i < ArrayCount(LevelValues); i++)
+    {
+        if (UseEasySkillValues(i))
+            LevelValues[i] = LevelValuesEasy[i];
+        else if (UseHardcoreSkillValues(i))
+            LevelValues[i] = LevelValuesHardcore[i];
+        else
+            LevelValues[i] = default.LevelValues[i]; //Do this explicitly, in case we change options mid-game that invalidate the above conditions
+    }
+}
+
+// ----------------------------------------------------------------------
+// SARGE: UseEasySkillValues and UseHardcoreSkillValues()
+// These can be overwritten to determine when to use the new values, such as
+// by modifiers. By default, they simply check for easy and hardcore
+// (and for if they are actually set)
+// ----------------------------------------------------------------------
+function bool UseEasySkillValues(int index)
+{
+    return player.CombatDifficulty <= 1 && LevelValuesEasy[index] != -1;
+}
+
+function bool UseHardcoreSkillValues(int index)
+{
+    return player.bHardcoreMode && LevelValuesHardcore[index] != -1;
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -321,4 +355,12 @@ defaultproperties
      PerkMenuTitle="Perks - %s"
      SkillPointsToMaster="Total skill points to master: %n"
      smartSkillMult=100
+     LevelValuesEasy(0)=-1
+     LevelValuesEasy(1)=-1
+     LevelValuesEasy(2)=-1
+     LevelValuesEasy(3)=-1
+     LevelValuesHardcore(0)=-1
+     LevelValuesHardcore(1)=-1
+     LevelValuesHardcore(2)=-1
+     LevelValuesHardcore(3)=-1
 }

@@ -739,7 +739,7 @@ var globalconfig bool bEnableBlinking; //Allows characters to blink
 var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
 
 //SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
-var globalconfig bool bBiggerBelt;
+var globalconfig int iBiggerBelt;
 
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
@@ -1041,15 +1041,24 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 /////////Version 1.3 Additions
 /////////June 2026
 
+var globalconfig bool bSearchCorpsePiles;   //SARGE: Allow searching multiple carcasses at once when they are stacked on top of each other.
+
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
+
+var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 var const localized string msgSaveName;
 
 var const localized String TooSick;
+
+//SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
+//passed on to the carcass.
+var bool bBloodyDeath;
+var globalconfig bool bSmartBloodPools;                 //SARGE: Enable or disable the smart blood pools system.
 
 //Show Lockpicks and Tools on the NanoKey icon
 var globalconfig bool bNanoKeyShowsTools;
@@ -1061,6 +1070,8 @@ var const localized String StarvingStr;
 var const localized String HungryStr;
 
 var globalconfig float fGlobalAmmoMod;                  //SARGE: Hidden, secret variable to adjust the overall ammo cap, because some people have complained about it. Leave this as is.
+
+var globalconfig bool bShowAugLevelsInHUD;              //SARGE: Show aug levels in HUD. Blatandly stolen from DXRando
 
 //Credits update/refactoring
 var localized string msgCreditsAdded;
@@ -1133,39 +1144,39 @@ replication
 }
 
 //SARGE: Gets any adjustments to our head health. For now, just medical skill.
-function int GetHeadHealthAdjustment()
+function float GetHeadHealthAdjustment()
 {
-    local Skill sk;
-    local int re;
+    local SkillMedicine sk;
+    local float re;
     
     re = 0;
 
     if (SkillSystem!=None)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
 
     return re;
 }
 
 //SARGE: Gets any adjustments to our torso health, such as from medical skill, drunkenness or blood loss.
-function int GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
+function float GetTorsoHealthAdjustment(optional bool bNoMedicineSkill)
 {
-    local int re;
+    local float re;
     local Wound wound;
-    local Skill sk;
+    local SkillMedicine sk;
     
     re = 0;
 
     if (SkillSystem!=None && !bNoMedicineSkill)
     {
-        sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
+        sk = SkillMedicine(SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine'));
         if (sk != None)
-            re += sk.CurrentLevel*10;
+            re += sk.CurrentLevel*sk.limbMod;
     }
-
+    
     if (AddictionManager != None)
 		re += AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
 
@@ -1624,12 +1635,6 @@ local DeusExPickup     PU;                                                      
               DC.LightType=LT_None;
 	       }
         }
-        if (SkillSystem != None && CombatDifficulty <= 1)
-        {
-            SkillSystem.UpdateSkillLevelValues(class'SkillTech');               //RSD: This function now BUFFS the lockpicking/electronics skill for Easy
-            SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');        //RSD: From 10/15/25/50 -> 10/25/40/75
-        }
-
     }
     else
     {
@@ -1655,11 +1660,6 @@ local DeusExPickup     PU;                                                      
               DC.SetPhysics(PHYS_Flying);
               DC.LightType=LT_None;
 	       }
-       }
-       if (SkillSystem != None)
-       {
-        SkillSystem.UpdateSkillLevelValues(class'SkillTech');                   //RSD: This function still nerfs lockpicks/multitools on Hardcore, values altered
-        SkillSystem.UpdateSkillLevelValues(class'SkillLockpicking');            //RSD: used to give lockpicks values of 5/10/15/50, now 5/10/20/50
        }
     }
 
@@ -2175,12 +2175,16 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocket';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.RocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.Rocket';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.RocketWP';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocketWP';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocket';
             GEP.ProjectileNames[0]=Class'DeusEx.RocketWP';
             GEP.ProjectileNames[1]=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
     else
@@ -2189,12 +2193,17 @@ function SetupGEPAmmo()
         class'WeaponGEPGun'.default.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
         class'WeaponGEPGun'.default.ProjectileNames[0]=Class'DeusEx.Rocket';
         class'WeaponGEPGun'.default.ProjectileNames[1]=Class'DeusEx.RocketWP';
+        class'WeaponGEPGun'.default.ProjectileClass=Class'DeusEx.Rocket';
         foreach AllActors(class'WeaponGEPGun', GEP)
         {
             GEP.AmmoNames[0]=Class'DeusEx.AmmoRocket';
             GEP.AmmoNames[1]=Class'DeusEx.AmmoRocketWP';
             GEP.ProjectileNames[0]=Class'DeusEx.Rocket';
             GEP.ProjectileNames[1]=Class'DeusEx.RocketWP';
+            GEP.ProjectileClass=Class'DeusEx.Rocket';
+            
+            if (GEP.Owner == None)
+                GEP.ProjectileClass = GEP.ProjectileNames[0];
         }
     }
 }
@@ -2423,7 +2432,7 @@ event TravelPostAccept()
 	// If the player was carrying a decoration, make sure
 	// it's placed back in his hand (since the location
 	// info won't properly travel)
-	PutCarriedDecorationInHand();
+	PutCarriedDecorationInHand(true);
 
 	// Reset FOV
 	SetFOVAngle(Default.DesiredFOV);
@@ -3554,8 +3563,7 @@ function ResetPlayer(optional bool bTraining)
     killswitchTimer = default.killswitchTimer;
 
     // Reset Belt Memory
-    for(i = 0;i < 12;i++)
-        ClearPlaceholder(i);
+    ClearAllBeltPlaceholders();
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
@@ -3809,7 +3817,7 @@ function RecoilEffectTick(float deltaTime)
 // SelectMeleePriority()
 // ----------------------------------------------------------------------
 
-function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+function bool SelectMeleePriority(Actor A)	// Trash: Used to automatically decide what to draw
 {
 	local Inventory anItem;
 	local DeusExWeapon meleeWeapon;
@@ -3833,16 +3841,15 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
 		return false;
 
-
-	if (crowbar != None && crowbar.CanUseWeapon(self,true) && (BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && crowbar.CanUseWeapon(self,true) && crowbar.BreaksDamageThreshold(A))
 		meleeWeapon = crowbar;
-	else if (sword != None && sword.CanUseWeapon(self,true) && (BreaksDamageThreshold(sword, damageThreshold)))
+	else if (sword != None && sword.CanUseWeapon(self,true) && sword.BreaksDamageThreshold(A))
 		meleeWeapon = sword;
-	else if (knife != None && knife.CanUseWeapon(self,true) && (BreaksDamageThreshold(knife, damageThreshold)))
+	else if (knife != None && knife.CanUseWeapon(self,true) && knife.BreaksDamageThreshold(A))
 		meleeWeapon = knife;
-	else if (baton != None && baton.CanUseWeapon(self,true) && (BreaksDamageThreshold(baton, damageThreshold)))
+	else if (baton != None && baton.CanUseWeapon(self,true) && baton.BreaksDamageThreshold(A))
 		meleeWeapon = baton;
-	else if (dts != None && dts.CanUseWeapon(self,true) && (BreaksDamageThreshold(dts, damageThreshold)))
+	else if (dts != None && dts.CanUseWeapon(self,true) && dts.BreaksDamageThreshold(A))
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
     {
@@ -3854,14 +3861,6 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	
     PutInHand(meleeWeapon,true);
     return true;
-}
-
-function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
-{
-	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects //SARGE: Now deals 2x damage, to scale with low-tech
-        return (weapon.CalculateTrueDamage() * 2) >= damageThreshold;
-    else
-        return (weapon.CalculateTrueDamage()) >= damageThreshold;
 }
 
 // ----------------------------------------------------------------------
@@ -6082,6 +6081,10 @@ function Carcass SpawnCarcass()
 	{
 	    if (bRemoveVanillaDeath)
 	        carc.DrawScale = 0.000050;
+        
+        if (!bBloodyDeath && bSmartBloodPools)
+            carc.bNoDefaultPools = true;
+
 		carc.Initfor(self);
 
 		// move it down to the ground
@@ -6275,34 +6278,23 @@ function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 // CalculateSkillHealAmount()
 // ----------------------------------------------------------------------
 
-function int CalculateSkillHealAmount(int baseHealPoints)
+function int CalculateSkillHealAmount(int baseHealPoints, optional out int deduction)
 {
 	local float mult;
 	local int adjustedHealAmount;
     local Wound wound;
+	local Skill sk;
 
 	// check skill use
 	if (SkillSystem != None)
 	{
-		/*mult = SkillSystem.GetSkillLevelValue(class'SkillMedicine');
-        //RSD: Unfortunately we have to hack in the new medkit level values (30/45/65/90) here so they don't mess things up elsewhere
-        if ((mult > 1.99)  && (mult < 2.01))
-        	mult = 1.500000;
-        else if ((mult > 2.49) && (mult < 2.51))
-        	mult = 2.166667;
-        else if ((mult > 2.99) && (mult < 3.01))
-        	mult = 3.000000;
-       	else mult = 1.000000;*/                                                 //RSD: this is dumb but I'd rather have the default be 30
+	    sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
 
-       	mult = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        //RSD: Still hacking medkit level values (30/45/65/90), but 30% less stupidly
-        if (mult == 1)
-        	mult = 1.500000;
-        else if (mult == 2)
-        	mult = 2.166667;
-        else if (mult == 3)
-        	mult = 3.000000;
-       	else mult = 1.000000;
+        //SARGE: This was horrible hardcoded before for vRSD, but no idea why - the
+        //medicine skill values weren't being used for anything? I have adjusted them accordingly
+        mult = sk.LevelValues[sk.CurrentLevel];
+        if (mult <= 0.0)
+            mult = 1.0;
 
 		// apply the skill
 		adjustedHealAmount = baseHealPoints * mult;
@@ -6312,9 +6304,11 @@ function int CalculateSkillHealAmount(int baseHealPoints)
         {
             wound = WoundManager.GetWoundByType(class'WoundBurning');
             if (wound != None && wound.HasWound())
-                adjustedHealAmount -= wound.woundData[0];
+                deduction += wound.woundData[0];
         }
 	}
+                
+    adjustedHealAmount -= deduction;
 
 	return adjustedHealAmount;
 }
@@ -6983,12 +6977,9 @@ state PlayerWalking
 				// opportunity for client to translate movement to server
 				MoveDrone( DeltaTime, loc );
 
-				// freeze the player
-				Velocity = vect(0,0,0);
-                
                 //SARGE: Stop player from sliding along the ground very slowly while the drone is active
-                SetPhysics(PHYS_None);
-                SetPhysics(PHYS_Walking);
+                Velocity = Velocity * vect(0,0,1);
+                Acceleration = Acceleration * vect(0,0,1);
 			}
 			return;
 		}
@@ -9626,6 +9617,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local WeaponNanoSword dts;
     local bool bDestroy;
     local string source;
+    local DeusExCarcass linkedCarc;
     local ChargedPickup cp;
     local bool bTransfer;
 
@@ -9833,8 +9825,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
 
         //SARGE: Decline checking.
-        if (!bSkipDeclineCheck)
+        if (!bSkipDeclineCheck && FromCorpse != None)
+            bDeclined = DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class));
+        else if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
+
         if (!bDeclined && !bSearchOnly)
             FindInventorySlot(Inventory(FrobTarget), false);
     }
@@ -9863,6 +9858,17 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         
         if (bCanPickup)
         {
+
+            //SARGE: Hack. If it's a weapon, we need to unlink it from any carcasses or scriptedpawns that currently have it as their dropped weapon
+            if (Weapon(FrobTarget) != None)
+            {
+                foreach AllActors(class'DeusExCarcass', linkedCarc)
+                {
+                    if (linkedCarc.droppedWeapon == Weapon(FrobTarget))
+                        linkedCarc.droppedWeapon = none;
+                }
+            }
+
             DoFrob(Self, inHand);
             /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
             {
@@ -9870,7 +9876,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             //bLeftClicked = False;
             }*/
             // This is bad. We need to reset the number so restocking works
-            if ( Level.NetMode != NM_Standalone )
+            if ( Level.NetMode != NM_Standalone  && FromCorpse == None)
             {
                 if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
                 {
@@ -9941,7 +9947,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DebugLog("AddReceivedItem - Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
+        DebugLog("AddReceivedItem - Item is: " $ item $ ", owned by " $ owner $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
 
         DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 
@@ -10965,6 +10971,13 @@ function SetPlaceholder(int objectNum, Inventory item)
         else
             beltInfos[objectNum].defaultIcon = string(item.icon);
     }
+}
+
+function ClearAllBeltPlaceholders()
+{
+    local int i;
+    for (i = 0; i < ArrayCount(beltInfos); i++)
+        ClearPlaceholder(i);
 }
 
 function ClearPlaceholder(int objectNum)
@@ -16449,9 +16462,9 @@ function GenerateTotalHealth()
 	local float headMult, torsoMult;
 
 	//SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
-    headMult = default.HealthHead/float(default.HealthHead+GetHeadHealthAdjustment());
-    torsoMult = default.HealthTorso/float(default.HealthTorso+GetTorsoHealthAdjustment());
-
+    headMult = default.HealthHead/(default.HealthHead+GetHeadHealthAdjustment());
+    torsoMult = default.HealthTorso/(default.HealthTorso+GetTorsoHealthAdjustment());
+    
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
 	if ((HealthHead <= 0) || (HealthTorso <= 0))
@@ -17781,6 +17794,9 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
+    
+    //SARGE: Store if the damage that killed us should make our carcass bleed.
+    bBloodyDeath = class'PawnUtils'.static.IsBloodyDamageType(damageType);
 
 	Super.Died(Killer, damageType, HitLocation);
 }
@@ -20795,6 +20811,12 @@ function string GetHungerString(optional string prefix)
     return prefix $ class'StringUtils'.static.FormatFloatString(fullUp,1.0) $ "%" @ suffix;//RSD: Now FormatFloatString(fullUp) because it's now a float
 }
 
+function RefreshSkills()
+{
+    if (SkillSystem != None)
+        SkillSystem.RefreshSkills();
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -21018,7 +21040,7 @@ defaultproperties
      iEnhancedLipSync=1
      bEnableBlinking=True
      iDeathSoundMode=2
-     bBiggerBelt=True
+     iBiggerBelt=1
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
      bShowItemPickupCounts=True
@@ -21109,11 +21131,14 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bSearchCorpsePiles=true
      bPickupsUseFOV=true
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bShowAugLevelsInHUD=true
+     bSmartBloodPools=true
      bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"

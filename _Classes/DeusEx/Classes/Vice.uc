@@ -21,7 +21,13 @@ var localized String IncrementLabel;
 //if the addiction system is disabled.
 function bool RestrictedUse(DeusExPlayer player, optional out string RestrictedMsg)
 {
-    return !player.bAddictionSystem && (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism));
+    return !player.bAddictionSystem && !player.HungerCheck(RestrictedMsg);
+}
+
+//SARGE: Whether or not to show the hunger level in the inventory screen.
+function bool DisplayHungerLevel(DeusExPlayer player)
+{
+    return (player.bHardCoreMode || player.bRestrictedMetabolism) && !player.bAddictionSystem;
 }
 
 //Add to the players FullUp bar, but only if we aren't using vices
