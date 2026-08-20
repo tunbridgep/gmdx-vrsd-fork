@@ -40,6 +40,31 @@ function BuildModifierList()
         RemoveItem("bShenanigans");
 }
 
+//Horrible static function to return if our modifiers are active.
+//Used by the health screen
+static function bool IsModifierActive(DeusExPlayer pl, int index)
+{
+    local string variable, cmdVal;
+    
+    //HACK!
+    if (default.items[index].variable == "bCollectibles")
+        variable = "bCollectiblesEnabled";
+    else
+        variable = default.items[index].variable;
+        
+
+    cmdVal = pl.GetPropertyText(variable);
+
+    pl.DebugLog("Modifier Index " $ index @ variable $ ": " $ cmdVal);
+    
+    //Sometimes it can return True and False, convert it to numeric
+    if (cmdVal == "True")
+        return true;
+    else if (cmdVal == "False")
+        return false;
+    else return (int(cmdVal)) > 0;
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
