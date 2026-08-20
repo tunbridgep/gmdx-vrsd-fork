@@ -2323,6 +2323,9 @@ function SetSkins(Actor actor, out Texture oldSkins[9])
 {
 	local int     i;
 	local texture curSkin;
+    
+    //SARGE: Wake it up first
+    actor.lastRendertime = actor.Level.TimeSeconds;
 
 	for (i=0; i<8; i++)
 		oldSkins[i] = actor.MultiSkins[i];

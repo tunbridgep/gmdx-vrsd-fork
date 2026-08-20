@@ -35,18 +35,21 @@ event InitWindow()
 
 function RecreateBelt(optional bool bDontRecreateKeyring)
 {
-    if (player.bBiggerBelt)
+    if (player.iBiggerBelt > 0)
     {
-        keyringSlot = 11;
         extraSize = 100;
         numSlots = 12;
     }
     else
     {
-        keyringSlot = 9;
         extraSize = 0;
         numSlots = 10;
     }
+        
+    if (player.iBiggerBelt == 1)
+        keyringSlot = 11;
+    else
+        keyringSlot = 9;
 	
     CreateSlots();
     
@@ -119,7 +122,7 @@ function ConfigureSlots()
     winRadio.SetPos(offset+10-extraSize, 6);
 
     //SARGE: DIRTY HACK!
-    if (player.bBiggerBelt)
+    if (player.iBiggerBelt > 0)
     {
         // Last item is a little shorter
         objects[9].SetWidth(50);
@@ -201,7 +204,7 @@ function DrawBackground(GC gc)
 
 
     //SARGE: No idea why this needs adjusting...
-    if (player.bBiggerBelt)
+    if (player.iBiggerBelt > 0)
         gc.DrawTexture(offset+2, 6, 8, 54, 0, 0, texBackgroundLeft);
     else
         gc.DrawTexture(offset+2, 6, 9, 54, 0, 0, texBackgroundLeft);
@@ -239,7 +242,7 @@ function DrawBorder(GC gc)
 			gc.SetTileColor(colBorder);
 
 		gc.DrawTexture(offset, 0, 256, 69, 0, 0, texBorder[0]);
-        if (player.bBiggerBelt)
+        if (player.iBiggerBelt > 0)
         {
             gc.DrawTexture(offset+256, 0, 512, 69, 0, 0, texBorderBig);
             gc.DrawTexture(offset+612, 0,  29, 69, 0, 0, rightBorder);

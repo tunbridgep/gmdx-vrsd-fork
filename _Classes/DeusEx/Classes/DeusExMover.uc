@@ -72,7 +72,6 @@ var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" 
 
 var(GMDX) const bool bDontOpenOnMissionComplete;                                    //SARGE: Don't open this door on mission completion.
 
-
 //SARGE: Do we have the key for this lock?
 function bool HasKey(DeusExPlayer Player)
 {
@@ -105,7 +104,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     //This is a fallback for glass panes that aren't actually defined as BreakableGlass
     if (!bLocked && minDamageThreshold > 0 && !bHighlight && bBreakable)
     {
-        frobber.SelectMeleePriority(minDamageThreshold);
+        frobber.SelectMeleePriority(self);
         return false;
     }
 
@@ -117,7 +116,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     }
     else if (bLocked) //See if we have a melee weapon to bust the mover. Otherwise, select picks
     {
-        if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
+        if (bBreakable && frobber.SelectMeleePriority(self))
 			return false;
         else if (!bPickable || !frobber.SelectInventoryItem('Lockpick',true))
             frobber.PutInHand(frobber.KeyRing,true);
@@ -159,7 +158,7 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     {
         if (frobber.inHand.isA('NanoKeyRing'))
         {
-            if (!frobber.SelectMeleePriority(minDamageThreshold))
+            if (!frobber.SelectMeleePriority(self))
                 if (!frobber.SelectInventoryItem('Lockpick',true))
                     return true;
             leftFrobTimer = leftFrobTimerMax;
@@ -517,38 +516,52 @@ singular function SupportActor(Actor standingActor)
 		standingActor.SetPhysics(PHYS_Falling);
 }
 
+//SARGE:
+//All TakeDamage functions are now going to be changed into 2 functions, one called GetDamage which returns the damage they should receive,
+//with the TakeDamage function simply calling that function to get it's damage.
+//This way, other things can see what they will be able to deal as damage without needing to actually do any damage.
+//TODO: This needs to be done for every object type.
+function float GetDamageSimple(int Damage, Pawn instigatedBy, name damageType)
+{
+    return GetDamage(Damage,instigatedBy,Vect(0,0,0),Vect(0,0,0),damageType);
+}
+
+function float GetDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, name damageType)
+{
+	if (!bBreakable || bDestroyed)
+		return 0;
+
+	if ((damageType == 'TearGas') || (damageType == 'PoisonGas') || (damageType == 'HalonGas'))
+		return 0;
+
+	if ((damageType == 'Stunned') || (damageType == 'Radiation'))
+		return 0;
+
+    if ((damageType == 'KnockedOut') && Damage > 90 && minDamageThreshold > 30)
+		return 0;    //CyberP: prevent pressurized gas nades destroying movers.
+
+	if ((DamageType == 'EMP') || (DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
+		return 0;
+
+    //Hardened Breakables - only allow Exploded damage
+    if (DeusExPlayer(instigatedBy) != None && DeusExPlayer(instigatedBy).bHardenedBreakables && DamageType != 'Exploded' && minDamageThreshold >= 30)
+        return 0;
+
+    if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
+       damage *= 2;
+  
+    return Damage;
+}
+
 //
 // Copied from Engine.Mover
 //
 function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, name damageType)
 {
-	if (bDestroyed)
-		return;
+    Damage = GetDamage(damage,instigatedBy,hitLocation,momentum,damageType);
 
-	if ((damageType == 'TearGas') || (damageType == 'PoisonGas') || (damageType == 'HalonGas'))
-		return;
-
-	if ((damageType == 'Stunned') || (damageType == 'Radiation'))
-		return;
-
-    if ((damageType == 'KnockedOut') && Damage > 90 && DamageThreshold > 30)
-		return;    //CyberP: prevent pressurized gas nades destroying movers.
-
-	if ((DamageType == 'EMP') || (DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
-		return;
-
-    if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
-       damage *= 2;
-
-   //log("TakeDamage "@Damage@" "@instigatedBy@" "@bBreakable);
-	if (bBreakable)
+	if (Damage > 0)
 	{
-        /*
-        if (InstigatedBy.IsA('DeusExPlayer'))
-            DeusExPlayer(InstigatedBy).clientMessage("Damage:" @ Damage @ ", Threshold:" @ minDamageThreshold);
-        */
-		//log("dooStrength "@doorStrength); //CyberP: we don't need to log this
-      // add up the damage
 		if (Damage >= minDamageThreshold)
         {
             //SARGE: If we aren't highlighting but are breakable, destroy in 1 hit.
@@ -569,14 +582,8 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
             }
         }
 
-		//log("doorStrength1 "@doorStrength);
-
-//		else
-//			doorStrength -= Damage * 0.001;		// damage below the threshold does 1/10th the damage
-
 		doorStrength = FClamp(doorStrength, 0.0, 1.0);
 
-		//log("doorStrength2 "@doorStrength@" "@(doorStrength ~= 0.0));
 		if (doorStrength ~= 0.0)
 			BlowItUp(instigatedBy);
 	}

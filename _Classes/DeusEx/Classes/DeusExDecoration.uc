@@ -152,7 +152,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
         }
     }
 
-    else*/ if (!bInvincible && frobber.SelectMeleePriority(minDamageThreshold))
+    else*/ if (!bInvincible && frobber.SelectMeleePriority(self))
         return false;
 
     //SARGE: Do this here, since we would otherwise need GMDX Exclusive code inside the OutfitSpawner class,
@@ -601,7 +601,7 @@ singular function BaseChange()
     //This is a hack to deal with vanilla shenanigans!
     p = DeusExPlayer(base);
 
-    if (p != None && p.carriedDecoration == self)
+    if (p != None && p.carriedDecoration == self && !p.Region.Zone.bWaterZone)
         p.PutCarriedDecorationInHand(true);
 }
 

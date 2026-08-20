@@ -739,7 +739,7 @@ var globalconfig bool bEnableBlinking; //Allows characters to blink
 var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
 
 //SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
-var globalconfig bool bBiggerBelt;
+var globalconfig int iBiggerBelt;
 
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
@@ -1041,15 +1041,24 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 /////////Version 1.3 Additions
 /////////June 2026
 
+var globalconfig bool bSearchCorpsePiles;   //SARGE: Allow searching multiple carcasses at once when they are stacked on top of each other.
+
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
+
+var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 var const localized string msgSaveName;
 
 var const localized String TooSick;
+
+//SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
+//passed on to the carcass.
+var bool bBloodyDeath;
+var globalconfig bool bSmartBloodPools;                 //SARGE: Enable or disable the smart blood pools system.
 
 //Show Lockpicks and Tools on the NanoKey icon
 var globalconfig bool bNanoKeyShowsTools;
@@ -3798,7 +3807,7 @@ function RecoilEffectTick(float deltaTime)
 // SelectMeleePriority()
 // ----------------------------------------------------------------------
 
-function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+function bool SelectMeleePriority(Actor A)	// Trash: Used to automatically decide what to draw
 {
 	local Inventory anItem;
 	local DeusExWeapon meleeWeapon;
@@ -3822,16 +3831,15 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
 		return false;
 
-
-	if (crowbar != None && crowbar.CanUseWeapon(self,true) && (BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && crowbar.CanUseWeapon(self,true) && crowbar.BreaksDamageThreshold(A))
 		meleeWeapon = crowbar;
-	else if (sword != None && sword.CanUseWeapon(self,true) && (BreaksDamageThreshold(sword, damageThreshold)))
+	else if (sword != None && sword.CanUseWeapon(self,true) && sword.BreaksDamageThreshold(A))
 		meleeWeapon = sword;
-	else if (knife != None && knife.CanUseWeapon(self,true) && (BreaksDamageThreshold(knife, damageThreshold)))
+	else if (knife != None && knife.CanUseWeapon(self,true) && knife.BreaksDamageThreshold(A))
 		meleeWeapon = knife;
-	else if (baton != None && baton.CanUseWeapon(self,true) && (BreaksDamageThreshold(baton, damageThreshold)))
+	else if (baton != None && baton.CanUseWeapon(self,true) && baton.BreaksDamageThreshold(A))
 		meleeWeapon = baton;
-	else if (dts != None && dts.CanUseWeapon(self,true) && (BreaksDamageThreshold(dts, damageThreshold)))
+	else if (dts != None && dts.CanUseWeapon(self,true) && dts.BreaksDamageThreshold(A))
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
     {
@@ -3843,14 +3851,6 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 	
     PutInHand(meleeWeapon,true);
     return true;
-}
-
-function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
-{
-	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects //SARGE: Now deals 2x damage, to scale with low-tech
-        return (weapon.CalculateTrueDamage() * 2) >= damageThreshold;
-    else
-        return (weapon.CalculateTrueDamage()) >= damageThreshold;
 }
 
 // ----------------------------------------------------------------------
@@ -6071,6 +6071,10 @@ function Carcass SpawnCarcass()
 	{
 	    if (bRemoveVanillaDeath)
 	        carc.DrawScale = 0.000050;
+        
+        if (!bBloodyDeath && bSmartBloodPools)
+            carc.bNoDefaultPools = true;
+
 		carc.Initfor(self);
 
 		// move it down to the ground
@@ -9603,6 +9607,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local WeaponNanoSword dts;
     local bool bDestroy;
     local string source;
+    local DeusExCarcass linkedCarc;
     local ChargedPickup cp;
     local bool bTransfer;
 
@@ -9810,8 +9815,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
 
         //SARGE: Decline checking.
-        if (!bSkipDeclineCheck)
+        if (!bSkipDeclineCheck && FromCorpse != None)
+            bDeclined = DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class));
+        else if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
+
         if (!bDeclined && !bSearchOnly)
             FindInventorySlot(Inventory(FrobTarget), false);
     }
@@ -9840,6 +9848,17 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         
         if (bCanPickup)
         {
+
+            //SARGE: Hack. If it's a weapon, we need to unlink it from any carcasses or scriptedpawns that currently have it as their dropped weapon
+            if (Weapon(FrobTarget) != None)
+            {
+                foreach AllActors(class'DeusExCarcass', linkedCarc)
+                {
+                    if (linkedCarc.droppedWeapon == Weapon(FrobTarget))
+                        linkedCarc.droppedWeapon = none;
+                }
+            }
+
             DoFrob(Self, inHand);
             /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
             {
@@ -9847,7 +9866,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             //bLeftClicked = False;
             }*/
             // This is bad. We need to reset the number so restocking works
-            if ( Level.NetMode != NM_Standalone )
+            if ( Level.NetMode != NM_Standalone  && FromCorpse == None)
             {
                 if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
                 {
@@ -9918,7 +9937,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DebugLog("AddReceivedItem - Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
+        DebugLog("AddReceivedItem - Item is: " $ item $ ", owned by " $ owner $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
 
         DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 
@@ -17756,6 +17775,9 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
+    
+    //SARGE: Store if the damage that killed us should make our carcass bleed.
+    bBloodyDeath = class'PawnUtils'.static.IsBloodyDamageType(damageType);
 
 	Super.Died(Killer, damageType, HitLocation);
 }
@@ -20999,7 +21021,7 @@ defaultproperties
      iEnhancedLipSync=1
      bEnableBlinking=True
      iDeathSoundMode=2
-     bBiggerBelt=True
+     iBiggerBelt=1
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
      bShowItemPickupCounts=True
@@ -21090,12 +21112,14 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bSearchCorpsePiles=true
      bPickupsUseFOV=true
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
      bShowAugLevelsInHUD=true
+     bSmartBloodPools=true
      bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"
