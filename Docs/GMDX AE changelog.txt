@@ -95,6 +95,8 @@ Map Changes:
     - Prevented Josh from fulfilling his dying wish of becoming Louis Pan
     - Harley Filben now properly responds if you obtain the Mole People password from Curly's journal.
     - Blocking off the Subway lasers with objects is no longer possible on Hardcore mode.
+- 03_NYC_Street:
+    - The number of rockets in the locked GEP garage area reduced from 8 to 2
 - 04_NYC_*:
     - Fixed being able to take Paul's corpse to the MJ12 Prison map.
     - Fixed Paul being registered as alive after being killed in some circumstances.
