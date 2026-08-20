@@ -739,7 +739,7 @@ var globalconfig bool bEnableBlinking; //Allows characters to blink
 var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
 
 //SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
-var globalconfig bool bBiggerBelt;
+var globalconfig int iBiggerBelt;
 
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
@@ -21008,7 +21008,7 @@ defaultproperties
      iEnhancedLipSync=1
      bEnableBlinking=True
      iDeathSoundMode=2
-     bBiggerBelt=True
+     iBiggerBelt=1
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
      bShowItemPickupCounts=True
