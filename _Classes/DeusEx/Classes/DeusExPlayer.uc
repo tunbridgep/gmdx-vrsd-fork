@@ -13520,7 +13520,7 @@ exec function NextBeltItem()
     
     assigned = GetSecondary();
 
-    if (bBiggerBelt)
+    if (iBiggerBelt > 0)
         totalSlots = 12;
     else
         totalSlots = 10;
@@ -13584,9 +13584,9 @@ exec function NextBeltItem()
 			do
 			{
                 slot++;
-                if (bBiggerBelt && slot >= 12)
+                if (iBiggerBelt > 0 && slot >= 12)
                     slot = 0;
-                else if (!bBiggerBelt && slot >= 10)
+                else if (iBiggerBelt == 0 && slot >= 10)
                     slot = 0;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
@@ -13627,9 +13627,9 @@ exec function NextBeltItem()
 			{
                 //SARGE: UnrealScript doesn't short-circuit, aparrently
                 advBelt++;
-                if (bBiggerBelt && advBelt >= 12)
+                if (iBiggerBelt > 0 && advBelt >= 12)
                     advBelt = 0;
-                else if (!bBiggerBelt && advBelt >= 10)
+                else if (iBiggerBelt == 0 && advBelt >= 10)
                     advBelt = 0;
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
@@ -13718,7 +13718,7 @@ exec function PrevBeltItem()
                 slot--;
                 if (slot <= -1)
                 {
-                    if (bBiggerBelt)
+                    if (iBiggerBelt > 0)
                         slot = 11;
                     else
                         slot = 9;
@@ -13764,7 +13764,7 @@ exec function PrevBeltItem()
                 advBelt--;
                 if (advBelt <= -1)
                 {
-                    if (bBiggerBelt)
+                    if (iBiggerBelt > 0)
                         advBelt = 11;
                     else
                         advBelt = 9;
@@ -17981,7 +17981,7 @@ function MakePlayerIgnored(bool bNewIgnore)
 // CalculatePlayerVisibility()
 // ----------------------------------------------------------------------
 
-function float CalculatePlayerVisibility(ScriptedPawn P)                        //RSD: Ignore all of the changes below, they don't work reliably. Messed with stuff in ScriptedPawn instead
+function float CalculatePlayerVisibility(Actor P)                        //RSD: Ignore all of the changes below, they don't work reliably. Messed with stuff in ScriptedPawn instead
 {
 	local float vis, skillStealthMod, litelvl;//, litemult;                     //RSD: Added skillStealthMod, litelvl
 	local AdaptiveArmor armor;
@@ -17997,7 +17997,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
     //litemult = litelvl-0.031;                                                 //RSD: New formula to keep visibility constant during night vision (9.3%)
 	if ((P != None) && (AugmentationSystem != None))
 	{
-		if (P.IsA('Robot'))
+		if (P.IsA('Robot') || P.IsA('AutoTurret') || P.IsA('SecurityCamera'))
 		{
 			// if the aug is on, give the player full invisibility
 			if (AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') != -1.0)
