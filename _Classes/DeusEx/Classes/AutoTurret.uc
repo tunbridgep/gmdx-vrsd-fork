@@ -847,6 +847,9 @@ function AlarmHeard(Name event, EAIEventState state, XAIParams params)
 {
 local DeusExPlayer player;
 
+    if (bRebooting)
+        return;
+
 	if (state == EAISTATE_Begin)
 	{
 		if (!bActive)

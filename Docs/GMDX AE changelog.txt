@@ -27,6 +27,7 @@ New Features:
 
 Bug Fixes:
 - Fixed Turrets and Cameras being able to see through Themoptic Camo in certain cases.
+- Fixed Turrets resetting their targeting priorities when set to "Enemies" or "Everything" while rebooting if an alarm is deactivated.
 - Fixed Vision Aug and Tech Goggles not always showing everything in range.
 - Fixed Laser Sight being left enabled when using the Spy Drone.
 - Fixed Repair Bots giving the DTS extra charge with the Field Repair perk.
