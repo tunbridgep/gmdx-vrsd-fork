@@ -1081,6 +1081,9 @@ var globalconfig bool bShowAugLevelsInHUD;              //SARGE: Show aug levels
 var localized string msgCreditsAdded;
 var localized string msgCreditsDeducted;
 
+//Allow custom seeds
+var globalconfig int iPresetSeed;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -3166,7 +3169,7 @@ exec function StartNewGame(String startMap)
     local Inventory item, nextItem;
 
     bGMDXNewGame = True;
-    seed = -1;
+    seed = iPresetSeed;
 
 	if (DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).ClearWindowStack();
@@ -20706,8 +20709,10 @@ function SetupNewGamePlus(bool bFromCube)
     // Reset Belt Memory
     ClearAllBeltPlaceholders();
 
-    //Reset seed
-    seed = -1;
+    //Increment seed
+    //This keeps things random and interesting,
+    //while allowing preset seeds to be used also.
+    seed += 1;
 
     ResetPlayerToDefaults();
 	
@@ -21064,4 +21069,5 @@ defaultproperties
      SatiatedStr="(Satiated)"
      HungryStr="(Hungry)"
      StarvingStr="(Starving)"
+     iPresetSeed=-1
 }
