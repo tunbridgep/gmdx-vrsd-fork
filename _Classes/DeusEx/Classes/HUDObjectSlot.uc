@@ -345,7 +345,7 @@ event DrawWindow(GC gc)
 		gc.EnableWordWrap(false);
 		gc.SetTextColor(colObjectNum);
 
-		if ((objectNum >=1) && (objectNum <=3))
+		if ((objectNum >=0) && (objectNum <=3))
 		{
 			gc.DrawText(1+1, 42, 42, 7, "WEAPONS");
 		}
@@ -353,7 +353,7 @@ event DrawWindow(GC gc)
 		{
 			gc.DrawText(1+1, 42, 42, 7, "GRENADES");
 		}
-		else if ( ((objectNum >=7) && (objectNum <=9)) || (objectNum == 0) )
+		else if ( ((objectNum >=7) && (objectNum <=12)))
 		{
 			gc.DrawText(1+1, 42, 42, 7, "TOOLS");
 		}

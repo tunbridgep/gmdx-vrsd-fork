@@ -485,7 +485,7 @@ function float GetAccurateRange()
 // SARGE: Returns the default fire sound (standard or classic), based on the players options
 // SARGE: Now also handles all fire sound handling, since the previous implementation was buggy and broken.
 // ----------------------------------------------------------------------
-function Sound GetFireSound(optional bool bSilenced)
+simulated function Sound GetFireSound(optional bool bSilenced)
 {
     //No firing sound if we are firing projectiles, since they play the sound.
     //SARGE: I wish this wasn't the case, what a hacky mess...
@@ -644,6 +644,10 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     local int intj, i;
     local Texture overrideTexture;
     local DeusExCarcass carc;
+    
+    //No ammo looting in multiplayer
+    if ( Level.NetMode != NM_Standalone )
+        return false;
 
     if (bNativeAttack)
         return false;
@@ -698,7 +702,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
 }
 
 //Sarge: Update weapon frob display when we have a mod applied
-function string GetFrobString(DeusExPlayer player)
+simulated function string GetFrobString(DeusExPlayer player)
 {
     local string str;
     local DeusExPlayer pl;
@@ -758,7 +762,7 @@ function string GetFrobString(DeusExPlayer player)
 }
 
 //Sarge: Update weapon description/display when we have a mod applied
-function string GetBeltDescription(DeusExPlayer player)
+simulated function string GetBeltDescription(DeusExPlayer player)
 {
     if (bModified && player != None && player.bBeltShowModified)
         return beltDescription $ "+";
@@ -985,6 +989,13 @@ function PreBeginPlay()
 	{
 		Default.mpPickupAmmoCount = Default.PickupAmmoCount;
 	}
+    
+    //SARGE: Turn off GMDX's weapon collisions in MP, and start fully loaded.
+    if (Level.NetMode != NM_Standalone)
+    {
+        bCollideWorld = False;
+        ClipCount = ReloadCount;
+    }
 
     if (FOVManager == None)
         FOVManager = new(Self) class'ViewmodelFOVManager';
@@ -1127,7 +1138,7 @@ function DrawBloodyViewModel(Canvas canvas)
 }
 
 //SARGE: Positions the viewmodel properly, ready for drawing.
-function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
+simulated function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
 {
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added

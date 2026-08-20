@@ -595,7 +595,7 @@ simulated function PreBeginPlay()
 
 function DoJump(optional float F)
 {
-	if ((Physics == PHYS_Falling || (HealthLegLeft < 1 && HealthLegRight < 1)) && Base==none && !isMantling && bMantleOption && CarriedDecoration == None)
+	if ((Physics == PHYS_Falling || (HealthLegLeft < 1 && HealthLegRight < 1)) && Base==none && !isMantling && bMantleOption && CarriedDecoration == None && Level.NetMode == NM_StandAlone)
 	{      
 		startMantling();
 	}

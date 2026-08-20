@@ -1964,10 +1964,17 @@ simulated function PostNetBeginPlay()
 		if (DeusExRootWindow(rootWindow) != None)
 		   DeusExRootWindow(rootWindow).ChangeStyle();
 	}
+    
 	ReceiveFirstOptionSync(AugPrefs[0], AugPrefs[1], AugPrefs[2], AugPrefs[3], AugPrefs[4]);
 	ReceiveSecondOptionSync(AugPrefs[5], AugPrefs[6], AugPrefs[7], AugPrefs[8]);
 	ShieldStatus = SS_Off;
 	bCheatsEnabled = False;
+    
+    //Setup player subcomponents
+	SetupPerkManager();
+	SetupFontManager();
+    SetupKeybindManager();
+    SetupCloakManager();
 
 	 ServerSetAutoReload( bAutoReload );
 }
@@ -7714,6 +7721,19 @@ state PlayerWalking
 
 		    Super.PlayerTick(deltaTime);
 	}
+	
+    //SARGE: Handle multiplayer respawning
+    function BeginState()
+    {
+		if (Level.NetMode != NM_Standalone)
+        {
+            HeadRegion.Zone.ViewFog.X = 0;
+			InstantFog   = vect(0.1,0.1,0.1);
+			InstantFlash = 0.01;
+			ViewFlash(1.0);
+            ShowHUD(true);
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -10968,6 +10988,11 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 // Set Placeholder
 function SetPlaceholder(int objectNum, Inventory item)
 {
+
+    //No placeholders in multiplayer
+    if ( Level.NetMode != NM_Standalone )
+        return;
+
     if (item != None && item.Class != class'NanoKeyRing')
     {
         beltInfos[objectNum].itemClass = string(item.Class);
@@ -13362,10 +13387,7 @@ function private _UpdateHUD()
 
     // Reset Belt Memory
     if (iBeltMemory == 0)
-    {
-        for(i = 0;i < 12;i++)
-            ClearPlaceholder(i);
-    }
+        ClearAllBeltPlaceholders();
 
     if (root != None)
         root.UpdateHUD();
