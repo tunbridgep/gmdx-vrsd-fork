@@ -49,7 +49,7 @@ defaultproperties
      strHeaderValueLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
      Items(0)=(actionText="HDTP Enabled",variable="bHDTPEnabled",consoleTarget="DeusEx.DeusExPlayer",HelpText="Global toggle for HDTP models and textures.",defaultValue=1,valueText0="Off",valueText1="On",sortcategory="00TOP0")
-     Items(1)=(actionText="Vanilla Weapon Attachments",helpText="Vanilla weapon models will have visible attachments, similar to HDTP Models",valueText0="Disabled",valueText1="Enabled",consoleTarget="DeusEx.DeusExWeapon",variable="bVanillaModelAttachments",sortcategory="00TOP1")
+     Items(1)=(actionText="Vanilla Weapon Attachments",helpText="Vanilla weapon models will have visible attachments, similar to HDTP Models",valueText0="Disabled",valueText1="Enabled",consoleTarget="DeusEx.DeusExWeapon",variable="bVanillaModelAttachments",sortcategory="00TOP1",defaultValue=1)
      Items(2)=(actionText="Enhanced Blood",helpText="Use Vanilla-scaled HDTP-Style blood textures based on the HDTP Textures when not using HDTP. Does not require HDTP.",valueText0="Disabled",valueText1="Enabled",consoleTarget="DeusEx.DeusExPlayer",variable="bNewBlood",sortcategory="00TOP11")
      Items(3)=(actionText="Force HDTP Muzzle Flashes",helpText="Use HDTP muzzle flashes on Vanilla Weapons",valueText0="Disabled",valueText1="Enabled",consoleTarget="DeusEx.DeusExWeapon",variable="bHDTPMuzzleFlashes",sortcategory="00TOP2")
      Items(4)=(actionText="Force HDTP Effects",helpText="Use HDTP effects on Vanilla Flares, Flare Darts, etc",valueText0="Disabled",valueText1="Enabled",consoleTarget="DeusEx.DeusExPlayer",variable="bHDTPEffects",sortcategory="00TOP22")

@@ -4,6 +4,20 @@
 //=============================================================================
 class StringUtils extends Object abstract;
 
+//The function that broke the internet...
+function static string LeftPad(coerce string source, int length)
+{
+    local int stringLength, i;
+    local string str, spaces;
+
+    str = source;
+
+    for (i = Len(source);i < length;i++)
+        spaces = spaces $ " ";
+
+    return spaces $ str;
+}
+
 function static String FormatFloatString(float value, float precision)
 {
 	local string str;

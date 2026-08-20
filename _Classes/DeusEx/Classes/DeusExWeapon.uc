@@ -1986,7 +1986,7 @@ function bool BreaksDamageThreshold(Actor target)
 
     dmg = CalculateTrueDamage();
 
-    if (IsA('WeaponCrowbar') && target.IsA('DeusExMover') || target.IsA('DeusExDecoration'))
+    if (IsA('WeaponCrowbar') && (target.IsA('DeusExMover') || target.IsA('DeusExDecoration')))
         dmg *= 2;
 
     if (target.IsA('DeusExMover'))
