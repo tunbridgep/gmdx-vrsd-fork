@@ -87,6 +87,14 @@ var PersonaNormalTextWindow     winTraumaLevel;
 var PersonaNormalTextWindow     winMedkitsNeeded;
 var bool bTraumasSelected;
 
+//Modifiers Button
+var localized string ModifiersButtonLabel;
+var localized string ModifiersHeader;
+var localized string SeedText;
+var localized string SeedTextPreset;
+var string enabledModifiersString; //We cache the modifiers list because it might crash otherwise, and is otherwise never modified
+var bool bDoneModifiers;            //Don't needlessly update unless we change screens.
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -98,9 +106,22 @@ event InitWindow()
 	Super.InitWindow();
 
 	EnableButtons();
+    
+    PopulateModifierString();
 
 	//if (player.bRealUI || player.bHardCoreMode)
 	   bTickEnabled = True;
+}
+
+//Cache this because it has a tendency to crash the game otherwise
+function PopulateModifierString()
+{
+    local int i;
+    local string str;
+    for (i = 0; i < 255; i++)
+        str = GetModifierText(i,str);
+
+    enabledModifiersString = str;
 }
 
 // ----------------------------------------------------------------------
@@ -386,14 +407,26 @@ function bool ButtonActivated(Window buttonPressed)
             
             case buttonTraumas:
                 ToggleTraumaWindow();
+                bDoneModifiers = false;
                 break;
 
             case buttonStats:
-                if (bBodyPartPressed && !player.bAddictionSystem) //Always show pedometer if we click regular Status button, rather than an empty window.
-                    player.bShowStatus = true;
-                if (!bBodyPartPressed) //Otherwise, reset it back to what it was
-                    player.bShowStatus = !player.bShowStatus;
                 winInfo.Clear();
+                bDoneModifiers = false;
+                if (!player.bShowModifiers && (!player.bShowStatus || !player.bAddictionSystem))
+                {
+                    player.bShowModifiers = true;
+                    player.bShowStatus = true;
+                }
+                else if (player.bShowStatus && player.bShowModifiers)
+                {
+                    player.bShowModifiers = false;
+                    player.bShowStatus = true;
+                }
+                else if (player.bShowStatus && player.bAddictionSystem)
+                {
+                    player.bShowStatus = false;
+                }
                 bBodyPartPressed = False;
                 PlaySound(Sound'MetalDrawerOpen',0.5);
                 break;
@@ -457,6 +490,9 @@ function Tick(float deltaTime)
     local float speedPenalty;
     local float formatInt;
 
+    if (winInfo == None)
+        return;
+
 	regionWindows[0].SetHealth(player.HealthHead);
 	regionWindows[1].SetHealth(player.HealthTorso);
 	regionWindows[2].SetHealth(player.HealthArmRight);
@@ -470,21 +506,22 @@ function Tick(float deltaTime)
     }
     else if (!bBodyPartPressed)
     {
-        if (player.bShowStatus)
+        if (player.bShowModifiers)
+            UpdateModifiersText();
+        else if (player.bShowStatus)
             UpdateStatusText();                                                     //Sarge: Added the ability for the Status button to toggle addictions, rather than on/off empty page
         else if (player.bAddictionSystem)
             UpdateAddictionText();                                                  //RSD: Used to have repeat code blocks here and CreateInfoWindo(), moved to a function
     }
     
     //Update Status Button
-    if (!player.bAddictionSystem)
-        buttonStats.SetButtonText(StatsButtonLabel); //Default button when not using addiction system
-    else if (player.bShowStatus && !bBodyPartPressed)
-        buttonStats.SetButtonText(AddictionButtonLabel); //Show Addiction Button
-    else if (!player.bShowStatus && bBodyPartPressed)
-        buttonStats.SetButtonText(AddictionButtonLabel); //Show Addiction Button
+    
+    if (player.bShowModifiers)
+        buttonStats.SetButtonText(PedometerButtonLabel);
+    else if (player.bShowStatus && !player.bShowModifiers && player.bAddictionSystem)
+        buttonStats.SetButtonText(AddictionButtonLabel);
     else
-        buttonStats.SetButtonText(PedometerButtonLabel); //Show Pedometer Button
+        buttonStats.SetButtonText(ModifiersButtonLabel);
 }
 
 function DisplayCommonInfo()
@@ -652,6 +689,58 @@ function UpdateAddictionText()
             winInfo.SetText(drugEffectLabel $ "N/A");
         }
     }
+}
+
+//SARGE: This fucking sucks. Too bad the "get" command doesn't fucking work.
+//So we have to iterate the menu fucking manually
+function string GetModifierText(int index, string str)
+{
+    local string modName;
+    local bool value;
+    value = class'MenuScreenPlaythroughModifiers'.static.IsModifierActive(player,index);
+    if (!value)
+        return str;
+
+    modName = class'MenuScreenPlaythroughModifiers'.static.GetActionTextAt(index);
+    if (str != "")
+        str = str $ "|n";
+    return str $ modName;
+}
+
+//SARGE: Display our seed.
+//Rando should probably override this to show the Rando seed
+function string GetSeedString()
+{
+    if (player.iPresetSeed != player.default.iPresetSeed)
+        return SeedText $ player.Seed $ SeedTextPreset;
+    else
+        return SeedText $ player.Seed;
+}
+
+function UpdateModifiersText()
+{
+    if (winInfo == None || bDoneModifiers)
+        return;
+    
+    winInfo.bStylization = False;
+    winInfo.bStylization2 = False;
+
+    winInfo.Clear();
+    winInfo.SetTitle(ModifiersHeader);
+    if (winInfo.winScroll != None)
+    {
+        winInfo.winScroll.EnableScrolling(true,true);
+        winInfo.winScroll.EnableWindow(true);
+    }
+
+    winInfo.SetText(GetSeedString());
+    winInfo.AddLine();
+    winInfo.SetText(class'MenuScreenPlaythroughModifiers'.default.Title);
+    winInfo.AddLine();
+
+    winInfo.SetText(enabledModifiersString);
+                
+    bDoneModifiers = true;
 }
 
 function UpdateStatusText()                                                     //RSD: Had repeat code in CreatInfoWindow() and Tick(), how about not
@@ -1359,6 +1448,7 @@ defaultproperties
      pedStr="PEDOMETER"
      StatsButtonLabel="|&Stats"
      AddictionButtonLabel="|&Addictions"
+     ModifiersButtonLabel="|&Modifiers"
      PedometerButtonLabel="|&Pedometer"
      accuracyLabel=" Accuracy Penalty: "
      speedLabel=" Speed Penalty: "
@@ -1409,4 +1499,7 @@ defaultproperties
      CureAllButtonLabel="Cure All"
      TraumaButtonLabel="|&Traumas"
      TraumaTitleText="Health"
+     ModifiersHeader="Playthrough Information"
+     SeedText="Seed: "
+     SeedTextPreset=" (Preset)"
 }

@@ -530,6 +530,7 @@ var transient float GEPsteeringX,GEPsteeringY; //used for mouse input control
 var WeaponGEPGun GEPmounted;
 var travel int stepCount;
 var travel bool bShowStatus;
+var travel bool bShowModifiers; //SARGE: Added
 var travel bool bShowAugStatus;
 var bool bIcarusClimb;
 var float CarriedDecoGlow;
