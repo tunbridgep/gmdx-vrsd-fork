@@ -165,6 +165,12 @@ function FirstFrame()
             
             flags.SetBool('GMDXRemoveTNT', True,, 3);
         }
+
+        //On Hardcore, don't allow blocking off the laser tripwires
+        if (player.bHardcoreMode)
+            foreach AllActors(class'BeamTrigger', trig)
+                trig.TriggerType = TT_AnyProximity;
+
     }
 CanQuickSave=true;
 }
