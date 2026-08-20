@@ -29,6 +29,7 @@ New Features:
 - Current hunger level now shows on edibles, not just the health screen
 
 Bug Fixes:
+- Fixed Secondary icon sometimes being cleared when transitioning between maps.
 - Fixed Turrets and Cameras being able to see through Themoptic Camo in certain cases.
 - Fixed Turrets resetting their targeting priorities when set to "Enemies" or "Everything" while rebooting if an alarm is deactivated.
 - Fixed Vision Aug and Tech Goggles not always showing everything in range.
