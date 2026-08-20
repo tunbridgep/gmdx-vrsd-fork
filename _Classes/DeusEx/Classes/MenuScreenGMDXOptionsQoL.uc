@@ -202,9 +202,11 @@ defaultproperties
      items(144)=(HelpText="Upon acquiring a new weapon skin, it will be automatically equipped if it matches the currently held weapon.",actionText="Augmentique: Auto Equip Skins",consoleTarget="WeaponSkinManager",variable="bSwitchToNewSkins",defaultValue=1)
      items(145)=(HelpText="When attempting to pick up an item for which you don't have inventory space, the pickup message will show the size of the item in grid squares.",actionText="HUD: Pickup Message Shows Size",variable="bFullInventoryMsgShowsSize",defaultValue=1)
      items(146)=(HelpText="Always show the Stamina bar, even when the Stamina system is disabled.",actionText="HUD: Always Show Stamina Bar",variable="bAlwaysShowStamina")
+     items(147)=(HelpText="If enabled, searching a carcass will also search all carcasses nearby.",actionText="Interaction: Search Carcass Piles",variable="bSearchCorpsePiles",defaultValue=1)
      items(148)=(HelpText="Sets viewmodel FOV. Requires the Alternate Weapon Offsets setting to be enabled.",actionText="HUD: Viewmodel FOV",consoleTarget="ViewmodelFOVManager",variable="weaponFOV",realValue0=60,realValue1=75,realValue2=80,realValue3=90,realValue4=100,realValue5=110,valueText0="60 FOV",valueText1="75 FOV",valueText2="80 FOV",valueText3="90 FOV",valueText4="100 FOV",valueText5="110 FOV",defaultValue=1)
      items(149)=(HelpText="Automatically equip Ballistic Armor and HazMat Suits when picking them up if you don't have anything equipped.",actionText="Interaction: Auto-Use Armor Items",variable="bAutoUseChargedPickups",defaultValue=1)
      items(150)=(HelpText="Drop carcasses at your feet when dropping would otherwise fail, such as in tight corridoors or vents.",actionText="Interaction: Always Drop Carcasses",variable="bAlwaysDropCarcasses",defaultValue=1)
+     items(151)=(HelpText="NPCs and the Player will not create blood pools if killed in non-bloody ways, such as through poison gas or radiation.",actionText="Game: Smarter Blood Pools",variable="bSmartBloodPools",defaultValue=1)
      items(152)=(HelpText="The NanoKey icon on the belt will show available Lockpicks and Multitools",actionText="HUD: NanoKey Slot shows Tools",variable="bNanoKeyShowsTools",defaultValue=1)
 
      Title="GMDX Advanced Options"

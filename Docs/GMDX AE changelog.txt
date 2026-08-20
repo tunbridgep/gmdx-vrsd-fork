@@ -5,6 +5,7 @@ New Features:
 - Added a new perk TARGETING ROUTINES (Demolitions Advanced, 300 points): An agent is able to program the targeting routines of proximity grenades, ensuring placed EMP and Scrambler grenades only explode in the presence of robots, and placed gas grenades only explode in the presence of organics.
     - Additionally prevents medical, repair and cleaner bots from setting off placed grenades.
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
+- If an enemy dropped a weapon, searching their carcass will also include their dropped weapon.
 - Weapon FOV is now properly detected, instead of using preset weapon positions.
     - Weapons should now feel a lot more consistent with their on-screen positions at different resolutions and aspect ratios.
     - A new Weapon FOV setting has been added to accommodate this
@@ -16,6 +17,7 @@ New Features:
 - Added sounds when acquiring Traumas.
 - Added new "Hold" bindings for active autmentations.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
+- Searching a single carcass will now also search nearby carcasses.
 - Added a new "Sturdy Construction" modifier, which only breakables to be broken using Explosive attacks.
 - Edible Items now show the players current hunger level in the Inventory screen.
 - Upgraded to the newest DeusExe by @flippers
@@ -48,6 +50,7 @@ Bug Fixes:
 - Fixed Ammo Display not showing Cyan for full weapons in some cases.
 - Fixed Breakdown perk being able to destroy certain doors that shouldn't have been destroyable.
 - Fixed the player taking damage after moving down ramps at high framerates.
+- Minor carcass searching fixes.
 - Fixed GEP Gun scope being disabled when fired rockets leave the players line of sight.
 - Fixed the Combat Medics Bag Perk giving it's medkit/biocell carry bonus without taking the perk.
 - Fixed climbing ladders at different speeds based on whether you're running or walking.
@@ -59,6 +62,7 @@ Bug Fixes:
 - Fixed Water Fountains and Water Coolers not respecting the Glutton perk, and various other food-related statuses (such as Traumas).
 - Fixed Medicine Skill information window listing wrong numbers.
 - Fixed Security Cameras being re-activated after being hacked while EMP'd.
+- Fixed searching carcasses not properly recharging the Dragons Tooth Sword like it should if the corpse contains a DTS.
 - Fixes for phones not properly displaying "Line disconnected" and other frob sounds.
 
 Misc Changes:
@@ -75,6 +79,7 @@ Misc Changes:
 - "Disposable Rebreathers and Camo" playthrough modifier is now no longer forced on Hardcore.
 - Slightly decreased enemy footstep detection on higher difficulties.
 - Slightly increased swimming stamina requirements in Hardcore mode.
+- When the player and NPCs are killed by poison gas and other non-bloody methods, they will no longer leave blood pools.
 - Adds a fixed Lockpick model to work better at higher FOV values.
 - Slightly decreased trauma thresholds, which should make getting some traumas happen more often.
 - Added Pride outfit.

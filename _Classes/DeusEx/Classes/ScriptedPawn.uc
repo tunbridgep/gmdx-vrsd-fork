@@ -535,6 +535,14 @@ var(GMDX) const float fRandomHeightMult;
 var travel float fHeightMod;
 var travel bool bSetupVariableHeightActor;
 
+//SARGE: When we drop a weapon on death, keep track of it for the purposes of looting.
+//But intentionally forget about it if we pick up the corpse, so we don't pick up weapons from across the room.
+var Weapon droppedWeapon;
+
+//SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
+//passed on to the carcass.
+var bool bBloodyDeath;
+
 //SARGE: Only allow receiving one extra weapon in certain circumstances
 //See DistributeItem() in MissionScript for more info
 var bool bAlreadyDistributedWeapon;
@@ -2983,7 +2991,7 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 		bDrawWeapon = true;
 
 	if (ShouldDropWeapon())
-		DropWeapon();
+		DropWeapon(false);
 	else if (bDrawWeapon)
 	{
 //		if (Weapon == None)
@@ -2998,12 +3006,16 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 // DropWeapon()
 // SARGE: This function needed a rewrite, so I rewrote it...
 // ----------------------------------------------------------------------
-function DropWeapon()
+function DropWeapon(bool bAllowRifle)
 {
 	local DeusExWeapon dxWeapon;
     local vector loc;
 
-	if (Weapon != None && !Weapon.IsA('WeaponRifle'))
+    //SARGE: This is just fucking annoying when it happens...
+    if (IsA('ScubaDiver'))
+        return;
+
+	if (Weapon != None && (!Weapon.IsA('WeaponRifle') || bAllowRifle))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
 		if (dxWeapon != None && !dxWeapon.bNativeAttack)
@@ -3021,7 +3033,10 @@ function DropWeapon()
                 if (!class'SpawnUtils'.static.CheckDropFrom(dxWeapon,loc,Location))
                     return;
             }
-			
+            
+            droppedWeapon = dxWeapon;
+
+            dxWeapon.PlayAnim('Still');
             dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 			
             SetWeapon(None);
@@ -3547,6 +3562,9 @@ function Carcass SpawnCarcass()
               carc.passedSkins = True;
           }
         }
+
+        if (!bBloodyDeath)
+            carc.bNoDefaultPools = true;
 
 		carc.Initfor(self);
 
@@ -4244,11 +4262,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	if (!bPlayAnim || (actualDamage <= 0))
 		hitPos = HITLOC_None;
 
-	if (bCanBleed)
-		if ((damageType != 'Stunned') && (damageType != 'TearGas') && (damageType != 'HalonGas') &&
-		    (damageType != 'PoisonGas') && (damageType != 'Radiation') && (damageType != 'EMP') &&
-		    (damageType != 'NanoVirus') && (damageType != 'Drowned') && (damageType != 'KnockedOut') &&
-		    (damageType != 'Poison') && (damageType != 'PoisonEffect'))
+
+	if (bCanBleed && class'PawnUtils'.static.IsBloodyDamageType(damageType))
 			bleedRate += (origHealth-Health)/(0.3*Default.Health);  // 1/3 of default health = bleed profusely
 
     //bleed like crazy every time we take a blood tick
@@ -4296,7 +4311,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     }
     
     //Cover the players weapon in blood
-    if (bCanBleed && player != None)
+    if (bCanBleed && player != None && class'PawnUtils'.static.IsBloodyDamageType(damageType))
         player.DoBloodEffect(actualDamage,damageType,Location,false);
 
 	if (Health <= 0)
@@ -4329,7 +4344,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     Velocity.Z = 6; //6
     bFixedRotationDir = True;
     if (FRand() < 0.3 && instigator != None && instigator != self && ShouldDropWeapon())
-       DropWeapon();
+       DropWeapon(false);
     }
     }
 
@@ -9226,7 +9241,7 @@ function bool SwitchToBestWeapon()
 
 	if (ShouldDropWeapon())
 	{
-		DropWeapon();
+		DropWeapon(false);
 		return false;
 	}
 
@@ -10138,6 +10153,9 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 	player = DeusExPlayer(GetPlayerPawn());
 
 	ExtinguishFire();
+
+    //SARGE: Store if the damage that killed us should make our carcass bleed.
+    bBloodyDeath = class'PawnUtils'.static.IsBloodyDamageType(damageType);
 
 	// set the instigator to be the killer
 	Instigator = Killer;
@@ -16950,7 +16968,10 @@ state Dying
 Begin:
     //SARGE: Drop weapons on death.
     if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
-        DropWeapon();
+    {
+        if (DeusExWeapon(Weapon) == None || !DeusExWeapon(Weapon).bNativeAttack)
+            DropWeapon(true);
+    }
 
 	WaitForLanding();
 	MoveFallingBody();

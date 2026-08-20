@@ -1041,6 +1041,8 @@ var globalconfig bool bAlwaysShowStamina;   //SARGE: Always show the stamina bar
 /////////Version 1.3 Additions
 /////////June 2026
 
+var globalconfig bool bSearchCorpsePiles;   //SARGE: Allow searching multiple carcasses at once when they are stacked on top of each other.
+
 var transient bool bTookBumpDamage;                   //SARGE: Set when we take damage after bumping a wall so we can't do it again. This avoids repeated damage at high framerates.
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
@@ -1052,6 +1054,11 @@ var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip
 var const localized string msgSaveName;
 
 var const localized String TooSick;
+
+//SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
+//passed on to the carcass.
+var bool bBloodyDeath;
+var globalconfig bool bSmartBloodPools;                 //SARGE: Enable or disable the smart blood pools system.
 
 //Show Lockpicks and Tools on the NanoKey icon
 var globalconfig bool bNanoKeyShowsTools;
@@ -6074,6 +6081,10 @@ function Carcass SpawnCarcass()
 	{
 	    if (bRemoveVanillaDeath)
 	        carc.DrawScale = 0.000050;
+        
+        if (!bBloodyDeath && bSmartBloodPools)
+            carc.bNoDefaultPools = true;
+
 		carc.Initfor(self);
 
 		// move it down to the ground
@@ -9618,6 +9629,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local WeaponNanoSword dts;
     local bool bDestroy;
     local string source;
+    local DeusExCarcass linkedCarc;
     local ChargedPickup cp;
     local bool bTransfer;
 
@@ -9825,8 +9837,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
 
         //SARGE: Decline checking.
-        if (!bSkipDeclineCheck)
+        if (!bSkipDeclineCheck && FromCorpse != None)
+            bDeclined = DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class));
+        else if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
+
         if (!bDeclined && !bSearchOnly)
             FindInventorySlot(Inventory(FrobTarget), false);
     }
@@ -9855,6 +9870,17 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         
         if (bCanPickup)
         {
+
+            //SARGE: Hack. If it's a weapon, we need to unlink it from any carcasses or scriptedpawns that currently have it as their dropped weapon
+            if (Weapon(FrobTarget) != None)
+            {
+                foreach AllActors(class'DeusExCarcass', linkedCarc)
+                {
+                    if (linkedCarc.droppedWeapon == Weapon(FrobTarget))
+                        linkedCarc.droppedWeapon = none;
+                }
+            }
+
             DoFrob(Self, inHand);
             /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
             {
@@ -9862,7 +9888,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             //bLeftClicked = False;
             }*/
             // This is bad. We need to reset the number so restocking works
-            if ( Level.NetMode != NM_Standalone )
+            if ( Level.NetMode != NM_Standalone  && FromCorpse == None)
             {
                 if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
                 {
@@ -9933,7 +9959,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DebugLog("AddReceivedItem - Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
+        DebugLog("AddReceivedItem - Item is: " $ item $ ", owned by " $ owner $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
 
         DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 
@@ -17764,6 +17790,9 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
+    
+    //SARGE: Store if the damage that killed us should make our carcass bleed.
+    bBloodyDeath = class'PawnUtils'.static.IsBloodyDamageType(damageType);
 
 	Super.Died(Killer, damageType, HitLocation);
 }
@@ -21092,11 +21121,13 @@ defaultproperties
      iWeatherControl=1
      precipMaxDensity=14.0
      precipMinDensity=0.0
+     bSearchCorpsePiles=true
      bPickupsUseFOV=true
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
      TooSick="You feel too nauseous to consume anything"
+     bSmartBloodPools=true
      bNanoKeyShowsTools=false
      fGlobalAmmoMod=1.0;
      msgCreditsAdded="%d credits added"
