@@ -4226,7 +4226,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer') && !bHidden && !bCloakOn)
     {
         //SARGE: Don't display poison effect hitmarkers in Hardcore mode. //SARGE: Or at all.
-        if ((DamageType != 'PoisonEffect' && DamageType != 'TearGas') || !DeusExPlayer(instigatedBy).bHardcoreMode)
+        if ((DamageType != 'PoisonEffect' && DamageType != 'TearGas' && DamageType != 'BleedEffect') || !DeusExPlayer(instigatedBy).bHardcoreMode)
         {
             if (DeusExPlayer(instigatedBy).bHitmarkerOn)
                 DeusExPlayer(instigatedBy).hitmarkerTime = 0.2;
