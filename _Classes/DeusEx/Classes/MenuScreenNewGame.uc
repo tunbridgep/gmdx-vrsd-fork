@@ -94,6 +94,7 @@ var bool bShippingAndReceiving;
 var bool bGEPUsesWPByDefault;
 var bool bHarderSkillRebalance;
 var bool bHarderChargedPickups;
+var bool bHardenedBreakables;
 
 //SARGE: Save our true player name for future playthroughs
 //SARGE: And now the player skin too!
@@ -126,7 +127,7 @@ function InvokePlaythroughModifiersMenu(optional bool bCheck)
     if (mods != None)
     {
         mods.bHardcoreSelected = bHardCoreMode;
-        mods.BuildModifierList();
+        mods.RebuildModifierList();
     }
 }
 
@@ -203,6 +204,7 @@ event InitWindow()
     bGEPUsesWPByDefault=default.bGEPUsesWPByDefault;
     bHarderSkillRebalance=default.bHarderSkillRebalance;
     bHarderChargedPickups=default.bHarderChargedPickups;
+    bHardenedBreakables=default.bHardenedBreakables;
 	StyleChanged();
 }
 
@@ -885,6 +887,7 @@ function SaveSettings()
     player.bGEPUsesWPByDefault=bGEPUsesWPByDefault;
     player.bHarderSkillRebalance=bHarderSkillRebalance;
     player.bHarderChargedPickups=bHarderChargedPickups;
+    player.bHardenedBreakables=bHardenedBreakables;
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

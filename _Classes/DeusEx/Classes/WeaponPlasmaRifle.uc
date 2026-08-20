@@ -247,6 +247,7 @@ defaultproperties
      Misc1Sound=Sound'DeusExSounds.Weapons.PlasmaRifleReloadEnd'
      InventoryGroup=8
      ItemName="Plasma Rifle"
+     OldPlayerViewOffset=(X=18.000000,Z=-7.000000)
      PlayerViewOffset=(X=18.000000,Z=-7.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPPlasmaRifle"
      HDTPPickupViewMesh="HDTPItems.HDTPplasmariflePickup"

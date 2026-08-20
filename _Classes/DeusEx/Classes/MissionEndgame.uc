@@ -111,14 +111,17 @@ function Tick(float DT)
     //TODO: Fix this to work properly on other aspect ratios
     //SARGE TODO: This exists here as well as ConWindowActive,
     //lets move it into the player, something like AdjustCutsceneFOV()
-    if (player.iCutsceneFOVAdjust == 1)
-        AdjustFOV(75);
-    else if (player.iCutsceneFOVAdjust == 2)
-        AdjustFOV(80);
-    else if (player.iCutsceneFOVAdjust == 3)
-        AdjustFOV(85);
-    else if (player.iCutsceneFOVAdjust == 4)
-        AdjustFOV(90);
+    if(Player != None)
+    {
+        if (player.iCutsceneFOVAdjust == 1)
+            AdjustFOV(75);
+        else if (player.iCutsceneFOVAdjust == 2)
+            AdjustFOV(80);
+        else if (player.iCutsceneFOVAdjust == 3)
+            AdjustFOV(85);
+        else if (player.iCutsceneFOVAdjust == 4)
+            AdjustFOV(90);
+    }
 
 	
 	//LDDP, 11/3/21: Barf, part 2.

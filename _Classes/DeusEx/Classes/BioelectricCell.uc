@@ -50,7 +50,7 @@ function int RetMaxCopies()
     local int amount;
     player = DeusExPlayer(GetPlayerPawn());
     
-    amount = default.maxCopies;
+    amount = maxCopies;
 
     if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkCombatMedicsBag').bPerkObtained)
         amount += 5;

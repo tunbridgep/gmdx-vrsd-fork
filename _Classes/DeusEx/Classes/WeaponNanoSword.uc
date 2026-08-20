@@ -84,7 +84,7 @@ function SetupChargeManager()
         chargeManager.chargeMult = 0.2;
     }
         
-    if (owner.IsA('DeusExPlayer'))
+    if (owner != None && owner.IsA('DeusExPlayer'))
         ChargeManager.Setup(DeusExPlayer(owner),self);
 }
 
@@ -102,6 +102,8 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 event Destroyed()
 {
     CriticalDelete(chargeManager);
+    chargeManager = None;
+    super.Destroyed();
 }
 
 //SARGE: Show DTS Charge on the frob string
@@ -163,7 +165,7 @@ function SetWeaponSkin(bool hdtp)
 {
     if (hdtp)
     {
-        if (chargeManager.IsUsedUp())
+        if (chargeManager != None && chargeManager.IsUsedUp())
         {
             multiskins[2] = Texture'PinkMaskTex';
             multiskins[3] = Texture'PinkMaskTex';
@@ -183,7 +185,7 @@ function SetWeaponSkin(bool hdtp)
             SelectSound = default.SelectSound;
         }
     }
-    else if (chargeManager.IsUsedUp())
+    else if (chargeManager != None && chargeManager.IsUsedUp())
     {
         multiskins[1] = Texture'PinkMaskTex';
         multiskins[2] = Texture'BlackMaskTex';
@@ -276,6 +278,7 @@ defaultproperties
      InventoryGroup=14
      ItemName="Dragon's Tooth Sword"
      ItemArticle="the"
+     OldPlayerViewOffset=(X=21.000000,Y=-16.000000,Z=-27.000000)
      PlayerViewOffset=(X=21.000000,Y=-16.000000,Z=-27.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPDragonTooth"
      HDTPPickupViewMesh="HDTPItems.HDTPDragonToothPickup"

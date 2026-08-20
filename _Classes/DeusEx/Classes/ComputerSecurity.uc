@@ -14,6 +14,9 @@ struct sViewInfo
 var() localized sViewInfo Views[3];
 var int team;
 var() travel int secLevel;              //CyberP: skill requirement to hack this computer.
+
+var Texture ActivatedSkin;        //SARGE: Change our texture when activating the computer.
+
 // ----------------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------------
@@ -93,8 +96,8 @@ function AdditionalActivation(DeusExPlayer ActivatingPlayer)
       SetControlledObjectOwners(ActivatingPlayer);
     
     if (!IsHDTP())
-        Skin = Texture'DeusExDeco.Skins.ComputerSecurityTex1';
-    Super.AdditionalDeactivation(ActivatingPlayer);
+        Skin = ActivatedSkin;
+    Super.AdditionalActivation(ActivatingPlayer);
 }
 
 // ----------------------------------------------------------------------
@@ -131,4 +134,5 @@ defaultproperties
      CollisionHeight=10.100000
      bCollideWorld=False
      BindName="ComputerSecurity"
+     ActivatedSkin=Texture'DeusExDeco.Skins.ComputerSecurityTex1'
 }

@@ -13,7 +13,9 @@ var int iconHeight;
 var Texture icon;
 var Texture texBackground;
 
-var ProgressBarWindow winEnergy; //SARGE: Moved to the base class, so augs can use it too.
+var bool bHasChargeBar;
+
+var transient ProgressBarWindow winEnergy; //SARGE: Moved to the base class, so augs can use it too.
 
 
 // ----------------------------------------------------------------------
@@ -25,6 +27,8 @@ event InitWindow()
 	Super.InitWindow();
 
 	SetSize(iconWidth, iconHeight);
+
+    CreateEnergyBar();
 }
 
 // ----------------------------------------------------------------------
@@ -122,6 +126,14 @@ function CreateEnergyBar()
 	winEnergy.SetValues(0, 100);
 	winEnergy.SetCurrentValue(0);
 	winEnergy.SetVertical(False);
+    winEnergy.Hide();
+}
+
+event DestroyWindow()
+{
+    winEnergy = None;
+    //DestroyAllChildren();
+    super.DestroyWindow();
 }
 
 // ----------------------------------------------------------------------

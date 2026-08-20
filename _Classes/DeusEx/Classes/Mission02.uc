@@ -147,6 +147,9 @@ function FirstFrame()
             //remove all the TNT Crates
             foreach AllActors(class'CrateExplosiveSmall', tnt)
             {
+                if (tnt == player.CarriedDecoration)
+                    continue;
+
                 tnt.DrawScale = 0.00001;
                 tnt.SetCollision(false,false,false);
                 tnt.SetCollisionSize(0,0);
@@ -162,6 +165,12 @@ function FirstFrame()
             
             flags.SetBool('GMDXRemoveTNT', True,, 3);
         }
+
+        //On Hardcore, don't allow blocking off the laser tripwires
+        if (player.bHardcoreMode)
+            foreach AllActors(class'BeamTrigger', trig)
+                trig.TriggerType = TT_AnyProximity;
+
     }
 CanQuickSave=true;
 }

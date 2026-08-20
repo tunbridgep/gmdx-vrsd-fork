@@ -14,7 +14,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     if (minDamageThreshold > 0 && bSelectMeleeWeapon)
     {
-        frobber.SelectMeleePriority(minDamageThreshold);
+        frobber.SelectMeleePriority(self);
         return false;
     }
     return true;

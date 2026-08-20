@@ -286,6 +286,8 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel_QuickSelect2.pcx"       NAME="QoL_AugWheel_QuickSelect2"        GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel1.pcx"	                NAME="QoL_FreeCursor1"		    	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugWheel2.pcx"	                NAME="QoL_FreeCursor2"		    	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugLevels1.pcx"	                NAME="QoL_AugLevels1"           	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AugLevels2.pcx"	                NAME="QoL_AugLevels2"           	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AutoFillBelt1.pcx"	            NAME="QoL_AutoFillBelt1"         	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AutoFillBelt2.pcx"	            NAME="QoL_AutoFillBelt2"         	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_AutoHolster1.pcx"	            NAME="QoL_AutoHolster1"         	    GROUP="UserInterface"    FLAGS=2

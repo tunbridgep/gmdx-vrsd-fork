@@ -188,7 +188,7 @@ function GrabProjectile(DeusExPlayer player)
 	{
 		if (spawnWeaponClass != None)		// spawn the weapon
 		{
-			item = Spawn(spawnWeaponClass);
+			item = Inventory(class'SpawnUtils'.static.SpawnSafe(spawnWeaponClass,self));
 			if (item != None)
 			{
                 //AUGMENTIQUE: Give our created weapon the right skin.
@@ -208,7 +208,7 @@ function GrabProjectile(DeusExPlayer player)
 		}
 		else if (spawnAmmoClass != None)	// or spawn the ammo
 		{
-			item = Spawn(spawnAmmoClass);
+			item = Inventory(class'SpawnUtils'.static.SpawnSafe(spawnAmmoClass,self));
 			if (item != None)
 			{
 				if ( (Level.NetMode != NM_Standalone ) && Self.IsA('Dart'))
@@ -222,7 +222,7 @@ function GrabProjectile(DeusExPlayer player)
 			player.FrobTarget = item;
 
 			// check to see if we can pick up the new weapon/ammo
-			if (player.HandleItemPickup(item))
+			if (player.HandleItemPickup(item,false,Owner == player))
 			{
 				Destroy();				// destroy the projectile on the wall
 				if ( Level.NetMode != NM_Standalone )
@@ -542,7 +542,7 @@ state Exploding
 			damageType,
 			MomentumTransfer / gradualHurtSteps,
 			Location, gradualHurtCounter < 2,                                   //RSD: Was <3
-			gradualHurtCounter < 3);                                            //RSD: Additional new bIgnoreLOSmover bool
+			gradualHurtCounter < 3, Damage);                                    //RSD: Additional new bIgnoreLOSmover bool
 
         //SARGE: Actually send explosion sound events!!!
         if (ImpactSound != None)
@@ -649,15 +649,40 @@ function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name da
 	return false;
 }
 
+//SARGE: Calculate for DT based on BASE damage
+//If we exceed the DT, then send the damage through to the mover
+//Since otherwise we're doing 2/5th the normal damage, which means we will not break DT when we should.
+//This fixes vanilla bug where a 200 damage grenade deals 80 damage, not enough to break an 86 DT mover.
+//Returns FALSE if this hack wasn't applied to a specific mover, for whatever reason
+function bool GMDXMoverHack(Pawn instigator, DeusExMover DM, float damageScale, float damageAmount, name DamageName, float TrueDamage)
+{
+    local float DT;
+
+    if (DM != None && damageScale * TrueDamage >= DM.minDamageThreshold)
+    {
+        DT = DM.minDamageThreshold;
+        DeusExPlayer(instigator).DebugMessage("Original damage amount (" $ TrueDamage @ "x" @ damageScale $ ") would have beaten the threshold (" $ DT $ ") for Mover " $ DM $ ", so deal " $ (damageScale * DamageAmount) $ " directly to it");
+
+        //This is a massive hack. Temporarily remove the DT entirely so that we can damage the door.
+        DM.minDamageThreshold = 0;
+        DM.TakeDamage(damageScale * DamageAmount,instigator,Vect(0,0,0),Vect(0,0,0),damageName);
+        DM.minDamageThreshold = DT;
+        return true;
+    }
+    return false;
+}
+
 //RSD: stolen from HurtRadius() in Actor.uc to patch out mover damage through walls
 //SARGE: make damage scale with ADS level, rather than always doing full damage
-function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName, float Momentum, vector HitLocation, optional bool bIgnoreLOS , optional bool bIgnoreLOSmover)
+//SARGE: Added TrueDamage variable for accurate tracking with movers
+function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName, float Momentum, vector HitLocation, optional bool bIgnoreLOS , optional bool bIgnoreLOSmover, optional float TrueDamage)
 {
 	local actor Victims;
 	local float damageScale, dist, mult;
 	local vector dir;
 	// DEUS_EX CNN
 	local Mover M;
+    local DeusExMover DM;
 
 	if( bHurtEntry )
 		return;
@@ -723,18 +748,27 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
 		{
 			if( M != self )
 			{
+                DM = DeusExMover(M);
 				dir = M.Location - HitLocation;
 				dist = FMax(1,VSize(dir));
 				dir = dir/dist;
 				damageScale = 1 - FMax(0,(dist - M.CollisionRadius)/DamageRadius);
-				M.TakeDamage
-				(
-					damageScale * DamageAmount,
-					Instigator,
-					M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
-					(damageScale * Momentum * dir),
-					DamageName
-				);
+    
+                //SARGE: Calculate for DT based on BASE damage
+                //If we exceed the DT, then send the damage through to the mover
+                //Since otherwise we're doing 2/5th the normal damage, which means we will not break DT when we should.
+                //This fixes vanilla bug where a 200 damage grenade deals 80 damage, not enough to break an 86 DT mover.
+                if (!GMDXMoverHack(instigator,DeusExMover(M),damageScale,damageAmount,DamageName,trueDamage))
+                {
+                    M.TakeDamage
+                    (
+                        damageScale * DamageAmount,
+                        Instigator,
+                        M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
+                        (damageScale * Momentum * dir),
+                        DamageName
+                    );
+                }
 			}
 		}
 	}
@@ -744,22 +778,31 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
 		{
 			if( M != self )
 			{
+                DM = DeusExMover(M);
 				dir = M.Location - HitLocation;
 				dist = FMax(1,VSize(dir));
 				dir = dir/dist;
 				damageScale = 1 - FMax(0,(dist - M.CollisionRadius)/DamageRadius);
-				M.TakeDamage
-				(
-					damageScale * DamageAmount,
-					Instigator,
-					M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
-					(damageScale * Momentum * dir),
-					DamageName
-				);
+                
+                //SARGE: Calculate for DT based on BASE damage
+                //If we exceed the DT, then send the damage through to the mover
+                //Since otherwise we're doing 2/5th the normal damage, which means we will not break DT when we should.
+                //This fixes vanilla bug where a 200 damage grenade deals 80 damage, not enough to break an 86 DT mover.
+                if (!GMDXMoverHack(instigator,DeusExMover(M),damageScale,damageAmount,DamageName,trueDamage))
+                {
+                    M.TakeDamage
+                    (
+                        damageScale * DamageAmount,
+                        Instigator,
+                        M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
+                        (damageScale * Momentum * dir),
+                        DamageName
+                    );
+                }
 			}
 		}
 	}
-
+                
 	bHurtEntry = false;
 }
 
