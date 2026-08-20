@@ -47,13 +47,16 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 
 defaultproperties
 {
+     weaponOffsets=(X=15.00,Y=8.00,Z=-17.00)
      UseSound=Sound'RSDCrap.Misc.LockpickUse'
      ClassicUseSound=Sound'DeusExSounds.Generic.LockpickRattling'
      maxCopies=20
      bCanHaveMultipleCopies=True
      ItemName="Lockpick"
+     OldPlayerViewOffset=(X=16.000000,Y=8.000000,Z=-16.000000)
      PlayerViewOffset=(X=16.000000,Y=8.000000,Z=-16.000000)
-     PlayerViewMesh=LodMesh'DeusExItems.LockpickPOV'
+     //PlayerViewMesh=LodMesh'DeusExItems.LockpickPOV'
+     PlayerViewMesh=LodMesh'RSDCrap.LockpickPOV_Fixed'
      PickupViewMesh=LodMesh'DeusExItems.Lockpick'
      ThirdPersonMesh=LodMesh'DeusExItems.Lockpick3rd'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit2'

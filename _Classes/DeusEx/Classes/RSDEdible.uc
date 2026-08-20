@@ -10,6 +10,7 @@ var localized string msgConsumed;                                   //SARGE: Mes
 
 //Add fullness amount to the description field
 var localized String HungerLabel;
+var localized String playerHungerLabel;
 
 var const bool bGluttonous;                                         //SARGE: Is this edible affected by gluttony
 
@@ -17,6 +18,12 @@ var const bool bGluttonous;                                         //SARGE: Is 
 function bool CanAssignSecondary(DeusExPlayer player)
 {
     return true;
+}
+
+//SARGE: Whether or not to show the hunger level in the inventory screen.
+function bool DisplayHungerLevel(DeusExPlayer player)
+{
+    return player.bHardCoreMode || player.bRestrictedMetabolism;
 }
 
 function int GetHealAmount(DeusExPlayer player)
@@ -59,8 +66,11 @@ function string GetDescription2(DeusExPlayer player)
 
     str = super.GetDescription2(player);
 
-    if (fullness > 0 && (player.bHardcoreMode || player.bRestrictedMetabolism) && (!isA('Vice') || !player.bAddictionSystem))
+    if (fullness > 0 && DisplayHungerLevel(player))
+    {
         str = AddLine(str,sprintf(HungerLabel,fullness));
+        str = AddLine(str,player.GetHungerString());
+    }
 
     return str;
 }

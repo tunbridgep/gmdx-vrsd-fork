@@ -646,8 +646,6 @@ function bool IsActuallyValidEnemy(Pawn TestEnemy, optional EAllianceCheckType c
 
 function SetupCloakManager()
 {
-    if (!bHasCloak)
-        return;
 
 	// install the Perk Manager if not found
 	if (CloakManager == None)
@@ -865,8 +863,6 @@ function PostPostBeginPlay()
         
     //SARGE: Make Pawns have random heights
     SetupRandomHeight(FRandomHeightBaseMult + FRand()*fRandomHeightMult);
-
-    SetupCloakManager();
 
 	//bCloakOn = True;                                                            //RSD: Failsafe
 	//EnableCloak(False);
@@ -1936,7 +1932,7 @@ function HandleSighting(Pawn pawnSighted)
     //rather than standing around waiting to be headshotted.
     player = DeusExPlayer(pawnSighted);
     
-    if (IsActuallyValidEnemy(pawnSighted) && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
+    if (IsActuallyValidEnemy(pawnSighted) && pawnSighted == player && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
     {
         //player.DebugMessage("High Alert!");
         SetEnemy(player);
@@ -3938,6 +3934,9 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
     local bool bHelmetSoundHack;                                                //SARGE: Added
 
     origDamageType = damageType;                                                //RSD: For distinct helmet hit sounds
+    
+    //SARGE: Chair/Swimming fix???
+    Offset.Z += PrePivot.Z;
 
 	// calculate our hit extents
 	headOffsetZ = CollisionHeight * 0.7;
@@ -4757,12 +4756,13 @@ function Bool HasTwoHandedWeapon()
 
 function EnableCloak(bool bEnable)  // beware! called from C++
 {
+    SetupCloakManager();
+
 	if (!bHasCloak || (CloakEMPTimer > 0) || (Health <= 0) || bOnFire)
 		bEnable = false;
 
 	if (bEnable && !bCloakOn)
 	{
-        CloakManager.SetCloaked(true,true);
 		bCloakOn = bEnable;
 	}
 	else if (!bEnable && bCloakOn && !bForcedCloak)
@@ -11827,28 +11827,45 @@ Patrol:
 	PickDestination();
 
 Moving:
-	// Move from pathnode to pathnode until we get where we're going
-	if (destPoint != None)
-	{
-		if (!IsPointInCylinder(self, destPoint.Location, 16-CollisionRadius))
-		{
-			EnableCheckDestLoc(true);
-			MoveTarget = FindPathToward(destPoint);
-			while (MoveTarget != None)
-			{
-				if (ShouldPlayWalk(MoveTarget.Location))
-					PlayWalking();
-				MoveToward(MoveTarget, GetWalkingSpeed());
-				CheckDestLoc(MoveTarget.Location, true);
-				if (MoveTarget == destPoint)
-					break;
-				MoveTarget = FindPathToward(destPoint);
-			}
-			EnableCheckDestLoc(false);
-		}
-	}
-	else
-		Goto('Patrol');
+    bCrouching = False;
+    
+    // Move from PathNode to PathNode until we get where we're going
+    if(DestPoint != None)
+    {
+        if (!IsPointInCylinder(self, DestPoint.Location, 16-CollisionRadius))
+        {
+            EnableCheckDestLoc(true);
+            MoveTarget = FindPathToward(DestPoint);
+            
+            if (MoveTarget != None)
+            {
+                while (MoveTarget != None)
+                {
+                    if (ShouldPlayWalk(MoveTarget.Location))
+                        PlayWalking();
+                    MoveToward(MoveTarget, GetWalkingSpeed());
+                    CheckDestLoc(MoveTarget.Location, true);
+                    if (MoveTarget == DestPoint)
+                        break;
+                    MoveTarget = FindPathToward(DestPoint);
+                }
+                if ((MoveTarget != None) && (MoveTarget != DestPoint))
+                {
+                    SetOrders('Standing', 'None', False);
+                    GoToState('Standing');
+                }
+            }
+            else 
+            {
+                if(ShouldPlayWalk(DestPoint.Location))
+                    PlayWalking();
+                MoveToward(DestPoint, GetWalkingSpeed());
+            }
+            EnableCheckDestLoc(false);
+        }
+    }
+    else
+        Goto('Patrol');
 
 Pausing:
 	if (!bAlwaysPatrol)

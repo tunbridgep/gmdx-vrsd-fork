@@ -62,44 +62,48 @@ function RechargeFrom(ChargeManager other)
         other.SetCharge(other.charge - amount);
         target.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
         
-        if (charge == maxCharge)
-            owner.ClientMessage(Sprintf(msgFullyCharged,target.itemName));
-        else
-            owner.ClientMessage(Sprintf(msgRecharged,target.itemName,amount));
+        if (owner != None)
+        {
+            if (charge == maxCharge)
+                owner.ClientMessage(Sprintf(msgFullyCharged,target.itemName));
+            else
+                owner.ClientMessage(Sprintf(msgRecharged,target.itemName,amount));
+        }
     }
 }
 
 //Gets the recharge amount per biocell
-function float GetRechargeAmount()
+function float GetRechargeAmount(bool bBiocell)
 {
-    if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
+    if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true && bBiocell)                         //RSD: New Repairman perk
         return (1.5 * chargeMult);
     else 
         return chargeMult;
 }
 
 //Gets the recharge amount per biocell in a nice format
-function int GetRechargeAmountDisplay()
+function int GetRechargeAmountDisplay(bool bBiocell)
 {
-    return int(GetRechargeAmount() * 100);
+    return int(GetRechargeAmount(bBiocell) * 100);
 }
 
 function Setup(DeusExPlayer newOwner, Inventory newTarget)
 {
     owner = newOwner;
     target = newTarget;
-    owner.UpdateBeltText(target);
+    if (owner != None)
+        owner.UpdateBeltText(target);
 }
 
 //Recharges the item, and returns a relevant charge message
-function bool Recharge(optional out string msg)
+function bool Recharge(bool bBiocell,optional out string msg)
 {
     local float mult;
 
     if (target == None)
         return false;
 
-    mult = GetRechargeAmount();
+    mult = GetRechargeAmount(bBiocell);
     charge += mult * maxCharge;
     if (charge >= maxCharge)
     {
@@ -108,7 +112,7 @@ function bool Recharge(optional out string msg)
     }
     else
     {
-        msg = sprintf(msgRecharged,target.itemName,GetRechargeAmountDisplay());
+        msg = sprintf(msgRecharged,target.itemName,GetRechargeAmountDisplay(bBiocell));
     }
     //ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
     unDimIcon();                                      //RSD
@@ -117,12 +121,12 @@ function bool Recharge(optional out string msg)
 
 function bool IsFull()
 {
-    return charge >= maxCharge || (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode);
+    return charge >= maxCharge || (owner != None && !owner.bNanoswordEnergyUse && !owner.bHardcoreMode);
 }
 
 function bool IsUsedUp()
 {
-    return charge <= 0 && (owner.bNanoswordEnergyUse || owner.bHardcoreMode);
+    return charge <= 0 && !(owner != None && !owner.bNanoswordEnergyUse && !owner.bHardcoreMode);
 }
 
 function DimIcon() //RSD: When an item runs out of charge, dim the inv/belt icon in real time
@@ -165,13 +169,13 @@ function unDimIcon() //RSD: When a biocell is used to charge an item, check if i
 
 	//local PersonaInventoryItemButton invbutton;
 	local int objectNum;
+    
+    if (owner == None || target == None)
+        return;
 
     root = DeusExRootWindow(owner.rootWindow);
 	winInv = PersonaScreenInventory(root.GetTopWindow());                       //RSD: Might be none
 	hudBelt = root.hud.belt;
-    
-    if (owner == None || target == None)
-        return;
 
     if (target.bInObjectBelt)
     {
@@ -207,7 +211,7 @@ function int CalcChargeDrain()
 
 function Drain(int drainAmount)
 {
-    if (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode)
+    if (owner == none || (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode))
         return;
     charge -= drainAmount;
     if (charge <= 0)
@@ -222,6 +226,8 @@ function Drain(int drainAmount)
 //Assuming draining at 0.1sec intervals
 function DrainOverTime()
 {
+    if (owner == none || (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode))
+        return;
     charge -= CalcChargeDrain();
     if (charge <= 0)
     {

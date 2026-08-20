@@ -21,6 +21,7 @@ var localized string enabledText;
 
 var localized string confirmDefaultsTitle;
 var localized string confirmDefaultsText;
+var localized string currentValueText;
 
 var Window messagebox;
 
@@ -114,7 +115,7 @@ struct S_ListItem
     var float realValue5;
 };
 
-var S_ListItem items[255];
+var localized S_ListItem items[255];
 
 event InitWindow()
 {
@@ -573,7 +574,7 @@ function ShowHelpString(int id)
     if (bShowNameInHelp)
         h = items[id].actionText $ "|n|n" $ h;
     if (bShowValueInHelp)
-        h = h $ "|n|n" $ "Current Value: " $ GetValueString(id);
+        h = h $ "|n|n" $ CurrentValueText $ GetValueString(id);
     if (bShowDefaults && bAltDefaultLocation) //SARGE: Bit of a hack...
         h = h $ "|n" $ GetDefaultString(id);
 
@@ -613,7 +614,14 @@ event bool ListRowActivated(window list, int rowId)
     lstItems.SetField(rowId, 1, GetValueString(id));
     //RefreshChoices();
 
+    OnValueSet();
+
 	return True;
+}
+
+//Called whenever we set a valud
+function OnValueSet()
+{
 }
 
 // ----------------------------------------------------------------------
@@ -793,6 +801,7 @@ defaultproperties
      textureCols=2
      disabledText="Disabled"
      enabledText="Enabled"
+     currentValueText="Current Value: "
      confirmDefaultsTitle="Reset to default settings?"
      confirmDefaultsText="Are you sure?|nThis action cannot be undone!"
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)

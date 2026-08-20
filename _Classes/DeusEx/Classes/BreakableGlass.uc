@@ -9,7 +9,7 @@ var() bool ParisUndergroundHack;
 //Simply pull out a melee weapon
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    frobber.SelectMeleePriority(minDamageThreshold);
+    frobber.SelectMeleePriority(self);
     return false;
 }
 

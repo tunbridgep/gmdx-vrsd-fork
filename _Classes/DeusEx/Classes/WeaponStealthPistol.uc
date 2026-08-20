@@ -395,6 +395,7 @@ defaultproperties
      InventoryGroup=3
      ItemName="Stealth Pistol"
      BobDamping=0.760000
+     OldPlayerViewOffset=(X=24.000000,Y=-10.000000,Z=-14.000000)
      PlayerViewOffset=(X=24.000000,Y=-10.000000,Z=-14.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPStealthPistol"
      HDTPPickupViewMesh="HDTPItems.HDTPstealthpistolPickup"

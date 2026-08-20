@@ -47,10 +47,12 @@ simulated function PreBeginPlay()
 
 defaultproperties
 {
+     weaponOffsets=(X=19.00,Y=10.00,Z=-17.00)
      UseSound=Sound'DeusExSounds.Generic.MultitoolUse'
      maxCopies=20
      bCanHaveMultipleCopies=True
      ItemName="Multitool"
+     OldPlayerViewOffset=(X=20.000000,Y=10.000000,Z=-16.000000)
      PlayerViewOffset=(X=20.000000,Y=10.000000,Z=-16.000000)
      PlayerViewMesh=LodMesh'DeusExItems.MultitoolPOV'
      PickupViewMesh=LodMesh'DeusExItems.Multitool'

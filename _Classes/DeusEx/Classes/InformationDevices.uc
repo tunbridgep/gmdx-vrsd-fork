@@ -753,6 +753,7 @@ function string GetString(string text, bool bClosed)
 
 defaultproperties
 {
+     bVisionImportant=True
      bAltGrab=True
      TextPackage="DeusExText"
      msgNoText="It is blank"
@@ -776,6 +777,7 @@ defaultproperties
      bookTitles(1)=(textTag="DeusExText.03_Book06",replacement="Curly's Journal")
      bookTitles(2)=(textTag="DeusExText.06_Book07",replacement="Scrawled Note")
      bookTitles(3)=(textTag="DeusExText.11_Book10",replacement="Journal")
+     bookTitles(4)=(textTag="DeusExText.14_Book03",replacement="1st Force Recon Company Log")
 
      datacubeTitles(0)=(textTag="DeusExText.01_Datacube01",replacement="Joseph Manderley Password Change")
      datacubeTitles(1)=(textTag="DeusExText.01_Datacube03",replacement="Comm Van Code")
@@ -875,20 +877,24 @@ defaultproperties
      datacubeTitles(95)=(textTag="DeusExText.12_Datacube02",replacement="Saddle Up (Draft)")
      datacubeTitles(96)=(textTag="DeusExText.14_Datacube01",replacement="Message for Nasir")
      datacubeTitles(97)=(textTag="DeusExText.14_Datacube02",replacement="Tunnel Code")
-     datacubeTitles(98)=(textTag="DeusExText.14_Datacube05",replacement="Security Login")
-     datacubeTitles(99)=(textTag="DeusExText.14_Datacube06",replacement="Ridley's Betrayal")
-     datacubeTitles(100)=(textTag="DeusExText.15_Datacube01",replacement="Message for Julia")
-     datacubeTitles(101)=(textTag="DeusExText.15_Datacube09",replacement="Coolant Door Lock")
-     datacubeTitles(102)=(textTag="DeusExText.15_Datacube11",replacement="Message for Alain")
-     datacubeTitles(103)=(textTag="DeusExText.15_Datacube12",replacement="Explosives")
-     datacubeTitles(104)=(textTag="DeusExText.15_Datacube17",replacement="Security Login")
-     datacubeTitles(105)=(textTag="DeusExText.15_Datacube18",replacement="Lab 12 Testing Regimen")
-     datacubeTitles(106)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
-     datacubeTitles(107)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
+     datacubeTitles(98)=(textTag="DeusExText.14_Datacube04",replacement="Help Us!")
+     datacubeTitles(99)=(textTag="DeusExText.14_Datacube05",replacement="Security Login")
+     datacubeTitles(100)=(textTag="DeusExText.14_Datacube06",replacement="Ridley's Betrayal")
+     datacubeTitles(101)=(textTag="DeusExText.15_Datacube01",replacement="Message for Julia")
+     datacubeTitles(102)=(textTag="DeusExText.15_Datacube09",replacement="Coolant Door Lock")
+     datacubeTitles(103)=(textTag="DeusExText.15_Datacube11",replacement="Message for Alain")
+     datacubeTitles(104)=(textTag="DeusExText.15_Datacube12",replacement="Explosives")
+     datacubeTitles(105)=(textTag="DeusExText.15_Datacube17",replacement="Security Login")
+     datacubeTitles(106)=(textTag="DeusExText.15_Datacube18",replacement="Lab 12 Testing Regimen")
+     datacubeTitles(107)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
+     datacubeTitles(108)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
      //Training
-     datacubeTitles(108)=(textTag="DeusExText.00_Datacube01",replacement="Door Code")
-     datacubeTitles(109)=(textTag="DeusExText.00_Datacube02",replacement="Bridge Code")
-     datacubeTitles(110)=(textTag="DeusExText.00_Datacube03",replacement="Quick Note")
+     datacubeTitles(109)=(textTag="DeusExText.00_Datacube01",replacement="Door Code")
+     datacubeTitles(110)=(textTag="DeusExText.00_Datacube02",replacement="Bridge Code")
+     datacubeTitles(111)=(textTag="DeusExText.00_Datacube03",replacement="Quick Note")
+
+     //Special
+     datacubeTitles(112)=(textTag="GMDXText.DatacubeNGPlus",replacement="Mysterious Note");
      
      shenanigansTitles(0)=(textTag="DeusExText.06_Datacube17",replacement="Captains Log: Stardate 00.2345.2223")
 

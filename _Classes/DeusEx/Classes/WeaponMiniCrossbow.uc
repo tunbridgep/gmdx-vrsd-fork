@@ -304,6 +304,7 @@ defaultproperties
      Misc1Sound=Sound'DeusExSounds.Special.Switch1Click'
      InventoryGroup=9
      ItemName="Mini-Crossbow"
+     OldPlayerViewOffset=(X=25.000000,Y=-8.000000,Z=-14.000000)
      PlayerViewOffset=(X=25.000000,Y=-8.000000,Z=-14.000000)
      HDTPPlayerViewMesh="HDTPItems.HDTPMiniCrossbow"
      HDTPPickupViewMesh="HDTPItems.HDTPminicrossbowPickup"
