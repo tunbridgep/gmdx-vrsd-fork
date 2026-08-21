@@ -7938,7 +7938,11 @@ state ADSToggle                                                                 
 
 simulated function bool TestMPBeltSpot(int BeltSpot)
 {
-	return ((BeltSpot <= 3) && (BeltSpot >= 0));
+    //Disposables go in the grenade slots
+    if (bDisposableWeapon)
+        return (BeltSpot >= 4 && BeltSpot <= 6);
+    else
+        return (BeltSpot <= 3 && BeltSpot >= 0);
 }
 
 //SARGE: Destroys the object, and makes sure if it's in our belt, it becomes a placeholder
