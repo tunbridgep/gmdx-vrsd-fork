@@ -176,7 +176,10 @@ function PlayerLogin(PlayerPawn P)
     ReplaceMusicEvents();
 
     if (default.bDeadReset)
+    {
         DeusExPlayer(P).ClientSetMusic(default.currentSong,default.savedSection,255,MTRAN_Instant);
+        default.bDeadReset = false;
+    }
 }
 
 function DeusExLevelInfo GetLevelInfo()
