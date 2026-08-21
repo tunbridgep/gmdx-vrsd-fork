@@ -2420,7 +2420,8 @@ event TravelPostAccept()
 		conPlay.TerminateConversation();
 
 	HDTP();
-	// Make sure any objects that care abou the PlayerSkin
+	
+    // Make sure any objects that care abou the PlayerSkin
 	// are notified
 	UpdatePlayerSkin();
 
@@ -20441,6 +20442,8 @@ exec function AllAmmo()                                                         
 	for( Inv=Inventory; Inv!=None; Inv=Inv.Inventory )
 		if (Ammo(Inv)!=None)
             Ammo(Inv).AmmoAmount  = GetAdjustedMaxAmmo(Ammo(Inv));     //RSD: Replaced Ammo(Inv).MaxAmmo with adjusted
+
+    UpdateHUD();
 }
 
 //SARGE: Plays the breathing sound based on gender
