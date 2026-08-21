@@ -49,6 +49,10 @@ var bool bRebooting;                      //This will be set when the turret is 
 //SARGE: Only allow beeping after 2 seconds of "no target" time
 var float beepTimer;
 
+var bool bQuickHacked;                      //SARGE: Has this thing been quick hacked already?
+var bool bQuickHackWasPreviouslyDisabled;   //SARGE: Remember disable state after quick-hacks
+var float quickHackPreviousRebootTime;      //SARGE: Hacks upon hacks!
+
 //SARGE: Store the default state of the turret
 var travel bool bSetupDefaults;
 var travel bool bDefaultDisabled;
@@ -62,6 +66,28 @@ replication
 	//server to client
 	reliable if (Role == ROLE_Authority)
 	  safeTarget, bDisabled, bActive, team, titleString;
+}
+
+//SARGE: Can we quick-hack this?
+function bool CanBeQuickHacked()
+{
+    return !bQuickHacked && !bConfused /*&& !bRebooting && !bDisabled*/;
+}
+
+//SARGE: And actually do the quick hack...
+function PerformQuickHack(DeusExPlayer P)
+{
+    bQuickHacked = true;
+    bQuickHackWasPreviouslyDisabled = bDisabled && !bRebooting;
+    quickHackPreviousRebootTime = disableTime;
+    bRebooting = true;
+    bActive = true;
+    bDisabled = false;
+    disableTime = P.saveTime + 10;
+    //P.ClientMessage("Disable time:" @ Level.TimeSeconds @ P.saveTime);
+    bTrackPlayersOnly = false;
+    bTrackPawnsOnly = true;
+    PlaySound(sound'EMPZap', SLOT_None,,, 1280);
 }
 
 // if we are triggered, turn us on
@@ -254,10 +280,20 @@ function Tick(float deltaTime)
     {
         if (remainingTime <= 0)
         {
-            bRebooting = false;
-            bDisabled = bDefaultDisabled;
-            bActive = bDefaultActive;
-            AmbientSound = Default.AmbientSound;
+            if (quickHackPreviousRebootTime > 0)
+            {
+                disableTime = quickHackPreviousRebootTime;
+            }
+            else
+            {
+                bRebooting = false;
+                bDisabled = bDefaultDisabled || bQuickHackWasPreviouslyDisabled;
+                bActive = bDefaultActive && !bQuickHackWasPreviouslyDisabled;
+                if (bActive)
+                    AmbientSound = Default.AmbientSound;
+
+                bQuickHackWasPreviouslyDisabled = false;
+            }
 
             //Reset Tracking
             bTrackPlayersOnly = bDefaultTrackPlayersOnly;
@@ -386,6 +422,10 @@ function Tick(float deltaTime)
 							}
 							else if (pawn.IsA('ScriptedPawn') && (ScriptedPawn(pawn).GetPawnAllianceType(GetPlayerPawn()) != ALLIANCE_Hostile))
 							{
+                                //SARGE: Ignore disabled robots
+                                if (pawn.IsA('Robot') && pawn.IsInState('Disabled'))
+                                    continue;
+
 							    if (bPreAlarmActiveState) //CyberP: fix the turrets causing stupidity
 							    {
 								    curTarget = pawn;
@@ -415,6 +455,10 @@ function Tick(float deltaTime)
 					// Attack enemies
 					foreach gun.VisibleActors(class'ScriptedPawn', sp, maxRange, gun.Location)
 					{
+                        //SARGE: Ignore disabled robots
+                        if (sp.IsA('Robot') && sp.IsInState('Disabled'))
+                            continue;
+
 						if (sp.bDetectable && !sp.bIgnore && (sp.GetPawnAllianceType(GetPlayerPawn()) == ALLIANCE_Hostile))
 						{
 							curTarget = sp;

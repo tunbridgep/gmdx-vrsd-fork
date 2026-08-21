@@ -101,6 +101,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Hacking Perks
 	AddPerk(Class'DeusEx.PerkDataRecovery');
 	AddPerk(Class'DeusEx.PerkModder');
+	AddPerk(Class'DeusEx.PerkQuickHack');
 	AddPerk(Class'DeusEx.PerkMisfeatureExploit');
 	AddPerk(Class'DeusEx.PerkTurretDomination');
 

@@ -4,6 +4,8 @@ New Features:
 - Added a new perk VIGILANT RECYCLER (General, 100 points): An agent learns how to restructure the nanite composites within nanokeys, allowing them to transform duplicated NanoKeys into 45 credits each.
 - Added a new perk TARGETING ROUTINES (Demolitions Advanced, 300 points): An agent is able to program the targeting routines of proximity grenades, ensuring placed EMP and Scrambler grenades only explode in the presence of robots, and placed gas grenades only explode in the presence of organics.
     - Additionally prevents medical, repair and cleaner bots from setting off placed grenades.
+- Added a new perk QUICK HACK (Computers Advanced, 450 points): An agent modifies their augmentation interface, allowing them to expel a small amount of bioenergy (%d) to interfere with the internal systems of Bots, Cameras and Turrets. By using the Reload key while holstered, an agent can disable cameras and bots or take over the targeting routines of turrets at medium range for a few seconds.
+    - Unfortunately, network firewalls are quick to adapt and prevent repeated quick hacks on the same device. 
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
 - If an enemy dropped a weapon, searching their carcass will also include their dropped weapon.
 - Weapon FOV is now properly detected, instead of using preset weapon positions.
