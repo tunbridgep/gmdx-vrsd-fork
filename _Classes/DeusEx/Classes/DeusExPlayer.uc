@@ -3435,19 +3435,13 @@ function GiveStartingItems()
     anItem = Spawn(class'WeaponProd');
     anItem.Frob(Self, None);
     anItem.bInObjectBelt = True;
-    anItem.beltPos = 0;
     anItem = Spawn(class'WeaponPistol');
     anItem.Frob(Self, None);
     anItem.bInObjectBelt = True;
-    anItem.beltPos = 1;
     advBelt = 1;
     anItem = Spawn(class'MedKit');
     anItem.Frob(Self, None);
     anItem.bInObjectBelt = True;
-    anItem.beltPos = 2;
-    swimTimer = 1000;  //CyberP: start with full stamina.
-    KillerCount = 0;    //CyberP: start with 0 kills
-    stepCount = 0;      //CyberP: start with 0 steps
     bForceBeltAutofill = false;
 }
 
@@ -3504,6 +3498,11 @@ function ResetPlayerToDefaults()
 	// clear the notes and the goals
 	DeleteAllNotes();
 	DeleteAllGoals();
+    
+    //Reset stats
+    swimTimer = 1000;  //CyberP: start with full stamina.
+    KillerCount = 0;    //CyberP: start with 0 kills
+    stepCount = 0;      //CyberP: start with 0 steps
 
 	// Nuke the history
 	ResetConversationHistory();
