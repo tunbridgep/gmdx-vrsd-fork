@@ -7725,6 +7725,7 @@ state PlayerWalking
     //SARGE: Handle multiplayer respawning
     function BeginState()
     {
+        super.BeginState();
 		if (Level.NetMode != NM_Standalone)
         {
             HeadRegion.Zone.ViewFog.X = 0;
