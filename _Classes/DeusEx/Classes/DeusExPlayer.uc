@@ -8661,7 +8661,7 @@ exec function UseSecondary(optional bool bRelease)
 
     assigned = GetSecondary();
 
-    if (RestrictInput())
+    if (RestrictInput(true))
         return;
 
     if (CarriedDecoration != none)                                          //RSD: just don't screw around with this, it didn't make any sense anyway

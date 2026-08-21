@@ -24,6 +24,8 @@ class PaulDenton extends HumanMilitary;
 // EMP			- 0%
 //
 
+var int playerSkin;
+
 function float ShieldDamage(name damageType)
 {
 	// handle special damage types
@@ -48,61 +50,59 @@ function GotoDisabledState(name damageType, EHitLocation hitPos)
 		GotoNextState();
 }
 
-function SetupSkin()
+function SetSkin(DeusExPlayer player)
 {
-	setskin(deusexplayer(getplayerpawn()));
-	super.SetupSkin();
+	if (player != None)
+        playerSkin = player.PlayerSkin;
 }
-
 
 // ----------------------------------------------------------------------
 // SetSkin()
 // ----------------------------------------------------------------------
 
-function SetSkin(DeusExPlayer player)
+function SetupSkin()
 {
     local Texture tex1, tex2;
+
+	super.SetupSkin();
 
     if (bCloakOn)
         return;
 
-	if (player != None)
-	{
-		if(IsHDTP())
-		{
-            switch(player.PlayerSkin)
-            {
-                case 0:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex0"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex0"); break;
-                case 1:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex2"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex1"); break;
-                case 2:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex3"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex2"); break;
-                case 3:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex4"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex3"); break;
-                case 4:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex5"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex4"); break;
-            }
-            multiskins[0] = tex1;
-            multiskins[3] = tex2;
-		}
-		else
-		{
-			switch(player.PlayerSkin)
-			{
-				case 0:	MultiSkins[0] = Texture'PaulDentonTex0';
-						MultiSkins[3] = Texture'PaulDentonTex0';
-						break;
-				case 1:	MultiSkins[0] = Texture'PaulDentonTex4';
-						MultiSkins[3] = Texture'PaulDentonTex4';
-						break;
-				case 2:	MultiSkins[0] = Texture'PaulDentonTex5';
-						MultiSkins[3] = Texture'PaulDentonTex5';
-						break;
-				case 3:	MultiSkins[0] = Texture'PaulDentonTex6';
-						MultiSkins[3] = Texture'PaulDentonTex6';
-						break;
-				case 4:	MultiSkins[0] = Texture'PaulDentonTex7';
-						MultiSkins[3] = Texture'PaulDentonTex7';
-						break;
-			}
-		}
-	}
+    if(IsHDTP())
+    {
+        switch(playerSkin)
+        {
+            case 0:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex0"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex0"); break;
+            case 1:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex2"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex1"); break;
+            case 2:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex3"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex2"); break;
+            case 3:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex4"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex3"); break;
+            case 4:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPPaulDentonTex5"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex4"); break;
+        }
+        multiskins[0] = tex1;
+        multiskins[3] = tex2;
+    }
+    else
+    {
+        switch(playerSkin)
+        {
+            case 0:	MultiSkins[0] = Texture'PaulDentonTex0';
+                    MultiSkins[3] = Texture'PaulDentonTex0';
+                    break;
+            case 1:	MultiSkins[0] = Texture'PaulDentonTex4';
+                    MultiSkins[3] = Texture'PaulDentonTex4';
+                    break;
+            case 2:	MultiSkins[0] = Texture'PaulDentonTex5';
+                    MultiSkins[3] = Texture'PaulDentonTex5';
+                    break;
+            case 3:	MultiSkins[0] = Texture'PaulDentonTex6';
+                    MultiSkins[3] = Texture'PaulDentonTex6';
+                    break;
+            case 4:	MultiSkins[0] = Texture'PaulDentonTex7';
+                    MultiSkins[3] = Texture'PaulDentonTex7';
+                    break;
+        }
+    }
 }
 
 // ----------------------------------------------------------------------

@@ -34,6 +34,8 @@ var globalconfig int iAllowCombatMusic;                                        /
 
 var globalconfig int iEnhancedMusicSystem;                                        //SARGE: Should the music system be a bit smarter about playing tracks?
 
+var bool bDeadReset;                                                    //SARGE: Dirty hack!
+
 function SetNewSong(Music song, optional byte section)
 {
     local PlayerPawn player;
@@ -72,8 +74,6 @@ function SetNewSong(Music song, optional byte section)
     //Just in case, reset our part
     else if (default.fMusicHackTimer > 0)
         player.ClientSetMusic(song,default.savedSection,255,MTRAN_Instant);
-
-
 }
 
 //Replace all MusicEvent's with GMDXMusicTriggers
@@ -108,15 +108,19 @@ function private ReplaceMusicEvents()
 function private SetHackTimer(bool bCombat)
 {
     if (bCombat)
-        default.fMusicHackTimer = 10;
+        default.fMusicHackTimer = 15;
     else
-        default.fMusicHackTimer = 4;
+        default.fMusicHackTimer = 8;
 }
 
 function SetDefaultLevelMusic(DeusExLevelInfo info)
 {
     local PlayerPawn player;
     player = GetGameInfo().GetPlayerPawn();
+
+    //SARGE: Might be placebo. Supposed to fix stupid bugs with level transitions having the same track.
+    if (info.SongAmbientSection != default.currentLevelSection)
+        default.savedSection = info.SongAmbientSection;
 
     //Always start our default song when adding a new player
     SetNewSong(player.Level.Song,info.SongAmbientSection);
@@ -131,7 +135,6 @@ function SetDefaultLevelMusic(DeusExLevelInfo info)
     }
     default.musicCheckTimer = 5.0;
     default.musicChangeTimer = 5.0;
-    
     default.currentLevelSection = info.SongAmbientSection;
 }
 
@@ -167,10 +170,16 @@ function PlayerLogin(PlayerPawn P)
     if (info.SongAmbientSection == -1)
         info.SongAmbientSection = p.Level.SongSection;
     
-    DeusExPlayer(p).DebugMessage("New Song:" @ p.Level.Song @ "Section: " $ p.level.SongSection @ "info.SongAmbientSection: " $ info.SongAmbientSection);
+    DeusExPlayer(P).DebugMessage("New Song:" @ p.Level.Song @ "Section: " $ p.level.SongSection @ "info.SongAmbientSection: " $ info.SongAmbientSection);
 
     SetDefaultLevelMusic(info);
     ReplaceMusicEvents();
+
+    if (default.bDeadReset)
+    {
+        DeusExPlayer(P).ClientSetMusic(default.currentSong,default.savedSection,255,MTRAN_Instant);
+        default.bDeadReset = false;
+    }
 }
 
 function DeusExLevelInfo GetLevelInfo()
@@ -286,6 +295,7 @@ function Tick(float deltaTime)
                 default.savedSection = player.SongSection;
 
 			default.musicMode = MUS_Dying;
+            default.bDeadReset = true;
 			player.ClientSetMusic(default.currentSong, 1, 255, MTRAN_Fade);
             SetHackTimer(false);
 		}
@@ -339,6 +349,8 @@ function Tick(float deltaTime)
                     SetHackTimer(false);
 				}
 			}
+            else if (default.fMusicHackTimer == 0 && default.musicMode == MUS_Ambient)
+                default.savedSection = info.SongAmbientSection;
 		}
 	}
 }

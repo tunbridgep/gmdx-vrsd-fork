@@ -813,6 +813,11 @@ function PostBeginPlay()
 {
 
 	Super.PostBeginPlay();
+    
+    //SARGE: Prevent going into stasis ever for predictable enemies
+    LastRenderTime = Level.TimeSeconds;
+    
+    SetupCloakManager();
 
 	//sort out HDTP settings
 	UpdateHDTPSettings();
@@ -4221,7 +4226,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer') && !bHidden && !bCloakOn)
     {
         //SARGE: Don't display poison effect hitmarkers in Hardcore mode. //SARGE: Or at all.
-        if ((DamageType != 'PoisonEffect' && DamageType != 'TearGas') || !DeusExPlayer(instigatedBy).bHardcoreMode)
+        if ((DamageType != 'PoisonEffect' && DamageType != 'TearGas' && DamageType != 'BleedEffect') || !DeusExPlayer(instigatedBy).bHardcoreMode)
         {
             if (DeusExPlayer(instigatedBy).bHitmarkerOn)
                 DeusExPlayer(instigatedBy).hitmarkerTime = 0.2;
@@ -4771,16 +4776,15 @@ function Bool HasTwoHandedWeapon()
 
 function EnableCloak(bool bEnable)  // beware! called from C++
 {
-    SetupCloakManager();
-
 	if (!bHasCloak || (CloakEMPTimer > 0) || (Health <= 0) || bOnFire)
 		bEnable = false;
 
 	if (bEnable && !bCloakOn)
 	{
+        CloakManager.SetCloaked(true,false);
 		bCloakOn = bEnable;
 	}
-	else if (!bEnable && bCloakOn && !bForcedCloak)
+	else if (!bEnable && bCloakOn && (!bForcedCloak || IsInState('Dying')))
 	{
         CloakManager.SetCloaked(false,true);
 		bCloakOn = bEnable;
@@ -8696,6 +8700,9 @@ function Tick(float deltaTime)
     if (!bFirstTickDone && !ShouldCreate(player))
         Destroy();
 
+    //SARGE: Prevent going into stasis ever for predictable enemies
+    if (IsInState('Patrolling') || IsInState('Seeking'))
+        LastRenderTime = Level.TimeSeconds;
     
     //SARGE: tick down high alert state
     fHighAlertState = FMAX(0,fHighAlertState - deltaTime);
