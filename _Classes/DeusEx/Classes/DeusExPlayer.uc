@@ -17673,12 +17673,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 				foreach AllActors(class'BallisticArmor', armor)
 				{
 			        if ((armor.Owner == Self) && armor.bActive)
-			            {
-							if (skillLevel == 1)
-								armor.Charge -= (Damage * 16 * skillLevel);
-							else
-								armor.Charge -= (Damage * 32 * skillLevel);	// Trash: Nerfed
-						}
+                            armor.Charge -= (Damage * 32 * skillLevel);
                     if (armor.Charge < 0)                                       //RSD: Don't go below zero
                     {
                         armor.Charge = 0;

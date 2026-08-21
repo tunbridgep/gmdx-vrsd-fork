@@ -37,6 +37,7 @@ Bug Fixes:
 - Fixed Repair Bots giving the DTS extra charge with the Field Repair perk.
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
 - Various fixes for red borders when hovering over some items in certain circumstances.
+- Ballistic Vests no longer drain more charge at Trained than at Untrained Enviro Resistance.
 - Fixed Female JC not displaying overlays in the Augmentation screen when Augs are installed.
 - Fixed mismatched texture on the Combat Knife (thanks Kisskills, original mod here: https://www.nexusmods.com/deusex/mods/92)
     - Also fixed the same issue on all Augmentique knife skins.
