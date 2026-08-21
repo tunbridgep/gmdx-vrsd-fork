@@ -413,7 +413,7 @@ function bool ButtonActivated(Window buttonPressed)
             case buttonStats:
                 winInfo.Clear();
                 bDoneModifiers = false;
-                if (!player.bShowModifiers && (!player.bShowStatus || !player.bAddictionSystem))
+                if (!player.bShowModifiers && (!player.bShowStatus || !player.bAddictionSystem) && enabledModifiersString != "")
                 {
                     player.bShowModifiers = true;
                     player.bShowStatus = true;
@@ -515,13 +515,24 @@ function Tick(float deltaTime)
     }
     
     //Update Status Button
+    buttonStats.SetButtonText(StatsButtonLabel);
     
-    if (player.bShowModifiers)
-        buttonStats.SetButtonText(PedometerButtonLabel);
-    else if (player.bShowStatus && !player.bShowModifiers && player.bAddictionSystem)
+    if (player.bShowStatus && !player.bShowModifiers && player.bAddictionSystem)
         buttonStats.SetButtonText(AddictionButtonLabel);
-    else
+    else if (player.bShowModifiers && player.bAddictionSystem)
+        buttonStats.SetButtonText(PedometerButtonLabel);
+    else if (player.bShowModifiers)
+        buttonStats.SetButtonText(StatsButtonLabel);
+    else if (enabledModifiersString != "")
         buttonStats.SetButtonText(ModifiersButtonLabel);
+    else if (player.bAddictionSystem)
+        buttonStats.SetButtonText(AddictionButtonLabel);
+
+    //If we have no body part selected, and no reason to click the stats button, disable it
+    if (!bBodyPartPressed && !player.bAddictionSystem && enabledModifiersString == "")
+        buttonStats.SetSensitivity(false);
+    else
+        buttonStats.SetSensitivity(true);
 }
 
 function DisplayCommonInfo()
@@ -733,7 +744,7 @@ function UpdateModifiersText()
         winInfo.winScroll.EnableWindow(true);
     }
 
-    if (player.bRandomizeCrap || player.bRandomizeMods || player.bRandomizeEnemies || player.bRandomizeAugs || player.bRandomizeCrates)
+    if (/*player.bRandomizeCrap || */player.bRandomizeMods || player.bRandomizeEnemies || player.bRandomizeAugs || player.bRandomizeCrates)
     {
         winInfo.SetText(GetSeedString());
         winInfo.AddLine();
