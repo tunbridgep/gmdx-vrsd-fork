@@ -470,7 +470,7 @@ var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
 var globalconfig int iModdedHeadBob;                                            //SARGE: Now an int
-var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
+var globalconfig int iBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig int iBeltMemory;  								     			//Sarge: Added new feature to allow belt to rember items. 0 = Disabled, 1 = Enabled, 2 = Autofill Placeholders.
@@ -1147,7 +1147,7 @@ replication
 
 function bool AutofillBelt()
 {
-    return bBeltAutofill || bForceBeltAutofill || Level.NetMode != NM_Standalone;
+    return iBeltAutofill > 0 || bForceBeltAutofill || Level.NetMode != NM_Standalone;
 }
 
 //=========================================================

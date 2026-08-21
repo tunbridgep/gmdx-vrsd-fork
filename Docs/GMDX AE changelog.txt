@@ -27,6 +27,8 @@ New Features:
 - The number of Lockpicks and Multitools can now show under the NanoKey icon.
     - Disabled by default. Enable it in the QoL menu.
 - Current hunger level now shows on edibles, not just the health screen
+- Added a new Belt Autofill mode that allows using the Categorised Multiplayer belt in Singleplayer
+    - Items can still be assigned to any belt slots manually, and dragged anywhere. The setting only controls autofill.
 
 Bug Fixes:
 - Fixed Secondary icon sometimes being cleared when transitioning between maps.

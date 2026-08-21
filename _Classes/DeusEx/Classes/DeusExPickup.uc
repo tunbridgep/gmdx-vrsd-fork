@@ -175,6 +175,16 @@ replication
 		UseOnce;
 }
 
+// ----------------------------------------------------------------------
+// TestMPBeltSpot()
+// Returns true if the suggested belt location is ok for the object in mp.
+// ----------------------------------------------------------------------
+
+simulated function bool TestMPBeltSpot(int BeltSpot)
+{
+   return (BeltSpot >= 7 && BeltSpot <= 12);
+}
+
 function DropFrom(vector StartLocation)
 {
     Style = default.Style;

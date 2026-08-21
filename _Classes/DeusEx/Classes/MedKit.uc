@@ -47,16 +47,6 @@ function int GetHealAmount(DeusExPlayer player)
     return player.CalculateSkillHealAmount(healAmount);
 }
 
-// ----------------------------------------------------------------------
-// TestMPBeltSpot()
-// Returns true if the suggested belt location is ok for the object in mp.
-// ----------------------------------------------------------------------
-
-simulated function bool TestMPBeltSpot(int BeltSpot)
-{
-   return (BeltSpot == 8);
-}
-
 //SARGE: Max number is increased with CombatMedicsBag
 function int RetMaxCopies()
 {

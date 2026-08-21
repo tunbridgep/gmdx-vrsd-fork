@@ -489,7 +489,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     else
                     {
                         //First, always allow empty slots if we have autofill turned on
-                        if (objects[i].GetItem() == None && (!player.IsPlaceholder(i) || player.iBeltMemory == 0) && objects[i].bAllowDragging)
+                        if (objects[i].GetItem() == None && (!player.IsPlaceholder(i) || player.iBeltMemory == 0) && objects[i].bAllowDragging && (player.iBeltAutofill < 2 || newItem.TestMPBeltSpot(i)))
                             break;
                     }
                 }

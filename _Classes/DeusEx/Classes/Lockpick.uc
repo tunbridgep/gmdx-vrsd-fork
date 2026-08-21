@@ -35,16 +35,6 @@ function OnUnEquipped()
         PlaySound(sound'RSDCrap.Misc.LockpickUnEquip',SLOT_None);
 }
 
-// ----------------------------------------------------------------------
-// TestMPBeltSpot()
-// Returns true if the suggested belt location is ok for the object in mp.
-// ----------------------------------------------------------------------
-
-simulated function bool TestMPBeltSpot(int BeltSpot)
-{
-   return (BeltSpot == 10);
-}
-
 defaultproperties
 {
      weaponOffsets=(X=15.00,Y=8.00,Z=-17.00)

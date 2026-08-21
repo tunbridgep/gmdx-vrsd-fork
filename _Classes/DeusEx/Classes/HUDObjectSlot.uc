@@ -338,7 +338,7 @@ event DrawWindow(GC gc)
 			gc.DrawBorders(slotIconX - 1, slotIconY - 1, borderWidth, borderHeight, 0, 0, 0, 0, texBorders);
 		}
 	}
-    else if ((item == None) && (player != None) && (player.Level.NetMode != NM_Standalone) && (player.bBeltIsMPInventory))
+    else if ((item == None) && GetDelineatedBelt(false))
     {
 		// Text defaults
 		gc.SetAlignments(HALIGN_Center, VALIGN_Center);
@@ -351,7 +351,7 @@ event DrawWindow(GC gc)
 		}
 		else if ((objectNum >=4) && (objectNum <=6))
 		{
-			gc.DrawText(1+1, 42, 42, 7, "GRENADES");
+			gc.DrawText(1+1, 42, 42, 7, "THROWABLE");
 		}
 		else if ( ((objectNum >=7) && (objectNum <=12)))
 		{
@@ -407,12 +407,16 @@ function DrawHUDBackground(GC gc)
 
    // DEUS_EX AMSD Warning.  This background delineates specific item locations on the belt, which
    // are usually only known to the items themselves.
-   if ( (player != None) && (Player.Level.Netmode != NM_Standalone) && (Player.bBeltIsMPInventory) && ((objectNum == 3) || (objectNum == 6)) )
-   {
+   if (GetDelineatedBelt(true))
       gc.DrawTexture(0, 0, width, height, 0, 0, mpBorderTex);
-   }
    else
       gc.DrawTexture(0, 0, width, height, 0, 0, texBackground);
+}
+
+//SARGE: Is the belt delineated, should it be drawn as the sectioned MP belt?
+function bool GetDelineatedBelt(bool bCheckSlots)
+{
+    return (player != None && ((Player.Level.Netmode != NM_Standalone && Player.bBeltIsMPInventory) || player.iBeltAutofill >= 2) && (!bCheckSlots || objectNum == 3 || objectNum == 6));
 }
 
 // ----------------------------------------------------------------------

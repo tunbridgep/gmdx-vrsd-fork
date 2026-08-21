@@ -3,16 +3,6 @@
 //=============================================================================
 class Multitool extends SkilledTool;
 
-// ----------------------------------------------------------------------
-// TestMPBeltSpot()
-// Returns true if the suggested belt location is ok for the object in mp.
-// ----------------------------------------------------------------------
-
-simulated function bool TestMPBeltSpot(int BeltSpot)
-{
-   return (BeltSpot == 11);
-}
-
 function Display(bool overlay)
 {
     super.Display(overlay);
