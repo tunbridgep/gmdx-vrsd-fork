@@ -1731,6 +1731,14 @@ function PlaySelect()
      }
      else
      {
+        if (player != none && player.AugmentationSystem != none)
+            p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
+        
+        if (p < 1.0)
+            p = 1.0;
+            
+        if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
+            p *= 1.2;
 
         //Skip the select animation in quick melee mode.
         if (bQuickSelect)
@@ -1741,20 +1749,10 @@ function PlaySelect()
         else if (bBeginQuickMelee)
         {
             if (IsA('WeaponShuriken'))
-                p = 3;
+                p *= 3;
             else
-                p = 2;
+                p *= 2;
             //ReadyToFire();
-        }
-        else if (player != none && player.AugmentationSystem != none)
-        {
-            p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
-            if (p < 1.0)
-            {
-            p = 1.0;
-            if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
-                p = 1.2;
-            }
         }
 
         //SARGE: Addon Penalties
@@ -7854,39 +7852,37 @@ simulated function TweenDown()
             PlaySound(DeselectSound,SLOT_None);
     }
 
-    //If we're switching to a secondary, change at high speed
-    if (bQuickPutAway)
-    {
-        PlayAnim('Down', 4, 0.02);
-        bQuickPutAway = false;
-        return;
-    }
-    /*
-    else if (bBeginQuickMelee)
-    {
-        PlayAnim('Down', 2, 0.02);
-        return;
-    }
-    */
-    
     player = DeusExPlayer(Owner);
 
-     if (player != None)
-     p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
+     if (player != None && player.AugmentationSystem != none)
+        p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
         
      if (p < 1.0)
-     p = 1.0;
+        p = 1.0;
+        
+    //SARGE: GOD this takes forever
+    if (IsA('WeaponSawedOffShotgun'))
+        p *= 1.2;
+
+    //SARGE: Make weapon switching speed matter in Hardcore
+    if (player != None && player.bHardCoreMode)
+        p *= 0.85;
+    
+    //Secondaries switch FAST
+    if (bQuickPutAway)
+    {
+        bQuickPutAway = false;
+        p *= 4;
+    }
+		
+    // Have the put away animation play twice as fast in multiplayer
+    if ( Level.NetMode != NM_Standalone )
+        p *= 2;
 
 	if ( (AnimSequence != '') && (GetAnimGroup(AnimSequence) == 'Select') )
 		TweenAnim( AnimSequence, AnimFrame * 0.4 );
 	else
-	{
-		// Have the put away animation play twice as fast in multiplayer
-		if ( Level.NetMode != NM_Standalone )
-			PlayAnim('Down', 2.0, 0.05);
-		else
-			PlayAnim('Down', p, 0.02);
-	}
+        PlayAnim('Down', p, 0.02);
 	BobDamping=default.BobDamping;
 }
  //CyberP end
