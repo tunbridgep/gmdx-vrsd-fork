@@ -66,7 +66,7 @@ var localized string NameBlankPrompt;
 var bool bHardCoreMode; //GMDX: menu holder for player
 var bool bRandomizeCrates;                                                      //RSD: Same for these
 var bool bRandomizeMods;
-var int iAugShuffleMode;                                                                 //RSD: 0 = no shuffle, 1 = random, 2 = semi-random
+var int iAugShuffleMode;                                                                 //Ivan Kenobi: 0 = no shuffle, 1 = fully random, 2 = semi-random
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
