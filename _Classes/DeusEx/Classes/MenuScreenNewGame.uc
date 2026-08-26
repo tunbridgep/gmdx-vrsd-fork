@@ -66,7 +66,7 @@ var localized string NameBlankPrompt;
 var bool bHardCoreMode; //GMDX: menu holder for player
 var bool bRandomizeCrates;                                                      //RSD: Same for these
 var bool bRandomizeMods;
-var int iAugShuffleMode;                                                                 //RSD: 0 = no shuffle, 1 = random, 2 = random but same order every time
+var int iAugShuffleMode;                                                                 //RSD: 0 = no shuffle, 1 = random, 2 = semi-random
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
@@ -989,7 +989,7 @@ function ScrambleAugOrderList()                                                 
 		log(player.augOrderNums[i]);
 }
 
-function ScrambleSemiAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game, but keep the same order every time
+function ScrambleSemiAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game
 {
 	local int i, j, temp;
 
