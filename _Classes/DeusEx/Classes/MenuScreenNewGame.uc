@@ -888,9 +888,16 @@ function SaveSettings()
     player.bHarderSkillRebalance=bHarderSkillRebalance;
     player.bHarderChargedPickups=bHarderChargedPickups;
     player.bHardenedBreakables=bHardenedBreakables;
-    if (player.iAugShuffleMode > 0)                                                  //RSD: New aug randomization feature
-	    //TODO: implement proper behavior for 2 modes
-        ScrambleAugOrderList();
+    switch (player.iAugShuffleMode)                                                  // RSD: New aug randomization feature
+	{
+		case 1: 
+			ScrambleAugOrderList();
+			break;
+
+	    case 2:
+			ScrambleSemiAugOrderList();
+			break;
+	}
 
     //Fix players still having killswitch if they had it previously
     if (!player.bRealKillswitch)
@@ -955,21 +962,95 @@ function SaveSettings()
 	}
 }
 
+function ShuffleAugOrderRange(int firstIndex, int lastIndex)                    //AE: Helper for partial aug shuffle
+{
+	local int i, j, temp;
+
+	for (i = lastIndex; i > firstIndex; i--)
+	{
+		j = firstIndex + rand(i - firstIndex + 1);
+
+		temp = player.augOrderNums[i];
+		player.augOrderNums[i] = player.augOrderNums[j];
+		player.augOrderNums[j] = temp;
+	}
+}
+
 function ScrambleAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game
 {
-    local int i,j,temp;
+	local int i;
 
-    for (i=0; i<ArrayCount(player.augOrderNums); i++)                           //RSD: Initialize ordered list
-	    player.augOrderNums[i] = i;
-    for (i=ArrayCount(player.augOrderNums)-1; i>0; i--)                         //RSD: Fisher–Yates shuffle algorithm
-    {
-        j = rand(i+1);                                                          //RSD: i+1 because Rand(i) produces a number between 0 and i-1, which is actually Sattolo's biased algorithm
-        temp = player.augOrderNums[i];
-        player.augOrderNums[i] = player.augOrderNums[j];
-        player.augOrderNums[j] = temp;
-    }
-    for (i=0; i<ArrayCount(player.augOrderNums); i++)
-log(player.augOrderNums[i]);
+	// init the aug order array
+	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
+		player.augOrderNums[i] = i;
+	ShuffleAugOrderRange(0, ArrayCount(player.augOrderNums) - 1);
+
+	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
+		log(player.augOrderNums[i]);
+}
+
+function ScrambleSemiAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game, but keep the same order every time
+{
+	local int i, j, temp;
+
+	// the idea is to let the player find all of the aug canisters at versalife level 2 labs if he checks all the spawns
+	// at versalife lv2 there are 13 aug slots, with 10 augs being unique
+	// so we shuffle these 10 uniques + 3 random duplicates in the first 13 slots and then add the rest, also shuffled
+
+    // all unique aug canisters (aug pairs)
+	local int uniquePairs[10];
+
+    // the rest of the canisters
+	local int duplicatePairs[11];
+
+	// hardcoded unique pairs referencing the og aug order
+	uniquePairs[0] = 0;   // Muscle / Combat
+	uniquePairs[1] = 1;   // Aqualung / Enviro Prot
+	uniquePairs[2] = 2;   // Speed / Run Silent
+	uniquePairs[3] = 3;   // Vision / Targeting
+	uniquePairs[4] = 4;   // Ballistic / Ballistic Passive
+	uniquePairs[5] = 6;   // Combat Strength / Ammo Capacity
+	uniquePairs[6] = 7;   // Spy Drone / Agg Defense
+	uniquePairs[7] = 8;   // Regeneration / Energy Shield
+	uniquePairs[8] = 10;  // Cloak / Radar Transparency
+	uniquePairs[9] = 12;  // S Heart / Power Rec
+
+	duplicatePairs[0] = 5;   // Speed / Run Silent
+	duplicatePairs[1] = 9;   // Vision / Targeting
+	duplicatePairs[2] = 11;  // Spy Drone / Agg Defense
+	duplicatePairs[3] = 13;  // Combat Strength / Ammo Capacity
+	duplicatePairs[4] = 14;  // Aqualung / Enviro Prot
+	duplicatePairs[5] = 15;  // Ballistic / Ballistic Passive
+	duplicatePairs[6] = 16;  // Muscle / Combat
+	duplicatePairs[7] = 17;  // Speed / Run Silent
+	duplicatePairs[8] = 18;  // Regeneration / Energy Shield
+	duplicatePairs[9] = 19;  // Cloak / Radar Transparency
+	duplicatePairs[10] = 20;  // S Heart / Power Rec
+
+    // Filling the first 10 slots with unique pairs
+	for (i = 0; i < 10; i++)
+		player.augOrderNums[i] = uniquePairs[i];
+
+    // Shuffling the duplicates to pick the 3 randomly by index
+	for (i = 10; i > 0; i--)
+	{
+		j = rand(i+1);
+		temp = duplicatePairs[i];
+		duplicatePairs[i] = duplicatePairs[j];
+		duplicatePairs[j] = temp;
+	}
+
+    // Adding the three random duplicates
+	for (i = 0; i < 3; i++)
+		player.augOrderNums[10+i] = duplicatePairs[i];
+
+    // The rest goes into the later pool
+	for (i = 0; i < 8; i++)
+		player.augOrderNums[13+i] = duplicatePairs[i+3];
+
+    // Shuffle positions within both pools independently. Voila!
+	ShuffleAugOrderRange(0, 12);
+	ShuffleAugOrderRange(13, 20);
 }
 
 //LDDP
