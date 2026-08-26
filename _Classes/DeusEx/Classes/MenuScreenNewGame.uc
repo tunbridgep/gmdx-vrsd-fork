@@ -970,7 +970,7 @@ function ShuffleAugOrderRange(int firstIndex, int lastIndex)
 
 	for (i = lastIndex; i > firstIndex; i--)
 	{
-		j = firstIndex + rand(i - firstIndex + 1);
+		j = firstIndex + Player.Randomizer.GetRandomInt(i - firstIndex + 1);
 
 		temp = player.augOrderNums[i];
 		player.augOrderNums[i] = player.augOrderNums[j];
