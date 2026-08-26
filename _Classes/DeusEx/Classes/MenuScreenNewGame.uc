@@ -962,7 +962,9 @@ function SaveSettings()
 	}
 }
 
-function ShuffleAugOrderRange(int firstIndex, int lastIndex)                    //AE: Helper for partial aug shuffle
+// Ivan Kenobi: Helper for partial aug shuffle
+// TLDR: can be abstracted away to a more general array shuffle
+function ShuffleAugOrderRange(int firstIndex, int lastIndex)
 {
 	local int i, j, temp;
 
@@ -975,6 +977,7 @@ function ShuffleAugOrderRange(int firstIndex, int lastIndex)                    
 		player.augOrderNums[j] = temp;
 	}
 }
+
 // Ivan Kenobi: Shuffle the order of aug canisters encountered throughout the game
 function ScrambleAugOrderList()
 {
