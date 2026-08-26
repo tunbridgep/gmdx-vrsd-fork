@@ -890,7 +890,7 @@ function SaveSettings()
     player.bHardenedBreakables=bHardenedBreakables;
     switch (player.iAugShuffleMode)                                                  // RSD: New aug randomization feature
 	{
-		case 1: 
+		case 1:
 			ScrambleAugOrderList();
 			break;
 
