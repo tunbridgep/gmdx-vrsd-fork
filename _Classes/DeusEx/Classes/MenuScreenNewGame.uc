@@ -178,7 +178,7 @@ event InitWindow()
 	bHardCoreMode=false;
     bRandomizeCrates=default.bRandomizeCrates;                                                     //RSD
     bRandomizeMods=default.bRandomizeMods;                                                       //RSD
-    iAugShuffleMode=default.iAugShuffleMode;                                                       //RSD
+    iAugShuffleMode=default.iAugShuffleMode;                                                       //Ivan Kenobi
     bAddictionSystem=default.bAddictionSystem;                                                     //RSD
     bRestrictedSaving=default.bRestrictedSaving;                                                    //Sarge
     iNoKeypadCheese=default.iNoKeypadCheese;      	                                                //Sarge
@@ -868,7 +868,7 @@ function SaveSettings()
 	  player.bAutoReload=false;
     player.bRandomizeCrates=bRandomizeCrates;                                   //RSD
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
-    player.iAugShuffleMode=iAugShuffleMode;                                       //RSD
+    player.iAugShuffleMode=iAugShuffleMode;                                       //Ivan Kenobi
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
     player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
@@ -888,7 +888,7 @@ function SaveSettings()
     player.bHarderSkillRebalance=bHarderSkillRebalance;
     player.bHarderChargedPickups=bHarderChargedPickups;
     player.bHardenedBreakables=bHardenedBreakables;
-    switch (player.iAugShuffleMode)                                                  // RSD: New aug randomization feature
+    switch (player.iAugShuffleMode)                                                  // Ivan Kenobi: Fully/Semi-random aug canister shuffle
 	{
 		case 1:
 			ScrambleAugOrderList();
@@ -1012,7 +1012,7 @@ function ScrambleAugOrderList()
 }
 
 // Ivan Kenobi: Controlled aug randomization to prevent RNG from screwing the player over
-// Makes it possible to find all of the aug canisters after completing versalife level 2 labs if they check all the spawns prior and on said map
+// Makes it possible to find all of the aug canisters by the end of VersaLife level 2 labs if they check all the spawns
 // There are 13 aug slots before + at versalife lv2, with 10 total unique aug canisters 
 // 10 uniques + 3 random duplicates are shuffled between the first 13 spawn locations, and the rest of the duplicates spawn after in random order
 function ScrambleSemiAugOrderList()

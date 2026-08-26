@@ -1,7 +1,7 @@
 1.3:
 
 New Features:
-- Added a Semi-Random option to Aug Canister Shuffle: all unique augs can be found after completing Versalife Level 2 Labs, as in Vanilla
+- Added a Semi-Random option to Aug Canister Shuffle: all unique augs can be found by the end of Versalife Level 2 Labs, as in Vanilla
 - Added a new perk VIGILANT RECYCLER (General, 100 points): An agent learns how to restructure the nanite composites within nanokeys, allowing them to transform duplicated NanoKeys into 45 credits each.
 - Added a new perk TARGETING ROUTINES (Demolitions Advanced, 300 points): An agent is able to program the targeting routines of proximity grenades, ensuring placed EMP and Scrambler grenades only explode in the presence of robots, and placed gas grenades only explode in the presence of organics.
     - Additionally prevents medical, repair and cleaner bots from setting off placed grenades.
