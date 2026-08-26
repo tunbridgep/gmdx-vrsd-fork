@@ -991,7 +991,7 @@ function ScrambleAugOrderList()                                                 
 
 function ScrambleSemiAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game
 {
-	local int i, j, temp;
+	local int i;
 
 	// the idea is to let the player find all of the aug canisters at versalife level 2 labs if he checks all the spawns
 	// at versalife lv2 there are 13 aug slots, with 10 augs being unique
