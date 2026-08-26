@@ -1051,6 +1051,9 @@ function ScrambleSemiAugOrderList()                                             
     // Shuffle positions within both pools independently. Voila!
 	ShuffleAugOrderRange(0, 12);
 	ShuffleAugOrderRange(13, 20);
+
+	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
+		log(player.augOrderNums[i]);
 }
 
 //LDDP
