@@ -28,6 +28,7 @@ This fork is possible thanks to the following awesome people:
 - NG+ - Discord server organization and community management.
 - Kisskills - Fixed Combat Knife textures.
 - pancaketaicho - Collectible Pickup and other sound effects.
+- Ivan Kenobi - semi-random aug shuffle modifier
 
 This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe, Made In China,
