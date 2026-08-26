@@ -1031,22 +1031,13 @@ function ScrambleSemiAugOrderList()                                             
 	for (i = 0; i < 10; i++)
 		player.augOrderNums[i] = uniquePairs[i];
 
-    // Shuffling the duplicates to pick the 3 randomly by index
-	for (i = 10; i > 0; i--)
-	{
-		j = rand(i+1);
-		temp = duplicatePairs[i];
-		duplicatePairs[i] = duplicatePairs[j];
-		duplicatePairs[j] = temp;
-	}
-
-    // Adding the three duplicates + the rest, will be random cause already shuffled
+    // Adding the three duplicates + the rest
 	for (i = 0; i < ArrayCount(duplicatePairs); i++)
 		player.augOrderNums[10+i] = duplicatePairs[i];
 
-    // Shuffle positions within both pools independently. Voila!
+	// Shuffle all duplicates and then the first 13 spawns. Voila!
+	ShuffleAugOrderRange(10, 20);
 	ShuffleAugOrderRange(0, 12);
-	ShuffleAugOrderRange(13, 20);
 
 	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
 		log(player.augOrderNums[i]);
