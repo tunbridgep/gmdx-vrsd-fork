@@ -1011,8 +1011,9 @@ function ScrambleAugOrderList()
 	LogAugShuffleOrder();
 }
 
-// Ivan Kenobi: lets the player find all of the aug canisters after completing versalife level 2 labs if they check all the spawns prior and on said map
-// There are 13 aug slots before + at versalife lv2, with 10 unique aug canisters 
+// Ivan Kenobi: Controlled aug randomization to prevent RNG from screwing the player over
+// Makes it possible to find all of the aug canisters after completing versalife level 2 labs if they check all the spawns prior and on said map
+// There are 13 aug slots before + at versalife lv2, with 10 total unique aug canisters 
 // 10 uniques + 3 random duplicates are shuffled between the first 13 spawn locations, and the rest of the duplicates spawn after in random order
 function ScrambleSemiAugOrderList()
 {
