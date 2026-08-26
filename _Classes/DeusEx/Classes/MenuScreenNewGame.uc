@@ -1040,13 +1040,9 @@ function ScrambleSemiAugOrderList()                                             
 		duplicatePairs[j] = temp;
 	}
 
-    // Adding the three random duplicates
-	for (i = 0; i < 3; i++)
+    // Adding the three duplicates + the rest, will be random cause already shuffled
+	for (i = 0; i < ArrayCount(duplicatePairs); i++)
 		player.augOrderNums[10+i] = duplicatePairs[i];
-
-    // The rest goes into the later pool
-	for (i = 0; i < 8; i++)
-		player.augOrderNums[13+i] = duplicatePairs[i+3];
 
     // Shuffle positions within both pools independently. Voila!
 	ShuffleAugOrderRange(0, 12);
