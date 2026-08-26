@@ -975,8 +975,8 @@ function ShuffleAugOrderRange(int firstIndex, int lastIndex)                    
 		player.augOrderNums[j] = temp;
 	}
 }
-
-function ScrambleAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game
+// Ivan Kenobi: Shuffle the order of aug canisters encountered throughout the game
+function ScrambleAugOrderList()
 {
 	local int i;
 
