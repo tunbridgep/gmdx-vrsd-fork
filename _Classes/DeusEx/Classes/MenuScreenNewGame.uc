@@ -962,6 +962,26 @@ function SaveSettings()
 	}
 }
 
+// Ivan Kenobi: Aug debug helper
+function LogAugShuffleOrder()
+{
+	local int i;
+	local int sourceIndex;
+
+	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
+	{
+		sourceIndex = player.augOrderNums[i];
+
+		player.DebugLog(
+			"Spawn slot " $ string(i + 1)
+			$ " now has original spawn " $ string(sourceIndex) $ " with: "
+			$ string(player.augOrderList[sourceIndex].aug1)
+			$ " / "
+			$ string(player.augOrderList[sourceIndex].aug2)
+		);
+	}
+}
+
 // Ivan Kenobi: Helper for partial aug shuffle
 // TLDR: can be abstracted away to a more general array shuffle
 function ShuffleAugOrderRange(int firstIndex, int lastIndex)
@@ -988,8 +1008,7 @@ function ScrambleAugOrderList()
 		player.augOrderNums[i] = i;
 	ShuffleAugOrderRange(0, ArrayCount(player.augOrderNums) - 1);
 
-	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
-		log(player.augOrderNums[i]);
+	LogAugShuffleOrder();
 }
 
 // Ivan Kenobi: lets the player find all of the aug canisters after completing versalife level 2 labs if they check all the spawns prior and on said map
@@ -1041,8 +1060,7 @@ function ScrambleSemiAugOrderList()
 	ShuffleAugOrderRange(10, 20);
 	ShuffleAugOrderRange(0, 12);
 
-	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
-		log(player.augOrderNums[i]);
+	LogAugShuffleOrder();
 }
 
 //LDDP
