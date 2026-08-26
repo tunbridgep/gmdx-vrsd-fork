@@ -596,12 +596,12 @@ var travel bool bRandomizeModsBallistics;
 var travel bool bRandomizeModsAttachments;*/
 var travel bool bRandomizeCrates;
 var travel bool bRandomizeMods;
-var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bCutInteractions;                                               //Sarge: Allow cut-content interactions like arming Miguel and giving Tiffany Thermoptic Camo
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel int iNoKeypadCheese;													//Sarge: 1 = Prevent using keycodes that we don't know, 2 = additionally prevent plot skips, 3 = additionally obscure keypad code length.
 var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
+var travel int iAugShuffleMode;
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;

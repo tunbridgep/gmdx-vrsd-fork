@@ -66,7 +66,7 @@ var localized string NameBlankPrompt;
 var bool bHardCoreMode; //GMDX: menu holder for player
 var bool bRandomizeCrates;                                                      //RSD: Same for these
 var bool bRandomizeMods;
-var bool bRandomizeAugs;
+var int iAugShuffleMode;                                                                 //RSD: 0 = no shuffle, 1 = random, 2 = random but same order every time
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
@@ -178,7 +178,7 @@ event InitWindow()
 	bHardCoreMode=false;
     bRandomizeCrates=default.bRandomizeCrates;                                                     //RSD
     bRandomizeMods=default.bRandomizeMods;                                                       //RSD
-    bRandomizeAugs=default.bRandomizeAugs;                                                       //RSD
+    iAugShuffleMode=default.iAugShuffleMode;                                                       //RSD
     bAddictionSystem=default.bAddictionSystem;                                                     //RSD
     bRestrictedSaving=default.bRestrictedSaving;                                                    //Sarge
     iNoKeypadCheese=default.iNoKeypadCheese;      	                                                //Sarge
@@ -868,7 +868,7 @@ function SaveSettings()
 	  player.bAutoReload=false;
     player.bRandomizeCrates=bRandomizeCrates;                                   //RSD
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
-    player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
+    player.iAugShuffleMode=iAugShuffleMode;                                       //RSD
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
     player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
@@ -888,7 +888,8 @@ function SaveSettings()
     player.bHarderSkillRebalance=bHarderSkillRebalance;
     player.bHarderChargedPickups=bHarderChargedPickups;
     player.bHardenedBreakables=bHardenedBreakables;
-    if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
+    if (player.iAugShuffleMode > 0)                                                  //RSD: New aug randomization feature
+	    //TODO: implement proper behavior for 2 modes
         ScrambleAugOrderList();
 
     //Fix players still having killswitch if they had it previously
