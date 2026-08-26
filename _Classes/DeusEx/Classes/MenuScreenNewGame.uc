@@ -989,13 +989,12 @@ function ScrambleAugOrderList()                                                 
 		log(player.augOrderNums[i]);
 }
 
-function ScrambleSemiAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game
+// Ivan Kenobi: lets the player find all of the aug canisters after completing versalife level 2 labs if they check all the spawns prior and on said map
+// There are 13 aug slots before + at versalife lv2, with 10 unique aug canisters 
+// 10 uniques + 3 random duplicates are shuffled between the first 13 spawn locations, and the rest of the duplicates spawn after in random order
+function ScrambleSemiAugOrderList()
 {
 	local int i;
-
-	// the idea is to let the player find all of the aug canisters at versalife level 2 labs if he checks all the spawns
-	// at versalife lv2 there are 13 aug slots, with 10 augs being unique
-	// so we shuffle these 10 uniques + 3 random duplicates in the first 13 slots and then add the rest, also shuffled
 
     // all unique aug canisters (aug pairs)
 	local int uniquePairs[10];
