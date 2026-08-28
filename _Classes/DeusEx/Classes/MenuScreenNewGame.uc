@@ -983,7 +983,7 @@ function LogAugShuffleOrder()
 }
 
 // Ivan Kenobi: Helper for partial aug shuffle
-// TLDR: can be abstracted away to a more general array shuffle
+// TODO: can be abstracted away to a more general array shuffle
 function ShuffleAugOrderRange(int firstIndex, int lastIndex)
 {
 	local int i, j, temp;
