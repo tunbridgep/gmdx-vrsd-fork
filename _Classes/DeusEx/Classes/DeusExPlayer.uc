@@ -3198,8 +3198,8 @@ exec function StartNewGame(String startMap)
 		Level.Game.SendPlayer(Self, startMap);
 
     //If Addiction System is enabled, set it as our default screen in the Health display
-    if (bAddictionSystem)
-        bShowStatus = false;
+    bShowStatus = !bAddictionSystem;
+    bShowModifiers = false;
     
     SetupRendererSettings();
 

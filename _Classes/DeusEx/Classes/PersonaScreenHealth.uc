@@ -90,6 +90,8 @@ var bool bTraumasSelected;
 //Modifiers Button
 var localized string ModifiersButtonLabel;
 var localized string ModifiersHeader;
+var localized string DifficultyText;
+var localized string NewGameCycleText;
 var localized string SeedText;
 var localized string SeedTextPreset;
 var string enabledModifiersString; //We cache the modifiers list because it might crash otherwise, and is otherwise never modified
@@ -413,7 +415,7 @@ function bool ButtonActivated(Window buttonPressed)
             case buttonStats:
                 winInfo.Clear();
                 bDoneModifiers = false;
-                if (!player.bShowModifiers && (!player.bShowStatus || !player.bAddictionSystem) && enabledModifiersString != "")
+                if (!player.bShowModifiers && (!player.bShowStatus || !player.bAddictionSystem))
                 {
                     player.bShowModifiers = true;
                     player.bShowStatus = true;
@@ -517,22 +519,21 @@ function Tick(float deltaTime)
     //Update Status Button
     buttonStats.SetButtonText(StatsButtonLabel);
     
-    if (player.bShowStatus && !player.bShowModifiers && player.bAddictionSystem)
-        buttonStats.SetButtonText(AddictionButtonLabel);
-    else if (player.bShowModifiers && player.bAddictionSystem)
-        buttonStats.SetButtonText(PedometerButtonLabel);
-    else if (player.bShowModifiers)
-        buttonStats.SetButtonText(StatsButtonLabel);
-    else if (enabledModifiersString != "")
-        buttonStats.SetButtonText(ModifiersButtonLabel);
-    else if (player.bAddictionSystem)
-        buttonStats.SetButtonText(AddictionButtonLabel);
-
-    //If we have no body part selected, and no reason to click the stats button, disable it
-    if (!bBodyPartPressed && !player.bAddictionSystem && enabledModifiersString == "")
-        buttonStats.SetSensitivity(false);
+    //Horrible hack
+    if (player.bAddictionSystem)
+    {
+        if (player.bShowModifiers)
+            buttonStats.SetButtonText(PedometerButtonLabel);
+        else if (player.bShowStatus)
+            buttonStats.SetButtonText(AddictionButtonLabel);
+        else
+            buttonStats.SetButtonText(ModifiersButtonLabel);
+    }
     else
-        buttonStats.SetSensitivity(true);
+    {
+        if (!player.bShowModifiers)
+            buttonStats.SetButtonText(ModifiersButtonLabel);
+    }
 }
 
 function DisplayCommonInfo()
@@ -728,6 +729,23 @@ function string GetSeedString()
         return SeedText $ player.Seed;
 }
 
+/*
+//SARGE: Get our New Game Plus level.
+function string GetNGPlusString()
+{
+    return NewGameCycleText $ player.GetNewGamePlusString(false);
+}
+*/
+
+//SARGE: Read difficulty name directly from the main menu
+function string GetDifficultyString()
+{
+    //Icky hardcoded shit!
+    if (player.bHardcoreMode)
+        return DifficultyText $ class'MenuSelectDifficulty'.default.ButtonNames[4];
+    return DifficultyText $ class'MenuSelectDifficulty'.default.ButtonNames[player.combatDifficulty];
+}
+
 function UpdateModifiersText()
 {
     if (winInfo == None || bDoneModifiers)
@@ -743,16 +761,33 @@ function UpdateModifiersText()
         winInfo.winScroll.EnableScrolling(true,true);
         winInfo.winScroll.EnableWindow(true);
     }
+    
+    //Add title
+    winInfo.SetText(ModifiersHeader);
+    winInfo.AddLine();
+
+    //Show Difficulty
+    winInfo.SetText(GetDifficultyString() $ player.GetNewGamePlusString(true));
+
+    /*
+    //Show NG+ Cycle
+    if (player.iNewGamePlusCycle > 0)
+        winInfo.SetText(GetNGPlusString());
+    */
 
     if (/*player.bRandomizeCrap || */player.bRandomizeMods || player.bRandomizeEnemies || player.bRandomizeAugs || player.bRandomizeCrates)
     {
         winInfo.SetText(GetSeedString());
-        winInfo.AddLine();
     }
-    winInfo.SetText(class'MenuScreenPlaythroughModifiers'.default.Title);
-    winInfo.AddLine();
+    
+    if (enabledModifiersString != "")
+    {
+        winInfo.AddLine();
+        winInfo.SetText(class'MenuScreenPlaythroughModifiers'.default.Title);
+        winInfo.AddLine();
 
-    winInfo.SetText(enabledModifiersString);
+        winInfo.SetText(enabledModifiersString);
+    }
                 
     bDoneModifiers = true;
 }
@@ -1462,7 +1497,7 @@ defaultproperties
      pedStr="PEDOMETER"
      StatsButtonLabel="|&Stats"
      AddictionButtonLabel="|&Addictions"
-     ModifiersButtonLabel="|&Modifiers"
+     ModifiersButtonLabel="|&Information"
      PedometerButtonLabel="|&Pedometer"
      accuracyLabel=" Accuracy Penalty: "
      speedLabel=" Speed Penalty: "
@@ -1515,5 +1550,7 @@ defaultproperties
      TraumaTitleText="Health"
      ModifiersHeader="Playthrough Information"
      SeedText="Seed: "
+     DifficultyText="Difficulty: "
+     NewGameCycleText="New Game Plus Cycle: "
      SeedTextPreset=" (Preset)"
 }

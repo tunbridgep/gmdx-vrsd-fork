@@ -7,7 +7,7 @@ New Features:
     - Additionally prevents medical, repair and cleaner bots from setting off placed grenades.
 - The Overwhelming Odds modifier has been split into a new "Underwhelming Resources" modifier, which now removes resources that are normally removed on Hardcore.
     - Overwhelming Odds no longer removes resources that are normally removed on Hardcore.
-- Added the ability to see the current Playthrough Modifiers in the Health screen.
+- Added the ability to see the current Playthrough Modifiers and other playthrough information in the Health screen.
 - Selecting to use Weapon Skins will now automatically switch from the HDTP models to the normal models, rather than disabling Skins entirely.
 - If an enemy dropped a weapon, searching their carcass will also include their dropped weapon.
 - Weapon FOV is now properly detected, instead of using preset weapon positions.
