@@ -70,8 +70,6 @@ event TravelPostAccept()
 	local Sound TSound;
 	local class<DeusExCarcass> TCarc;
 	
-	Super.TravelPostAccept();
-	
 	//LDDP, load and update our female flag accordingly.
 	if (FlagBase != None)
 	{
@@ -115,6 +113,8 @@ event TravelPostAccept()
 			bFemale = true;
 		}*/
 	}
+	
+	Super.TravelPostAccept();
 	
 	//LDDP, 10/26/21: Update HUD elements.
 	if ((DeusExRootWindow(RootWindow) != None) && (DeusExRootWindow(RootWindow).HUD != None) && (DeusExRootWindow(RootWindow).HUD.Hit != None))
