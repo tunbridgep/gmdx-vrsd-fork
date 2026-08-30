@@ -18578,8 +18578,8 @@ exec function AllHealth()
 	if (!bCheatsEnabled)
 		return;
 
-	RestoreAllHealth();
     HealAllWounds();
+	RestoreAllHealth();
 }
 
 // ----------------------------------------------------------------------
