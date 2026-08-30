@@ -410,7 +410,7 @@ var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in
 
 var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
 
-var bool bPrisonStart;                              //SARGE: Alternate Start
+var travel bool bPrisonStart;                      //SARGE: Alternate Start
 
 //Radial Aug Menu
 var bool bRadialAugMenuVisible;
@@ -530,6 +530,7 @@ var transient float GEPsteeringX,GEPsteeringY; //used for mouse input control
 var WeaponGEPGun GEPmounted;
 var travel int stepCount;
 var travel bool bShowStatus;
+var travel bool bShowModifiers; //SARGE: Added
 var travel bool bShowAugStatus;
 var bool bIcarusClimb;
 var float CarriedDecoGlow;
@@ -1047,7 +1048,12 @@ var transient bool bTookBumpDamage;                   //SARGE: Set when we take 
 
 var globalconfig bool bAlwaysDropCarcasses;           //SARGE: Always drop carcasses at our feet instead of saying "cannot drop here"
 
+var travel int iNewGamePlusCycle;                     //SARGE: New Game+ Cycle. Starts at 0 and goes up by 1 every time you finish the game.
+var globalconfig int iNewGamePlusReached;            //SARGE: The highest NG+ Cycle that's been reached in any game so far.
+
 var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
+
+var travel bool bHardcoreFilterOptionResources;     //SARGE: Hardcore Filter Option, but for crates
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
@@ -1056,6 +1062,8 @@ var private float fAutoHideBeltTimeCountdown;   //SARGE: The countdown timer lef
 
 var const localized string msgSaveName;
 
+var const localized string msgSaveName;
+var const localized string msgNewGamePlusString;
 var const localized String TooSick;
 
 //SARGE: Stores if the shot that killed us resulted in bleeding, so it can be
@@ -1079,6 +1087,9 @@ var globalconfig bool bShowAugLevelsInHUD;              //SARGE: Show aug levels
 //Credits update/refactoring
 var localized string msgCreditsAdded;
 var localized string msgCreditsDeducted;
+
+//Allow custom seeds
+var globalconfig int iPresetSeed;
 
 //////////END GMDX
 
@@ -1571,231 +1582,71 @@ function UpdateHDTPsettings()
 	}
 }
 
-function setupDifficultyMod() //CyberP: scale things based on difficulty. To find all things modified by
-{                             //CyberP: difficulty level in GMDX, search CombatDifficulty & bHardCoreMode.
-local ScriptedPawn P;         //CyberP: WARNING: is called every login.
-local ThrownProjectile TP;
-local AutoTurret       T;
-local SecurityCamera   SC;
-local DeusExWeapon     WP;
-local DeusExAmmo       AM;
-local DeusExMover      MV;
-local Keypad           KP;
-local Medkit           MK;
-local BioelectricCell  BC;
-local inventory        anItem;
-local int              i;
-local DeusExDecoration DC;
-local actor            AR;
-local DeusExLevelInfo dxInfo;                                                   //RSD: Added
-local name flagName;                                                            //RSD: Added
-local bool bFirstLevelLoad;                                                     //RSD: Added
-local AlarmUnit        AU;                                                      //RSD: Added
-local Perk perkDoorsman;
-local DeusExPickup     PU;                                                      //SARGE: Added
+//SARGE: TODO: Convert this horrid mess into usable code.
+//TT shit the bed once again...
+//SARGE: Okay, it's kind of clean now...
+//lets just call off to the individual objects instead, let them
+//sort it out.
+function setupDifficultyMod()
+{
+    local Name flagName;
+    local ScriptedPawn P;
+    local DeusExPickup PU;
+    local DeusExProjectile PR;
+    local DeusExDecoration DC;
+    local DeusExAmmo AM;
+    local DeusExMover MV;
+    local DeusExWeapon WP;
+    local BeamTrigger BT;
+    local LaserTrigger LT;
+    
+    if (rootWindow == None || GetLevelInfo() == None || flagBase == None)
+        return;
 
-//log("bHardCoreMode =" @bHardCoreMode);
-//log("CombatDifficulty =" @CombatDifficulty);
+    //SARGE: Only run the first time we start a map
+    flagName = rootWindow.StringToName("M"$Caps(GetLevelInfo().mapName)$"_NotFirstTime");
+    if (flagBase.GetBool(flagName))
+        return;
 
-     dxInfo=GetLevelInfo();
-     flagName = rootWindow.StringToName("M"$Caps(dxInfo.mapName)$"_NotFirstTime");
-   	 bFirstLevelLoad = !flagBase.GetBool(flagName);                             //RSD: Tells us if this is the first time loading a map
-//log("flagName =" @flagName);
-//log("bFirstLevelLoad =" @bFirstLevelLoad);
-
-
-    //SARGE: Set up shenanigans
-    if (bFirstLevelLoad)
+    Foreach AllActors(class'DeusExPickup', PU)
     {
-        ForEach AllActors(class'ScriptedPawn', P)
+        if (PU.Owner == None)
         {
-            P.Shenanigans(bShenanigans);
-            P.SmartWeaponDraw(self);
-        }
-        ForEach AllActors(class'DeusExPickup', PU)
+            PU.SetupDifficultyMod(self);
             PU.Shenanigans(bShenanigans);
+        }
     }
     
-
-     bStunted = False; //CyberP: failsafe
-     if (CarriedDecoration != None && CarriedDecoration.IsA('Barrel1'))
-         Barrel1(CarriedDecoration).StupidBugfix();
-     ForEach AllActors(class'ScriptedPawn', P)
-     {
-      if (P.bHardcoreOnly == True && bHardCoreMode == False && bHardcoreFilterOption == False)  //CyberP: remove this pawn if we are not hardcore
-          P.Destroy();
-      else if (P.bHardcoreRemove && (bHardCoreMode == True || bHardcoreFilterOption == True))
-          P.Destroy();
-      P.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad); //RSD: Replaced ALL NPC stat modulation with a compact function implementation
-    }
-
-    if (bHardCoreMode == False)
+    Foreach AllActors(class'ScriptedPawn', P)
     {
-        ForEach AllActors(class'ThrownProjectile', TP)
-        {
-       	    if (TP.bNoHardcoreFilter == True && !bHardcoreFilterOption) //CyberP: destroy this bomb if we are not hardcore
-	       	    TP.Destroy();
-            else
-                TP.proxRadius=156.000000;  //Also lower radius if not hardcore
-        }
-        ForEach AllActors(class'DeusExDecoration', DC)
-        {
-           if ((DC.bLowDifficultyOnly && CombatDifficulty >= 3.0) || DC.bHardcoreOnly)
-           {
-              DC.DrawScale = 0.00001;
-              DC.SetCollision(false,false,false);
-              DC.SetCollisionSize(0,0);
-              DC.LightType=LT_None;
-	       }
-        }
-    }
-    else
-    {
-       ForEach AllActors(class'DeusExAmmo', AM)
-       {
-           if (AM.Owner == None && !AM.bLooted)                                 //RSD: Added !bLooted so we don't add free ammo to containers we've partially looted
-           {
-        	/*if (AM.IsA('AmmoDartTaser'))
-	         AM.AmmoAmount = 3;                                                 //RSD: Was 1, now 3
-	        else */if (AM.IsA('Ammo20mm'))
-	         AM.AmmoAmount = 2;
-	        else if (AM.IsA('AmmoRocket'))
-             AM.AmmoAmount = 3;
-           }
-       }
-       ForEach AllActors(class'DeusExDecoration', DC)
-       {
-           if (DC.bLowDifficultyOnly || DC.bHardcoreRemoveIt)
-           {
-              DC.DrawScale = 0.00001;
-              DC.SetCollision(false,false,false);
-              DC.SetCollisionSize(0,0);
-              DC.SetPhysics(PHYS_Flying);
-              DC.LightType=LT_None;
-	       }
-       }
+        P.SetupDifficultyMod(self);
+        P.Shenanigans(bShenanigans);
+        P.SmartWeaponDraw(self);
     }
 
-    if (PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-    {
-    ForEach AllActors(class'Medkit', MK)
-    {
-		       MK.MaxCopies = 20;
-    }
-    ForEach AllActors(class'BioelectricCell', BC)
-    {
-		       BC.MaxCopies = 25;
-    }
-    }
+    Foreach AllActors(class'DeusExProjectile', PR)
+        if (PR.Owner == None)
+            PR.SetupDifficultyMod(self);
 
-	perkDoorsman = PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman');
+    Foreach AllActors(class'DeusExDecoration', DC)
+        DC.SetupDifficultyMod(self);
+    
+    Foreach AllActors(class'DeusExWeapon', WP)
+        if (WP.Owner == None)
+            WP.SetupDifficultyMod(self);
+       
+    Foreach AllActors(class'DeusExAmmo', AM)
+        if (AM.Owner == None)
+            AM.SetupDifficultyMod(self);
 
-     ForEach AllActors(class'DeusExMover', MV)
-     {
-         if (!MV.bPerkApplied && perkDoorsman.bPerkObtained == true)
-         {
-		       MV.bPerkApplied = True;
-		       MV.minDamageThreshold -= perkDoorsman.PerkValue;
-		       if (MV.minDamageThreshold <= 0)
-                MV.minDamageThreshold = 1;
-		 }
-		 if (MV.lockStrength == 0.050000)
-		     MV.lockStrength = 0.100000;
-     }
-
-    //if (bLaserRifle == False)
-    //{
-    //ForEach AllActors(class'DeusExWeapon', WP)
-    //{
-    //    	if (WP.ItemName == "Laser Rifle") //CyberP: destroy it
-	//        	WP.Destroy();
-    //}
-    //}
-
-    //if (bUSP == False)
-    //{
-    ForEach AllActors(class'DeusExWeapon', WP)
-    {
-          if (WP.Owner == None)
-          {
-	         if (WP.default.ItemName == "Laser Rifle") //CyberP: destroy it
-	        	WP.Destroy();
-             if (WP.default.ItemName == "USP.10")
-                WP.Destroy();
-             if (WP.default.ItemName == "UMP7.62c")
-	        	WP.Destroy();
-          }
-          if (bHardCoreMode && bExtraHardcore && Owner != None && Owner == self)
-              WP.BaseAccuracy = WP.default.BaseAccuracy + 0.2;
-    }
-    //}
-
-    ForEach AllActors(class'AutoTurret', T)
-    {
-        	if (CombatDifficulty < 3.0)
-	        {
-	        	if (T.gun.hackStrength > 0.25)                                  //RSD: limiting hack strength with failsafe
-	        	   T.gun.hackStrength = 0.250000;
-                T.maxRange=1400;
-	            T.default.maxRange=1400;
-            }
-            else
-            {
-                if (T.gun.hackStrength > 0.50)                                  //RSD: limiting hack strength with failsafe
-	        	   T.gun.hackStrength = 0.500000;
-                T.maxRange=4000;
-	            T.default.maxRange=4000;
-	            if (bHardCoreMode && bExtraHardcore)
-	                T.pitchLimit = 31000.0;
-	        }
-    }
-
-    ForEach AllActors(class'SecurityCamera', SC)
-    {
-        	if (CombatDifficulty < 3.0)
-	        {
-	            if (SC.hackStrength > 0.1)
-	        	   SC.hackStrength = 0.100000;
-	        	if (SC.HitPoints > 40)
-                   SC.HitPoints = 40;
-	            SC.cameraRange = 1024;
-	            SC.default.cameraRange = 1024;
-	            if (SC.swingPeriod < 9.0)
-	              SC.swingPeriod+=3.0;
-            }
-            else if (bHardCoreMode)
-            {
-                //SC.hackStrength=0.200000;                                     //RSD: This was commented for some reason
-                if (SC.hackStrength > 0.2)                                      //RSD: Reinstating but with failsafe logic
-	        	   SC.hackStrength = 0.200000;
-                if (SC.cameraFOV<6144)
-                    SC.cameraFOV=6144;
-            }
-            else
-            {
-            //    SC.hackStrength=0.150000;                                     //RSD: This was commented for some reason
-                if (SC.hackStrength > 0.15)                                     //RSD: Reinstating but with failsafe logic
-	        	   SC.hackStrength = 0.150000;
-            }
-
-            if (bA51Camera && SC.minDamageThreshold != 70)
-            {
-                if (!SC.bDiffProperties)
-                {
-                if (SC.hackStrength>0.300000)
-                    SC.hackStrength=0.300000;
-                if (SC.HitPoints>60)
-                    SC.HitPoints=60;
-                SC.minDamageThreshold=70;
-                SC.bDiffProperties = True;
-                }
-            }
-    }
-    ForEach AllActors(class'AlarmUnit', AU)                                     //RSD: Alarm Units are 5% hack strength now
-    {
-        if (AU.hackStrength > 0.050000)
-            AU.hackStrength = 0.050000;
-    }
+    ForEach AllActors(class'DeusExMover', MV)
+        MV.SetupDifficultyMod(self);
+    
+    ForEach AllActors(class'BeamTrigger', BT)
+        BT.SetupDifficultyMod(self);
+    
+    ForEach AllActors(class'LaserTrigger', LT)
+        LT.SetupDifficultyMod(self);
 }
 
 // ----------------------------------------------------------------------
@@ -3085,7 +2936,21 @@ function GameDirectory GetSaveGameDirectory()
 
 function string GetDefaultSaveName()
 {
-    return sprintf(msgSaveName,retInfo(),TruePlayerName);
+    return sprintf(msgSaveName,retInfo(),TruePlayerName) $ GetNewGamePlusString(true);
+}
+
+function string GetNewGamePlusString(bool bAddSpace)
+{
+    local string str;
+    if (iNewGamePlusCycle > 0)
+    {
+        if (bAddSpace)
+            str = " ";
+
+        str = str $ Sprintf(msgNewGamePlusString,iNewGamePlusCycle);
+    }
+    
+    return str;
 }
 
 //SARGE: We can't modify the native function, so do this here, and then call it
@@ -3165,6 +3030,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDesc = GetDefaultSaveName();
 
     root.GenerateSnapshot(True);
+
     DebugMessage("Save Game: " $ saveIndex @ saveDesc @ iLastSave);
     SaveGame(saveIndex, saveDesc);
     root.HideSnapshot();
@@ -3246,7 +3112,7 @@ function bool PerformAutoSave(bool allowHardcore)
     //or if saving restrictions is enabled.
     if (bTogAutoSave || bRestrictedSaving || bHardCoreMode)
     {
-        DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
+        DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName) $ GetNewGamePlusString(true));
         return true;
     }
     return false;
@@ -3257,7 +3123,7 @@ function bool PerformAutoSave(bool allowHardcore)
 // ----------------------------------------------------------------------
 exec function QuickSave()
 {
-    Quicksave2(sprintf(QuickSaveGameTitle,TruePlayerName));
+    Quicksave2(sprintf(QuickSaveGameTitle,TruePlayerName) $ GetNewGamePlusString(true));
 }
 
 //Can't add an optional to the above function, so we use a separate one instead
@@ -3353,7 +3219,7 @@ exec function StartNewGame(String startMap)
     local Inventory item, nextItem;
 
     bGMDXNewGame = True;
-    seed = -1;
+    seed = iPresetSeed;
 
 	if (DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).ClearWindowStack();
@@ -3361,17 +3227,12 @@ exec function StartNewGame(String startMap)
     if(KeyRing != None)
 		KeyRing.RemoveAllKeys();
 
-	for(item = Inventory; item != None; item = nextItem)
-	{
-		nextItem = item.Inventory;
-		item.Destroy();
-	}
 	// Set a flag designating that we're traveling,
 	// so MissionScript can check and not call FirstFrame() for this map.
 	flagBase.SetBool('PlayerTraveling', True, True, 0);
 
 	SaveSkillPoints();
-	ResetPlayer();
+	ResetPlayer(false);
 	DeleteSaveGameFiles();
 
 	bStartingNewGame = True;
@@ -3383,8 +3244,8 @@ exec function StartNewGame(String startMap)
 		Level.Game.SendPlayer(Self, startMap);
 
     //If Addiction System is enabled, set it as our default screen in the Health display
-    if (bAddictionSystem)
-        bShowStatus = false;
+    bShowStatus = !bAddictionSystem;
+    bShowModifiers = false;
     
     SetupRendererSettings();
 
@@ -3464,7 +3325,7 @@ function ShowIntro(optional bool bStartNewGame, optional bool force)
 	// Make sure all augmentations are OFF before going into the intro
 	AugmentationSystem.DeactivateAll(true);
 
-	if ((bSkipNewGameIntro || bPrisonStart) && !force)
+	if (bSkipNewGameIntro && !force)
 	  PostIntro();
 	  else// Reset the player
 		 Level.Game.SendPlayer(Self, "00_Intro");
@@ -3584,19 +3445,15 @@ function ShowMultiplayerWin( String winnerName, int winningTeam, String Killer, 
 
 function ResetPlayer(optional bool bTraining)
 {
-	local inventory anItem;
-	local inventory nextItem;
-    local int i;
-
 	ResetPlayerToDefaults();
 
-	// Reset Augmentations
-	if (AugmentationSystem != None)
-	{
-		AugmentationSystem.ResetAugmentations();
-		AugmentationSystem.Destroy();
-		AugmentationSystem = None;
-	}
+    // Reset Augmentations
+    if (AugmentationSystem != None)
+    {
+        AugmentationSystem.ResetAugmentations();
+        AugmentationSystem.Destroy();
+        AugmentationSystem = None;
+    }
 
     //SARGE: Remove perks
     if (PerkManager != None)
@@ -3618,30 +3475,29 @@ function ResetPlayer(optional bool bTraining)
     ClearAllBeltPlaceholders();
 
 	// Give the player a pistol and a prod
+    // Our inventory will be handled elsewhere
 	if (!bTraining && !bPrisonStart)
-	{
+        GiveStartingItems();
+}
 
-        //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
-        bForceBeltAutofill = true;
-        //SARGE: Now give Prod first, and set Pistol as primary belt selection
-		anItem = Spawn(class'WeaponProd');
-		anItem.Frob(Self, None);
-		anItem.bInObjectBelt = True;
-		anItem.beltPos = 0;
-		anItem = Spawn(class'WeaponPistol');
-		anItem.Frob(Self, None);
-		anItem.bInObjectBelt = True;
-		anItem.beltPos = 1;
-        advBelt = 1;
-		anItem = Spawn(class'MedKit');
-		anItem.Frob(Self, None);
-		anItem.bInObjectBelt = True;
-		anItem.beltPos = 2;
-		swimTimer = 1000;  //CyberP: start with full stamina.
-		KillerCount = 0;    //CyberP: start with 0 kills
-		stepCount = 0;      //CyberP: start with 0 steps
-        bForceBeltAutofill = false;
-	}
+function GiveStartingItems()
+{
+	local inventory anItem;
+
+    //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
+    bForceBeltAutofill = true;
+    //SARGE: Now give Prod first, and set Pistol as primary belt selection
+    anItem = Spawn(class'WeaponProd');
+    anItem.Frob(Self, None);
+    anItem.bInObjectBelt = True;
+    anItem = Spawn(class'WeaponPistol');
+    anItem.Frob(Self, None);
+    anItem.bInObjectBelt = True;
+    advBelt = 1;
+    anItem = Spawn(class'MedKit');
+    anItem.Frob(Self, None);
+    anItem.bInObjectBelt = True;
+    bForceBeltAutofill = false;
 }
 
 // ----------------------------------------------------------------------
@@ -3652,9 +3508,11 @@ function ResetPlayer(optional bool bTraining)
 
 function ResetPlayerToDefaults()
 {
-	local inventory anItem;
+	local inventory item;
 	local inventory nextItem;
     local int i;
+    local ChargedPickup pickup;
+
 	// reset the image linked list
 	FirstImage = None;
 
@@ -3672,44 +3530,44 @@ function ResetPlayerToDefaults()
 	  }
 		KeyRing = None;
 	}
+        
+    //Unequip our eqiuipped chargedpickup
+    foreach AllActors(class'ChargedPickup', pickup)
+        if (pickup.Owner == Self && pickup.bActive)
+            pickup.Activate();
 
-	while(Inventory != None)
-	{
-		anItem = Inventory;
-		DeleteInventory(anItem);
-	  anItem.Destroy();
-	}
-/*
-	anItem = Inventory;
-	while(anItem!= None)
-	{
-	  log("DELETE "@anItem);
-	   nextItem=anItem.Inventory;
-		DeleteInventory(anItem,true);
-	  anItem.Destroy();
-	  anItem=nextItem;
-	}
-*/
-	// Clear object belt
+	SetInHandPending(None);
+	SetInHand(None);
+    primaryWeapon = None;
+
+    for(item = Inventory; item != None; item = nextItem)
+    {
+        nextItem = item.Inventory;
+        item.Destroy();
+    }
+	
+    // Clear object belt
 	if (DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).hud.belt.ClearBelt();
 
 	// clear the notes and the goals
 	DeleteAllNotes();
 	DeleteAllGoals();
+    
+    //Reset stats
+    swimTimer = 1000;  //CyberP: start with full stamina.
+    KillerCount = 0;    //CyberP: start with 0 kills
+    stepCount = 0;      //CyberP: start with 0 steps
 
 	// Nuke the history
 	ResetConversationHistory();
 
 	// Other defaults
 	Credits = Default.Credits;
-	Energy  = Default.Energy;
-	SkillPointsTotal = Default.SkillPointsTotal;
-	SkillPointsAvail = Default.SkillPointsAvail;
+    Energy  = GetMaxEnergy();
 
-	SetInHandPending(None);
-	SetInHand(None);
-    primaryWeapon = None;
+    SkillPointsTotal = Default.SkillPointsTotal;
+    SkillPointsAvail = Default.SkillPointsAvail;
 
 	bInHandTransition = False;
 
@@ -17105,6 +16963,10 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
          Damage=12; //GMDX mod drowning damage, take that hard coded 5hpts
 	}
 
+    //multiply all damage by an extra 5% for each new game plus cycle, up to an extra 50% max (NG+10)
+    if (iNewGamePlusCycle > 0)
+        Damage *= 1.0 + (FMIN(0.5,0.05 * iNewGamePlusCycle));
+
 	//CyberP: now we also reduce all other damage types based on difficulty.
     //CyberP: easy = reduced by half. Medium & hard = 1/4. Hardcore & realistic = No reduction
 	    if (CombatDifficulty < 1)
@@ -20951,6 +20813,68 @@ function RefreshSkills()
 }
 
 // ----------------------------------------------------------------------
+// DisplayNewGamePlusMessage()
+// SARGE: Pop up a message to confirm NewGamePlus, and unlock the next level of NG+
+// ----------------------------------------------------------------------
+function DisplayNewGamePlusMessage(bool bSkipCredits)
+{
+	if (DeusExRootWindow(rootWindow) != None)
+		DeusExRootWindow(rootWindow).ConfirmNewGamePlus(bSkipCredits);
+}
+
+//Actually move to New Game Plus by loading Liberty Island
+function ConfirmNewGamePlus(int cycle, bool bFromCube)
+{
+    if (cycle == -1)
+        cycle = iNewGamePlusCycle + 1;
+    iNewGamePlusCycle = cycle;
+    //Level.Game.SendPlayer(Self, strStartMap$"?Difficulty=" $ combatDifficulty);
+    //StartNewGame(strStartMap$"?Difficulty=" $ combatDifficulty,true);
+    SetupNewGamePlus(bFromCube);
+}
+
+//Setup for New Game Plus
+function SetupNewGamePlus(bool bFromCube)
+{
+    //SARGE: Reset collectibles
+    collectiblesFound = 0;
+
+    //SARGE: Reset killswitch
+    killswitchTimer = default.killswitchTimer;
+
+    // Reset Belt Memory
+    ClearAllBeltPlaceholders();
+
+    //Increment seed
+    //This keeps things random and interesting,
+    //while allowing preset seeds to be used also.
+    seed += 1;
+
+    ResetPlayerToDefaults();
+	
+    //Send us to UNATCO ISLAND
+    //ShowIntro(true,true);
+    //Level.Game.SendPlayer(Self, "00_Intro");
+    //ClientTravel( "?restart", TRAVEL_Relative, false );
+    //Level.Game.SendPlayer(Self, "?restart");
+    //RestartLevel();
+    bStartNewGameAfterIntro = true;
+    if (bFromCube)
+        Level.Game.SendPlayer(Self, "00_Intro?Difficulty=" $ combatDifficulty);
+    else if (bPrisonStart)
+        Level.Game.SendPlayer(Self, "05_NYC_UNATCOMJ12lab?Difficulty=" $ combatDifficulty);
+    else
+        Level.Game.SendPlayer(Self, strStartMap$"?Difficulty=" $ combatDifficulty);
+}
+
+function UnlockNextNewGamePlusCycle()
+{
+    if ((iNewGamePlusCycle + 1) > iNewGamePlusReached)
+        iNewGamePlusReached = iNewGamePlusCycle + 1;
+    SaveConfig();
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -21269,6 +21193,7 @@ defaultproperties
      bAutoUseChargedPickups=true
      bAlwaysDropCarcasses=true
      msgSaveName="%s [%s]"
+     msgNewGamePlusString="(NG+%d)"
      TooSick="You feel too nauseous to consume anything"
      bShowAugLevelsInHUD=true
      bSmartBloodPools=true
@@ -21280,5 +21205,6 @@ defaultproperties
      SatiatedStr="(Satiated)"
      HungryStr="(Hungry)"
      StarvingStr="(Starving)"
+     iPresetSeed=-1
      fAutoHideBeltTime=0
 }

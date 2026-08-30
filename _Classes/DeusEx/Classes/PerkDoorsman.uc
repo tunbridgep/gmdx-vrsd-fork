@@ -3,7 +3,7 @@
 //=============================================================================
 class PerkDoorsman extends Perk;
 
-function OnPerkPurchase()
+function OnMapLoadAndPurchase()
 {
     local DeusExMover mov;
 

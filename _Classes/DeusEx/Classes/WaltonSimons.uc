@@ -177,32 +177,30 @@ State Attacking
 	}
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-         Super.DifficultyMod(CombatDifficulty, bHardCoreMode, bExtraHardcore, bFirstLevelLoad);
+    //SARGE: Warning, shitty TT code follows!
+    //Read at your own risk!
+    super.SetupDifficultyMod(P);
 
-         if (!bHardCoreMode)
-         {
-          GroundSpeed=360.000000;
-          if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-          {
-          default.Health=500;
-         default.HealthHead=500;
-         default.HealthTorso=500;
-         default.HealthLegLeft=500;
-         default.HealthLegRight=500;
-         default.HealthArmLeft=500;
-         default.HealthArmRight=500;
-         Health=500;
-         HealthHead=500;
-          HealthTorso=500;
-         HealthLegLeft=500;
-         HealthLegRight=500;
-         HealthArmLeft=500;
-         HealthArmRight=500;
-         }
-         }
-         super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
+    if (!P.bHardCoreMode)
+    {
+        GroundSpeed=360.000000;
+        default.Health=500;
+        default.HealthHead=500;
+        default.HealthTorso=500;
+        default.HealthLegLeft=500;
+        default.HealthLegRight=500;
+        default.HealthArmLeft=500;
+        default.HealthArmRight=500;
+        Health=500;
+        HealthHead=500;
+        HealthTorso=500;
+        HealthLegLeft=500;
+        HealthLegRight=500;
+        HealthArmLeft=500;
+        HealthArmRight=500;
+    }
 }
 
 defaultproperties

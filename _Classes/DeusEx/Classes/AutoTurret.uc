@@ -64,6 +64,29 @@ replication
 	  safeTarget, bDisabled, bActive, team, titleString;
 }
 
+//SARGE: We can just literally destroy these, they leave no trace...
+function LowKeyDestroy()
+{
+    if (gun != None)
+        gun.Destroy(); //SARGE: Not sure why this is necessary...
+    Destroy();
+}
+
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    super.SetupDifficultyMod(P);
+    if (P.CombatDifficulty < 3.0)
+    {
+        maxRange=1400;
+    }
+    else
+    {
+        maxRange=4000;
+        if (P.bHardCoreMode && P.bExtraHardcore)
+            pitchLimit = 31000.0;
+    }
+}
+
 // if we are triggered, turn us on
 function Trigger(Actor Other, Pawn Instigator)
 {

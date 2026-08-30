@@ -433,8 +433,7 @@ var bool        bAlarmStatIncrease; //CyberP: AI get a one-time stat boost if al
 var bool        bHasHelmet;
 var bool        bBiteClamp;
 var bool        bGreaselShould;
-var(Filter) bool        bHardcoreOnly;     // CyberP: remove this pawn from world if we are not hardcore.
-var(Filter) bool        bHardcoreRemove;     // CyberP: remove this pawn from world if we ARE hardcore.
+
 var(AI) bool    bCanPop;       //CyberP: if we can pop at all.
 var bool        bIcarused;
 var float       sFire;         //CyberP: Suppresive fire timer
@@ -465,7 +464,6 @@ var bool bHeadshotAltered;                                                      
 var int PickupAmmoCount;                                                        //RSD: Ammo count to be passed to DeusExCarcass on death. Initialized in MissionScript.uc on first map load
 var float stunSleepTime;                                                        //RSD: Allows input of variable stun times
 var bool bStunTimeAltered;                                                      //RSD: Determines if the stun time was altered to avoid any edge cases
-var bool bNotFirstDiffMod;                                                      //RSD: Have we already changed difficulty stats?
 
 //Sarge
 var(GMDX) bool bDontRandomizeWeapons;                                           //If true, this pawn will never have it's weapons randomised amongst other enemies.
@@ -473,12 +471,6 @@ var(GMDX) bool bDontRandomizeWeapons;                                           
 var(GMDX) bool bNoDoorInteractions;                                             //If true, this pawn will never open locked doors. Used for Tiffany Savage to stop her running out of her cell.
 
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
-
-//Sarge: Gender Stuff
-var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
-var(GMDX) const bool LDDPExtra;                                                 //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
-var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
-var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
@@ -552,6 +544,17 @@ var travel CloakManager CloakManager;
 
 var const localized string msgDance;            //SARGE: Shenanigans dance string
 
+//SARGE: Filters
+var(Spawning) const bool requiresLDDP; //Delete this character LDD is uninstalled
+var(Spawning) const bool LDDPExtra; //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
+var(Spawning) const bool deleteIfMale; //Delete this character if we're male
+var(Spawning) const bool deleteIfFemale; //Delete this character if we're female
+var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var(Spawning) bool bHardcoreRemove; //Remove on hardcore only
+var(Spawning) bool bHardcoreOnly; //Keep on hardcore only
+var(Spawning) int minimumNewGamePlusCycle;
+var(Spawning) int maximumNewGamePlusCycle;
+
 //SARGE: Enum used for the swoocy bullshit that we have to do for our IsValidEnemy override.
 enum EAllianceCheckType
 {
@@ -622,6 +625,39 @@ native(2107) final function EAllianceType GetPawnAllianceType(Pawn QueryPawn);
 
 native(2108) final function bool HaveSeenCarcass(Name CarcassName);
 native(2109) final function AddCarcass(Name CarcassName);
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //New Game Plus handling
+    if (minimumNewGamePlusCycle > P.iNewGamePlusCycle)
+        Destroy();
+    else if (maximumNewGamePlusCycle > -1 && maximumNewGamePlusCycle < P.iNewGamePlusCycle)
+        Destroy();
+
+    //Hardcore Filters
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOption)
+        Destroy();
+    else if (bHardcoreRemove && (P.bHardCoreMode || P.bHardcoreFilterOption))
+        Destroy();
+    
+    //Difficulty Filters
+    if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
+        Destroy();
+
+    //Check for LDDP
+    if (!ShouldCreate(P))
+        Destroy();
+    
+    //SARGE: If we have perma cloak terned on, and if we can cloak, make it permanent
+    if (bHasCloak && P.bPermaCloak && (IsA('Robot') || IsA('MJ12Elite')))
+    {
+        bForcedCloak = true;
+        EnableCloak(true);
+    }
+}
 
 // ----------------------------------------------------------------------
 // IsActuallyValidEnemy()
@@ -964,7 +1000,7 @@ function InitializeInventory()
 
     player = DeusExPlayer(GetPlayerPawn());
 
-    if (player.bRandomizeMods)
+    if (player != None && player.bRandomizeMods)
     	RandomizeMods();                                                        //RSD: Before we do anything, check for random loot
 
 	// Add initial inventory items
@@ -3084,6 +3120,15 @@ function SetWeapon(Weapon newWeapon)
 		Weapon.BringUp();
 
 	PendingWeapon = None;
+    
+    //SARGE: This was previously being done in the difficultyMod class,
+    //but now actors can have more weapons, and we can swap them through gameplay modifiers,
+    //so do it here isntead.
+    if (Weapon != None && Weapon.IsA('WeaponMiniCrossbow'))
+        BaseAccuracy=0.000000;
+    else
+        BaseAccuracy=default.baseAccuracy;
+
 }
 
 
@@ -3740,6 +3785,11 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 	local int   actualDamage;
 	local float headOffsetZ, headOffsetY, armOffset;
 
+    //SARGE: Reduce damage by 10% per NewGamePlus level, down to 40% (NG+4)
+    if (DeusExPlayer(instigatedBy) != None)
+        actualDamage *= 1.0 + FMIN(0.4,0.1 * DeusExPlayer(instigatedBy).iNewGamePlusCycle);
+
+
 	actualDamage = Damage;
 
 	// calculate our hit extents
@@ -3904,7 +3954,7 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
     local bool bBroken;
     local Texture tex;
     
-    if (IsA('MJ12Troop') || IsA('MJ12Elite'))
+    if (IsA('MJ12Troop') || IsA('MJ12Elite') || IsA('TerroristElite'))
         return false;
 
     if (bHasHelmet && (actualDamage >= 25 || FRand() < 0.08 || bForced))
@@ -3921,6 +3971,8 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
                 tex = Texture'GMDXSFX.Skins.hSoldierTex3';
             else if (IsA('Mechanic'))
                 tex = Texture'GMDXSFX.Skins.hMechanicTex3';
+            else if (IsA('TerroristElite'))
+                tex = Texture'RSDCrap.Skins.hTerroristTex3';
             HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy, tex);
         }
 
@@ -4806,6 +4858,12 @@ function SetupSkin()
     //Also fix glasses on holograms
     class'SkinUtils'.static.GlassesFix(Self);
     //FixAllTextureMasks();
+    
+    //SARGE: Determine if we have a helmet here (since some characters such as mechanics can randomise with or without them in Augmentique)
+    bHasHelmet = default.mesh == LodMesh'RSDCrap.Fixed_Jumpsuit' && 
+        MultiSkins[6] != Texture'DeusExCharacters.Skins.PinkMaskTex' &&
+        MultiSkins[6] != Texture'DeusExCharacters.Skins.GogglesTex1' &&
+        MultiSkins[6] != Texture'DeusExCharacters.Skins.ThugMale3Tex3';
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
@@ -8696,10 +8754,6 @@ function Tick(float deltaTime)
 
 	player = DeusExPlayer(GetPlayerPawn());
     
-    //If we shouldn't be created, abort
-    if (!bFirstTickDone && !ShouldCreate(player))
-        Destroy();
-
     //SARGE: Prevent going into stasis ever for predictable enemies
     if (IsInState('Patrolling') || IsInState('Seeking'))
         LastRenderTime = Level.TimeSeconds;
@@ -10200,18 +10254,6 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 			}
 		}
 	}
-}
-
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
-{
-    //SARGE: If we have perma cloak terned on, and if we can cloak, make it permanent
-    if (!bNotFirstDiffMod && bFirstLevelLoad && bHasCloak && DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bPermaCloak && (IsA('Robot') || IsA('MJ12Elite')))
-    {
-        bForcedCloak = true;
-        EnableCloak(true);
-    }
-
-	bNotFirstDiffMod = true;
 }
 
 function RandomizeMods()                                                        //RSD: swap weapon mods in inventory
@@ -17666,4 +17708,6 @@ defaultproperties
      msgDance="Get electric on the dance floor!"
      fRandomHeightBaseMult=0.9
      fRandomHeightMult=0.2
+     minimumNewGamePlusCycle=0
+     maximumNewGamePlusCycle=-1
 }

@@ -259,29 +259,26 @@ function EHitLocation HandleDamage(int Damage, Vector hitLocation, Vector offset
 
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-        if (!bHardCoreMode)
-        {
-        if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-        {
+    super.SetupDifficultyMod(P);
+    if (!P.bHardCoreMode)
+    {
         default.Health=200;                                                   //RSD: Was 250
-	    default.HealthHead=200;
-	    default.HealthTorso=200;                                              //RSD: Was 250
-	    default.HealthLegLeft=200;                                            //RSD: Was 250
-    	default.HealthLegRight=200;                                           //RSD: Was 250
-     	default.HealthArmLeft=200;                                            //RSD: Was 250
-	   default.HealthArmRight=200;                                            //RSD: Was 250
-	    Health=200;                                                           //RSD: Was 250
-         HealthHead=200;
-         HealthTorso=200;                                                     //RSD: Was 250
-          HealthLegLeft=200;                                                  //RSD: Was 250
-          HealthLegRight=200;                                                 //RSD: Was 250
-          HealthArmLeft=200;                                                  //RSD: Was 250
-          HealthArmRight=200;                                                 //RSD: Was 250
-          }
-          }
-          super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
+        default.HealthHead=200;
+        default.HealthTorso=200;                                              //RSD: Was 250
+        default.HealthLegLeft=200;                                            //RSD: Was 250
+        default.HealthLegRight=200;                                           //RSD: Was 250
+        default.HealthArmLeft=200;                                            //RSD: Was 250
+        default.HealthArmRight=200;                                            //RSD: Was 250
+        Health=200;                                                           //RSD: Was 250
+        HealthHead=200;
+        HealthTorso=200;                                                     //RSD: Was 250
+        HealthLegLeft=200;                                                  //RSD: Was 250
+        HealthLegRight=200;                                                 //RSD: Was 250
+        HealthArmLeft=200;                                                  //RSD: Was 250
+        HealthArmRight=200;                                                 //RSD: Was 250
+    }
 }
 
 State Attacking

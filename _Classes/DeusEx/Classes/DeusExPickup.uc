@@ -78,6 +78,35 @@ struct IconInfo
 //Objects can support up to 10 skins
 var private transient IconInfo Icons[10];
 
+//SARGE: Filters
+var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var(Spawning) bool bHardcoreRemove; //Remove on hardcore only
+var(Spawning) bool bHardcoreOnly; //Keep on hardcore only
+var(Spawning) int minimumNewGamePlusCycle;
+var(Spawning) int maximumNewGamePlusCycle;
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //New Game Plus handling
+    if (minimumNewGamePlusCycle > P.iNewGamePlusCycle)
+        Destroy();
+    else if (maximumNewGamePlusCycle > -1 && maximumNewGamePlusCycle < P.iNewGamePlusCycle)
+        Destroy();
+
+    //Hardcore Filters
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOptionResources)
+        Destroy();
+    else if (bHardcoreRemove && (P.bHardCoreMode || P.bHardcoreFilterOptionResources))
+        Destroy();
+    
+    //Difficulty Filters
+    if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
+        Destroy();
+}
+
 //SARGE: MissionScript calls this on all objects on map start.
 function RandomiseSkin(DeusExPlayer player)
 {
@@ -1301,4 +1330,6 @@ defaultproperties
      msgRecharged="Your %s was Recharged!"
 	 M_Activated=""
 	 M_Deactivated=""
+     minimumNewGamePlusCycle=0
+     maximumNewGamePlusCycle=-1
 }

@@ -11,22 +11,23 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-             if (bHardCoreMode)
-                 EnemyTimeout = 11.000000;
-             else
-             {
-                 EnemyTimeout = 8.000000;
-                 if (combatDifficulty < 2.0)
-                 {
-                     EnemyTimeout = 7.000000;
-                     GroundSpeed=80.000000;
-                 }
-                 else
-                     GroundSpeed=110.000000;
-             }
-             super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
+    super.SetupDifficultyMod(P);
+
+    if (P.bHardCoreMode)
+        EnemyTimeout = 11.000000;
+    else
+    {
+        EnemyTimeout = 8.000000;
+        if (P.combatDifficulty < 2.0)
+        {
+            EnemyTimeout = 7.000000;
+            GroundSpeed=80.000000;
+        }
+        else
+            GroundSpeed=110.000000;
+    }
 }
 
 defaultproperties

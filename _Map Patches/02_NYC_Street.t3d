@@ -223960,20 +223960,24 @@ Begin Actor Class=Phone Name=Phone0
     Name=Phone0
 End Actor
 Begin Actor Class=AmmoRocket Name=AmmoRocket0
-    LastRenderTime=123.423027
+    Style=E_Single
+    bDynamicLight=True
+    LastRenderTime=77.115524
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=AmmoRocket
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=6858,ZoneNumber=2)
-    Location=(X=-2380.461426,Y=2836.600098,Z=-439.099640)
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=6726,ZoneNumber=2)
+    Location=(X=-2317.461426,Y=2821.600098,Z=-363.099640)
     OldLocation=(X=-2372.461426,Y=2836.600098,Z=-439.099640)
     Name=AmmoRocket0
 End Actor
 Begin Actor Class=AmmoRocket Name=AmmoRocket1
-    LastRenderTime=123.423027
+    Style=E_Single
+    bDynamicLight=True
+    LastRenderTime=77.115524
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=AmmoRocket
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=6858,ZoneNumber=2)
-    Location=(X=-2413.672607,Y=2836.600098,Z=-439.098999)
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=6726,ZoneNumber=2)
+    Location=(X=-2339.672607,Y=2808.600098,Z=-347.098999)
     OldLocation=(X=-2413.672607,Y=2836.600098,Z=-439.098999)
     Name=AmmoRocket1
 End Actor

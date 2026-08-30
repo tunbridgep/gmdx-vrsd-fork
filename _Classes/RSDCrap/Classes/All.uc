@@ -91,6 +91,10 @@ class All expands Object
 
 // Misc Textures
 
+//Armored Terrorist
+#exec TEXTURE IMPORT FILE="Textures\Skins\hTerroristTex3.pcx"	        NAME="hTerroristTex3" GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\TerroristArmoredTex1.pcx"	    NAME="TerroristArmoredTex1" GROUP="Skins"
+
 //HQ Bob Page Face
 #exec TEXTURE IMPORT FILE="Textures\Skins\hqbob.pcx"	        NAME="HQbob" GROUP="Skins"
 

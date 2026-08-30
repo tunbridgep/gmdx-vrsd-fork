@@ -45,7 +45,6 @@ var float carcassTriggerTimer;
 var float carcassCheckTimer;
 var bool bTrigSound; //CyberP
 var() bool bAlarmEvent;  //CyberP: optionally send event if triggered.
-var bool bDiffProperties; //CyberP:
 var bool bSkillApplied; //CyberP:
 
 //Sarge: Hacking disable time
@@ -68,6 +67,38 @@ replication
 	 reliable if (Role == ROLE_Authority)
 		  bActive, ReplicatedRotation, team, safeTarget;
 }
+
+//Set to 10% hack strength, increasing by 10% per NG Cycle
+//(one multitool at Trained on Hardcore, Untrained otherwise)
+//But caps at 30%
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    hackStrength = FMIN(0.3,0.1 + (0.1 * P.iNewGamePlusCycle));
+        	
+    //TT's shitty code follows
+    if (P.CombatDifficulty < 3.0)
+    {
+        if (HitPoints > 40)
+            HitPoints = 40;
+        cameraRange = 1024;
+        if (swingPeriod < 9.0)
+            swingPeriod+=3.0;
+    }
+    else if (P.bHardCoreMode)
+    {
+        if (cameraFOV<6144)
+            cameraFOV=6144;
+    }
+
+    if (P.bA51Camera && minDamageThreshold != 70)
+    {
+        if (HitPoints>60)
+            HitPoints=60;
+        minDamageThreshold=70;
+    }
+    super.SetupDifficultyMod(P);
+}
+
 
 //For cameras and turrets which can be turned off at a computer, we want to display them
 //as BYPASSED if they are disabled at a computer
@@ -212,7 +243,6 @@ function BeginPlay()
     }
 	SoundRadius=96;
 	default.SoundRadius=96;
-    hackStrength = 0.10;   //Sarge: All cameras are at 10% strength (one multitool at Trained on hardcore, Untrained otherwise)
 	if (Level.NetMode != NM_Standalone)
 	{
 		bInvincible=true;

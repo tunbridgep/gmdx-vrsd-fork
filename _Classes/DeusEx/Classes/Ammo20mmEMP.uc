@@ -3,16 +3,12 @@
 //=============================================================================
 class Ammo20mmEMP extends DeusExAmmo;
 
-function PostBeginPlay()
+//Less ammo on Hardcore
+function SetupDifficultyMod(DeusExPlayer P)
 {
-local DeusExPlayer player;
-
-        super.PostBeginPlay();
-
-        player=DeusExPlayer(GetPlayerPawn());
-
-   if ((player != none) && (player.bHardCoreMode == True))
-    	AmmoAmount = 1;  //CyberP: less ammo on hardcore
+    super.SetupDifficultyMod(P);
+    if (P.bHardCoreMode)
+        AmmoAmount = 1;
 }
 
 defaultproperties

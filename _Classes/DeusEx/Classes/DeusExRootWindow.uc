@@ -60,6 +60,7 @@ var float VerticalDivisor, VerticalRelaxedDivisor;	// Vertical divisor for autos
 
 var MenuUIMessageBoxWindow quickloadBox;
 var MenuUIMessageBoxWindow onboardingBox;
+var MenuUIMessageBoxWindow newGamePlusBox;
 
 //SARGE: Added Marker Display
 var MarkerDisplayWindow markerDisplay;
@@ -67,6 +68,11 @@ var MarkerDisplayWindow markerDisplay;
 //SARGE: Ability to display Onboarding
 var localized String OnboardingTitle;
 var localized String OnboardingMessage;
+
+var localized String NewGamePlusTitle;
+var localized String NewGamePlusMessage;
+
+var transient bool bNewGamePlusHack;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -586,6 +592,18 @@ function MenuUIMessageBoxWindow MessageBox
 }
 
 // ----------------------------------------------------------------------
+// ConfirmNewGamePlus()
+// SARGE: Taken from ConfirmQuickLoad
+// ----------------------------------------------------------------------
+
+function ConfirmNewGamePlus(bool bFromCube)
+{
+    bNewGamePlusHack = bFromCube;
+	newGamePlusBox = MessageBox(NewGamePlusTitle, NewGamePlusMessage, 0, False, Self);
+	newGamePlusBox.SetDeferredKeyPress(True);
+}
+
+// ----------------------------------------------------------------------
 // ConfirmQuickLoad()
 // ----------------------------------------------------------------------
 
@@ -614,7 +632,15 @@ event bool BoxOptionSelected(Window msgWindow, int buttonNumber)
     // Destroy the msgbox!
 	PopWindow();
 
-    if (msgWindow == onboardingBox)
+    if (msgWindow == newGamePlusBox)
+    {
+        if (buttonNumber == 0)
+            DeusExPlayer(parentPawn).ConfirmNewGamePlus(-1,bNewGamePlusHack);
+        else if (!bNewGamePlusHack)
+            DeusExPlayer(parentPawn).ShowCredits(True);
+        bNewGamePlusHack = false;
+    }
+    else if (msgWindow == onboardingBox)
     {
         DeusExPlayer(parentPawn).bDoneGMDXOnboarding = true;
         DeusExPlayer(parentPawn).SaveConfig();
@@ -1355,4 +1381,6 @@ defaultproperties
      QuickLoadMessage="You will lose your current game in progress, are you sure you wish to Quick Load?"
      OnboardingTitle="Show Help Menu?"
      OnboardingMessage="GMDX: Augmented Edition contains an in-depth help menu explaining new mechanics and features. Would you like to view it now? The help menu is always available by clicking 'Show Help' in the GMDX Options menu, accessible through the Main Menu."
+     NewGamePlusTitle="Start New Game Plus"
+     NewGamePlusMessage="Would you like to start New Game Plus? New Game Plus is harder and offers unique challenges and gameplay opportunities."
 }

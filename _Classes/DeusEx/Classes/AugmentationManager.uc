@@ -105,6 +105,23 @@ function Setup()
 }
 
 // ----------------------------------------------------------------------
+// RechargeAugmentations()
+// SARGE: Recharge all augmentations
+// ----------------------------------------------------------------------
+
+function RechargeAugmentations()
+{
+    local Augmentation aug;
+    aug = FirstAug;
+
+    while (aug != None)
+    {
+        aug.GiveFullRecharge();
+        aug = aug.next;
+    }
+}
+
+// ----------------------------------------------------------------------
 // CreateAugmentations()
 // ----------------------------------------------------------------------
 

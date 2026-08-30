@@ -36,7 +36,7 @@ var byte savedSpeechVolume;
 		
  function DoAcademyGraduateSkills()
  {
-    if (!flags.GetBool('GMDXUpfrontSkills') && player.bSkillsSetAtStart /*&& player.bPrisonStart*/)
+    if (!flags.GetBool('GMDXUpfrontSkills') && player.bSkillsSetAtStart /*&& player.bPrisonStart*/ && player.iNewGamePlusCycle == 0)
     {
         player.SkillPointsAdd(12000,true);
         flags.SetBool('GMDXUpfrontSkills', True,, 6);
@@ -95,8 +95,8 @@ function TriggerUNATCOTakeover(optional bool bAlwaysRemoveSkillTriggers)
         }
 
         //Shut down bots
-        else if (P.IsA('SecurityBot3') && SecurityBot3(P).EMPHitPoints > 0)
-            SecurityBot3(P).DoEMPEffect(100);
+        else if (P.IsA('Robot') && Robot(P).EMPHitPoints > 0 && P.GetPawnAllianceType(Player) == ALLIANCE_Hostile)
+            Robot(P).DoEMPEffect(100);
     }
     
     //Delete all tagged turrets //SARGE: Just shut them off
@@ -458,6 +458,74 @@ function DoConfixCheck()
 }
 
 // ----------------------------------------------------------------------
+// StartNewGamePlus()
+// SARGE: Strips the players inventory for New Game Plus and sets up some flags etc.
+// ----------------------------------------------------------------------
+
+function StartNewGamePlus()
+{
+    local Inventory item, nextItem;
+    
+    if (player.iNewGamePlusCycle > 0 && !flags.GetBool('GMDXNewGamePlusStarted'))
+    {
+        item      = Player.Inventory;
+        nextItem  = None;
+        
+        player.DebugMessage("NewGamePlus: Processing Inventory");
+
+        //Clear inventory
+        while (item != None)
+        {
+            
+            nextItem = item.Inventory;
+
+            if (item.IsA('Ammo'))
+            {
+                player.DebugMessage("NewGamePlus: Processing Ammo " $ item);
+                Ammo(item).AmmoAmount = 0;
+            }
+            else if (item.IsA('NanoKeyRing') || (!item.bDisplayableInv))
+            {
+                item = item.Inventory;
+                continue;
+            }
+            else
+            {
+                player.DebugMessage("NewGamePlus: Processing Item " $ item);
+                player.DeleteInventory(item);
+                item.Destroy();
+            }
+            item = nextItem;
+        }
+
+        // Reset Belt Memory
+        player.ClearAllBeltPlaceholders();
+
+        player.GiveStartingItems();
+
+        flags.SetBool('GMDXNewGamePlusStarted', True,, 0);
+    }
+}
+
+function RemoveNewGamePlusCube()
+{
+    local DatacubeNGPlus cube;
+	
+    //Destroy the NewGamePlus datacube if we're not able to increase in NG+ cycles
+    foreach AllActors(class'DatacubeNGPlus', cube)
+    {
+        //If we're at maximum NG+ unlocked level, destroy
+        if (player.iNewGamePlusReached <= player.iNewGamePlusCycle)
+            cube.Destroy();
+        
+        //If we're past mission 1, and we don't have prison start, destroy the cube.
+        //This prevents it showing up in Mission05 if we don't have alternate start turned on.
+        if (dxInfo.missionNumber > 1 && !player.bPrisonStart)
+            cube.Destroy();
+    }
+}
+
+// ----------------------------------------------------------------------
 // FirstFrame()
 //
 // Stuff to check at first frame
@@ -478,8 +546,13 @@ function FirstFrame()
     local SecurityCamera Cam;                                                      //SARGE
     local Collectible Coll;                                                     //SARGE
 
+    player.DebugMessage("New Game Plus Cycle: " $ player.iNewGamePlusCycle $ "/" $ player.iNewGamePlusReached);
+
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
     flags.SetBool('Enhancement_Detected', True);
+
+    RemoveNewGamePlusCube();
+    StartNewGamePlus();
     
     //Recreate/Setup our decal manager
 	foreach AllActors(class'DecalManager', D)
