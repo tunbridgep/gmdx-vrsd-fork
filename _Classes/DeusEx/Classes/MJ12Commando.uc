@@ -148,14 +148,14 @@ function float GetSabotDamage(int actualDamage)
     return actualDamage * 1.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-        Super.DifficultyMod(CombatDifficulty, bHardCoreMode, bExtraHardcore, bFirstLevelLoad);
+    //SARGE: Warning, shitty TT code follows!
+    //Read at your own risk!
+    super.SetupDifficultyMod(P);
 
-        if (bHardCoreMode)
-        {
-        if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-        {
+    if (P.bHardCoreMode)
+    {
         default.Health=450;
         default.HealthHead=450;
         default.HealthTorso=400;
@@ -170,15 +170,12 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
         HealthLegRight=350;
         HealthArmLeft=350;
         HealthArmRight=350;
-        }
         VisibilityThreshold=0.005000;
-        if (bExtraHardcore)
+        if (P.bExtraHardcore)
             VisibilityThreshold=0.002000;
-        }
-        else
-        {
-        if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-        {
+    }
+    else
+    {
         default.Health=250;
         default.HealthHead=250;
         default.HealthTorso=250;
@@ -193,10 +190,8 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
         HealthLegRight=200;
         HealthArmLeft=200;
         HealthArmRight=200;
-        }
         VisibilityThreshold=0.007000;
-        }
-        super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
+    }
 }
 
 defaultproperties

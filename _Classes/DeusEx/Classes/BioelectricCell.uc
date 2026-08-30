@@ -32,17 +32,6 @@ function OnActivate(DeusExPlayer player)
     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 }
 
-
-// ----------------------------------------------------------------------
-// TestMPBeltSpot()
-// Returns true if the suggested belt location is ok for the object in mp.
-// ----------------------------------------------------------------------
-
-simulated function bool TestMPBeltSpot(int BeltSpot)
-{
-   return (BeltSpot == 0);
-}
-
 //SARGE: Max number is increased with CombatMedicsBag
 function int RetMaxCopies()
 {

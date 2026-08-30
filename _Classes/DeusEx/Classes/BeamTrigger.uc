@@ -18,6 +18,35 @@ var string HDTPSkin;
 var string HDTPTexture;
 var config int iHDTPModelToggle;
 
+//SARGE: Filters. Moved from Containers, now affects all DeusExDecorations
+var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var(Spawning) bool bHardcoreRemoveIt; //Remove on hardcore only //SARGE: This was called bHardcoreRemoveIt before, and I'm too lazy to change it in every map/t3d file, so it gets that same name here.
+var(Spawning) bool bHardcoreOnly; //Keep on hardcore only
+var(Spawning) int minimumNewGamePlusCycle;
+var(Spawning) int maximumNewGamePlusCycle;
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //New Game Plus handling
+    if (minimumNewGamePlusCycle > P.iNewGamePlusCycle)
+        Destroy();
+    else if (maximumNewGamePlusCycle > -1 && maximumNewGamePlusCycle < P.iNewGamePlusCycle)
+        Destroy();
+
+    //Hardcore Filters
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOption)
+        Destroy();
+    else if (bHardcoreRemoveIt && (P.bHardCoreMode || P.bHardcoreFilterOption))
+        Destroy();
+
+    //Difficulty Filters
+    if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
+        Destroy();
+}
+
 singular function Touch(Actor Other)
 {
 	// does nothing when touched

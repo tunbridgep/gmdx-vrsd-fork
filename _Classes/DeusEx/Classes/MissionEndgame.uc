@@ -50,7 +50,7 @@ function FirstFrame()
 
 	if (Player != None)
 	{
-        player.DeactivateAllAugs(true);
+        player.DeactivateAllAugs();
 
 		// Make sure all the flags are deleted
 		TarEndgameConvo = 'Barf';
@@ -241,7 +241,12 @@ function FinishCinematic()
 
 	flags.SetBool('EndgameExplosions', False);
 	SetTimer(0, False);
-	Player.ShowCredits(True);
+    //SARGE: Start New Game Plus
+    Player.UnlockNextNewGamePlusCycle();
+    
+    //SARGE: We should be using the DisplayNewGamePlus message function instead, but it causes ammo transfer issues.
+    //Player.ConfirmNewGamePlus(-1);
+    Player.DisplayNewGamePlusMessage(false);
 }
 
 // ----------------------------------------------------------------------

@@ -3,14 +3,6 @@
 //=============================================================================
 class UNATCOTroop extends HumanMilitary;
 
-function PostBeginPlay()
-{
-    if (Multiskins[6]==Texture'DeusExCharacters.Skins.UNATCOTroopTex3')
-            bHasHelmet = True;
-
-    super.PostBeginPlay();
-}
-
 function PopHead()
 {
 MultiSkins[3] = Texture'GMDXSFX.Skins.CopTexBeheaded';

@@ -1257,7 +1257,7 @@ defaultproperties
      //bCutInteractions=true
      bImprisonmentTakesAmmo=true
      //bRealKillswitch=true
-     //bAddictionSystem=true
+     bAddictionSystem=true
      bCollectibles=true
      bGEPUsesWPByDefault=true
      

@@ -35,12 +35,13 @@ struct Title
 {
     var string textTag;
     var localized string replacement;
+    var localized string shenanigansReplacement;
 };
 
-var const Title bookTitles[20];
-var const Title newspaperTitles[20];
-var const Title datacubeTitles[150];
-var const Title shenanigansTitles[10];
+var const localized Title bookTitles[20];
+var const localized Title newspaperTitles[20];
+var const localized Title datacubeTitles[150];
+var const localized Title clipboardTitles[2];
 var const string titleIgnored[100];
 var const string titlePrefixes[100];
 var const string upcases[100];
@@ -76,7 +77,7 @@ function bool IsRead(optional DeusExPlayer player, optional bool bIndividual)
 //This idea is very similar to the same idea in DXRando, so credit
 //goes to them for thinking of this. Except I just use the first line,
 //since it fits in most cases, with some exceptions defined for specific instances.
-function string GetItemTitle()
+function string GetItemTitle(DeusExPlayer P)
 {
     local string tag, text, textPart;
 	local DeusExTextParser parser;
@@ -85,7 +86,6 @@ function string GetItemTitle()
     local bool bMatch;
 	local byte T;
     local int paragraphs;
-    local DeusExPlayer player;
 	
     if ( textTag == '' && imageClass == None)
         return msgEmpty;
@@ -94,20 +94,16 @@ function string GetItemTitle()
 
     //Some objects need special handling
     tag = textPackage $ "." $ texttag;
-    player = DeusExPlayer(GetPlayerPawn());
 
-    if (player != None && player.bShenanigans)
-    {
-        for (i = 0; i < ArrayCount(shenanigansTitles);i++)
-        {
-            if (shenanigansTitles[i].textTag == tag)
-                return shenanigansTitles[i].replacement;
-        }
-    }
     for (i = 0; i < ArrayCount(datacubeTitles);i++)
     {
         if (IsA('DataCube') && datacubeTitles[i].textTag == tag)
-            return datacubeTitles[i].replacement;
+        {
+            if (P != None && P.bShenanigans && datacubeTitles[i].shenanigansReplacement != "")
+                return datacubeTitles[i].shenanigansReplacement;
+            if (datacubeTitles[i].replacement != "")
+                return datacubeTitles[i].replacement;
+        }
     }
     for (i = 0; i < ArrayCount(bookTitles);i++)
     {
@@ -307,12 +303,6 @@ function Tick(float deltaTime)
 	if ((aReader != None) && (infoWindow != None))
 		if (aReader.FrobTarget != Self)
 			DestroyWindow();
-    
-    //If we shouldn't be created, abort
-    if (!bFirstTickDone && !ShouldCreate(player))
-        Destroy();
-
-    bFirstTickDone = true;
 }
 
 // ----------------------------------------------------------------------
@@ -353,7 +343,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
         //SARGE: Re-cache the fancy item name, to make testing easier.
         if (player.bGMDXDebug)
-            itemTitle = GetItemTitle();
+            itemTitle = GetItemTitle(player);
 	}
 }
 
@@ -575,10 +565,15 @@ function postbeginplay()
 		SetPropertyText("FemaleTextTag", TS);
 	}
 
-    //SARGE: Cache the fancy item name.
-    itemTitle = GetItemTitle();
-
 	super.postbeginplay();
+}
+
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //SARGE: Cache the fancy item name.
+    itemTitle = GetItemTitle(P);
+
+	super.SetupDifficultyMod(P);
 }
 
 exec function UpdateHDTPsettings()
@@ -833,70 +828,101 @@ defaultproperties
      datacubeTitles(51)=(textTag="DeusExText.06_Datacube13",replacement="Police Substation Code")
      datacubeTitles(52)=(textTag="DeusExText.06_Datacube14",replacement="Message to Party Leader Xan")
      datacubeTitles(53)=(textTag="DeusExText.06_Datacube15",replacement="Password Change")
-     datacubeTitles(54)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
-     datacubeTitles(55)=(textTag="DeusExText.06_Datacube19",replacement="Incident Report - Officer Tam")
-     datacubeTitles(56)=(textTag="DeusExText.06_Datacube20",replacement="Instructions for Mort")
-     datacubeTitles(57)=(textTag="DeusExText.06_Datacube21",replacement="Book Recommendations")
-     datacubeTitles(58)=(textTag="DeusExText.06_Datacube22",replacement="Surveillance Report - Maggie Chow")
-     datacubeTitles(59)=(textTag="DeusExText.06_Datacube23",replacement="Hong Kong Network Services - New Account")
-     datacubeTitles(60)=(textTag="DeusExText.06_Datacube24",replacement="Superfreighter Refit")
-     datacubeTitles(61)=(textTag="DeusExText.06_Datacube25",replacement="Regression Analysis")
-     datacubeTitles(62)=(textTag="DeusExText.06_Datacube29",replacement="Augmentation Canister")
-     datacubeTitles(63)=(textTag="DeusExText.06_Datacube30",replacement="Note to Self")
-     datacubeTitles(64)=(textTag="DeusExText.06_Datacube31",replacement="Welcome to VersaLife!")
-     datacubeTitles(65)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
-     datacubeTitles(66)=(textTag="DeusExText.08_Datacube01",replacement="Information for All Staff")
-     datacubeTitles(67)=(textTag="DeusExText.09_Datacube01",replacement="Ship Access")
-     datacubeTitles(68)=(textTag="DeusExText.09_Datacube02",replacement="Armory Code")
-     datacubeTitles(69)=(textTag="DeusExText.09_Datacube03",replacement="Code Change")
-     datacubeTitles(70)=(textTag="DeusExText.09_Datacube04",replacement="Note to Self")
-     datacubeTitles(71)=(textTag="DeusExText.09_Datacube05",replacement="Message to Walton Simons (Draft)")
-     datacubeTitles(72)=(textTag="DeusExText.09_Datacube06",replacement="Code Change")
-     datacubeTitles(73)=(textTag="DeusExText.09_Datacube07",replacement="Note for Doctor Liu")
-     datacubeTitles(74)=(textTag="DeusExText.09_Datacube08",replacement="Security Review")
-     datacubeTitles(75)=(textTag="DeusExText.09_Datacube09",replacement="Security Restrictions")
-     datacubeTitles(76)=(textTag="DeusExText.09_Datacube10",replacement="BlueOS Installation Log")
-     datacubeTitles(77)=(textTag="DeusExText.09_Datacube11",replacement="New Account")
-     datacubeTitles(78)=(textTag="DeusExText.09_Datacube12",replacement="Orders")
-     datacubeTitles(79)=(textTag="DeusExText.09_Datacube13",replacement="Note to Self")
-     datacubeTitles(80)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
-     datacubeTitles(81)=(textTag="DeusExText.10_Datacube02",replacement="Dear Nicolette")
-     datacubeTitles(82)=(textTag="DeusExText.10_Datacube03",replacement="Account Security")
-     datacubeTitles(83)=(textTag="DeusExText.10_Datacube04",replacement="Get Some Cash!")
-     datacubeTitles(84)=(textTag="DeusExText.10_Datacube05",replacement="Account Security")
-     datacubeTitles(85)=(textTag="DeusExText.10_Datacube06",replacement="To Do List")
-     datacubeTitles(86)=(textTag="DeusExText.10_Datacube07",replacement="Storeroom Code")
-     datacubeTitles(87)=(textTag="DeusExText.10_Datacube08",replacement="Hacking Attempt")
-     datacubeTitles(88)=(textTag="DeusExText.10_Datacube09",replacement="Welcome to Paris!")
-     datacubeTitles(89)=(textTag="DeusExText.10_Datacube10",replacement="Message for Chad")
-     datacubeTitles(90)=(textTag="DeusExText.10_Datacube11",replacement="Security Login")
-     datacubeTitles(91)=(textTag="DeusExText.10_Datacube13",replacement="Suspension Vault")
-     datacubeTitles(92)=(textTag="DeusExText.11_Datacube01",replacement="Security Code")
-     datacubeTitles(93)=(textTag="DeusExText.11_Datacube02",replacement="Morpheus")
-     datacubeTitles(94)=(textTag="DeusExText.11_Datacube03",replacement="Orders")
-     datacubeTitles(95)=(textTag="DeusExText.12_Datacube02",replacement="Saddle Up (Draft)")
-     datacubeTitles(96)=(textTag="DeusExText.14_Datacube01",replacement="Message for Nasir")
-     datacubeTitles(97)=(textTag="DeusExText.14_Datacube02",replacement="Tunnel Code")
-     datacubeTitles(98)=(textTag="DeusExText.14_Datacube04",replacement="Help Us!")
-     datacubeTitles(99)=(textTag="DeusExText.14_Datacube05",replacement="Security Login")
-     datacubeTitles(100)=(textTag="DeusExText.14_Datacube06",replacement="Ridley's Betrayal")
-     datacubeTitles(101)=(textTag="DeusExText.15_Datacube01",replacement="Message for Julia")
-     datacubeTitles(102)=(textTag="DeusExText.15_Datacube09",replacement="Coolant Door Lock")
-     datacubeTitles(103)=(textTag="DeusExText.15_Datacube11",replacement="Message for Alain")
-     datacubeTitles(104)=(textTag="DeusExText.15_Datacube12",replacement="Explosives")
-     datacubeTitles(105)=(textTag="DeusExText.15_Datacube17",replacement="Security Login")
-     datacubeTitles(106)=(textTag="DeusExText.15_Datacube18",replacement="Lab 12 Testing Regimen")
-     datacubeTitles(107)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
-     datacubeTitles(108)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
+     datacubeTitles(54)=(textTag="DeusExText.06_Datacube17",shenanigansReplacement="Captains Log: Stardate 00.2345.2223")
+     datacubeTitles(55)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
+     datacubeTitles(56)=(textTag="DeusExText.06_Datacube19",replacement="Incident Report - Officer Tam")
+     datacubeTitles(57)=(textTag="DeusExText.06_Datacube20",replacement="Instructions for Mort")
+     datacubeTitles(58)=(textTag="DeusExText.06_Datacube21",replacement="Book Recommendations")
+     datacubeTitles(59)=(textTag="DeusExText.06_Datacube22",replacement="Surveillance Report - Maggie Chow")
+     datacubeTitles(60)=(textTag="DeusExText.06_Datacube23",replacement="Hong Kong Network Services - New Account")
+     datacubeTitles(61)=(textTag="DeusExText.06_Datacube24",replacement="Superfreighter Refit")
+     datacubeTitles(62)=(textTag="DeusExText.06_Datacube25",replacement="Regression Analysis")
+     datacubeTitles(63)=(textTag="DeusExText.06_Datacube29",replacement="Augmentation Canister")
+     datacubeTitles(64)=(textTag="DeusExText.06_Datacube30",replacement="Note to Self")
+     datacubeTitles(65)=(textTag="DeusExText.06_Datacube31",replacement="Welcome to VersaLife!")
+     datacubeTitles(66)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
+     datacubeTitles(67)=(textTag="DeusExText.08_Datacube01",replacement="Information for All Staff")
+     datacubeTitles(68)=(textTag="DeusExText.09_Datacube01",replacement="Ship Access")
+     datacubeTitles(69)=(textTag="DeusExText.09_Datacube02",replacement="Armory Code")
+     datacubeTitles(70)=(textTag="DeusExText.09_Datacube03",replacement="Code Change")
+     datacubeTitles(71)=(textTag="DeusExText.09_Datacube04",replacement="Note to Self")
+     datacubeTitles(72)=(textTag="DeusExText.09_Datacube05",replacement="Message to Walton Simons (Draft)")
+     datacubeTitles(73)=(textTag="DeusExText.09_Datacube06",replacement="Code Change")
+     datacubeTitles(74)=(textTag="DeusExText.09_Datacube07",replacement="Note for Doctor Liu")
+     datacubeTitles(75)=(textTag="DeusExText.09_Datacube08",replacement="Security Review")
+     datacubeTitles(76)=(textTag="DeusExText.09_Datacube09",replacement="Security Restrictions")
+     datacubeTitles(77)=(textTag="DeusExText.09_Datacube10",replacement="BlueOS Installation Log")
+     datacubeTitles(78)=(textTag="DeusExText.09_Datacube11",replacement="New Account")
+     datacubeTitles(79)=(textTag="DeusExText.09_Datacube12",replacement="Orders")
+     datacubeTitles(80)=(textTag="DeusExText.09_Datacube13",replacement="Note to Self")
+     datacubeTitles(81)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
+     datacubeTitles(82)=(textTag="DeusExText.10_Datacube02",replacement="Dear Nicolette")
+     datacubeTitles(83)=(textTag="DeusExText.10_Datacube03",replacement="Account Security")
+     datacubeTitles(84)=(textTag="DeusExText.10_Datacube04",replacement="Get Some Cash!")
+     datacubeTitles(85)=(textTag="DeusExText.10_Datacube05",replacement="Account Security")
+     datacubeTitles(86)=(textTag="DeusExText.10_Datacube06",replacement="To Do List")
+     datacubeTitles(87)=(textTag="DeusExText.10_Datacube07",replacement="Storeroom Code")
+     datacubeTitles(88)=(textTag="DeusExText.10_Datacube08",replacement="Hacking Attempt")
+     datacubeTitles(89)=(textTag="DeusExText.10_Datacube09",replacement="Welcome to Paris!")
+     datacubeTitles(90)=(textTag="DeusExText.10_Datacube10",replacement="Message for Chad")
+     datacubeTitles(91)=(textTag="DeusExText.10_Datacube11",replacement="Security Login")
+     datacubeTitles(92)=(textTag="DeusExText.10_Datacube13",replacement="Suspension Vault")
+     datacubeTitles(93)=(textTag="DeusExText.11_Datacube01",replacement="Security Code")
+     datacubeTitles(94)=(textTag="DeusExText.11_Datacube02",replacement="Morpheus")
+     datacubeTitles(95)=(textTag="DeusExText.11_Datacube03",replacement="Orders")
+     datacubeTitles(96)=(textTag="DeusExText.12_Datacube02",replacement="Saddle Up (Draft)")
+     datacubeTitles(97)=(textTag="DeusExText.14_Datacube01",replacement="Message for Nasir")
+     datacubeTitles(98)=(textTag="DeusExText.14_Datacube02",replacement="Tunnel Code")
+     datacubeTitles(99)=(textTag="DeusExText.14_Datacube04",replacement="Help Us!")
+     datacubeTitles(100)=(textTag="DeusExText.14_Datacube05",replacement="Security Login")
+     datacubeTitles(101)=(textTag="DeusExText.14_Datacube06",replacement="Ridley's Betrayal")
+     datacubeTitles(102)=(textTag="DeusExText.15_Datacube01",replacement="Message for Julia")
+     datacubeTitles(103)=(textTag="DeusExText.15_Datacube09",replacement="Coolant Door Lock")
+     datacubeTitles(104)=(textTag="DeusExText.15_Datacube11",replacement="Message for Alain")
+     datacubeTitles(105)=(textTag="DeusExText.15_Datacube12",replacement="Explosives")
+     datacubeTitles(106)=(textTag="DeusExText.15_Datacube17",replacement="Security Login")
+     datacubeTitles(107)=(textTag="DeusExText.15_Datacube18",replacement="Lab 12 Testing Regimen")
+     datacubeTitles(108)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
+     datacubeTitles(109)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
      //Training
-     datacubeTitles(109)=(textTag="DeusExText.00_Datacube01",replacement="Door Code")
-     datacubeTitles(110)=(textTag="DeusExText.00_Datacube02",replacement="Bridge Code")
-     datacubeTitles(111)=(textTag="DeusExText.00_Datacube03",replacement="Quick Note")
+     datacubeTitles(110)=(textTag="DeusExText.00_Datacube01",replacement="Door Code")
+     datacubeTitles(111)=(textTag="DeusExText.00_Datacube02",replacement="Bridge Code")
+     datacubeTitles(112)=(textTag="DeusExText.00_Datacube03",replacement="Quick Note")
 
      //Special
-     datacubeTitles(112)=(textTag="GMDXText.DatacubeNGPlus",replacement="Mysterious Note");
-     
-     shenanigansTitles(0)=(textTag="DeusExText.06_Datacube17",replacement="Captains Log: Stardate 00.2345.2223")
+     datacubeTitles(113)=(textTag="GMDXText.DatacubeNGPlus",replacement="Mysterious Note");
+    
+     //Tutorial Cubes
+     datacubeTitles(114)=(textTag="GMDXText.Datacube00",replacement="Excellent")
+     datacubeTitles(115)=(textTag="GMDXText.Datacube01",replacement="Swimming Tips")
+     datacubeTitles(116)=(textTag="GMDXText.Datacube02",replacement="Ladder Jumping")
+     datacubeTitles(117)=(textTag="GMDXText.Datacube03",replacement="Accuracy Breakdown")
+     datacubeTitles(118)=(textTag="GMDXText.Datacube04",replacement="Secondary Items")
+     datacubeTitles(119)=(textTag="GMDXText.Datacube05",replacement="Final Test")
+     //datacubeTitles(120)=(textTag="GMDXText.Datacube06",replacement="Weapon Controls")
+     //datacubeTitles(121)=(textTag="GMDXText.Datacube07",replacement="Training Course Closed")
+     //datacubeTitles(122)=(textTag="GMDXText.Datacube08",replacement="Takedowns")
+     //datacubeTitles(123)=(textTag="GMDXText.Datacube09",replacement="Door Information")
+     //datacubeTitles(124)=(textTag="GMDXText.Datacube10",replacement="Mantling Training")
+     datacubeTitles(125)=(textTag="GMDXText.Datacube11",replacement="About Ammo Types")
+     datacubeTitles(126)=(textTag="GMDXText.Datacube12",replacement="Jumping")
+     datacubeTitles(127)=(textTag="GMDXText.Datacube13",replacement="Crawlspaces")
+     datacubeTitles(128)=(textTag="GMDXText.Datacube14",replacement="Walkway Code")
+     datacubeTitles(129)=(textTag="GMDXText.Datacube15",replacement="Staying Healthy")
+     datacubeTitles(130)=(textTag="GMDXText.Datacube16",replacement="Advanced Interactivity")
+     datacubeTitles(131)=(textTag="GMDXText.Datacube17",replacement="Zyme Deal")
+     datacubeTitles(132)=(textTag="GMDXText.Datacube18",replacement="Well Done!")
+     datacubeTitles(133)=(textTag="GMDXText.Datacube19",replacement="Storage Inventory Ledger")
+     datacubeTitles(134)=(textTag="GMDXText.Datacube20",replacement="The Cannister")
+     datacubeTitles(135)=(textTag="GMDXText.Datacube21",replacement="Nano-Augmentation Guidelines")
+     datacubeTitles(136)=(textTag="GMDXText.Datacube22",replacement="Transfer Request")
+     datacubeTitles(137)=(textTag="GMDXText.Datacube23",replacement="Stop Falling Asleep!")
+     ////SARGE: New training messages
+     datacubeTitles(138)=(textTag="GMDXText.Datacube24",replacement="Advanced World Interactions")
+     datacubeTitles(139)=(textTag="GMDXText.Datacube25",replacement="Left-Click Interactions")
+     datacubeTitles(140)=(textTag="GMDXText.Datacube26",replacement="Ammo Restrictions")
+     datacubeTitles(141)=(textTag="GMDXText.Datacube27",replacement="Disarming Explosives")
+     datacubeTitles(142)=(textTag="GMDXText.Datacube28",replacement="Toolbelt Slots")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="

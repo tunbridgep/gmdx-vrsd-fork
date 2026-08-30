@@ -265,8 +265,10 @@ var() sound ReloadMidSound;
 var bool bCancelLoading;
 var float negTime;
 var bool bBeginQuickMelee;
-var bool bAlreadyQuickMelee;                                                    //RSD
-var float quickMeleeCombo;
+var bool bBeginQuickMeleeAttack;                                                //SARGE: Now separate attacking and not attacking
+var bool bFinishedQuickMeleeAttack;                                             //SARGE: Now separate attacking and not attacking
+var bool bQuickSelect;                                                         //SARGE: Put it away quickly
+var bool bQuickPutAway;                                                         //SARGE: Put it away quickly
 var vector ironSightLoc;     //unused
 var float meleeStaminaDrain;
 var bool activateAn;
@@ -368,6 +370,9 @@ var travel bool bHadLaser;
 var travel bool bHadScope;
 var travel bool bHadSilencer;
 
+//SARGE: Added a variable, rather than hardcoding it
+var const float fExtraHardcoreAccuracyPenalty;
+
 var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
 
 //Used during the new "SwitchAttachment" state so we can change attachments during the animation
@@ -398,6 +403,13 @@ struct BloodTex
 
 var travel BloodTex BloodTextures[8];
 
+//SARGE: Filters
+var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var(Spawning) bool bHardcoreRemove; //Remove on hardcore only
+var(Spawning) bool bHardcoreOnly; //Keep on hardcore only
+var(Spawning) int minimumNewGamePlusCycle;
+var(Spawning) int maximumNewGamePlusCycle;
+
 //AUGMENTIQUE: Weapon Skin system
 var(Augmentique) travel string currentWeaponSkin;
 var transient Texture skinTextures[9]; //SARGE: Holds the textures for our current weapon skin.
@@ -416,6 +428,9 @@ var transient bool bDontActuallyRenderViewModel;
 var transient Vector cachedDrawOffset;
 var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
 var const float inertiaSpeed;                            //SARGE: How fast weapons move.
+
+//SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
+var const Sound DeselectSound;
 
 //END GMDX:
 
@@ -441,7 +456,29 @@ replication
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
 }
-	
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    //New Game Plus handling
+    if (minimumNewGamePlusCycle > P.iNewGamePlusCycle)
+        Destroy();
+    else if (maximumNewGamePlusCycle > -1 && maximumNewGamePlusCycle < P.iNewGamePlusCycle)
+        Destroy();
+
+    //Hardcore Filters
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOptionResources)
+        Destroy();
+    else if (bHardcoreRemove && (P.bHardCoreMode || P.bHardcoreFilterOptionResources))
+        Destroy();
+    
+    //Difficulty Filters
+    if ((bLowDifficultyOnly && (P.CombatDifficulty >= 3.0 || P.bHardCoreMode)))
+        Destroy();
+    
+}
 
 function Frob(Actor Other, Inventory frobWith)
 {
@@ -466,7 +503,7 @@ function float GetMaxRange()
 // ----------------------------------------------------------------------
 function float GetRecoilPenaltyMod()
 {
-    return GetAddonPenalty(Laser) + GetAddonPenalty(Scope);
+    return GetAddonPenalty(Scope);
 }
 
 // ----------------------------------------------------------------------
@@ -485,7 +522,7 @@ function float GetAccurateRange()
 // SARGE: Returns the default fire sound (standard or classic), based on the players options
 // SARGE: Now also handles all fire sound handling, since the previous implementation was buggy and broken.
 // ----------------------------------------------------------------------
-function Sound GetFireSound(optional bool bSilenced)
+simulated function Sound GetFireSound(optional bool bSilenced)
 {
     //No firing sound if we are firing projectiles, since they play the sound.
     //SARGE: I wish this wasn't the case, what a hacky mess...
@@ -644,6 +681,10 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     local int intj, i;
     local Texture overrideTexture;
     local DeusExCarcass carc;
+    
+    //No ammo looting in multiplayer
+    if ( Level.NetMode != NM_Standalone )
+        return false;
 
     if (bNativeAttack)
         return false;
@@ -698,7 +739,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
 }
 
 //Sarge: Update weapon frob display when we have a mod applied
-function string GetFrobString(DeusExPlayer player)
+simulated function string GetFrobString(DeusExPlayer player)
 {
     local string str;
     local DeusExPlayer pl;
@@ -758,7 +799,7 @@ function string GetFrobString(DeusExPlayer player)
 }
 
 //Sarge: Update weapon description/display when we have a mod applied
-function string GetBeltDescription(DeusExPlayer player)
+simulated function string GetBeltDescription(DeusExPlayer player)
 {
     if (bModified && player != None && player.bBeltShowModified)
         return beltDescription $ "+";
@@ -985,6 +1026,13 @@ function PreBeginPlay()
 	{
 		Default.mpPickupAmmoCount = Default.PickupAmmoCount;
 	}
+    
+    //SARGE: Turn off GMDX's weapon collisions in MP, and start fully loaded.
+    if (Level.NetMode != NM_Standalone)
+    {
+        bCollideWorld = False;
+        ClipCount = ReloadCount;
+    }
 
     if (FOVManager == None)
         FOVManager = new(Self) class'ViewmodelFOVManager';
@@ -1127,7 +1175,7 @@ function DrawBloodyViewModel(Canvas canvas)
 }
 
 //SARGE: Positions the viewmodel properly, ready for drawing.
-function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
+simulated function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
 {
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added
@@ -1297,9 +1345,6 @@ local DeusExPlayer playa;
 		 bNeedToSetMPPickupAmmo = False;
 	  }
 	}
-    playa = DeusExPlayer(GetPlayerPawn());
-    if (playa != None && playa.bExtraHardcore && playa.bHardCoreMode && Owner == None)
-            BaseAccuracy = default.BaseAccuracy + 0.2;
 
     //RSD: Failsafe in case we don't have these set; use the original ranges for NPC AI
 	if (NPCmaxRange == 0)
@@ -1714,53 +1759,11 @@ function BringUp()
 function PlaySelect()
 {
     local DeusExPlayer player;
-    local float p, mod;
-    local Projectile firedProjectile;
+    local float p;
 
      player = DeusExPlayer(Owner);
-
-     if (bBeginQuickMelee)
-     {
-       if (IsA('WeaponNanoSword') && !bAlreadyQuickMelee)
-       {
-            Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
-       }
-       if (ReloadCount > 0)
-			AmmoType.UseAmmo(1);
-
-       if (meleeStaminaDrain != 0)
-       {
-       if (player != none)
-       {
-		mod = player.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech');
-        if (mod < 3)
-          mod = 1;
-        else
-          mod = 0.5;
-        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme cancels all melee stamina drain
-          mod = 0.0;
-
-        player.swimTimer -= meleeStaminaDrain*mod;
-          if (player.swimTimer < 0)
-		     player.swimTimer = 0;
-        }
-        }
-
-		bReadyToFire = False;
-		GotoState('NormalFire');
-		bPointing=True;
-		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
-        {
-            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
-            OnProjectileFired(firedProjectile);
-        }
-		if ( Owner.IsA('PlayerPawn') )
-			PlayerPawn(Owner).PlayFiring();
-		PlaySelectiveFiring();
-		PlayFiringSound();
-     }
-     else if (bBeginAmmoSelectLoad)                                             //RSD: For ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
+     
+     if (bBeginAmmoSelectLoad)                                             //RSD: For ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
      {
 		bAmmoSelectWait = true;                                                 //RSD: Need to wait one tick to load ammo otherwise the reload state doesn't engage (???)
 		//LoadAmmoClass(ammoSelectClass);
@@ -1768,25 +1771,46 @@ function PlaySelect()
      }
      else
      {
-     if (player != none && player.AugmentationSystem != none)
-     {
-        p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
+        if (player != none && player.AugmentationSystem != none)
+            p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
+        
         if (p < 1.0)
+            p = 1.0;
+            
+        if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
+            p *= 1.2;
+
+        //Skip the select animation in quick melee mode.
+        if (bQuickSelect)
         {
-           p = 1.0;
-           if (IsA('WeaponMiniCrossbow') || IsA('WeaponSawedOffShotgun') || IsA('WeaponLAW'))
-               p = 1.2;
+            p = 0;
+            bQuickSelect = false;
         }
-     }
-    PlayAnim('Select',p,0.0);
-    bAimingDown=False;
-	Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
-	negTime = 0;
-	
-    if (player != none && bLaserToggle) //Sarge: Add laser check to re-enable laser if we turned it on
-	{                                   //Sarge: The block for mantling checks was also removed, now it uses this directly
-	   LaserOn(true);
-	}
+        else if (bBeginQuickMelee)
+        {
+            if (IsA('WeaponShuriken'))
+                p *= 3;
+            else
+                p *= 2;
+            //ReadyToFire();
+        }
+
+        //SARGE: Addon Penalties
+        p -= GetAddonPenalty(Scope); //SARGE: Penalties for addons
+        p -= GetAddonPenalty(Laser); //SARGE: Penalties for addons
+        
+        //SARGE: Can't go below zero
+        p = FMAX(0.0,p);
+
+        PlayAnim('Select',p,0.0);
+        bAimingDown=False;
+        Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
+        negTime = 0;
+        
+        if (player != none && bLaserToggle) //Sarge: Add laser check to re-enable laser if we turned it on
+        {                                   //Sarge: The block for mantling checks was also removed, now it uses this directly
+            LaserOn(true);
+        }
 	}
 }
 
@@ -1986,6 +2010,10 @@ simulated function float CalculateAccuracy()
 
 	if (player != None)
 	{
+        //SARGE: Hardcore+ Inaccuracy
+        if (player.bHardCoreMode && player.bExtraHardcore)
+            accuracy += fExtraHardcoreAccuracyPenalty;
+
 		// check the player's skill
 		// 0.0 = dead on, 1.0 = way off
 		accuracy += weapskill;
@@ -2767,9 +2795,6 @@ simulated function Tick(float deltaTime)
     	bAmmoSelectWait = false;                                                //RSD: Note we do this last to hack sound effects
    	}
 
-
-    if (quickMeleeCombo > 0)
-        quickMeleeCombo -= deltaTime;
 	//GMDX: ADD PROJECTILE TEST INFLIGHT
 	if ((player!=none)&&player.bGEPprojectileInflight)//(player.aGEPProjectile!=none)) //RSD: Changed so it still updates laser position
 		return;
@@ -2994,7 +3019,11 @@ simulated function Tick(float deltaTime)
 		else
 		   recoil = recoilStrength;
 
-        recoil += GetRecoilPenaltyMod(); //SARGE: Penalties for addons
+        //SARGE: Lets make recoil actually mean something
+        //if (player.bHardcoreMode)
+        //    recoil *= 1.1;
+
+        recoil *= (1.0 + GetRecoilPenaltyMod()); //SARGE: Penalties for addons
 
 		if (recoil < 0.0)
 			recoil = 0.0;
@@ -5910,33 +5939,19 @@ function Finish()
 	if (bHasMuzzleFlash)
 		EraseMuzzleFlashTexture();
 
-    if (bBeginQuickMelee)
+    if (bBeginQuickMeleeAttack && bFinishedQuickMeleeAttack && DeusExPlayer(Owner) != None)
     {
-            bFiring = False;
-            if (Owner != None && Owner.IsA('DeusExPlayer'))
-            {
-               DeusExPlayer(Owner).StopFiring();
-               if (quickMeleeCombo > 0)
-               {
-                 PlaySelect();
-                 return;
-               }
-               //if (DeusExPlayer(Owner).primaryWeapon != None)                 //RSD: Always quickdraw
-               //{
-                  if (AccurateRange > 200)
-                      Buoyancy=5.123456;
-                  if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
-                  {
-                     bBeginQuickMelee = False;
-				     DestroyMe();
-				     return;
-				  }
-                  if (DeusExPlayer(Owner).CarriedDecoration == None)
-                     DeusExPlayer(Owner).SelectLastWeapon(true);
-                  GotoState('Idle');
-                  return;
-               //}
-            }
+        DeusExPlayer(Owner).StopFiring();
+        DeusExPlayer(Owner).DebugMessage("Selecting old weapon");
+        bFinishedQuickMeleeAttack = false;
+        bBeginQuickMeleeAttack = false;
+        if (DeusExPlayer(Owner).CarriedDecoration == None)
+        {
+            DeusExPlayer(Owner).SetupQuickSwitch(DeusExPlayer(Owner).primaryWeapon,DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'PerkTacticalRigging').bPerkObtained && !DeusExPlayer(Owner).bLastWasEmpty,false);
+            DeusExPlayer(Owner).SelectLastWeapon(true);
+        }
+		GotoState('Idle');
+        return;
     }
 
 	if ( bChangeWeapon )
@@ -6112,9 +6127,10 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 }
 
 //SARGE: Now each object can define it's own function for whether it can be a secondary or not.
+//TODO: Split this out properly
 function bool CanAssignSecondary(DeusExPlayer player)
 {
-	if (bHandToHand)
+    if (bHandToHand || IsA('WeaponPepperGun'))
 	{
         if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained || GoverningSkill == class'DeusEx.SkillDemolition' || IsA('WeaponCombatKnife') || IsA('WeaponHideAGun') || IsA('WeaponShuriken'))
             return true;
@@ -6342,6 +6358,7 @@ simulated function bool UpdateInfo(Object winObject)
 	}
 
     mod = GetAddonPenalty(Scope); //SARGE: Penalties for addons
+    mod += GetAddonPenalty(Laser); //SARGE: Penalties for addons
 	if (HasReloadMod() || mod > 0.0)
 	{
 		str = str @ BuildPercentString(ModReloadTime + mod);
@@ -6359,7 +6376,7 @@ simulated function bool UpdateInfo(Object winObject)
 	if (HasRecoilMod() || mod > 0.0)
 	{
 		str = str @ BuildPercentString(ModRecoilStrength + mod);
-		str = str @ "=" @ FormatFloatString(recoilStrength + mod, 0.01);
+		str = str @ "=" @ FormatFloatString(recoilStrength * (1.0 + mod), 0.01);
 	}
     if (!bHandToHand)
 	winInfo.AddInfoItem(msgInfoRecoil, str, HasRecoilMod() || mod > 0.0);
@@ -6379,6 +6396,8 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		str = Int((2.0 - Default.BaseAccuracy)*50.0) $ "%";
 		mod = (Default.BaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
+        if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).bExtraHardcore)
+            mod -= fExtraHardcoreAccuracyPenalty;
 
 		if (mod != 0.0)
 		{
@@ -7085,6 +7104,14 @@ state NormalFire
 			// if we are a thrown weapon and we run out of ammo, destroy the weapon
 			if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
 			{
+                if (bBeginQuickMeleeAttack && DeusExPlayer(Owner) != None)
+                {
+                    if (DeusExPlayer(Owner).CarriedDecoration == None)
+                    {
+                        DeusExPlayer(Owner).SetupQuickSwitch(DeusExPlayer(Owner).primaryWeapon,DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'PerkTacticalRigging').bPerkObtained && !DeusExPlayer(Owner).bLastWasEmpty,false);
+                        DeusExPlayer(Owner).SelectLastWeapon(true);
+                    }
+                }
 				DestroyMe();
 			}
 		}
@@ -7280,6 +7307,7 @@ ignores Fire, AltFire;
 			val = ReloadTime + (val*ReloadTime);
  
             val += GetAddonPenalty(Scope); //SARGE: Penalties for addons
+            val += GetAddonPenalty(Laser); //SARGE: Penalties for addons
 
 			/*if (AmmoType.IsA('AmmoRubber'))                                   //RSD: Rubber rounds no longer load more quickly (huh?)
 			   val *= 0.75;*/
@@ -7708,7 +7736,14 @@ Begin:
 	}
 	else
 	{
-		if (!bNearWall && !activateAn && (IsA('WeaponAssaultShotgun') || IsA('WeaponSawedOffShotgun')))
+
+        if (bBeginQuickMeleeAttack)
+        {
+            bFinishedQuickMeleeAttack=true;
+            Fire(0);
+        }
+
+		else if (!bNearWall && !activateAn && (IsA('WeaponAssaultShotgun') || IsA('WeaponSawedOffShotgun')))
         	PlayAnim('Idle2',,0.1);
         else if (!bNearWall && !activateAn && IsA('WeaponPistol'))
         {
@@ -7847,34 +7882,50 @@ ignores Fire, AltFire;
     //CyberP begin
 simulated function TweenDown()
 {
-local DeusExPlayer player;
-local float p;
+    local DeusExPlayer player;
+    local float p;
+    local bool bPlaySound;
 
-     player = DeusExPlayer(Owner);
+    if (DeselectSound != None)
+    {
+        //SARGE: DTS only plays unequip if it's got some charge
+        bPlaySound = !IsA('WeaponNanoSword') || (WeaponNanoSword(Self).chargeManager != None && !WeaponNanoSword(self).chargeManager.IsUsedUp());
+        if (bPlaySound)
+            PlaySound(DeselectSound,SLOT_None);
+    }
 
-     if (player != None)
-     p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
+    player = DeusExPlayer(Owner);
 
+     if (player != None && player.AugmentationSystem != none)
+        p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
+        
      if (p < 1.0)
-     p = 1.0;
+        p = 1.0;
+        
+    //SARGE: GOD this takes forever
+    if (IsA('WeaponSawedOffShotgun'))
+        p *= 1.2;
 
-        if (IsA('WeaponNanoSword') && WeaponNanoSword(Self).chargeManager != None && !WeaponNanoSword(self).chargeManager.IsUsedUp()) //SARGE: Added sword energy level checks
-            PlaySound(sound'GMDXSFX.Weapons.energybladeunequip2',SLOT_None);
-        else if (IsA('WeaponProd'))
-            PlaySound(sound'GMDXSFX.Weapons.produnequip',SLOT_None);
-        else if (IsA('WeaponCombatKnife') || IsA('WeaponSword'))
-            PlaySound(sound'GMDXSFX.Weapons.knifeunequip',SLOT_None);
+    //SARGE: Make weapon switching speed matter in Hardcore
+    if (player != None && player.bHardCoreMode)
+        p *= 0.85;
+    
+    //Secondaries switch FAST
+    if (bQuickPutAway)
+    {
+        bQuickPutAway = false;
+        p *= 4;
+    }
+		
+    // Have the put away animation play twice as fast in multiplayer
+    if ( Level.NetMode != NM_Standalone )
+        p *= 2;
 
 	if ( (AnimSequence != '') && (GetAnimGroup(AnimSequence) == 'Select') )
 		TweenAnim( AnimSequence, AnimFrame * 0.4 );
 	else
-	{
-		// Have the put away animation play twice as fast in multiplayer
-		if ( Level.NetMode != NM_Standalone )
-			PlayAnim('Down', 2.0, 0.05);
-		else
-			PlayAnim('Down', p, 0.02);
-	}
+        PlayAnim('Down', p, 0.02);
+	BobDamping=default.BobDamping;
 }
  //CyberP end
 Begin:
@@ -7895,7 +7946,8 @@ Begin:
 	   FinishAnim();
 	}
     bBeginQuickMelee = False;
-    bAlreadyQuickMelee = False;                                                 //RSD: Added
+    bBeginQuickMeleeAttack = False;
+    bFinishedQuickMeleeAttack = False;
 	//if ( Level.NetMode != NM_Standalone )
 	//{
 	//	ReloadMaxAmmo();	// Auto-reload in multiplayer (when putting away)
@@ -7927,7 +7979,11 @@ state ADSToggle                                                                 
 
 simulated function bool TestMPBeltSpot(int BeltSpot)
 {
-	return ((BeltSpot <= 3) && (BeltSpot >= 1));
+    //Disposables go in the grenade slots
+    if (bDisposableWeapon)
+        return (BeltSpot >= 4 && BeltSpot <= 6);
+    else
+        return (BeltSpot <= 3 && BeltSpot >= 0);
 }
 
 //SARGE: Destroys the object, and makes sure if it's in our belt, it becomes a placeholder
@@ -7956,6 +8012,7 @@ defaultproperties
 {
      bReadyToFire=True
      LowAmmoWaterMark=10
+     fExtraHardcoreAccuracyPenalty=0.1
      FireAnim(0)=Shoot
      FireAnim(1)=Shoot
      NoiseLevel=1.000000
@@ -8076,9 +8133,11 @@ defaultproperties
      bVanillaModelAttachments=true
      addonPenalties(0)=0.1 //Scope
      addonPenalties(1)=0.2 //Silencer
-     addonPenalties(2)=0.075 //Laser
+     addonPenalties(2)=0.15 //Laser
      currentWeaponSkin="default"
      totalScopeTime=0.41
      inertiaSpeed=30
      AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
+     minimumNewGamePlusCycle=0
+     maximumNewGamePlusCycle=-1
 }

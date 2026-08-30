@@ -13,8 +13,7 @@ var() float flaretime; //added DDL: because hardcoded numbers are TEH STUPID
 var bool bFlameEffect;
 var Beam attachedBeam;
 var bool bLClicked;
-var bool bBeginQuickThrow;
-var float quickThrowCombo;
+var bool bQuickFlare;       //SARGE: Skip the initial effects and just chuck the flare
 ///HDTP
 //ok for this one I've actually done a fair bit of coding
 //it's basically the vastly nicer looking one I made for QE,
@@ -87,9 +86,6 @@ function ExtinguishFlare()
 
 function tick(float DT)
 {
-    if (quickThrowCombo > 0)
-        quickThrowCombo -= DT;
-
     if(gen != none)
 		UpdateGens();
 
@@ -259,7 +255,7 @@ state Activated
 	{
         local Flare flare;
     
-        if (!IsHDTP())
+        if (!IsHDTP() || bQuickFlare)
         {
             Super.BeginState();
             flare = Spawn(class'Flare', Owner);
@@ -276,11 +272,12 @@ state Activated
     {
     }
 Begin:
-    if (IsHDTP())
+    if (IsHDTP() && !bQuickFlare)
     {
         PlayAnim('Attack',2,0.1);                                                    //RSD: Was 0.1
         FinishAnim();
     }
+    bQuickFlare = false;
     Finish();                                                                   //RSD
 }
 
@@ -457,45 +454,18 @@ function BringUp()                                                              
 {
     if (!IsInState('Idle'))
 		GotoState('Idle');
-
-    if (bBeginQuickThrow)
-    {
-        GotoState('Activated');
-    }
 }
 
 function PutDown()                                                              //RSD: For secondary item shenanigans
 {
 	if (IsInState('Idle'))
 		GotoState('DownItem');
-
-	bBeginQuickThrow = false;
 }
 
 function Finish()                                                               //RSD: For secondary item shenanigans
 {
-    if (bBeginQuickThrow)
-    {
-   		if (Owner != None && Owner.IsA('DeusExPlayer'))
-        {
-            DeusExPlayer(Owner).StopFiring();
-    		if (quickThrowCombo > 0)
-    		{
-    			GotoState('Activated');
-    			return;
-   			}
-            //if (DeusExPlayer(Owner).primaryWeapon != None)                    //RSD: Always quickdraw
-            //{
-              if (DeusExPlayer(Owner).CarriedDecoration == None)
-                 DeusExPlayer(Owner).SelectLastWeapon(true,false);
-              GotoState('idle');
-              return;
-            //}
-         }
-    }
-    else
-		GoToState('Idle');
-		return;
+    GoToState('Idle');
+    return;
 }
 
 exec function UpdateHDTPsettings()

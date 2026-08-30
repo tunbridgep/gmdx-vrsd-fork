@@ -13,6 +13,23 @@ function string GetFrobString(DeusExPlayer player)
 		return ItemName @ "(" $ numCredits $ ")"; //SARGE: Append the current charge and num copies
 }
 
+//SARGE: Modify credit amounts on higher difficulties
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    if (numCredits > 5)
+    {
+        if (P.iNewGamePlusCycle > 0)
+            numCredits *= 0.4; //40% credits only on newgameplus
+        else if (P.bHardcoreMode)
+            numCredits *= 0.75; //75% credits only on hardcore mode
+
+        numCredits = FMAX(5.0,numCredits);
+    }
+
+    super.SetupDifficultyMod(P);
+}
+
+
 // ----------------------------------------------------------------------
 // Frob()
 //

@@ -3,14 +3,6 @@
 //=============================================================================
 class Soldier extends HumanMilitary;
 
-function PostBeginPlay()
-{
-if (MultiSkins[6]==Texture'DeusExCharacters.Skins.SoldierTex3')
-         bHasHelmet = True;
-
-super.PostBeginPlay();
-}
-
 function PopHead()
 {
 MultiSkins[3] = Texture'GMDXSFX.Skins.ChefTexBeheaded';

@@ -58,7 +58,6 @@ var localized string	msgNoNanoKey;			// message when the player doesn't have the
 var() bool				bOpenSendEvent;				//CyberP/totalitarian: send an event when triggered
 var() bool              bSpecialExclusion;          //CyberP: don't break when NPCs bump us. Foe footlockers primarily.
 var() bool              bNoDestroyEvent;            //CyberP: don't send an event when destroyed
-var bool                bPerkApplied;
 var float               frobGate;                    //CyberP: to prevent NPCs constantly closing doors that have just been opened
 var ScriptedPawn        ChosenPawn;                 //CyberP: used by AI to determine wether they should open doors in the newly elaborated post-combat seeking sub-state
 
@@ -68,9 +67,51 @@ var float               previousStrength;        //Sarge: What was the strength 
 var float               leftFrobTimer;           //Sarge: Ticks down from 3 seconds after we do a left frob, so that we can use right-click to select different options
 const             leftFrobTimerMax = 6.0;
 
+//SARGE: Track if this mover was modified by perks.
+var bool                bDoorsmanApplied;
+var bool                bBreakdownApplied;
+
 var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" into place on map load. Used for the janky smuggler elevator
 
 var(GMDX) const bool bDontOpenOnMissionComplete;                                    //SARGE: Don't open this door on mission completion.
+
+//SARGE: Moved from the giant SetupDifficultyMod function in DeusExPlayer
+//This is called automatically on mission start.
+//NOT called for objects created during gameplay.
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    if (lockStrength == 0.050000)
+        lockStrength = 0.100000;
+
+    //Increase hack strength by 15% per NG Cycle
+    if (lockStrength > 0.0)
+        lockStrength = FMIN(1.0,lockStrength + (0.15 * P.iNewGamePlusCycle));
+}
+
+function ApplyDoorsman(float perkValue)
+{
+    if (bDoorsmanApplied)
+        return;
+
+    minDamageThreshold -= PerkValue;
+    if (minDamageThreshold <= 0)
+    minDamageThreshold = 1;
+    bDoorsmanApplied = True;
+}
+
+function ApplyBreakdown(float perkValue)
+{
+    if (bBreakdownApplied)
+        return;
+
+    if (bPickable && bFrobbable && !bBreakable && Event == '')
+    {
+        bBreakable = true;
+        doorStrength = 0.8;
+        minDamageThreshold = PerkValue;
+        bBreakdownApplied = True;
+    }
+}
 
 //SARGE: Do we have the key for this lock?
 function bool HasKey(DeusExPlayer Player)

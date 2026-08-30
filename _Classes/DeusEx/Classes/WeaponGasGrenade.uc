@@ -70,16 +70,6 @@ function BecomePickup()
          Lifespan = 0.0;
 }
 
-// ----------------------------------------------------------------------
-// TestMPBeltSpot()
-// Returns true if the suggested belt location is ok for the object in mp.
-// ----------------------------------------------------------------------
-
-simulated function bool TestMPBeltSpot(int BeltSpot)
-{
-   return (BeltSpot == 5);
-}
-
 simulated function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation, Vector Momentum, name damageType)
 {
 	local ThrownProjectile tp;

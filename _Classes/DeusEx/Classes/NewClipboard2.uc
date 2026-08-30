@@ -8,21 +8,23 @@ class NewClipboard2 extends InformationDevices;
 var() bool              sClip;
 var() bool              sClip2;
 
-var transient bool bUpdatedTextTag;
-
 var const localized string TitleText;
 
-//We need to do this
-function UpdateTextTag()
+function SetupDifficultyMod(DeusExPlayer P)
 {
-    local DeusExPlayer player;
+    UpdateTextTag(P);
+	super.SetupDifficultyMod(P);
+}
+
+//We need to do this
+function UpdateTextTag(DeusExPlayer player)
+{
     local string str;
 
     //Figure out our texttag based on our passed in HackText
     //This is a holdover from GMDX v9 where it used strings instead of a text package.
     if (textTag == '')
     {
-        player = DeusExPlayer(GetPlayerPawn());
         if (player != None && player.flagBase != None)
         {
             str = "Clipboard";
@@ -38,20 +40,10 @@ function UpdateTextTag()
     }
 }
 
-//SARGE: Fix this!
-function string GetItemTitle()
+//SARGE: TODO: Fix this! Use ClipboardTitles in InformationDevices instead!
+function string GetItemTitle(DeusExPlayer P)
 {
     return TitleText;
-}
-
-function Tick(float deltaTime)
-{
-    super.Tick(deltaTime);
-
-    if (!bUpdatedTextTag)
-        UpdateTextTag();
-
-    bUpdatedTextTag = true;
 }
 
 // ----------------------------------------------------------------------

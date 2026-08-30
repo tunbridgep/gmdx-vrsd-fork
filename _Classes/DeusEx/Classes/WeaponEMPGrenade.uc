@@ -96,16 +96,6 @@ simulated function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation,
     tp.Explode(Location, vect(0,0,1));
 }
 
-// ----------------------------------------------------------------------
-// TestMPBeltSpot()
-// Returns true if the suggested belt location is ok for the object in mp.
-// ----------------------------------------------------------------------
-
-simulated function bool TestMPBeltSpot(int BeltSpot)
-{
-   return (BeltSpot == 4);
-}
-
 defaultproperties
 {
      weaponOffsets=(X=18.000000,Y=-15.000000,Z=-20.000000)

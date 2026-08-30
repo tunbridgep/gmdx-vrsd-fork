@@ -28,21 +28,18 @@ State Attacking
    }
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-             if (bHardCoreMode)
-             {
-                EnemyTimeout = 12.000000;
-                GroundSpeed = 280.000000;
-                bReactLoudNoise = True;
-                CloakThreshold = 110;
-                if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-                {
-                    Health = 200;
-                    EMPHitPoints = 120;
-                }
-             }
-             super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
+    super.SetupDifficultyMod(P);
+    if (P.bHardCoreMode)
+    {
+        EnemyTimeout = 12.000000;
+        GroundSpeed = 280.000000;
+        bReactLoudNoise = True;
+        CloakThreshold = 110;
+        Health = 200;
+        EMPHitPoints = 120;
+    }
 }
 
 /*function bool ShouldStrafe()                                                    //RSD: Hacked so we can get the robot backing up but not generally actually strafing

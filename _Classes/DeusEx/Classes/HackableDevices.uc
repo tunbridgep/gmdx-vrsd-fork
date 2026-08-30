@@ -36,6 +36,20 @@ var const bool          bShiftRightClickToolSelection; //Sarge: Used to prevent 
 
 var const localized string msgNeedMultitool;        //SARGE: Tell the user that they need a tool (Wireless Strength perk)
 
+//SARGE: We can just literally destroy these, they leave no trace...
+function LowKeyDestroy()
+{
+    Destroy();
+}
+                    
+//Increase hack strength by 15% per NG Cycle
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    if (hackStrength > 0.0)
+        hackStrength = FMIN(1.0,hackStrength + (0.15 * P.iNewGamePlusCycle));
+    super.SetupDifficultyMod(P);
+}
+
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism, or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
