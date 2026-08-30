@@ -287,8 +287,17 @@ function Tick(float deltaTime)
             else
             {
                 bRebooting = false;
-                bDisabled = bDefaultDisabled || bQuickHackWasPreviouslyDisabled;
-                bActive = bDefaultActive && !bQuickHackWasPreviouslyDisabled;
+                if (bQuickHacked)
+                {
+                    bDisabled = bDefaultDisabled || bQuickHackWasPreviouslyDisabled;
+                    bActive = bDefaultActive && !bQuickHackWasPreviouslyDisabled;
+                }
+                else
+                {
+                    bDisabled = bDefaultDisabled;
+                    bActive = bDefaultActive;
+                }
+
                 if (bActive)
                     AmbientSound = Default.AmbientSound;
 

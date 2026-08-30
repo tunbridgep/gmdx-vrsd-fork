@@ -638,8 +638,11 @@ function Tick(float deltaTime)
 			SoundPitch = default.SoundPitch;
 			DesiredRotation = origRot;
             //SARGE: Fix trigger timers not resetting
+            playerCheckTimer = 0;
             carcassTriggerTimer = 0;
             triggerTimer = 0;
+            bPlayerSeen = false;
+            bCarcassSeen = false;
 		}
 
 		return;
