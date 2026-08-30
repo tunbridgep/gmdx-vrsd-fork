@@ -58,7 +58,7 @@ defaultproperties
      ShotTime=0.300000
      bHandToHand=True
      reloadTime=0.000000
-     HitDamage=100
+     HitDamage=1000
      maxRange=12000
      AccurateRange=7200
      BaseAccuracy=0.600000
@@ -67,7 +67,7 @@ defaultproperties
      ScopeFOV=30
      bHasMuzzleFlash=False
      recoilStrength=1.000000
-     mpHitDamage=100
+     mpHitDamage=1000
      mpBaseAccuracy=0.600000
      mpAccurateRange=14400
      mpMaxRange=14400

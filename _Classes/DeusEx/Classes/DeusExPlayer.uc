@@ -2436,7 +2436,8 @@ event TravelPostAccept()
 		conPlay.TerminateConversation();
 
 	HDTP();
-	// Make sure any objects that care abou the PlayerSkin
+	
+    // Make sure any objects that care abou the PlayerSkin
 	// are notified
 	UpdatePlayerSkin();
 
@@ -17468,8 +17469,10 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 		if (instigatedBy != None)
 			damageAttitudeTo(instigatedBy);
-		PlayDXTakeDamageHit(actualDamage, hitLocation, damageType, momentum, bDamageGotReduced);
-		AISendEvent('Distress', EAITYPE_Visual);
+        
+        //SARGE: Changed: Now we only do the damage screen effects if we reduced less than 80% of damage.
+        PlayDXTakeDamageHit(actualDamage, hitLocation, damageType, momentum, !bDamageGotReduced || actualDamage >= Damage * 0.2);
+        AISendEvent('Distress', EAITYPE_Visual);
 	}
 	else
 	{
@@ -17704,12 +17707,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 				foreach AllActors(class'BallisticArmor', armor)
 				{
 			        if ((armor.Owner == Self) && armor.bActive)
-			            {
-							if (skillLevel == 1)
-								armor.Charge -= (Damage * 16 * skillLevel);
-							else
-								armor.Charge -= (Damage * 32 * skillLevel);	// Trash: Nerfed
-						}
+                            armor.Charge -= (Damage * 32 * skillLevel);
                     if (armor.Charge < 0)                                       //RSD: Don't go below zero
                     {
                         armor.Charge = 0;
@@ -18068,10 +18066,21 @@ function PlayDXTakeDamageHit(float Damage, vector HitLocation, name damageType, 
 
 function PlayHit(float Damage, vector HitLocation, name damageType, vector Momentum)
 {
+    local Perk perk;
+
 	if ((Damage > 0) && (damageType == 'Shot') || (damageType == 'Exploded') || (damageType == 'AutoShot'))
 		SpawnBlood(HitLocation, Damage);
 
-    if (Damage > 0) //CyberP: Don't scream (and subsequently send AIEvents) if the damage is 0.
+    if (PerkManager != None)
+        perk = PerkManager.GetPerkWithClass(class'PerkNervesOfSteel');
+
+    //SARGE: The new Suffer in Silence perk only makes noise if we suffer major injuries.
+    if (perk != none && perk.bPerkObtained)
+    {
+        if (Damage > perk.PerkValue)
+            PlayTakeHitSound(Damage, damageType, 1);
+    }
+    else if (Damage > 0) //CyberP: Don't scream (and subsequently send AIEvents) if the damage is 0.
 	   PlayTakeHitSound(Damage, damageType, 1);
 }
 
@@ -18614,8 +18623,8 @@ exec function AllHealth()
 	if (!bCheatsEnabled)
 		return;
 
-	RestoreAllHealth();
     HealAllWounds();
+	RestoreAllHealth();
 }
 
 // ----------------------------------------------------------------------
@@ -20473,6 +20482,8 @@ exec function AllAmmo()                                                         
 	for( Inv=Inventory; Inv!=None; Inv=Inv.Inventory )
 		if (Ammo(Inv)!=None)
             Ammo(Inv).AmmoAmount  = GetAdjustedMaxAmmo(Ammo(Inv));     //RSD: Replaced Ammo(Inv).MaxAmmo with adjusted
+
+    UpdateHUD();
 }
 
 //SARGE: Plays the breathing sound based on gender

@@ -69,7 +69,7 @@ defaultproperties
      items(14)=(HelpText="Show Credits Balance in the Dialog Window.",actionText="Conversations: Show Credits",variable="bCreditsInDialog",defaultValue=1);
      items(15)=(HelpText="Use selected HUD Theme in dialog menus.",actionText="Conversations: Use HUD Colours",variable="bDialogHUDColors");
      items(16)=(HelpText="If enabled, blood pools will always be the same size for humans. Otherwise it's dependent on carcass size, which is somewhat arbitrary.",actionText="Game: Consistent Blood Pools",variable="bConsistentBloodPools",defaultValue=1);
-     items(17)=(HelpText="If enabled, saving will be allowed while an infolink is playing. The infolink will be stopped.",actionText="Game: Allow Saving during Infolinks",variable="bAllowSaveWhileInfolinkPlaying");
+     items(17)=(HelpText="If enabled, the game can save while an infolink is playing. The infolink will be stopped.",actionText="Game: Allow Saving during Infolinks",variable="bAllowSaveWhileInfolinkPlaying");
      items(18)=(HelpText="If enabled, the game will return to the menu after dying, as in Vanilla.",actionText="Game: Death returns to menu",variable="bMenuAfterDeath");
      items(19)=(HelpText="If enabled, characters (including the player) will blink randomly.",actionText="Game: Enable Blinking",variable="bEnableBlinking",defaultValue=1);
      items(20)=(HelpText="Shooting at walls will send sparks flying, and bullet holes are bigger!",actionText="Game: John Woo Mode",variable="bJohnWooSparks");
