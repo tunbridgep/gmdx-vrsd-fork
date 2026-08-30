@@ -1061,8 +1061,6 @@ var globalconfig float fAutoHideBeltTime;         //SARGE: How long before the b
 var private float fAutoHideBeltTimeCountdown;   //SARGE: The countdown timer left before our belt disappears.
 
 var const localized string msgSaveName;
-
-var const localized string msgSaveName;
 var const localized string msgNewGamePlusString;
 var const localized String TooSick;
 
