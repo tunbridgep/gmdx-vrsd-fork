@@ -26,6 +26,9 @@ var const bool bNoDisplay;              //SARGE: Don't display in the list. It's
 
 var const Sound WoundSound;             //SARGE: Play a sound when we get a trauma.
 
+var localized string strAfflicted;
+var localized string strUnafflicted;
+
 function int GetRequiredMedkits()
 {
     if (bHasIt)
@@ -49,9 +52,9 @@ function int GetDamage()
 function string GetSeverity()
 {
     if (bHasIt)
-        return "Afflicted";
+        return strAfflicted;
     else
-        return "Unaffected";
+        return strUnafflicted;
 }
 
 function AddWoundDamage(int amount)
@@ -116,4 +119,6 @@ defaultproperties
      DamageThreshold=350
      bHidden=True
      bTravel=True
+     strAfflicted="Afflicted"
+     strUnafflicted="Unafflicted"
 }

@@ -1,6 +1,7 @@
 1.3:
 
 New Features:
+- Added a new perk NERVES OF STEEL (Stealth Trained, 50 points): An agent learns to push through minor injuries while focusing on the mission at hand. Pain sounds are removed entirely (and will no longer alert nearby hostiles) for injuries causing 10 damage or less.
 - Added a new perk VIGILANT RECYCLER (General, 100 points): An agent learns how to restructure the nanite composites within nanokeys, allowing them to transform duplicated NanoKeys into 45 credits each.
 - Added a new perk TARGETING ROUTINES (Demolitions Advanced, 300 points): An agent is able to program the targeting routines of proximity grenades, ensuring placed EMP and Scrambler grenades only explode in the presence of robots, and placed gas grenades only explode in the presence of organics.
     - Additionally prevents medical, repair and cleaner bots from setting off placed grenades.
@@ -42,6 +43,7 @@ Bug Fixes:
 - Fixed Repair Bots giving the DTS extra charge with the Field Repair perk.
 - Fixed a crash when pressing ESC at the start of the endgame cutscenes.
 - Various fixes for red borders when hovering over some items in certain circumstances.
+- Ballistic Vests no longer drain more charge at Trained than at Untrained Enviro Resistance.
 - Fixed Female JC not displaying overlays in the Augmentation screen when Augs are installed.
 - Fixed mismatched texture on the Combat Knife (thanks Kisskills, original mod here: https://www.nexusmods.com/deusex/mods/92)
     - Also fixed the same issue on all Augmentique knife skins.
@@ -70,11 +72,16 @@ Bug Fixes:
 - Fixed Security Cameras being re-activated after being hacked while EMP'd.
 - Fixed searching carcasses not properly recharging the Dragons Tooth Sword like it should if the corpse contains a DTS.
 - Fixes for phones not properly displaying "Line disconnected" and other frob sounds.
+- Fixed LAW incorrectly listing it's damage as 100, rather than 1000
 
 Misc Changes:
 - Addon Penalties for Scope, Laser and Silencer updated:
     - Scope now gives -recoil and +reload and equip time.
     - Laser now gives +reload and equip time.
+- Screen effects and flinching from pain will now only be removed when blocking 80% or more of the damage, rather than always whenever damage is reduced.
+- NPCs will no longer track targets with the GEP gun.
+- Minor changes to explosives to properly account for mover DT checks.
+- Confix is now installed as a separate mod, due to recent DeusExe support for mod-added conversation files.
 - The Save Game menu now uses the same default naming format as saves created from Save Points (Location [Real Name]).
 - It is now significantly less likely to be unable to drop a carcass when in a tight space, such as a vent.
 - Minor internal changes to make translations easier, such as localizing a few strings.

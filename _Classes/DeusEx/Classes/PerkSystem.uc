@@ -95,6 +95,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 
 	// Stealth Perks
 	AddPerk(Class'DeusEx.PerkNimble');
+	AddPerk(Class'DeusEx.PerkNervesOfSteel');
 	AddPerk(Class'DeusEx.PerkSecurityLoophole');
 	AddPerk(Class'DeusEx.PerkWetwork');
 	AddPerk(Class'DeusEx.PerkTacticalDistraction');
@@ -153,7 +154,8 @@ function AddAll()
 {
     local int i;
     for (i = 0;i < numPerks;i++)
-        PurchasePerk(PerkList[i].Class,true);
+        if (PerkList[i].IsVisible())
+            PurchasePerk(PerkList[i].Class,true);
 }
 
 // ----------------------------------------------------------------------
