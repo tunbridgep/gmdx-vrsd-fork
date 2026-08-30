@@ -8,12 +8,7 @@ function OnPerkPurchase()
     local DeusExMover mov;
 
     foreach PerkOwner.AllActors(class'DeusExMover',mov)
-    {
-        mov.minDamageThreshold -= PerkValue;
-        if (mov.minDamageThreshold <= 0)
-        mov.minDamageThreshold = 1;
-        mov.bPerkApplied = True;
-    }
+        mov.ApplyDoorsman(PerkValue);
 }
 
 defaultproperties
