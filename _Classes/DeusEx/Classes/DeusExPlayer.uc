@@ -9850,6 +9850,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             cp = ChargedPickup(FrobTarget);
             if (cp.Owner == self && cp != None && !bLeftClicked && !cp.bUnequipWhenDrained && bAutoUseChargedPickups && cp.IsTorsoFree())
                 cp.Activate();
+
+            //Reset the belt if the item is on the belt
+            if (Inventory(FrobTarget) != None && Inventory(FrobTarget).bInObjectBelt)
+                ResetAutoHideBeltTime();
         }
 	}
 
