@@ -2268,7 +2268,8 @@ event TravelPostAccept()
 		conPlay.TerminateConversation();
 
 	HDTP();
-	// Make sure any objects that care abou the PlayerSkin
+	
+    // Make sure any objects that care abou the PlayerSkin
 	// are notified
 	UpdatePlayerSkin();
 
@@ -17531,12 +17532,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 				foreach AllActors(class'BallisticArmor', armor)
 				{
 			        if ((armor.Owner == Self) && armor.bActive)
-			            {
-							if (skillLevel == 1)
-								armor.Charge -= (Damage * 16 * skillLevel);
-							else
-								armor.Charge -= (Damage * 32 * skillLevel);	// Trash: Nerfed
-						}
+                            armor.Charge -= (Damage * 32 * skillLevel);
                     if (armor.Charge < 0)                                       //RSD: Don't go below zero
                     {
                         armor.Charge = 0;
@@ -18441,8 +18437,8 @@ exec function AllHealth()
 	if (!bCheatsEnabled)
 		return;
 
-	RestoreAllHealth();
     HealAllWounds();
+	RestoreAllHealth();
 }
 
 // ----------------------------------------------------------------------
@@ -20300,6 +20296,8 @@ exec function AllAmmo()                                                         
 	for( Inv=Inventory; Inv!=None; Inv=Inv.Inventory )
 		if (Ammo(Inv)!=None)
             Ammo(Inv).AmmoAmount  = GetAdjustedMaxAmmo(Ammo(Inv));     //RSD: Replaced Ammo(Inv).MaxAmmo with adjusted
+
+    UpdateHUD();
 }
 
 //SARGE: Plays the breathing sound based on gender

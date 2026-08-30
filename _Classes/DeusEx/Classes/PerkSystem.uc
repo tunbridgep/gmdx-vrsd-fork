@@ -151,7 +151,8 @@ function AddAll()
 {
     local int i;
     for (i = 0;i < numPerks;i++)
-        PurchasePerk(PerkList[i].Class,true);
+        if (PerkList[i].IsVisible())
+            PurchasePerk(PerkList[i].Class,true);
 }
 
 // ----------------------------------------------------------------------
