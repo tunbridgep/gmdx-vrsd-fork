@@ -17298,8 +17298,10 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 		if (instigatedBy != None)
 			damageAttitudeTo(instigatedBy);
-		PlayDXTakeDamageHit(actualDamage, hitLocation, damageType, momentum, bDamageGotReduced);
-		AISendEvent('Distress', EAITYPE_Visual);
+        
+        //SARGE: Changed: Now we only do the damage screen effects if we reduced less than 80% of damage.
+        PlayDXTakeDamageHit(actualDamage, hitLocation, damageType, momentum, !bDamageGotReduced || actualDamage >= Damage * 0.2);
+        AISendEvent('Distress', EAITYPE_Visual);
 	}
 	else
 	{
@@ -17893,10 +17895,21 @@ function PlayDXTakeDamageHit(float Damage, vector HitLocation, name damageType, 
 
 function PlayHit(float Damage, vector HitLocation, name damageType, vector Momentum)
 {
+    local Perk perk;
+
 	if ((Damage > 0) && (damageType == 'Shot') || (damageType == 'Exploded') || (damageType == 'AutoShot'))
 		SpawnBlood(HitLocation, Damage);
 
-    if (Damage > 0) //CyberP: Don't scream (and subsequently send AIEvents) if the damage is 0.
+    if (PerkManager != None)
+        perk = PerkManager.GetPerkWithClass(class'PerkNervesOfSteel');
+
+    //SARGE: The new Suffer in Silence perk only makes noise if we suffer major injuries.
+    if (perk != none && perk.bPerkObtained)
+    {
+        if (Damage > perk.PerkValue)
+            PlayTakeHitSound(Damage, damageType, 1);
+    }
+    else if (Damage > 0) //CyberP: Don't scream (and subsequently send AIEvents) if the damage is 0.
 	   PlayTakeHitSound(Damage, damageType, 1);
 }
 
