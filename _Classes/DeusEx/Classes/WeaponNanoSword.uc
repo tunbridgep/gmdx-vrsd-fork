@@ -306,4 +306,5 @@ defaultproperties
      minSkillRequirement=3;
      chargePerUse=5
      totalCharge=100
+     DeSelectSound=sound'GMDXSFX.Weapons.energybladeunequip2'
 }
