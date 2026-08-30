@@ -803,7 +803,7 @@ function AddWeaponModDrawbacks(DeusExWeapon weapon)
     if (bDrawLaser)
     {
         SetText(LaserLabel $ ":");
-        SetText("  " $ ReloadPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Scope), 0.1) $ " sec");
+        SetText("  " $ ReloadPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Laser), 0.1) $ " sec");
     }
     if (bDrawScope)
     {
