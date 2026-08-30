@@ -22,6 +22,10 @@ var Texture reversedBorder;
 	
 var RadioBoxWindow winRadio;                //SARGE: Made global so we can delete and recreate it
 
+//SARGE: prevent ever fading this belt out.
+//Used for the inventory belt when belt fading is enabled.
+var bool bNoFade;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -31,6 +35,18 @@ event InitWindow()
 	Super.InitWindow();
     SetRightSide(true);
     RecreateBelt(!bInteractive);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Don't draw the belt at all if we've faded it out completely
+// This is a hack because the IsVisible() function is native
+// ----------------------------------------------------------------------
+
+event DrawWindow(GC gc)
+{
+    if (GetOpacity() == 0.0)
+        return;
+    super.DrawWindow(gc);
 }
 
 function bool IsBiggerBelt()
@@ -71,6 +87,9 @@ function SetInventoryBelt(bool option)
     local int i;
 	for (i=0; i<numSlots; i++)
         objects[i].bInventorySlot = option;
+
+    //SARGE: No fading out if we're an inventory belt.
+    bNoFade = option;
 }
 
 // ----------------------------------------------------------------------
@@ -105,6 +124,7 @@ function CreateSlots()
 	for (i=0; i<12; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
+        objects[i].SetBelt(self);
 		objects[i].SetObjectNumber(i);
 		objects[i].Lower();
 	}
@@ -188,6 +208,48 @@ function CreateNanoKeySlot()
 }
 
 // ----------------------------------------------------------------------
+// GetOpacity()
+// ----------------------------------------------------------------------
+
+function float GetOpacity()
+{
+    local float opacity;
+    local float timer;
+	
+    opacity = 1.0;
+
+    if (bNoFade)
+        return opacity;
+
+    timer = player.GetBeltOpacityTimer();
+    if (player.fAutoHideBeltTime > 0 && timer < 2.0)
+    {
+        opacity = timer * 0.5;
+        opacity = FMIN(1.0,opacity);
+        opacity = FMAX(0.0,opacity);
+    }
+    
+    //In skills mode, always cap the opacity at 50%
+    if (( player != None ) && (player.Level.NetMode != NM_Standalone) && ( player.bBuySkills ))
+        opacity = FMIN(opacity,0.5);
+
+    return opacity;
+}
+
+function Color GetColorWithOpacity(Color c)
+{
+    local float opacity;
+
+    opacity = GetOpacity();
+    c.r = c.r * opacity;
+    c.g = c.g * opacity;
+    c.b = c.b * opacity;
+    c.a = c.a * opacity;
+
+    return c;
+}
+
+// ----------------------------------------------------------------------
 // DrawBackground()
 // ----------------------------------------------------------------------
 
@@ -195,18 +257,10 @@ function DrawBackground(GC gc)
 {
 	local Color newBackground;
 
+    newBackground = GetColorWithOpacity(colBackground);
+
 	gc.SetStyle(backgroundDrawStyle);
-
-	if (( player != None ) && (player.Level.NetMode != NM_Standalone) && ( player.bBuySkills ))
-	{
-		newBackground.r = colBackground.r / 2;
-		newBackground.g = colBackground.g / 2;
-		newBackground.b = colBackground.b / 2;
-		gc.SetTileColor(newBackground);
-	}
-	else
-		gc.SetTileColor(colBackground);
-
+    gc.SetTileColor(newBackground);
 
     //SARGE: No idea why this needs adjusting...
     if (IsBiggerBelt())
@@ -223,12 +277,10 @@ function DrawBackground(GC gc)
 
 function DrawBorder(GC gc)
 {
-	local Color newCol;
     local Texture rightBorder;
 
 	if (bDrawBorder)
 	{
-
         //Use a different border for the right side
         if (bRightSided)
             rightBorder = texBorder[2];
@@ -236,15 +288,7 @@ function DrawBorder(GC gc)
             rightBorder = reversedBorder;
 
 		gc.SetStyle(borderDrawStyle);
-		if (( player != None ) && ( player.bBuySkills ))
-		{
-			newCol.r = colBorder.r / 2;
-			newCol.g = colBorder.g / 2;
-			newCol.b = colBorder.b / 2;
-			gc.SetTileColor(newCol);
-		}
-		else
-			gc.SetTileColor(colBorder);
+        gc.SetTileColor(GetColorWithOpacity(colBorder));
 
 		gc.DrawTexture(offset, 0, 256, 69, 0, 0, texBorder[0]);
         if (IsBiggerBelt())

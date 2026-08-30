@@ -74,6 +74,14 @@ var string beltText;            //SARGE: The number printed on the belt. Set to 
 var localized String LockpicksLabel; //SARGE: L prefix for NanoKey slot
 var localized String MultitoolsLabel; //SARGE: M prefix for NanoKey slot
 
+var HUDObjectBelt belt;                 //SARGE: Our linked belt (if we have one)
+
+//SARGE: These were originally hardcoded in vanilla.
+//Allow localizing the multiplayer belt
+var localized string strTools;
+var localized string strThrowable;
+var localized string strWeapons;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -114,6 +122,15 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 	{
 		return False;
 	}
+}
+
+// ----------------------------------------------------------------------
+// SetBelt()
+// ----------------------------------------------------------------------
+
+function SetBelt(HUDOBjectBelt newBelt)
+{
+    belt = newBelt;
 }
 
 // ----------------------------------------------------------------------
@@ -263,13 +280,29 @@ function Inventory GetItem()
 // DrawWindow()
 // ----------------------------------------------------------------------
 
+function Color GetColorWithOpacity(Color c)
+{
+    if (belt != None)
+        c = belt.GetColorWithOpacity(c);
+    return c;
+}
+
 event DrawWindow(GC gc)
 {
 	local DeusExWeapon weapon;
     local DeusExAmmo DXammo;
 	
+    //SARGE: Don't draw if we should be faded out completely
+    //This is a hack because the IsVisible() function is native
+    if (belt != None && belt.GetOpacity() <= 0.0)
+        return;
+
 	// First draw the background
     DrawHUDBackground(gc);
+    
+    //SARGE: Do this twice so the text and borders fade out sooner than the backgrounds
+    if (belt != None && belt.GetOpacity() <= 0.15)
+        return;
 
 	// Now fill the area under the icon, which can be different
 	// colors based on the state of the item.
@@ -280,7 +313,7 @@ event DrawWindow(GC gc)
 	{
 		SetFillColor();
 		gc.SetStyle(DSTY_Translucent);
-		gc.SetTileColor(fillColor);
+        gc.SetTileColor(GetColorWithOpacity(fillColor));
 		gc.DrawPattern(
 			slotIconX, slotIconY,
 			slotFillWidth, slotFillHeight,
@@ -296,7 +329,7 @@ event DrawWindow(GC gc)
 		// Text defaults
 		gc.SetAlignments(HALIGN_Center, VALIGN_Center);
 		gc.EnableWordWrap(false);
-		gc.SetTextColor(colObjectNum);
+        gc.SetTextColor(GetColorWithOpacity(colObjectNum));
 
         weapon = DeusExWeapon(item);
         // Draw the item description at the bottom
@@ -314,7 +347,7 @@ event DrawWindow(GC gc)
                 {
                     itemText = DXAmmo.beltDescription;
                     if (DXAmmo.HasCustomAmmoColor())
-						gc.SetTextColor(DXAmmo.ammoHUDColor);
+						gc.SetTextColor(GetColorWithOpacity(DXAmmo.ammoHUDColor));
                 }
 			}
 			//Sarge: Disabled because it looks weird on the belt
@@ -333,7 +366,7 @@ event DrawWindow(GC gc)
 		// Draw selection border
 		if (bButtonPressed)
 		{
-			gc.SetTileColor(colSelectionBorder);
+            gc.SetTileColor(GetColorWithOpacity(colSelectionBorder));
 			gc.SetStyle(DSTY_Masked);
 			gc.DrawBorders(slotIconX - 1, slotIconY - 1, borderWidth, borderHeight, 0, 0, 0, 0, texBorders);
 		}
@@ -343,31 +376,32 @@ event DrawWindow(GC gc)
 		// Text defaults
 		gc.SetAlignments(HALIGN_Center, VALIGN_Center);
 		gc.EnableWordWrap(false);
-		gc.SetTextColor(colObjectNum);
+        gc.SetTextColor(GetColorWithOpacity(colObjectNum));
 
 		if ((objectNum >=0) && (objectNum <=3))
 		{
-			gc.DrawText(1+1, 42, 42, 7, "WEAPONS");
+			gc.DrawText(1+1, 42, 42, 7, strWeapons);
 		}
 		else if ((objectNum >=4) && (objectNum <=6))
 		{
-			gc.DrawText(1+1, 42, 42, 7, "THROWABLE");
+			gc.DrawText(1+1, 42, 42, 7, strThrowable);
 		}
 		else if ( ((objectNum >=7) && (objectNum <=12)))
 		{
-			gc.DrawText(1+1, 42, 42, 7, "TOOLS");
+			gc.DrawText(1+1, 42, 42, 7, strTools);
 		}
     }
 
 	// Draw the Object Slot Number in upper-right corner
 	gc.SetAlignments(HALIGN_Right, VALIGN_Center);
-	gc.SetTextColor(colObjectNum);
+    gc.SetTextColor(GetColorWithOpacity(colObjectNum));
 	gc.DrawText(slotNumberX - 11, slotNumberY, 16, 7, beltText);
 }
 
 function DrawHUDIcon(GC gc)
 {
         local texture icon;
+        local Color col;
 
         if (item != None)
             icon = item.icon;
@@ -380,30 +414,28 @@ function DrawHUDIcon(GC gc)
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
 		if (bDimIcon || player.IsPlaceholder(objectNum))	                                        //RSD: Can now dim icons
-		{
-			gc.SetTileColorRGB(64,64,64);
-		}
+        {
+            col.r = 64;
+            col.g = 64;
+            col.b = 64;
+        }
 		else
-		{
-			gc.SetTileColorRGB(255,255,255);
-		}
+        {
+            col.r = 255;
+            col.g = 255;
+            col.b = 255;
+        }
+    
+        //SARGE: Darken based on opacity
+        gc.SetTileColor(GetColorWithOpacity(col));
+
 		gc.DrawTexture(slotIconX+1, slotIconY, slotFillWidth, slotFillHeight, 0, 0, icon);
 }
 
 function DrawHUDBackground(GC gc)
 {
-	local Color newBackground;
-
 	gc.SetStyle(backgroundDrawStyle);
-	if (( player != None ) && (player.Level.NetMode != NM_Standalone) && (player.bBuySkills))
-	{
-		newBackground.r = colBackground.r / 2;
-		newBackground.g = colBackground.g / 2;
-		newBackground.b = colBackground.b / 2;
-		gc.SetTileColor(newBackground);
-	}
-	else
-		gc.SetTileColor(colBackground);
+    gc.SetTileColor(GetColorWithOpacity(colBackground));
 
    // DEUS_EX AMSD Warning.  This background delineates specific item locations on the belt, which
    // are usually only known to the items themselves.
@@ -717,4 +749,7 @@ defaultproperties
      CountLabel="x"
      LockpicksLabel="L"
      MultitoolsLabel="M"
+     strWeapons="WEAPONS"
+     strThrowable="THROWABLE"
+     strTools="TOOLS"
 }

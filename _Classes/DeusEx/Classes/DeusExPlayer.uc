@@ -1051,6 +1051,9 @@ var travel bool bHardenedBreakables;                //SARGE: Explosives are requ
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
+var globalconfig float fAutoHideBeltTime;         //SARGE: How long before the belt fades out. Set to zero to disable.
+var private float fAutoHideBeltTimeCountdown;   //SARGE: The countdown timer left before our belt disappears.
+
 var const localized string msgSaveName;
 
 var const localized String TooSick;
@@ -1297,6 +1300,7 @@ exec function TogglePhotoMode()
 function SetPhotoMode(bool value)
 {
     bPhotoMode = value;
+    ResetAutoHideBeltTime();
     UpdatePhotoMode();
 }
 
@@ -2643,6 +2647,30 @@ final function UpdateTimePlayed(float deltaTime)
 }
 
 // ----------------------------------------------------------------------
+// Update Belt Opacity Timer
+// ----------------------------------------------------------------------
+
+function ResetAutoHideBeltTime()
+{
+    default.fAutoHideBeltTimeCountdown = fAutoHideBeltTime;
+    DebugMessage("Reset Belt Fade Timer: " $ default.fAutoHideBeltTimeCountdown);
+}
+
+function UpdateAutoHideBeltTime(float deltaTime)
+{
+    if (default.fAutoHideBeltTimeCountdown > 0)
+    {
+        default.fAutoHideBeltTimeCountdown -= deltaTime;
+        default.fAutoHideBeltTimeCountdown = FMAX(0.0,default.fAutoHideBeltTimeCountdown);
+    }
+}
+
+function float GetBeltOpacityTimer()
+{
+    return default.fAutoHideBeltTimeCountdown;
+}
+
+// ----------------------------------------------------------------------
 // RestoreScopeView()
 // ----------------------------------------------------------------------
 
@@ -2995,6 +3023,7 @@ exec function LoadGame(int saveIndex)
         ToggleRadialAugMenu();
 	
     // Reset the FOV
+    ResetAutoHideBeltTime();
 	DesiredFOV = Default.DesiredFOV;
 	ClientTravel("?loadgame=" $ saveIndex, TRAVEL_Absolute, False);
 }
@@ -3363,6 +3392,9 @@ exec function StartNewGame(String startMap)
     //TODO: Make this an option
     //TODO: Move this to ResetPlayer, since this function is for loading maps
     SoundVolumeHackFix();
+    
+    //Un-fade the belt.
+    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -3402,6 +3434,9 @@ function StartTrainingMission()
 	DeleteSaveGameFiles();
 	bStartingNewGame = True;
 	Level.Game.SendPlayer(Self, "00_Training");
+    
+    //Un-fade the belt.
+    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -4809,6 +4844,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     {
         to.beltPos = beltSlot;
         to.bInObjectBelt = true;
+        ResetAutoHideBeltTime();
 
         //Remove the old item from the slot
         if (from != None)
@@ -4959,7 +4995,13 @@ exec function SwitchAmmo()
         //SARGE: Fallback
         //SARGE: Changed to inHandPending, so it's more responsive
         if (!bSwitch && inHandPending != None && inHandPending.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
+        {
             DeusExWeapon(inHandPending).CycleAmmo();
+            /*
+            if (inHandPending.bInObjectBelt)
+                ResetAutoHideBeltTime();
+            */
+        }
     }
 
     //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
@@ -7635,7 +7677,11 @@ state PlayerWalking
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
        
+
         //Update belt selection timer
         if (fBlockBeltSelection > 0)
             fBlockBeltSelection -= deltaTime;
@@ -7788,6 +7834,9 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -8000,6 +8049,9 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -13683,6 +13735,7 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
             NewWeaponSelected();
+            ResetAutoHideBeltTime();
 		}
 	}
 }
@@ -13742,6 +13795,8 @@ exec function NextBeltItem()
         }
         return;
 	}
+            
+    ResetAutoHideBeltTime();
 
    if (iAlternateToolbelt == 0)
    {
@@ -13875,6 +13930,8 @@ exec function PrevBeltItem()
         }
         return;
 	}
+            
+    ResetAutoHideBeltTime();
 
    if (iAlternateToolbelt == 0)
    {
@@ -14637,6 +14694,9 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
 	}
 
 	function LoopHeadConvoAnim()
@@ -21190,4 +21250,5 @@ defaultproperties
      SatiatedStr="(Satiated)"
      HungryStr="(Hungry)"
      StarvingStr="(Starving)"
+     fAutoHideBeltTime=0
 }
