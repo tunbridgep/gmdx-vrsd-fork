@@ -181,4 +181,5 @@ defaultproperties
      CollisionRadius=8.750000
      CollisionHeight=1.350000
      minSkillRequirement=1
+     DeSelectSound=sound'GMDXSFX.Weapons.produnequip'
 }

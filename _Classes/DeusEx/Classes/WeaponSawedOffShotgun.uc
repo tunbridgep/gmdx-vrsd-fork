@@ -230,32 +230,6 @@ Begin:
 	}
 }
 
-state downWeapon
-{
-simulated function TweenDown()
-{
-local DeusExPlayer player;
-local float p;
-
-     player = DeusExPlayer(Owner);
-
-     if (player != None)
-     p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
-
-     if (p < 1.0)
-     p = 1.0;
-
-	if ( (AnimSequence != '') && (GetAnimGroup(AnimSequence) == 'Select') )
-		TweenAnim( AnimSequence, AnimFrame * 0.4 );
-	else
-	{
-            PlayAnim('Down', p, 0.05);
-	}
-	BobDamping=default.BobDamping;
-}
-
-}
-
 defaultproperties
 {
      weaponOffsets=(X=4.000000,Y=-4.000000,Z=-15.000000)
