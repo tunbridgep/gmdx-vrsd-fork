@@ -24,6 +24,7 @@ function BuildModifierList()
     {
         RemoveItem("bRestrictedSaving");
         RemoveItem("bHardcoreFilterOption");
+		RemoveItem("bHardcoreFilterOptionResources");
         RemoveItem("bImprisonmentTakesAmmo");
         RemoveItem("bGEPUsesWPByDefault");
         //RemoveItem("bHarderChargedPickups");
@@ -38,6 +39,31 @@ function BuildModifierList()
     //Remove Shenanigans until we finish the game
     if (!player.bHardcoreUnlocked)
         RemoveItem("bShenanigans");
+}
+
+//Horrible static function to return if our modifiers are active.
+//Used by the health screen
+static function bool IsModifierActive(DeusExPlayer pl, int index)
+{
+    local string variable, cmdVal;
+    
+    //HACK!
+    if (default.items[index].variable == "bCollectibles")
+        variable = "bCollectiblesEnabled";
+    else
+        variable = default.items[index].variable;
+        
+
+    cmdVal = pl.GetPropertyText(variable);
+
+    pl.DebugLog("Modifier Index " $ index @ variable $ ": " $ cmdVal);
+    
+    //Sometimes it can return True and False, convert it to numeric
+    if (cmdVal == "True")
+        return true;
+    else if (cmdVal == "False")
+        return false;
+    else return (int(cmdVal)) > 0;
 }
 
 // ----------------------------------------------------------------------
@@ -61,23 +87,25 @@ defaultproperties
      items(12)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
      items(13)=(HelpText="When imprisoned by MJ12, your killswitch will be activated, exactly how it's described by Paul",actionText="Killswitch Engaged",variable="bRealKillswitch",defaultValue=1);
      items(14)=(HelpText="In hardcore mode you face enemies and hazards in greater numbers. Enable this option to have this feature in other difficulty modes.",actionText="Overwhelming Odds",variable="bHardcoreFilterOption");
-     items(15)=(HelpText="Collectibles can be found around the game world. There's one per mission.",actionText="Collectibles",variable="bCollectibles",defaultValue=1);
-	 items(16)=(HelpText="Enable cameras to detect unconscious bodies. Realism option - Not recommended for normal play.",actionText="Cameras Detect Unconscious",variable="bCameraDetectUnconscious");
-	 items(17)=(HelpText="When enabled, NPCs with cloaking will be permanently cloaked. Extremely difficult - Not recommended for normal play.",actionText="Permanent Cloaking",variable="bPermaCloak");
-     items(18)=(HelpText="No longer receive a starting weapon from Paul during the first mission.",actionText="Limited Starting Equipment",variable="bNoStartingWeaponChoices");
-     items(19)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
-     items(20)=(HelpText="Start with a large number of skill points, but you won't be able to gain any more during play.",actionText="UNATCO Academy Graduate",variable="bSkillsSetAtStart");
-     items(21)=(HelpText="When imprisoned by MJ12, lose ammo in addition to weapons. Your ammo will be placed in a box and can be recovered from the Armoury.",actionText="Take Ammo when Imprisoned",variable="bImprisonmentTakesAmmo",defaultValue=1);
-     items(22)=(HelpText="When completing missions, UNATCO will clean up corpses and confiscate unopened crates.",actionText="Competent Cleaning Crews",variable="bUNATCOCleanup");
-     items(23)=(HelpText="Taking damage will add traumas, which need to be removed using medical kits.",actionText="Trauma System",variable="bWoundSystem");
-     items(24)=(HelpText="Adds the Shipping and Receiving map, originally released as a GMDX v9 addon. It's accessible as part of the NYC Dockyard mission.",actionText="Shipping and Receiving",variable="bShippingAndReceiving");
-     items(25)=(HelpText="The GEP Gun will use WP Rockets by default. All GEP Gun pickups will contain WP rockets. Recommended. Always enabled in Hardcore Mode",actionText="GEP Gun defaults to WP Rockets",variable="bGEPUsesWPByDefault");
-     items(26)=(HelpText="Skill point gains are reduced by 15% to make skill choices more meaningful and create less 'jack of all trades' characters with everything at Advanced",actionText="Skill Rebalance",variable="bHarderSkillRebalance");
-     items(27)=(HelpText="Rebreathers and Thermoptic Camo will be removed upon use, similar to GMDX v9, and can no longer be recharged. Always enabled as part of Extra Hardcore",actionText="Disposable Rebreathers and Camo",variable="bHarderChargedPickups");
-     items(28)=(HelpText="Breakable Objects such as Doors with a Damage Threshold of 30 or higher will require explosives in order to destroy.",actionText="Sturdy Construction",variable="bHardenedBreakables");
-     items(29)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(15)=(HelpText="In hardcore mode you find less resources. Enable this option to have this feature in other difficulty modes.",actionText="Underwhelming Resources",variable="bHardcoreFilterOptionResources");
+     items(16)=(HelpText="Collectibles can be found around the game world. There's one per mission.",actionText="Collectibles",variable="bCollectibles",defaultValue=1);
+	 items(17)=(HelpText="Enable cameras to detect unconscious bodies. Realism option - Not recommended for normal play.",actionText="Cameras Detect Unconscious",variable="bCameraDetectUnconscious");
+	 items(18)=(HelpText="When enabled, NPCs with cloaking will be permanently cloaked. Extremely difficult - Not recommended for normal play.",actionText="Permanent Cloaking",variable="bPermaCloak");
+     items(19)=(HelpText="No longer receive a starting weapon from Paul during the first mission.",actionText="Limited Starting Equipment",variable="bNoStartingWeaponChoices");
+     items(20)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(21)=(HelpText="Start with a large number of skill points, but you won't be able to gain any more during play.",actionText="UNATCO Academy Graduate",variable="bSkillsSetAtStart");
+     items(22)=(HelpText="When imprisoned by MJ12, lose ammo in addition to weapons. Your ammo will be placed in a box and can be recovered from the Armoury.",actionText="Take Ammo when Imprisoned",variable="bImprisonmentTakesAmmo",defaultValue=1);
+     items(23)=(HelpText="When completing missions, UNATCO will clean up corpses and confiscate unopened crates.",actionText="Competent Cleaning Crews",variable="bUNATCOCleanup");
+     items(24)=(HelpText="Taking damage will add traumas, which need to be removed using medical kits.",actionText="Trauma System",variable="bWoundSystem");
+     items(25)=(HelpText="Adds the Shipping and Receiving map, originally released as a GMDX v9 addon. It's accessible as part of the NYC Dockyard mission.",actionText="Shipping and Receiving",variable="bShippingAndReceiving");
+     items(26)=(HelpText="The GEP Gun will use WP Rockets by default. All GEP Gun pickups will contain WP rockets. Recommended. Always enabled in Hardcore Mode",actionText="GEP Gun defaults to WP Rockets",variable="bGEPUsesWPByDefault");
+     items(27)=(HelpText="Skill point gains are reduced by 15% to make skill choices more meaningful and create less 'jack of all trades' characters with everything at Advanced",actionText="Skill Rebalance",variable="bHarderSkillRebalance");
+     items(28)=(HelpText="Rebreathers and Thermoptic Camo will be removed upon use, similar to GMDX v9, and can no longer be recharged. Always enabled as part of Hardcore+",actionText="Disposable Rebreathers and Camo",variable="bHarderChargedPickups");
+     items(29)=(HelpText="Breakable Objects such as Doors with a Damage Threshold of 30 or higher will require explosives in order to destroy.",actionText="Sturdy Construction",variable="bHardenedBreakables");
+     items(30)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true
      bAutoBuildModifierList=false
+     bZeroRemovedItems=true
 }

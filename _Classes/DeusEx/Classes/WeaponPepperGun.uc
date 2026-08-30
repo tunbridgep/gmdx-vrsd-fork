@@ -40,17 +40,20 @@ function DisplayWeaponBlood(bool overlay)
 function OnProjectileFired(Projectile firedProjectile)
 {
     local DeusExPlayer P;
-    local int level, speedAdd;
+    local Perk pepperPerk;
     P = DeusExPlayer(Owner);
 
-    if (P != None && P.SkillSystem != None)
+    if (P != None && P.PerkManager != None)
     {
-        level = P.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech');
-        speedAdd = 60 * level;
-        P.DebugMessage("SpeedAdd: " $ speedAdd);
-        //firedProjectile.speed += (speedAdd * level);
-        firedProjectile.Velocity += speedAdd * Vector(firedProjectile.Rotation);
-        firedProjectile.Acceleration += speedAdd * Vector(firedProjectile.Rotation);
+        pepperPerk = P.PerkManager.GetPerkWithClass(class'PerkPepperPerfector');
+        if (pepperPerk.bPerkObtained)
+        {
+            //P.DebugMessage("SpeedMod: " $ speedMod);
+            //firedProjectile.speed += (speedAdd * level);
+            firedProjectile.Velocity *= pepperPerk.PerkValue;// *= speedAdd * Vector(firedProjectile.Rotation);
+            firedProjectile.Acceleration *= pepperPerk.PerkValue;// += speedAdd * Vector(firedProjectile.Rotation);
+            Cloud(firedProjectile).CloudRadius *= pepperPerk.PerkValue;
+        }
     }
 }
 

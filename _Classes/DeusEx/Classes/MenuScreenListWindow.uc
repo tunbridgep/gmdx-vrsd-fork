@@ -43,6 +43,8 @@ var localized string DefaultValueString;
 
 var bool bAutoBuildModifierList;                    //SARGE: Automatically builds the modified list when we open the menu. Turn this off to delay it until after some values are set.
 
+var const bool bZeroRemovedItems;                         //SARGE: Items removed with "RemoveItem" are also set to zero.
+
 Struct ObjectPos
 {
     var int X;
@@ -813,6 +815,9 @@ function RemoveItem(string variable)
 
         if (items[i].variable == variable)
         {
+            if (bZeroRemovedItems)
+                SetConsoleValue(i,0);
+
             for(j = i; j < arrayCount(items) - 1; j++)
                 items[j] = items[j+1];
             return;

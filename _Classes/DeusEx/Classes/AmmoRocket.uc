@@ -3,18 +3,41 @@
 //=============================================================================
 class AmmoRocket extends DeusExAmmo;
 
-function PostPostBeginPlay()
+enum EPickupStyle
 {
-    local DeusExPlayer player;
+	E_Normal,
+    E_Single,
+};
 
-    super.PostPostBeginPlay();
+var(GMDX) EPickupStyle style;
 
-    player=DeusExPlayer(GetPlayerPawn());
+//Less ammo on Hardcore
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    super.SetupDifficultyMod(P);
+    if (P.bHardCoreMode)
+        AmmoAmount = 2;
+}
 
-    if ((player != none) && (player.bHardCoreMode == True))
+//SARGE: Allow single style
+exec function UpdateHDTPSettings()
+{
+    Super.UpdateHDTPSettings();
+    if (style == E_Single)
     {
-        if (Owner == None)
-            AmmoAmount = 2;  //SARGE: Less ammo on hardcore. Copied from Ammo20mm
+        ItemArticle=class'Rocket'.default.ItemArticle;
+        FamiliarName=class'Rocket'.default.ItemName;
+        UnfamiliarName=class'Rocket'.default.ItemName;
+        AmmoAmount=1;
+        ItemName=class'Rocket'.default.ItemName;
+        SetCollisionSize(8.000000, 2.0000000);
+        PickupViewMesh=LodMesh'DeusExItems.Rocket';
+        PlayerViewMesh=LodMesh'DeusExItems.Rocket';
+        ThirdPersonMesh=LodMesh'DeusExItems.Rocket';
+        Mesh=LodMesh'DeusExItems.Rocket';
+        DrawScale=0.250000;
+        Mass=34.000000;
+        Buoyancy=10.000000;
     }
 }
 

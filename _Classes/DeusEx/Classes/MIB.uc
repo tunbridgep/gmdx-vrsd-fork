@@ -252,86 +252,81 @@ State Attacking
 	}
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-    Super.DifficultyMod(CombatDifficulty, bHardCoreMode, bExtraHardcore, bFirstLevelLoad);
+    //SARGE: Warning, shitty TT code follows!
+    //Read at your own risk!
+    super.SetupDifficultyMod(P);
 
     if (GroundSpeed>default.GroundSpeed)
     {
-	bTank=True;
-	runAnimMult=1.200000;
-	MinRange=96.000000;
-	SurprisePeriod=0.200000;
-         if(bHardCoreMode)
-         {
-	GroundSpeed=450.000000;
-         if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-         {
-	default.Health=800;                                                         //RSD: Making these all 850 to avoid a stupid edge case where two Master sniper shots leaves the MIB at 0.4% health
-	default.HealthHead=800;                                                     //RSD: Now 800 since sniper rifle was also nerfed
-	default.HealthTorso=800;
-	default.HealthLegLeft=800;
-	default.HealthLegRight=800;
-	default.HealthArmLeft=800;
-	default.HealthArmRight=800;
-	Health=800;
-	HealthHead=800;
-	HealthTorso=800;
-	HealthLegLeft=800;
-	HealthLegRight=800;
-	HealthArmLeft=800;
-	HealthArmRight=800;
-         }
-         }
-         else
+        bTank=True;
+        runAnimMult=1.200000;
+        MinRange=96.000000;
+        SurprisePeriod=0.200000;
+        if(P.bHardCoreMode)
         {
-         GroundSpeed=360.000000;
-         if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-         {
-          default.Health=350;
-         default.HealthHead=350;
-         default.HealthTorso=350;
-         default.HealthLegLeft=350;
-         default.HealthLegRight=350;
-         default.HealthArmLeft=350;
-         default.HealthArmRight=350;
-         Health=350;
-         HealthHead=350;
-          HealthTorso=350;
-         HealthLegLeft=350;
-         HealthLegRight=350;
-         HealthArmLeft=350;
-         HealthArmRight=350;
-         }
+            GroundSpeed=450.000000;
+            default.Health=800;                                                         //RSD: Making these all 850 to avoid a stupid edge case where two Master sniper shots leaves the MIB at 0.4% health
+            default.HealthHead=800;                                                     //RSD: Now 800 since sniper rifle was also nerfed
+            default.HealthTorso=800;
+            default.HealthLegLeft=800;
+            default.HealthLegRight=800;
+            default.HealthArmLeft=800;
+            default.HealthArmRight=800;
+            Health=800;
+            HealthHead=800;
+            HealthTorso=800;
+            HealthLegLeft=800;
+            HealthLegRight=800;
+            HealthArmLeft=800;
+            HealthArmRight=800;
+        }
+        else
+        {
+            GroundSpeed=360.000000;
+            default.Health=350;
+            default.HealthHead=350;
+            default.HealthTorso=350;
+            default.HealthLegLeft=350;
+            default.HealthLegRight=350;
+            default.HealthArmLeft=350;
+            default.HealthArmRight=350;
+            Health=350;
+            HealthHead=350;
+            HealthTorso=350;
+            HealthLegLeft=350;
+            HealthLegRight=350;
+            HealthArmLeft=350;
+            HealthArmRight=350;
         }
     }
     else
     {
-	default.Health=300;
-	default.HealthHead=300;
-	default.HealthTorso=300;
-	default.HealthLegLeft=300;
-	default.HealthLegRight=300;
-	default.HealthArmLeft=300;
-	default.HealthArmRight=300;
-	Health=300;
-	HealthHead=300;
-	HealthTorso=300;
-	HealthLegLeft=300;
-	HealthLegRight=300;
-	HealthArmLeft=300;
-	HealthArmRight=300;
+        default.Health=300;
+        default.HealthHead=300;
+        default.HealthTorso=300;
+        default.HealthLegLeft=300;
+        default.HealthLegRight=300;
+        default.HealthArmLeft=300;
+        default.HealthArmRight=300;
+        Health=300;
+        HealthHead=300;
+        HealthTorso=300;
+        HealthLegLeft=300;
+        HealthLegRight=300;
+        HealthArmLeft=300;
+        HealthArmRight=300;
     }
 
     if (Fatness == 130)
 	{
-	HitSound1 = None;
-	bShowPain=False;
-	runAnimMult=1.200000;
-	SurprisePeriod=0.200000;
-	GroundSpeed=350.000000;
+        HitSound1 = None;
+        bShowPain=False;
+        runAnimMult=1.200000;
+        SurprisePeriod=0.200000;
+        GroundSpeed=350.000000;
 	}
-    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

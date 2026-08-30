@@ -29,7 +29,7 @@ function UpdateButtonStatus()
 	local DeusExLevelInfo info;
 
 	info = player.GetLevelInfo();
-    winButtons[8].SetSensitivity(False); //CyberP: no multiplayer in GMDX
+    //winButtons[8].SetSensitivity(False); //CyberP: no multiplayer in GMDX
 	// Disable the "Save Game" and "Back to Game" menu choices
 	// if the player's dead or we're on the logo map.
 	//

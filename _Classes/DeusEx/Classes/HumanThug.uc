@@ -32,22 +32,26 @@ function bool WillTakeStompDamage(actor stomper)
 		return true;
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-         if (CombatDifficulty <= 1)
-         {
-         if (VisibilityThreshold < 0.010000)
-             VisibilityThreshold = 0.010000;
-         if (HearingThreshold < 0.150000)
-             HearingThreshold = 0.150000;
-             EnemyTimeout = 8.000000;
-         if (SurprisePeriod < 2.000000)
-             SurprisePeriod = 2.0;
-         if (smartStrafeRate == default.smartStrafeRate)
-             smartStrafeRate = default.smartStrafeRate*0.75;
-         }
-         else if (CombatDifficulty <= 2)
-         {
+    //SARGE: Warning, shitty TT code follows!
+    //Read at your own risk!
+    super.SetupDifficultyMod(P);
+         
+    if (P.CombatDifficulty <= 1)
+    {
+        if (VisibilityThreshold < 0.010000)
+            VisibilityThreshold = 0.010000;
+        if (HearingThreshold < 0.150000)
+            HearingThreshold = 0.150000;
+            EnemyTimeout = 8.000000;
+        if (SurprisePeriod < 2.000000)
+            SurprisePeriod = 2.0;
+        if (smartStrafeRate == default.smartStrafeRate)
+            smartStrafeRate = default.smartStrafeRate*0.75;
+    }
+    else if (P.CombatDifficulty <= 2)
+    {
          if (HearingThreshold < 0.145000)
              HearingThreshold = 0.145000;
          if (SurprisePeriod < 1.50000)
@@ -57,35 +61,32 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
              VisibilityThreshold = 0.007000;
          if (smartStrafeRate == default.smartStrafeRate)
              smartStrafeRate = default.smartStrafeRate*0.75;
-         }
-         else if (!bHardCoreMode && CombatDifficulty <= 4.000000)
-         {
-         if (HearingThreshold < 0.145000)
-             HearingThreshold = 0.145000;
-         if (SurprisePeriod < 1.000000)
-             SurprisePeriod = 1.0+(FRand()*0.4);
-             EnemyTimeout = 10.000000;
-         if (VisibilityThreshold != 0.006000)
-             VisibilityThreshold = 0.006000;
-         }
-         else if (bHardCoreMode)
-         {
-         if (BaseAccuracy != 0.000000 && BaseAccuracy != 2.000000 && BaseAccuracy > 0.050000) //CyberP: all Human Military are more accurate on hardcore mode.
-             BaseAccuracy=0.050000;
-         EnemyTimeout = 11.000000;
-         if (bDefendHome && HomeExtent < 64)
-             EnemyTimeOut = 16.000000;  //CyberP: camp for longer
-         if (HearingThreshold < 0.135000)
-             HearingThreshold = 0.135000;
-         if (VisibilityThreshold != 0.005000)
-             VisibilityThreshold = 0.005000;
-         SurprisePeriod = 0.5+(FRand()*0.6);
-         if (Weapon != None && Weapon.IsA('WeaponMiniCrossbow'))
-             BaseAccuracy=0.000000;
-         else if (IsA('MJ12Commando'))
-             HearingThreshold = 0.125000;
-         }
-         super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
+    }
+    else if (!P.bHardCoreMode && P.CombatDifficulty <= 4.000000)
+    {
+        if (HearingThreshold < 0.145000)
+            HearingThreshold = 0.145000;
+        if (SurprisePeriod < 1.000000)
+            SurprisePeriod = 1.0+(FRand()*0.4);
+            EnemyTimeout = 10.000000;
+        if (VisibilityThreshold != 0.006000)
+            VisibilityThreshold = 0.006000;
+    }
+    else if (P.bHardCoreMode)
+    {
+        if (BaseAccuracy != 0.000000 && BaseAccuracy != 2.000000 && BaseAccuracy > 0.050000) //CyberP: all Human Military are more accurate on hardcore mode.
+            BaseAccuracy=0.050000;
+        EnemyTimeout = 11.000000;
+        if (bDefendHome && HomeExtent < 64)
+            EnemyTimeOut = 16.000000;  //CyberP: camp for longer
+        if (HearingThreshold < 0.135000)
+            HearingThreshold = 0.135000;
+        if (VisibilityThreshold != 0.005000)
+            VisibilityThreshold = 0.005000;
+        SurprisePeriod = 0.5+(FRand()*0.6);
+        if (IsA('MJ12Commando'))
+            HearingThreshold = 0.125000;
+    }
 }
 
 defaultproperties

@@ -806,22 +806,20 @@ function bool IsImmobile()
 	return (!bHasReactions && !bHasFears && !bHasHates);
 }
 
-function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
+function SetupDifficultyMod(DeusExPlayer P)
 {
-    if (bFirstLevelLoad)
-    {
-        if (bHardCoreMode)
-            EnemyTimeout = 13.000000;
-        else
-            EnemyTimeout = 9.000000;
+    super.SetupDifficultyMod(P);
 
-        //SARGE: Make bots hear you on Extra Hardcore only
-        if (bExtraHardcore)
-            HearingThreshold=0.150000;
-        else
-            HearingThreshold=99999.99999;
-    }
-    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
+    if (P.bHardCoreMode)
+        EnemyTimeout = 13.000000;
+    else
+        EnemyTimeout = 9.000000;
+
+    //SARGE: Make bots hear you on Extra Hardcore only
+    if (P.bExtraHardcore)
+        HearingThreshold=0.150000;
+    else
+        HearingThreshold=99999.99999;
 }
 
 defaultproperties

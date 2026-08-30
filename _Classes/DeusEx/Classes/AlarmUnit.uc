@@ -25,6 +25,13 @@ var bool bMaster; //so the HDTP deco has a tendency to do that 'go all black' me
 
 var bool bAlarmedOnce;                    //SARGE: Don't re-activate movers after the first alarm
 
+//Set to 5% hack strength
+function SetupDifficultyMod(DeusExPlayer P)
+{
+    super.SetupDifficultyMod(P);
+    hackStrength = 0.05;
+}
+
 exec function UpdateHDTPsettings()
 {
     //if (MultiSkins[1] == Texture'PinkMaskTex' && MultiSkins[2] == Texture'PinkMaskTex')
