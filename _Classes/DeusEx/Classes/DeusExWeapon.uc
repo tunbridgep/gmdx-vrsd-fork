@@ -6086,11 +6086,7 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 //TODO: Split this out properly
 function bool CanAssignSecondary(DeusExPlayer player)
 {
-    if (IsA('WeaponPepperGun'))
-    {
-        return true;
-    }
-    else if (bHandToHand)
+    if (bHandToHand || IsA('WeaponPepperGun'))
 	{
         if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained || GoverningSkill == class'DeusEx.SkillDemolition' || IsA('WeaponCombatKnife') || IsA('WeaponHideAGun') || IsA('WeaponShuriken'))
             return true;

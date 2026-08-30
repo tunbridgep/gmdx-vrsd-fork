@@ -20,7 +20,7 @@ New Features:
     - Added a new general perk "Tactical Rigging" which significantly increases secondary swapping speed.
     - Fixed "Select" secondary mode being slower than the "Auto-Activate" mode in GMDX:AE v1.2.
     - Fixed a few secondary weapon bugs and inconsistencies, such as missing animations.
-    - Pepper Spray can now be assigned as a secondary weapon.
+    - Pepper Spray can now be assigned as a secondary weapon with the Inventive perk.
 - Added "Pepper Perfector" perk (Low-Tech ADVANCED), which significantly improves pepper cloud movement speed and size.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
 - Searching a single carcass will now also search nearby carcasses.
