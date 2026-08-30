@@ -470,7 +470,7 @@ var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
 var globalconfig int iModdedHeadBob;                                            //SARGE: Now an int
-var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
+var globalconfig int iBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig int iBeltMemory;  								     			//Sarge: Added new feature to allow belt to rember items. 0 = Disabled, 1 = Enabled, 2 = Autofill Placeholders.
@@ -1051,6 +1051,9 @@ var travel bool bHardenedBreakables;                //SARGE: Explosives are requ
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
+var globalconfig float fAutoHideBeltTime;         //SARGE: How long before the belt fades out. Set to zero to disable.
+var private float fAutoHideBeltTimeCountdown;   //SARGE: The countdown timer left before our belt disappears.
+
 var const localized string msgSaveName;
 
 var const localized String TooSick;
@@ -1142,6 +1145,15 @@ replication
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
 }
+
+//SARGE: GMDX Multiplayer Stuff!
+
+function bool AutofillBelt()
+{
+    return iBeltAutofill > 0 || bForceBeltAutofill || Level.NetMode != NM_Standalone;
+}
+
+//=========================================================
 
 //SARGE: Gets any adjustments to our head health. For now, just medical skill.
 function float GetHeadHealthAdjustment()
@@ -1288,6 +1300,7 @@ exec function TogglePhotoMode()
 function SetPhotoMode(bool value)
 {
     bPhotoMode = value;
+    ResetAutoHideBeltTime();
     UpdatePhotoMode();
 }
 
@@ -1955,10 +1968,17 @@ simulated function PostNetBeginPlay()
 		if (DeusExRootWindow(rootWindow) != None)
 		   DeusExRootWindow(rootWindow).ChangeStyle();
 	}
+    
 	ReceiveFirstOptionSync(AugPrefs[0], AugPrefs[1], AugPrefs[2], AugPrefs[3], AugPrefs[4]);
 	ReceiveSecondOptionSync(AugPrefs[5], AugPrefs[6], AugPrefs[7], AugPrefs[8]);
 	ShieldStatus = SS_Off;
 	bCheatsEnabled = False;
+    
+    //Setup player subcomponents
+	SetupPerkManager();
+	SetupFontManager();
+    SetupKeybindManager();
+    SetupCloakManager();
 
 	 ServerSetAutoReload( bAutoReload );
 }
@@ -2627,6 +2647,30 @@ final function UpdateTimePlayed(float deltaTime)
 }
 
 // ----------------------------------------------------------------------
+// Update Belt Opacity Timer
+// ----------------------------------------------------------------------
+
+function ResetAutoHideBeltTime()
+{
+    default.fAutoHideBeltTimeCountdown = fAutoHideBeltTime;
+    DebugMessage("Reset Belt Fade Timer: " $ default.fAutoHideBeltTimeCountdown);
+}
+
+function UpdateAutoHideBeltTime(float deltaTime)
+{
+    if (default.fAutoHideBeltTimeCountdown > 0)
+    {
+        default.fAutoHideBeltTimeCountdown -= deltaTime;
+        default.fAutoHideBeltTimeCountdown = FMAX(0.0,default.fAutoHideBeltTimeCountdown);
+    }
+}
+
+function float GetBeltOpacityTimer()
+{
+    return default.fAutoHideBeltTimeCountdown;
+}
+
+// ----------------------------------------------------------------------
 // RestoreScopeView()
 // ----------------------------------------------------------------------
 
@@ -2979,6 +3023,7 @@ exec function LoadGame(int saveIndex)
         ToggleRadialAugMenu();
 	
     // Reset the FOV
+    ResetAutoHideBeltTime();
 	DesiredFOV = Default.DesiredFOV;
 	ClientTravel("?loadgame=" $ saveIndex, TRAVEL_Absolute, False);
 }
@@ -3347,6 +3392,9 @@ exec function StartNewGame(String startMap)
     //TODO: Make this an option
     //TODO: Move this to ResetPlayer, since this function is for loading maps
     SoundVolumeHackFix();
+    
+    //Un-fade the belt.
+    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -3386,6 +3434,9 @@ function StartTrainingMission()
 	DeleteSaveGameFiles();
 	bStartingNewGame = True;
 	Level.Game.SendPlayer(Self, "00_Training");
+    
+    //Un-fade the belt.
+    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -4793,6 +4844,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     {
         to.beltPos = beltSlot;
         to.bInObjectBelt = true;
+        ResetAutoHideBeltTime();
 
         //Remove the old item from the slot
         if (from != None)
@@ -4943,7 +4995,13 @@ exec function SwitchAmmo()
         //SARGE: Fallback
         //SARGE: Changed to inHandPending, so it's more responsive
         if (!bSwitch && inHandPending != None && inHandPending.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
+        {
             DeusExWeapon(inHandPending).CycleAmmo();
+            /*
+            if (inHandPending.bInObjectBelt)
+                ResetAutoHideBeltTime();
+            */
+        }
     }
 
     //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
@@ -7619,7 +7677,11 @@ state PlayerWalking
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
        
+
         //Update belt selection timer
         if (fBlockBeltSelection > 0)
             fBlockBeltSelection -= deltaTime;
@@ -7706,6 +7768,20 @@ state PlayerWalking
 
 		    Super.PlayerTick(deltaTime);
 	}
+	
+    //SARGE: Handle multiplayer respawning
+    function BeginState()
+    {
+        super.BeginState();
+		if (Level.NetMode != NM_Standalone)
+        {
+            HeadRegion.Zone.ViewFog.X = 0;
+			InstantFog   = vect(0.1,0.1,0.1);
+			InstantFlash = 0.01;
+			ViewFlash(1.0);
+            ShowHUD(true);
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -7758,6 +7834,9 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -7970,6 +8049,9 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -10847,7 +10929,7 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 		 {
 			if ( (DeusExRootWindow(rootWindow).hud.belt.objects[beltpos].item == None) && (anItem.TestMPBeltSpot(beltpos)) )
 			{
-			   bPositionFound = True;
+                bPositionFound = True;
 			}
 		 }
 	  }
@@ -10990,6 +11072,11 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 // Set Placeholder
 function SetPlaceholder(int objectNum, Inventory item)
 {
+
+    //No placeholders in multiplayer
+    if ( Level.NetMode != NM_Standalone )
+        return;
+
     if (item != None && item.Class != class'NanoKeyRing')
     {
         beltInfos[objectNum].itemClass = string(item.Class);
@@ -12023,7 +12110,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -12059,7 +12146,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
         }
 		else
@@ -12072,7 +12159,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+            RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -13384,10 +13471,7 @@ function private _UpdateHUD()
 
     // Reset Belt Memory
     if (iBeltMemory == 0)
-    {
-        for(i = 0;i < 12;i++)
-            ClearPlaceholder(i);
-    }
+        ClearAllBeltPlaceholders();
 
     if (root != None)
         root.UpdateHUD();
@@ -13681,6 +13765,7 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
             NewWeaponSelected();
+            ResetAutoHideBeltTime();
 		}
 	}
 }
@@ -13740,6 +13825,8 @@ exec function NextBeltItem()
         }
         return;
 	}
+            
+    ResetAutoHideBeltTime();
 
    if (iAlternateToolbelt == 0)
    {
@@ -13873,6 +13960,8 @@ exec function PrevBeltItem()
         }
         return;
 	}
+            
+    ResetAutoHideBeltTime();
 
    if (iAlternateToolbelt == 0)
    {
@@ -14635,6 +14724,9 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
 	}
 
 	function LoopHeadConvoAnim()
@@ -21188,4 +21280,5 @@ defaultproperties
      SatiatedStr="(Satiated)"
      HungryStr="(Hungry)"
      StarvingStr="(Starving)"
+     fAutoHideBeltTime=0
 }

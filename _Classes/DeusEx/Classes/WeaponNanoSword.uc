@@ -107,7 +107,7 @@ event Destroyed()
 }
 
 //SARGE: Show DTS Charge on the frob string
-function string GetFrobString(DeusExPlayer player)
+simulated function string GetFrobString(DeusExPlayer player)
 {
     local string modStr, energyStr;
 
