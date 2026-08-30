@@ -1053,6 +1053,8 @@ var globalconfig int iNewGamePlusReached;            //SARGE: The highest NG+ Cy
 
 var travel bool bHardenedBreakables;                //SARGE: Explosives are required to break doors and containers.
 
+var travel bool bHardcoreFilterOptionResources;     //SARGE: Hardcore Filter Option, but for crates
+
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
 

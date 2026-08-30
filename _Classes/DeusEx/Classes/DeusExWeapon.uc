@@ -464,9 +464,9 @@ function SetupDifficultyMod(DeusExPlayer P)
         Destroy();
 
     //Hardcore Filters
-    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOption)
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOptionResources)
         Destroy();
-    else if (bHardcoreRemove && (P.bHardCoreMode || P.bHardcoreFilterOption))
+    else if (bHardcoreRemove && (P.bHardCoreMode || P.bHardcoreFilterOptionResources))
         Destroy();
     
     //Difficulty Filters

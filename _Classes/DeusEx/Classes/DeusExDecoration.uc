@@ -125,9 +125,9 @@ function SetupDifficultyMod(DeusExPlayer P)
         LowKeyDestroy();
 
     //Hardcore Filters
-    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOption)
+    if (bHardcoreOnly && !P.bHardCoreMode && !P.bHardcoreFilterOptionResources)
         LowKeyDestroy();
-    else if (bHardcoreRemoveIt && (P.bHardCoreMode || P.bHardcoreFilterOption))
+    else if (bHardcoreRemoveIt && (P.bHardCoreMode || P.bHardcoreFilterOptionResources))
         LowKeyDestroy();
 
     //Difficulty Filters
