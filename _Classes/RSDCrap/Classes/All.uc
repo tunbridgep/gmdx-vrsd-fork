@@ -306,6 +306,8 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_DeathWpnDrop2.pcx"	            NAME="QoL_DeathWpnDrop2"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_EditDefaultNotes1.pcx"	        NAME="QoL_EditDefaultNotes1"       	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_EditDefaultNotes2.pcx"	        NAME="QoL_EditDefaultNotes2"       	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FadeBelt1.pcx"	                NAME="QoL_FadeBelt1"              	    GROUP="UserInterface"    FLAGS=2
+#exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FadeBelt2.pcx"	                NAME="QoL_FadeBelt2"              	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FemaleHand1.pcx"	                NAME="QoL_FemaleHand1"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FemaleHand2.pcx"	                NAME="QoL_FemaleHand2"          	    GROUP="UserInterface"    FLAGS=2
 #exec TEXTURE IMPORT FILE="Textures\MenuImages\QoL_FPConv1.pcx"	                    NAME="QoL_FPConv1"              	    GROUP="UserInterface"    FLAGS=2

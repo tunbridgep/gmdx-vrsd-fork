@@ -22,6 +22,10 @@ var Texture reversedBorder;
 	
 var RadioBoxWindow winRadio;                //SARGE: Made global so we can delete and recreate it
 
+//SARGE: prevent ever fading this belt out.
+//Used for the inventory belt when belt fading is enabled.
+var bool bNoFade;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -33,9 +37,26 @@ event InitWindow()
     RecreateBelt(!bInteractive);
 }
 
+// ----------------------------------------------------------------------
+// SARGE: Don't draw the belt at all if we've faded it out completely
+// This is a hack because the IsVisible() function is native
+// ----------------------------------------------------------------------
+
+event DrawWindow(GC gc)
+{
+    if (GetOpacity() == 0.0)
+        return;
+    super.DrawWindow(gc);
+}
+
+function bool IsBiggerBelt()
+{
+    return player.iBiggerBelt > 0 || player.Level.NetMode != NM_Standalone;
+}
+
 function RecreateBelt(optional bool bDontRecreateKeyring)
 {
-    if (player.iBiggerBelt > 0)
+    if (IsBiggerBelt())
     {
         extraSize = 100;
         numSlots = 12;
@@ -66,6 +87,9 @@ function SetInventoryBelt(bool option)
     local int i;
 	for (i=0; i<numSlots; i++)
         objects[i].bInventorySlot = option;
+
+    //SARGE: No fading out if we're an inventory belt.
+    bNoFade = option;
 }
 
 // ----------------------------------------------------------------------
@@ -100,6 +124,7 @@ function CreateSlots()
 	for (i=0; i<12; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
+        objects[i].SetBelt(self);
 		objects[i].SetObjectNumber(i);
 		objects[i].Lower();
 	}
@@ -122,7 +147,7 @@ function ConfigureSlots()
     winRadio.SetPos(offset+10-extraSize, 6);
 
     //SARGE: DIRTY HACK!
-    if (player.iBiggerBelt > 0)
+    if (IsBiggerBelt())
     {
         // Last item is a little shorter
         objects[9].SetWidth(50);
@@ -183,6 +208,48 @@ function CreateNanoKeySlot()
 }
 
 // ----------------------------------------------------------------------
+// GetOpacity()
+// ----------------------------------------------------------------------
+
+function float GetOpacity()
+{
+    local float opacity;
+    local float timer;
+	
+    opacity = 1.0;
+
+    if (bNoFade)
+        return opacity;
+
+    timer = player.GetBeltOpacityTimer();
+    if (player.fAutoHideBeltTime > 0 && timer < 2.0)
+    {
+        opacity = timer * 0.5;
+        opacity = FMIN(1.0,opacity);
+        opacity = FMAX(0.0,opacity);
+    }
+    
+    //In skills mode, always cap the opacity at 50%
+    if (( player != None ) && (player.Level.NetMode != NM_Standalone) && ( player.bBuySkills ))
+        opacity = FMIN(opacity,0.5);
+
+    return opacity;
+}
+
+function Color GetColorWithOpacity(Color c)
+{
+    local float opacity;
+
+    opacity = GetOpacity();
+    c.r = c.r * opacity;
+    c.g = c.g * opacity;
+    c.b = c.b * opacity;
+    c.a = c.a * opacity;
+
+    return c;
+}
+
+// ----------------------------------------------------------------------
 // DrawBackground()
 // ----------------------------------------------------------------------
 
@@ -190,21 +257,13 @@ function DrawBackground(GC gc)
 {
 	local Color newBackground;
 
+    newBackground = GetColorWithOpacity(colBackground);
+
 	gc.SetStyle(backgroundDrawStyle);
-
-	if (( player != None ) && (player.Level.NetMode != NM_Standalone) && ( player.bBuySkills ))
-	{
-		newBackground.r = colBackground.r / 2;
-		newBackground.g = colBackground.g / 2;
-		newBackground.b = colBackground.b / 2;
-		gc.SetTileColor(newBackground);
-	}
-	else
-		gc.SetTileColor(colBackground);
-
+    gc.SetTileColor(newBackground);
 
     //SARGE: No idea why this needs adjusting...
-    if (player.iBiggerBelt > 0)
+    if (IsBiggerBelt())
         gc.DrawTexture(offset+2, 6, 8, 54, 0, 0, texBackgroundLeft);
     else
         gc.DrawTexture(offset+2, 6, 9, 54, 0, 0, texBackgroundLeft);
@@ -218,12 +277,10 @@ function DrawBackground(GC gc)
 
 function DrawBorder(GC gc)
 {
-	local Color newCol;
     local Texture rightBorder;
 
 	if (bDrawBorder)
 	{
-
         //Use a different border for the right side
         if (bRightSided)
             rightBorder = texBorder[2];
@@ -231,18 +288,10 @@ function DrawBorder(GC gc)
             rightBorder = reversedBorder;
 
 		gc.SetStyle(borderDrawStyle);
-		if (( player != None ) && ( player.bBuySkills ))
-		{
-			newCol.r = colBorder.r / 2;
-			newCol.g = colBorder.g / 2;
-			newCol.b = colBorder.b / 2;
-			gc.SetTileColor(newCol);
-		}
-		else
-			gc.SetTileColor(colBorder);
+        gc.SetTileColor(GetColorWithOpacity(colBorder));
 
 		gc.DrawTexture(offset, 0, 256, 69, 0, 0, texBorder[0]);
-        if (player.iBiggerBelt > 0)
+        if (IsBiggerBelt())
         {
             gc.DrawTexture(offset+256, 0, 512, 69, 0, 0, texBorderBig);
             gc.DrawTexture(offset+612, 0,  29, 69, 0, 0, rightBorder);
@@ -342,7 +391,7 @@ function SetInteractive(bool bNewInteractive)
 function bool IsValidPos(int pos)
 {
 	// Don't allow NanoKeySlot to be used
-	if ((pos >= 0) && (pos < numSlots))
+	if ((pos >= 0 || player.Level.NetMode != NM_Standalone) && (pos < numSlots))
 		return true;
 	else
 		return false;
@@ -452,7 +501,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //only allow a position to be valid if the object in it is draggable.
             //Sarge: First, check for an existing placeholder slot
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
-                if (Player.Level.NetMode == NM_Standalone)
+                if (player.Level.NetMode == NM_Standalone)
                 {
                     for (i=0; IsValidPos(i); i++)
                     {
@@ -471,14 +520,20 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                 }
 			
             //No placeholder slot found, check for an empty one
-            if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))
+            if (!FoundPlaceholder && player.AutofillBelt())
             {
                 for (i=0; IsValidPos(i) && i < numSlots; i++)
                 {
-                    if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                    //For multiplayer belt mode, don't bother checking belt memory etc
+                    if (player.Level.NetMode != NM_Standalone && player.bBeltIsMPInventory)
+                    {
+                        if (newItem.TestMPBeltSpot(i) && objects[i].GetItem() == None)
+                            break;
+                    }
+                    else
                     {
                         //First, always allow empty slots if we have autofill turned on
-                        if (objects[i].GetItem() == None && (!player.IsPlaceholder(i) || player.iBeltMemory == 0) && objects[i].bAllowDragging)
+                        if (objects[i].GetItem() == None && (!player.IsPlaceholder(i) || player.iBeltMemory == 0) && objects[i].bAllowDragging && (player.iBeltAutofill < 2 || newItem.TestMPBeltSpot(i)))
                             break;
                     }
                 }

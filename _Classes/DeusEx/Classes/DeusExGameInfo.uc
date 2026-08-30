@@ -94,7 +94,8 @@ event Tick(float deltaTime)
 
 function private GetDefaultModules()
 {
-    GetModule(class'MusicPlayer');
+    if (Level.NetMode == NM_Standalone)
+        GetModule(class'MusicPlayer');
     GetModule(class'TextureFilterer');
 }
 

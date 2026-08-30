@@ -57,7 +57,7 @@ defaultproperties
      items(2)=(HelpText="Automatically Add Augmentations to the Wheel when acquired. Augmentations can always be added or removed using middle-click in the Augmentation window.",actionText="Aug Wheel: Auto Add Augs.",variable="iAugWheelAutoAdd",defaultValue=1,valueText1="Active Augs Only",valueText2="All Augs");
      items(3)=(HelpText="Remember the Cursor Position in the Augmentation Wheel",actionText="Aug Wheel: Remember Cursor Position",variable="bAugWheelRememberCursor");
      items(4)=(HelpText="Enable/Disable the 'Disable All' button on the Augmentation Wheel.",actionText="Aug Wheel: Show 'Disable All'",variable="bAugWheelDisableAll",defaultValue=1);
-     items(5)=(HelpText="Automatically add newly-acquired items to the toolbelt.",actionText="Belt: Autofill Belt",variable="bBeltAutofill");
+     items(5)=(HelpText="Automatically add newly-acquired items to the toolbelt.",helpText2="In Multiplayer-Like mode, the belt is split into categories similar to Multiplayer.",actionText="Belt: Autofill Belt",variable="iBeltAutofill",valueText2="Multiplayer-Like");
      items(6)=(HelpText="After consuming the last item in a belt slot, its position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="iBeltMemory",defaultValue=1,valueText2="Auto-Swap Placeholders",helpText2="Placeholders will also be replaced when picking up similar items.");
      items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches to the primary selection if the primary selection was initially unholstered.");
      items(8)=(HelpText="Belt size is extended to 12 items. The - and = keys will be rebound to use the new belt slots.",actionText="Belt: Larger Belt",variable="iBiggerBelt",valueText2="Enabled (Keyring in Slot 0)",helpText2="The Nano Keyring will remain in Belt Slot 0",defaultValue=1)
@@ -209,6 +209,7 @@ defaultproperties
      items(151)=(HelpText="NPCs and the Player will not create blood pools if killed in non-bloody ways, such as through poison gas or radiation.",actionText="Game: Smarter Blood Pools",variable="bSmartBloodPools",defaultValue=1)
      items(152)=(HelpText="The NanoKey icon on the belt will show available Lockpicks and Multitools",actionText="HUD: NanoKey Slot shows Tools",variable="bNanoKeyShowsTools",defaultValue=1)
      items(153)=(HelpText="If enabled, dots will show augmentation levels on the HUD.",actionText="HUD: Show Aug Levels",variable="bShowAugLevelsInHUD",defaultValue=1)
+     items(154)=(HelpText="If enabled, the toolbelt will fade out and disappear when not in use.",actionText="HUD: Toolbelt Fade",variable="fAutoHideBeltTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 secondS")
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

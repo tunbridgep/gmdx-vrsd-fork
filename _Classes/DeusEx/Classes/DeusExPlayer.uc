@@ -470,7 +470,7 @@ var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
 var globalconfig int iModdedHeadBob;                                            //SARGE: Now an int
-var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
+var globalconfig int iBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig int iBeltMemory;  								     			//Sarge: Added new feature to allow belt to rember items. 0 = Disabled, 1 = Enabled, 2 = Autofill Placeholders.
@@ -1057,6 +1057,10 @@ var travel bool bHardcoreFilterOptionResources;     //SARGE: Hardcore Filter Opt
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
+var globalconfig float fAutoHideBeltTime;         //SARGE: How long before the belt fades out. Set to zero to disable.
+var private float fAutoHideBeltTimeCountdown;   //SARGE: The countdown timer left before our belt disappears.
+
+var const localized string msgSaveName;
 
 var const localized string msgSaveName;
 var const localized string msgNewGamePlusString;
@@ -1152,6 +1156,15 @@ replication
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
 }
+
+//SARGE: GMDX Multiplayer Stuff!
+
+function bool AutofillBelt()
+{
+    return iBeltAutofill > 0 || bForceBeltAutofill || Level.NetMode != NM_Standalone;
+}
+
+//=========================================================
 
 //SARGE: Gets any adjustments to our head health. For now, just medical skill.
 function float GetHeadHealthAdjustment()
@@ -1298,6 +1311,7 @@ exec function TogglePhotoMode()
 function SetPhotoMode(bool value)
 {
     bPhotoMode = value;
+    ResetAutoHideBeltTime();
     UpdatePhotoMode();
 }
 
@@ -1805,10 +1819,17 @@ simulated function PostNetBeginPlay()
 		if (DeusExRootWindow(rootWindow) != None)
 		   DeusExRootWindow(rootWindow).ChangeStyle();
 	}
+    
 	ReceiveFirstOptionSync(AugPrefs[0], AugPrefs[1], AugPrefs[2], AugPrefs[3], AugPrefs[4]);
 	ReceiveSecondOptionSync(AugPrefs[5], AugPrefs[6], AugPrefs[7], AugPrefs[8]);
 	ShieldStatus = SS_Off;
 	bCheatsEnabled = False;
+    
+    //Setup player subcomponents
+	SetupPerkManager();
+	SetupFontManager();
+    SetupKeybindManager();
+    SetupCloakManager();
 
 	 ServerSetAutoReload( bAutoReload );
 }
@@ -2477,6 +2498,30 @@ final function UpdateTimePlayed(float deltaTime)
 }
 
 // ----------------------------------------------------------------------
+// Update Belt Opacity Timer
+// ----------------------------------------------------------------------
+
+function ResetAutoHideBeltTime()
+{
+    default.fAutoHideBeltTimeCountdown = fAutoHideBeltTime;
+    DebugMessage("Reset Belt Fade Timer: " $ default.fAutoHideBeltTimeCountdown);
+}
+
+function UpdateAutoHideBeltTime(float deltaTime)
+{
+    if (default.fAutoHideBeltTimeCountdown > 0)
+    {
+        default.fAutoHideBeltTimeCountdown -= deltaTime;
+        default.fAutoHideBeltTimeCountdown = FMAX(0.0,default.fAutoHideBeltTimeCountdown);
+    }
+}
+
+function float GetBeltOpacityTimer()
+{
+    return default.fAutoHideBeltTimeCountdown;
+}
+
+// ----------------------------------------------------------------------
 // RestoreScopeView()
 // ----------------------------------------------------------------------
 
@@ -2829,6 +2874,7 @@ exec function LoadGame(int saveIndex)
         ToggleRadialAugMenu();
 	
     // Reset the FOV
+    ResetAutoHideBeltTime();
 	DesiredFOV = Default.DesiredFOV;
 	ClientTravel("?loadgame=" $ saveIndex, TRAVEL_Absolute, False);
 }
@@ -3207,6 +3253,9 @@ exec function StartNewGame(String startMap)
     //TODO: Make this an option
     //TODO: Move this to ResetPlayer, since this function is for loading maps
     SoundVolumeHackFix();
+    
+    //Un-fade the belt.
+    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -3246,6 +3295,9 @@ function StartTrainingMission()
 	DeleteSaveGameFiles();
 	bStartingNewGame = True;
 	Level.Game.SendPlayer(Self, "00_Training");
+    
+    //Un-fade the belt.
+    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -4650,6 +4702,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     {
         to.beltPos = beltSlot;
         to.bInObjectBelt = true;
+        ResetAutoHideBeltTime();
 
         //Remove the old item from the slot
         if (from != None)
@@ -4800,7 +4853,13 @@ exec function SwitchAmmo()
         //SARGE: Fallback
         //SARGE: Changed to inHandPending, so it's more responsive
         if (!bSwitch && inHandPending != None && inHandPending.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
+        {
             DeusExWeapon(inHandPending).CycleAmmo();
+            /*
+            if (inHandPending.bInObjectBelt)
+                ResetAutoHideBeltTime();
+            */
+        }
     }
 
     //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
@@ -7476,7 +7535,11 @@ state PlayerWalking
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
        
+
         //Update belt selection timer
         if (fBlockBeltSelection > 0)
             fBlockBeltSelection -= deltaTime;
@@ -7563,6 +7626,20 @@ state PlayerWalking
 
 		    Super.PlayerTick(deltaTime);
 	}
+	
+    //SARGE: Handle multiplayer respawning
+    function BeginState()
+    {
+        super.BeginState();
+		if (Level.NetMode != NM_Standalone)
+        {
+            HeadRegion.Zone.ViewFog.X = 0;
+			InstantFog   = vect(0.1,0.1,0.1);
+			InstantFlash = 0.01;
+			ViewFlash(1.0);
+            ShowHUD(true);
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -7615,6 +7692,9 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -7827,6 +7907,9 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -8501,11 +8584,22 @@ exec function ShowScores()
 // SARGE: Now it's an actual proper exec function. What was CyberP thinking....???
 // ----------------------------------------------------------------------
 
+exec function SetupQuickSwitch(Inventory inv, bool bQuickSelect, bool bQuickPutAway)
+{
+    if (inv != None && inv.IsA('DeusExWeapon'))
+    {
+        DeusExWeapon(inv).bQuickSelect = bQuickSelect;
+        DeusExWeapon(inv).bQuickPutAway = bQuickPutAway;
+    }
+}
+
 exec function UseSecondary(optional bool bRelease)
 {
     local Inventory assigned;
     local DeusExWeapon W;
     local bool bSelectOnly;
+    local bool bRigging;
+
     assigned = GetSecondary();
 
     if (RestrictInput(true))
@@ -8555,19 +8649,40 @@ exec function UseSecondary(optional bool bRelease)
     //NEVER allow selecting food items and other things that don't make sense
     if (assigned.IsA('ConsumableItem') || assigned.IsA('Binoculars'))
         bSelectOnly = false;
+    
+    //Pepper Spray is bugged if we use it automatically
+    /*
+    if (assigned.IsA('WeaponPepperGun'))
+        bSelectOnly = true;
+    */
 
-    if (bSelectOnly)
-    {
-        if (bRelease)
-            SelectLastWeapon(true);
-        else
-            PutInHand(assigned,true);
+    //Don't mess with our item if it's our current item
+    if (bSelectOnly && inHandPending == assigned && !bRelease)
         return;
+
+    //Don't allow attacking with empty weapons
+    if (assigned.IsA('DeusExWeapon') && DeusExWeapon(assigned).ReloadCount > 0)
+    {
+        if (DeusExWeapon(assigned).AmmoType.AmmoAmount == 0)
+            return;
+        else if (DeusExWeapon(assigned).ClipCount == 0)
+            bSelectOnly = true;
     }
+
+    //Set if we have the Tactical Rigging perks
+    bRigging = PerkManager.GetPerkWithClass(class'DeusEx.PerkTacticalRigging').bPerkObtained;
 
     //Don't use a second time
     if (bRelease)
+    {
+        if (bSelectOnly || (DeusExWeapon(assigned) != None && DeusExWeapon(assigned).IsInState('Idle')))
+        {
+            SetupQuickSwitch(assigned,false,bRigging);
+            SetupQuickSwitch(primaryWeapon,bRigging && !bLastWasEmpty,false);
+            SelectLastWeapon(true);
+        }
         return;
+    }
 
     //Sarge: Now we check for ChargedPickup charge level
     if (assigned.IsA('ChargedPickup') && ChargedPickup(assigned).GetCurrentCharge() == 0)
@@ -8588,34 +8703,29 @@ exec function UseSecondary(optional bool bRelease)
         return;
     }
 
+    //Skip TT's Flare-throwing BS because it sucks and is HDTP exclusive.
+    if (assigned.IsA('Flare'))
+    {
+        Flare(assigned).bQuickFlare=true;
+        assigned.Activate();
+        return;
+    }
+
     if (!(inHand != none && inHand.IsA('Binoculars')) && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when not holding Binocs)
     {
         if(!Binoculars(assigned).bActive)
         {
             if (inHand != None)
             {
-                if (inHand.IsA('DeusExWeapon'))
-                {
-                    //DeusExWeapon(inHand).GotoState('DownWeapon');
-                    DeusExWeapon(inHand).ScopeOff();
-                    DeusExWeapon(inHand).LaserOff(true);
-                    PutInHand(None,true);
-                }
-                else if (inHand.IsA('SkilledTool'))
-                {
-                    //SkilledTool(inHand).PutDown();
-                    PutInHand(None,true);
-                }
-                else if (inHand.IsA('DeusExPickup'))
-                {
-                    PutInHand(None,true);
-                }
+                SetupQuickSwitch(inHand,false,bRigging);
+                PutInHand(None,true);
             }
             Binoculars(assigned).Activate();
         }
         else
         {
             Binoculars(assigned).Activate();
+            SetupQuickSwitch(primaryWeapon,bRigging && !bLastWasEmpty,false);
             SelectLastWeapon(true);
         }
         return;
@@ -8635,38 +8745,34 @@ exec function UseSecondary(optional bool bRelease)
                 return;
             }
         }
+        SetupQuickSwitch(assigned,bRigging,bRigging);
+        SetupQuickSwitch(inHand,false,bRigging);
         PutInHand(assigned,true);
         if (inHandPending.IsA('DeusExWeapon'))
+        {
             DeusExWeapon(inHandPending).bBeginQuickMelee=true;
+            DeusExWeapon(inHandPending).bBeginQuickMeleeAttack=!bSelectOnly;
+        }
         if (inHandPending.IsA('Flare'))
-            Flare(inHandPending).bBeginQuickThrow=true;
+        {
+            Flare(inHandPending).Activate();
+        }
     }
     else if (inHand != none && assigned == inHand)
     {
         if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bBeginQuickMelee)
         {
-                if (DeusExWeapon(inHand).AccurateRange > 200 && DeusExWeapon(inHand).AmmoLeftInClip() == 0 ) //CyberP/|Totalitarian|: hack fix bug
-                    return;
-                else
-                {
-                    DeusExWeapon(inHand).quickMeleeCombo = 0.4;
-                    DeusExWeapon(inHand).bAlreadyQuickMelee = true;
-                }
-        }
-        else if (inHand.IsA('Flare') && Flare(inHand).bBeginQuickThrow)
-        {
-            Flare(inHand).quickThrowCombo = 0.4;
+            DeusExWeapon(inHand).bFinishedQuickMeleeAttack=false;
         }
         else// if (primaryWeapon == None || primaryWeapon == assigned)  //RSD: Don't actually need this stuff?
         {
             if (inHand.IsA('DeusExWeapon'))
                 DeusExWeapon(inHand).Fire(0);
-            if (inHand.IsA('Flare'))
-                Flare(inHand).Activate();
         }
     }
     else if (inHand == none && inHandPending == None)
     {
+        SetupQuickSwitch(assigned,bRigging,bRigging);
         PutInHand(assigned,true);
     }
 }
@@ -10035,6 +10141,13 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     if (weap != None && !weap.CanUseWeapon(self))
         return;
 
+
+    if (inHand != None && inHand.IsA('DeusExWeapon') && inHand != inv)
+    {
+        DeusExWeapon(inHand).ScopeOff();
+        DeusExWeapon(inHand).LaserOff(true);
+    }
+
 	// can't do anything if you're carrying a corpse
 	if ((inHand != None) && inHand.IsA('POVCorpse'))
 		return;
@@ -10674,7 +10787,7 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 		 {
 			if ( (DeusExRootWindow(rootWindow).hud.belt.objects[beltpos].item == None) && (anItem.TestMPBeltSpot(beltpos)) )
 			{
-			   bPositionFound = True;
+                bPositionFound = True;
 			}
 		 }
 	  }
@@ -10817,6 +10930,11 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 // Set Placeholder
 function SetPlaceholder(int objectNum, Inventory item)
 {
+
+    //No placeholders in multiplayer
+    if ( Level.NetMode != NM_Standalone )
+        return;
+
     if (item != None && item.Class != class'NanoKeyRing')
     {
         beltInfos[objectNum].itemClass = string(item.Class);
@@ -11850,7 +11968,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -11886,7 +12004,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
         }
 		else
@@ -11899,7 +12017,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop, optiona
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+            RemoveObjectFromBelt(item,AutofillBelt()); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -13211,10 +13329,7 @@ function private _UpdateHUD()
 
     // Reset Belt Memory
     if (iBeltMemory == 0)
-    {
-        for(i = 0;i < 12;i++)
-            ClearPlaceholder(i);
-    }
+        ClearAllBeltPlaceholders();
 
     if (root != None)
         root.UpdateHUD();
@@ -13508,6 +13623,7 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
             NewWeaponSelected();
+            ResetAutoHideBeltTime();
 		}
 	}
 }
@@ -13567,6 +13683,8 @@ exec function NextBeltItem()
         }
         return;
 	}
+            
+    ResetAutoHideBeltTime();
 
    if (iAlternateToolbelt == 0)
    {
@@ -13700,6 +13818,8 @@ exec function PrevBeltItem()
         }
         return;
 	}
+            
+    ResetAutoHideBeltTime();
 
    if (iAlternateToolbelt == 0)
    {
@@ -14462,6 +14582,9 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update Belt Transparenct
+        UpdateAutoHideBeltTime(deltaTime);
 	}
 
 	function LoopHeadConvoAnim()
@@ -21083,4 +21206,5 @@ defaultproperties
      HungryStr="(Hungry)"
      StarvingStr="(Starving)"
      iPresetSeed=-1
+     fAutoHideBeltTime=0
 }

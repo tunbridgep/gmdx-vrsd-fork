@@ -25,18 +25,26 @@ New Features:
 - Added sounds for picking up Collectibles.
 - Data Cubes and other information devices are now highlighted when using Tech Goggles.
 - Added sounds when acquiring Traumas.
-- Added new "Hold" bindings for active autmentations.
+- Complete remake of GMDX's secondary weapon system
+    - Added a new general perk "Tactical Rigging" which significantly increases secondary swapping speed.
+    - Fixed "Select" secondary mode being slower than the "Auto-Activate" mode in GMDX:AE v1.2.
+    - Fixed a few secondary weapon bugs and inconsistencies, such as missing animations.
+    - Pepper Spray can now be assigned as a secondary weapon with the Inventive perk.
+- Added "Pepper Perfector" perk (Low-Tech ADVANCED), which significantly improves pepper cloud movement speed and size.
 - LOS checking for object interaction now includes carcasses, preventing them from being interacted with through walls.
 - Searching a single carcass will now also search nearby carcasses.
 - Added a new "Sturdy Construction" modifier, which only breakables to be broken using Explosive attacks.
 - Edible Items now show the players current hunger level in the Inventory screen.
 - Upgraded to the newest DeusExe by @flippers
 - Datacubes, Books etc are now visible using Tech Goggles
+- Added a setting to make the toolbelt disappear automatically after a number of seconds.
 - Added a new setting to the "Bigger Belt" option that moves the keyring slot to slot 0 rather than slot = while maintaining the larger belt.
   - For users of previous versions, the Bigger Belt setting has been reset, sorry.
 - The number of Lockpicks and Multitools can now show under the NanoKey icon.
     - Disabled by default. Enable it in the QoL menu.
 - Current hunger level now shows on edibles, not just the health screen
+- Added a new Belt Autofill mode that allows using the Categorised Multiplayer belt in Singleplayer
+    - Items can still be assigned to any belt slots manually, and dragged anywhere. The setting only controls autofill.
 
 Bug Fixes:
 - Fixed Secondary icon sometimes being cleared when transitioning between maps.
@@ -79,6 +87,9 @@ Bug Fixes:
 - Fixed LAW incorrectly listing it's damage as 100, rather than 1000
 
 Misc Changes:
+- Addon Penalties for Scope, Laser and Silencer updated:
+    - Scope now gives -recoil and +reload and equip time.
+    - Laser now gives +reload and equip time.
 - Screen effects and flinching from pain will now only be removed when blocking 80% or more of the damage, rather than always whenever damage is reduced.
 - NPCs will no longer track targets with the GEP gun.
 - Minor changes to explosives to properly account for mover DT checks.
