@@ -1,6 +1,7 @@
 1.3:
 
 New Features:
+- Added a new perk NERVES OF STEEL (Stealth Trained, 50 points): An agent learns to push through minor injuries while focusing on the mission at hand. Pain sounds are removed entirely (and will no longer alert nearby hostiles) for injuries causing 10 damage or less.
 - Added a new perk VIGILANT RECYCLER (General, 100 points): An agent learns how to restructure the nanite composites within nanokeys, allowing them to transform duplicated NanoKeys into 45 credits each.
 - Added a new perk TARGETING ROUTINES (Demolitions Advanced, 300 points): An agent is able to program the targeting routines of proximity grenades, ensuring placed EMP and Scrambler grenades only explode in the presence of robots, and placed gas grenades only explode in the presence of organics.
     - Additionally prevents medical, repair and cleaner bots from setting off placed grenades.
@@ -68,6 +69,7 @@ Bug Fixes:
 - Fixes for phones not properly displaying "Line disconnected" and other frob sounds.
 
 Misc Changes:
+- Screen effects and flinching from pain will now only be removed when blocking 80% or more of the damage, rather than always whenever damage is reduced.
 - NPCs will no longer track targets with the GEP gun.
 - Minor changes to explosives to properly account for mover DT checks.
 - Confix is now installed as a separate mod, due to recent DeusExe support for mod-added conversation files.
