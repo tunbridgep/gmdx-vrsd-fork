@@ -26,6 +26,8 @@ function SaveSettings()
     
     if (player.weaponSkinManager != None)
         player.weaponSkinManager.SaveConfig();
+
+    player.ResetHUDFadeTimes();
 }
 
 //Called whenever we set a valud
@@ -209,7 +211,10 @@ defaultproperties
      items(151)=(HelpText="NPCs and the Player will not create blood pools if killed in non-bloody ways, such as through poison gas or radiation.",actionText="Game: Smarter Blood Pools",variable="bSmartBloodPools",defaultValue=1)
      items(152)=(HelpText="The NanoKey icon on the belt will show available Lockpicks and Multitools",actionText="HUD: NanoKey Slot shows Tools",variable="bNanoKeyShowsTools",defaultValue=1)
      items(153)=(HelpText="If enabled, dots will show augmentation levels on the HUD.",actionText="HUD: Show Aug Levels",variable="bShowAugLevelsInHUD",defaultValue=1)
-     items(154)=(HelpText="If enabled, the toolbelt will fade out and disappear when not in use.",actionText="HUD: Toolbelt Fade",variable="fAutoHideBeltTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 secondS")
+     items(154)=(HelpText="If enabled, the toolbelt will fade out and disappear when not in use.",actionText="HUD: Fade Toolbelt",consoleTarget="HUDObjectBelt",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds")
+     items(155)=(HelpText="If enabled, the secondary display will fade out and disappear when not in use.",actionText="HUD: Fade Secondary Display",consoleTarget="HUDAmmoDisplay2",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds")
+     items(156)=(HelpText="If enabled, the ammo display will fade out and disappear when not in use.",actionText="HUD: Fade Ammo Display",consoleTarget="HUDAmmoDisplay",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds")
+     items(157)=(HelpText="If belt fading is enabled, this option will also show the belt whenever any belt item is selected.",actionText="HUD: Fade Toolbelt Shows On Unholster",variable="bMoreVisibleBeltFade",defaultValue=1)
 
      Title="GMDX Advanced Options"
      colWidths(0)=214

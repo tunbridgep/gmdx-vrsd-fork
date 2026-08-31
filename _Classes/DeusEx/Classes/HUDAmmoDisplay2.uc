@@ -18,7 +18,8 @@ var Texture texBackground;
 var Texture texBorder;
 var Texture texBorderRight;
 
-var Color colIconDimmed;
+var const Color colIconDimmed;
+var const Color colIcon;
 
 //SARGE: Cache the players secondary
 var transient Inventory assigned;
@@ -63,6 +64,8 @@ function UpdateAssigned()
 
 event Tick(float deltaSeconds)
 {
+    super.Tick(deltaSeconds);
+
     if (player != None && bUpdateAssigned)
     {
         assigned = player.GetSecondary();
@@ -88,13 +91,17 @@ event DrawWindow(GC gc)
     local string label;
 
 	Super.DrawWindow(gc);
+    
+    //SARGE: Make the text and icons fade out sooner than the background
+    if (GetOpacity() <= 0.15)
+        return;
 
     /*
     if (assigned == None || assigned.Owner != player)
         return;
     */
 
-    if (player == None || assignedClass == None)
+    if (player == None || assignedClass == None || GetOpacity() == 0)
         return;
 
 	// No need to draw anything if the player doesn't have
@@ -102,7 +109,7 @@ event DrawWindow(GC gc)
 
     if (assigned == None || assigned.Owner != player)
     {
-        gc.SetTileColor(colIconDimmed);
+        gc.SetTileColor(GetColorWithOpacity(colIconDimmed));
 		gc.SetStyle(DSTY_Masked);
 		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, assignedIcon);
         return;
@@ -124,7 +131,8 @@ event DrawWindow(GC gc)
         icon = item.icon;
    	}
         
-    gc.SetTileColorRGB(255, 255, 255);
+    //gc.SetTileColorRGB(255, 255, 255);
+    gc.SetTileColor(GetColorWithOpacity(colIcon));
     
     if (item != None && item.isA('ChargedPickup'))
         chargeLevel = int(ChargedPickup(item).GetCurrentCharge());
@@ -134,7 +142,7 @@ event DrawWindow(GC gc)
     if ( weapon != None || item != None)
 	{
         if (!IsCharged(item))
-            gc.SetTileColor(colIconDimmed);
+            gc.SetTileColor(GetColorWithOpacity(colIconDimmed));
 
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
@@ -160,7 +168,7 @@ event DrawWindow(GC gc)
             gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
             gc.EnableWordWrap(false);
             gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
-            gc.SetTextColor(colText);
+            gc.SetTextColor(GetColorWithOpacity(colText));
 
             if (amount > 0 && label != "")
                 gc.DrawText(offset-3, 56, 64, 8, label); //Position below icon
@@ -199,7 +207,7 @@ function bool IsCharged(DeusExPickup item)
 function DrawBackground(GC gc)
 {
 	gc.SetStyle(backgroundDrawStyle);
-	gc.SetTileColor(colBackground);
+    gc.SetTileColor(GetColorWithOpacity(colBackground));
 	gc.DrawTexture(offset, 13, 80, 54, 0, 0, texBackground);
 }
 
@@ -212,7 +220,7 @@ function DrawBorder(GC gc)
 	if (bDrawBorder)
 	{
 		gc.SetStyle(borderDrawStyle);
-		gc.SetTileColor(colBorder);
+        gc.SetTileColor(GetColorWithOpacity(colBorder));
         if (bRightSided)
             gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorderRight);
         else
@@ -241,6 +249,8 @@ defaultproperties
      texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary'
      texBorderRight=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondaryF'
      colIconDimmed=(R=64,G=64,B=64)
+     colIcon=(R=255,G=255,B=255)
      leftSideOffset=13
      rightSideOffset=2
+     bFadeEnabled=true
 }

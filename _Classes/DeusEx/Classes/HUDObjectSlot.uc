@@ -76,6 +76,9 @@ var localized String MultitoolsLabel; //SARGE: M prefix for NanoKey slot
 
 var HUDObjectBelt belt;                 //SARGE: Our linked belt (if we have one)
 
+var const Color colIconDimmed;
+var const Color colIcon;
+
 //SARGE: These were originally hardcoded in vanilla.
 //Allow localizing the multiplayer belt
 var localized string strTools;
@@ -414,17 +417,9 @@ function DrawHUDIcon(GC gc)
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
 		if (bDimIcon || player.IsPlaceholder(objectNum))	                                        //RSD: Can now dim icons
-        {
-            col.r = 64;
-            col.g = 64;
-            col.b = 64;
-        }
+            col = colIconDimmed;
 		else
-        {
-            col.r = 255;
-            col.g = 255;
-            col.b = 255;
-        }
+            col = colIcon;
     
         //SARGE: Darken based on opacity
         gc.SetTileColor(GetColorWithOpacity(col));
@@ -752,4 +747,6 @@ defaultproperties
      strWeapons="WEAPONS"
      strThrowable="THROWABLE"
      strTools="TOOLS"
+     colIconDimmed=(R=64,G=64,B=64)
+     colIcon=(R=255,G=255,B=255)
 }

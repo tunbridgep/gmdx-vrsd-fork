@@ -22,7 +22,7 @@ var Texture reversedBorder;
 	
 var RadioBoxWindow winRadio;                //SARGE: Made global so we can delete and recreate it
 
-//SARGE: prevent ever fading this belt out.
+//SARGE: prevent ever fading this element out.
 //Used for the inventory belt when belt fading is enabled.
 var bool bNoFade;
 
@@ -37,16 +37,21 @@ event InitWindow()
     RecreateBelt(!bInteractive);
 }
 
-// ----------------------------------------------------------------------
-// SARGE: Don't draw the belt at all if we've faded it out completely
-// This is a hack because the IsVisible() function is native
-// ----------------------------------------------------------------------
-
-event DrawWindow(GC gc)
+function bool AllowFade()
 {
-    if (GetOpacity() == 0.0)
-        return;
-    super.DrawWindow(gc);
+    return !bNoFade && super.AllowFade();
+}
+
+function float GetOpacity()
+{
+    local float opacity;
+    opacity = super.GetOpacity();
+    
+    //In skills mode, always cap the opacity at 50%
+    if (( player != None ) && (player.Level.NetMode != NM_Standalone) && ( player.bBuySkills ))
+        opacity = FMIN(opacity,0.5);
+
+    return opacity;
 }
 
 function bool IsBiggerBelt()
@@ -205,48 +210,6 @@ function CreateNanoKeySlot()
             objects[KeyRingSlot].AllowDragging(player.iSmartKeyring > 0);
             objects[KeyRingSlot].SetObjectNumber(KeyRingSlot);
 		}
-}
-
-// ----------------------------------------------------------------------
-// GetOpacity()
-// ----------------------------------------------------------------------
-
-function float GetOpacity()
-{
-    local float opacity;
-    local float timer;
-	
-    opacity = 1.0;
-
-    if (bNoFade)
-        return opacity;
-
-    timer = player.GetBeltOpacityTimer();
-    if (player.fAutoHideBeltTime > 0 && timer < 2.0)
-    {
-        opacity = timer * 0.5;
-        opacity = FMIN(1.0,opacity);
-        opacity = FMAX(0.0,opacity);
-    }
-    
-    //In skills mode, always cap the opacity at 50%
-    if (( player != None ) && (player.Level.NetMode != NM_Standalone) && ( player.bBuySkills ))
-        opacity = FMIN(opacity,0.5);
-
-    return opacity;
-}
-
-function Color GetColorWithOpacity(Color c)
-{
-    local float opacity;
-
-    opacity = GetOpacity();
-    c.r = c.r * opacity;
-    c.g = c.g * opacity;
-    c.b = c.b * opacity;
-    c.a = c.a * opacity;
-
-    return c;
 }
 
 // ----------------------------------------------------------------------
@@ -529,7 +492,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     {
                         if (newItem.TestMPBeltSpot(i) && objects[i].GetItem() == None)
                         {
-                            player.ResetAutoHideBeltTime();
+                            ResetHUDFadeTime();
                             break;
                         }
                     }
@@ -538,7 +501,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                         //First, always allow empty slots if we have autofill turned on
                         if (objects[i].GetItem() == None && (!player.IsPlaceholder(i) || player.iBeltMemory == 0) && objects[i].bAllowDragging && (player.iBeltAutofill < 2 || newItem.TestMPBeltSpot(i)))
                         {
-                            player.ResetAutoHideBeltTime();
+                            ResetHUDFadeTime();
                             break;
                         }
                     }
@@ -687,4 +650,5 @@ defaultproperties
      reversedBorder=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_3F'
      leftSideOffset=5
      rightSideOffset=0
+     bFadeEnabled=true
 }

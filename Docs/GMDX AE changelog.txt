@@ -37,7 +37,10 @@ New Features:
 - Edible Items now show the players current hunger level in the Inventory screen.
 - Upgraded to the newest DeusExe by @flippers
 - Datacubes, Books etc are now visible using Tech Goggles
-- Added a setting to make the toolbelt disappear automatically after a number of seconds.
+- Added HUD Fading
+    - Toolbelt can fade after a number of seconds, and will re-appear when selecting items on the belt. Additionally can appear when unholstering if the setting is enabled.
+    - Ammo can fade after a number of seconds, and will re-appear when firing weapons or reloading
+    - Secondary Display can fade after a number of seconds, and will re-appear when changing, selecting or using secondaries.
 - Added a new setting to the "Bigger Belt" option that moves the keyring slot to slot 0 rather than slot = while maintaining the larger belt.
   - For users of previous versions, the Bigger Belt setting has been reset, sorry.
 - The number of Lockpicks and Multitools can now show under the NanoKey icon.

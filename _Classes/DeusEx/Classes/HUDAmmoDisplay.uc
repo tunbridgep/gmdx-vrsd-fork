@@ -36,6 +36,8 @@ var Texture texBorderRight;
 var localized String LaserLabel;
 var localized String RemoteLabel;
 
+var const Color colIcon;
+
 //SARGE: Colour for the "Max Ammo" counter
 var Color			colAmmoTextMax;
 var bool            bMaxAmmo;
@@ -131,14 +133,6 @@ function Inventory GetWeapon()
 }
 
 // ----------------------------------------------------------------------
-// Tick()
-// ----------------------------------------------------------------------
-
-event Tick(float deltaSeconds)
-{
-}
-
-// ----------------------------------------------------------------------
 // GetAmmoTextColor()
 // SARGE: Get the ammo color()
 // ----------------------------------------------------------------------
@@ -163,6 +157,10 @@ event DrawWindow(GC gc)
 
     if (curr == None || !IsVisible() || curr.Owner != player)
         return;
+    
+    //SARGE: Make the text and icons fade out sooner than the background
+    if (GetOpacity() <= 0.15)
+        return;
 
     ammopostop = player.FontManager.GetTextPosition(27,26);
     ammoposbtm = player.FontManager.GetTextPosition(39,38);
@@ -176,15 +174,16 @@ event DrawWindow(GC gc)
     {
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
-		gc.SetTileColorRGB(255, 255, 255);
+        gc.SetTileColor(GetColorWithOpacity(colIcon));
 		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
 
+		gc.SetStyle(DSTY_Translucent);
 		// Draw the ammo count
 		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
          
-        gc.SetTextColor(colAmmoText);
+        gc.SetTextColor(GetColorWithOpacity(colAmmoText));
         gc.DrawText(infoX+offset, ammopostop, 20, 9, SkilledTool(curr).numCopies);
         gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
     }
@@ -192,10 +191,11 @@ event DrawWindow(GC gc)
 	{
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
-		gc.SetTileColorRGB(255, 255, 255);
+        gc.SetTileColor(GetColorWithOpacity(colIcon));
 		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, weapon.icon);
 
 		// Draw the ammo count
+		gc.SetStyle(DSTY_Translucent);
 		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
@@ -209,12 +209,12 @@ event DrawWindow(GC gc)
 		else
 			ammoRemaining = 0;
                 
-         gc.SetTextColor(colAmmoText);
+        gc.SetTextColor(GetColorWithOpacity(colAmmoText));
 
         //Draw DTS Charge
         if (weapon.IsA('WeaponNanoSword') && (player.bNanoswordEnergyUse || player.bHardcoreMode))
         {
-            gc.SetTextColor(colAmmoText);
+            gc.SetTextColor(GetColorWithOpacity(colAmmoText));
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
             gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoInClip);
 			gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
@@ -229,9 +229,9 @@ event DrawWindow(GC gc)
 				clipsRemaining = weapon.NumClips();
 		
             if ((weapon.reloadCount > 1 && ammoInClip <= weapon.reloadCount / 2.0) || ammoInClip == 0)
-                gc.SetTextColor(colAmmoLowText);
+                gc.SetTextColor(GetColorWithOpacity(colAmmoLowText));
             else
-                gc.SetTextColor(colAmmoText);
+                gc.SetTextColor(GetColorWithOpacity(colAmmoText));
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX+offset, ammopostop, 20, 9, msgReloading);
@@ -239,12 +239,12 @@ event DrawWindow(GC gc)
 				gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoInClip);
 
 			if (bMaxAmmo) //SARGE: Show ammo in Yellow at max ammo
-                gc.SetTextColor(colAmmoTextMax);
+                gc.SetTextColor(GetColorWithOpacity(colAmmoTextMax));
 			// if there are no clips (or a partial clip) remaining, color me red
 			else if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
-				gc.SetTextColor(colAmmoLowText);
+                gc.SetTextColor(GetColorWithOpacity(colAmmoLowText));
 			else
-                gc.SetTextColor(colAmmoText);
+                gc.SetTextColor(GetColorWithOpacity(colAmmoText));
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX+offset, ammoposbtm, 20, 9, msgReloading);
@@ -278,11 +278,11 @@ event DrawWindow(GC gc)
 		if (weapon.bCanTrack)
 		{
 			if (weapon.LockMode == LOCK_Locked)
-				gc.SetTextColor(colLockedText);
+                gc.SetTextColor(GetColorWithOpacity(colLockedText));
 			else if (weapon.LockMode == LOCK_Acquire)
-				gc.SetTextColor(colTrackingText);
+                gc.SetTextColor(GetColorWithOpacity(colTrackingText));
 			else
-				gc.SetTextColor(colNormalText);
+                gc.SetTextColor(GetColorWithOpacity(colNormalText));
 			
 			if (weapon.bLasing)
 		        gc.DrawText(posX, posY, 65, 8, LaserLabel);
@@ -297,7 +297,7 @@ event DrawWindow(GC gc)
         else if (player.bShowAmmoTypeInAmmoHUD && !weapon.bDisposableWeapon)
         {
 			gc.SetFont(player.FontManager.GetFont(TT_FontTiny)); //CyberP: hud scaling Font'FontTiny'
-            gc.SetTextColor(GetAmmoTextColor());
+            gc.SetTextColor(GetColorWithOpacity(GetAmmoTextColor()));
             gc.DrawText(posX, posY, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
         }
 
@@ -309,9 +309,9 @@ event DrawWindow(GC gc)
             if (weapon.bHadLaser)
             {
                 if (weapon.bHasLaser)
-                    gc.SetTextColor(colAmmoText);
+                    gc.SetTextColor(GetColorWithOpacity(colAmmoText));
                 else
-                    gc.SetTextColor(colAmmoLowText);
+                    gc.SetTextColor(GetColorWithOpacity(colAmmoLowText));
 
                 gc.DrawText(offset+9, addonOffset, 16, 8, "L");
                 addonOffset -= 6;
@@ -319,9 +319,9 @@ event DrawWindow(GC gc)
             if (weapon.bHadScope)
             {
                 if (weapon.bHasScope)
-                    gc.SetTextColor(colAmmoText);
+                    gc.SetTextColor(GetColorWithOpacity(colAmmoText));
                 else
-                    gc.SetTextColor(colAmmoLowText);
+                    gc.SetTextColor(GetColorWithOpacity(colAmmoLowText));
 
                 gc.DrawText(offset+9, addonOffset, 16, 8, "S");
                 addonOffset -= 6;
@@ -329,9 +329,9 @@ event DrawWindow(GC gc)
             if (weapon.bHadSilencer)
             {
                 if (weapon.bHasSilencer)
-                    gc.SetTextColor(colAmmoText);
+                    gc.SetTextColor(GetColorWithOpacity(colAmmoText));
                 else
-                    gc.SetTextColor(colAmmoLowText);
+                    gc.SetTextColor(GetColorWithOpacity(colAmmoLowText));
 
                 gc.DrawText(offset+9, addonOffset, 16, 8, "S");
                 addonOffset -= 6;
@@ -347,14 +347,19 @@ function DrawBackground(GC gc)
 {
     if (gc == None)
         return;
+    
+    //SARGE: Make the text and icons fade out sooner than the background
+    if (GetOpacity() <= 0.15)
+        return;
 
 	gc.SetStyle(backgroundDrawStyle);
-	gc.SetTileColor(colBackground);
+    gc.SetTileColor(GetColorWithOpacity(colBackground));
     gc.DrawTexture(offset, 13, 80, 54, 0, 0, texBackground);
 
 	// Draw the Ammo and Clips text labels
+    gc.SetStyle(DSTY_Translucent);
 	gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
-	gc.SetTextColor(colText);
+    gc.SetTextColor(GetColorWithOpacity(colText));
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 
     if (player != None)
@@ -382,7 +387,7 @@ function DrawBorder(GC gc)
 	if (bDrawBorder)
 	{
 		gc.SetStyle(borderDrawStyle);
-		gc.SetTileColor(colBorder);
+        gc.SetTileColor(GetColorWithOpacity(colBorder));
         if (bRightSided)
             gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorderRight);
         else
@@ -426,4 +431,6 @@ defaultproperties
      RemoteLabel="REMOTE GUIDANCE";
      leftSideOffset=13;
      rightSideOffset=2;
+     colIcon=(R=255,G=255,B=255)
+     bFadeEnabled=true
 }

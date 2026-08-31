@@ -1057,9 +1057,6 @@ var travel bool bHardcoreFilterOptionResources;     //SARGE: Hardcore Filter Opt
 
 var globalconfig bool bAutoUseChargedPickups;       //SARGE: Automatically equip armor when it's picked up, if you have no armor.
 
-var globalconfig float fAutoHideBeltTime;         //SARGE: How long before the belt fades out. Set to zero to disable.
-var private float fAutoHideBeltTimeCountdown;   //SARGE: The countdown timer left before our belt disappears.
-
 var const localized string msgSaveName;
 var const localized string msgNewGamePlusString;
 var const localized String TooSick;
@@ -1088,6 +1085,9 @@ var localized string msgCreditsDeducted;
 
 //Allow custom seeds
 var globalconfig int iPresetSeed;
+
+//Always show the belt when selecting any slot, if belt fading is enabled.
+var globalconfig bool bMoreVisibleBeltFade;
 
 //////////END GMDX
 
@@ -1309,7 +1309,7 @@ exec function TogglePhotoMode()
 function SetPhotoMode(bool value)
 {
     bPhotoMode = value;
-    ResetAutoHideBeltTime();
+    ResetHUDFadeTimes();
     UpdatePhotoMode();
 }
 
@@ -1492,6 +1492,7 @@ function AssignSecondary(Inventory item, optional bool bMessage)
 
     RefreshChargedPickups();
     UpdateSecondaryDisplay();
+    ResetSecondaryFadeTimer();
 }
 
 // ----------------------------------------------------------------------
@@ -2496,27 +2497,55 @@ final function UpdateTimePlayed(float deltaTime)
 }
 
 // ----------------------------------------------------------------------
-// Update Belt Opacity Timer
+// Update HUD Opacity Timers
 // ----------------------------------------------------------------------
 
-function ResetAutoHideBeltTime()
+function ResetBeltFadeTimer(optional bool bExtraVisible)
 {
-    default.fAutoHideBeltTimeCountdown = fAutoHideBeltTime;
-    DebugMessage("Reset Belt Fade Timer: " $ default.fAutoHideBeltTimeCountdown);
+    //default.fAutoHideBeltTimeCountdown = fAutoHideBeltTime;
+    //default.fAutoFadeTimeCountdowns[fadeTag] = default.fAutoFadeTimes[fadeTag];
+    //DebugMessage("Reset Belt Fade Timer: ");
+    local DeusExRootWindow root;
+
+    if (bExtraVisible && !bMoreVisibleBeltFade)
+        return;
+
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None && root.hud.belt != None)
+        root.hud.belt.ResetHUDFadeTime();
+
 }
 
-function UpdateAutoHideBeltTime(float deltaTime)
+function ResetSecondaryFadeTimer()
 {
-    if (default.fAutoHideBeltTimeCountdown > 0)
-    {
-        default.fAutoHideBeltTimeCountdown -= deltaTime;
-        default.fAutoHideBeltTimeCountdown = FMAX(0.0,default.fAutoHideBeltTimeCountdown);
-    }
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None && root.hud.ammo2 != None)
+        root.hud.ammo2.ResetHUDFadeTime();
 }
 
-function float GetBeltOpacityTimer()
+function ResetAmmoFadeTimer()
 {
-    return default.fAutoHideBeltTimeCountdown;
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None && root.hud.ammo != None)
+        root.hud.ammo.ResetHUDFadeTime();
+}
+
+function ResetHealthFadeTimer()
+{
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None && root.hud.hit != None)
+        root.hud.hit.ResetHUDFadeTime();
+}
+
+function ResetHUDFadeTimes()
+{
+    ResetBeltFadeTimer();
+    ResetSecondaryFadeTimer();
+    ResetAmmoFadeTimer();
+    //ResetHealthFadeTimer();
 }
 
 // ----------------------------------------------------------------------
@@ -2872,7 +2901,6 @@ exec function LoadGame(int saveIndex)
         ToggleRadialAugMenu();
 	
     // Reset the FOV
-    ResetAutoHideBeltTime();
 	DesiredFOV = Default.DesiredFOV;
 	ClientTravel("?loadgame=" $ saveIndex, TRAVEL_Absolute, False);
 }
@@ -3251,9 +3279,6 @@ exec function StartNewGame(String startMap)
     //TODO: Make this an option
     //TODO: Move this to ResetPlayer, since this function is for loading maps
     SoundVolumeHackFix();
-    
-    //Un-fade the belt.
-    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -3293,9 +3318,6 @@ function StartTrainingMission()
 	DeleteSaveGameFiles();
 	bStartingNewGame = True;
 	Level.Game.SendPlayer(Self, "00_Training");
-    
-    //Un-fade the belt.
-    ResetAutoHideBeltTime();
 }
 
 // ----------------------------------------------------------------------
@@ -4700,7 +4722,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     {
         to.beltPos = beltSlot;
         to.bInObjectBelt = true;
-        ResetAutoHideBeltTime();
+        ResetBeltFadeTimer();
 
         //Remove the old item from the slot
         if (from != None)
@@ -4855,8 +4877,9 @@ exec function SwitchAmmo()
             DeusExWeapon(inHandPending).CycleAmmo();
             /*
             if (inHandPending.bInObjectBelt)
-                ResetAutoHideBeltTime();
+                ResetBeltFadeTimer();
             */
+            ResetAmmoFadeTimer();
         }
     }
 
@@ -7534,10 +7557,6 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
-        //Update Belt Transparenct
-        UpdateAutoHideBeltTime(deltaTime);
-       
-
         //Update belt selection timer
         if (fBlockBeltSelection > 0)
             fBlockBeltSelection -= deltaTime;
@@ -7690,9 +7709,6 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update Belt Transparenct
-        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -7905,9 +7921,6 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update Belt Transparenct
-        UpdateAutoHideBeltTime(deltaTime);
         
 		Super.PlayerTick(deltaTime);
 	}
@@ -8681,6 +8694,8 @@ exec function UseSecondary(optional bool bRelease)
         }
         return;
     }
+        
+    ResetSecondaryFadeTimer();
 
     //Sarge: Now we check for ChargedPickup charge level
     if (assigned.IsA('ChargedPickup') && ChargedPickup(assigned).GetCurrentCharge() == 0)
@@ -9008,6 +9023,11 @@ exec function ParseLeftClick()
         else if (inHand.bActivatable)
             inHand.Activate();
 
+        //SARGE: Only refresh our HUD fading if we're attacking with the correct items.
+        if (inHand == primaryWeapon)
+            ResetAmmoFadeTimer();
+        else if (string(inHand.Class) == assignedWeapon.itemClass)
+            ResetSecondaryFadeTimer();
     }
 
     //Allow left-frobbing distant control panels with the Wireless Strength perk
@@ -9062,7 +9082,10 @@ exec function ParseLeftClick()
 
         //SARGE: Final option - select last weapon
         if (inHand == None && bLeftClickUnholster)
+        {
+            ResetBeltFadeTimer(true);
             SelectLastWeapon(false,!bSelectedOffBelt);
+        }
 	}
 }
 
@@ -9192,6 +9215,7 @@ exec function Holster()
     {
         bSelectedFromMainBeltSelection = true;
         SelectLastWeapon(false,!bSelectedOffBelt);
+        ResetBeltFadeTimer(true);
     }
 }
 
@@ -9392,6 +9416,7 @@ exec function ParseRightClick()
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
             bSelectedFromMainBeltSelection = true;
             SelectLastWeapon(false,!bSelectedOffBelt);
+            ResetBeltFadeTimer(true);
 		}
 		else if (inHand != None && (clickCountCyber >= 1 || iHolsterMode == 0))
 		{
@@ -10415,10 +10440,13 @@ function UpdateInHand()
                     beltLast = selectedItem.beltPos;
                 
                 bSelectedOffBelt = !selectedItem.bInObjectBelt && bAllowOffBeltSelection;
+               
+                if (primaryWeapon != inHandPending)
+                    ResetAmmoFadeTimer();
 
                 //if (selectedItem.bInObjectBelt || selectedItem.IsA('DeusExWeapon'))
                 //clientMessage("Update Primary to: " $ selectedItem);
-                    primaryWeapon = selectedItem;
+                primaryWeapon = selectedItem;
                 bBeltSkipNextPrimary = false;
             }
 
@@ -11239,8 +11267,11 @@ exec function ReloadWeapon()
 
         full = W.AmmoLeftInClip() >= W.ReloadCount;
         hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
-        if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
+        if (W != None && W.ReloadCount > 0 && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
+        {
+            ResetAmmoFadeTimer();
             W.ReloadAmmo();
+        }
 
     }
     UpdateCrosshair();
@@ -13612,6 +13643,7 @@ exec function ActivateBelt(int objectNum)
 			{
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
+                ResetBeltFadeTimer();
 			}
 
             //If we're not in IW belt mode, set our IW belt to match our current belt.
@@ -13621,7 +13653,7 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
             NewWeaponSelected();
-            ResetAutoHideBeltTime();
+            ResetBeltFadeTimer();
 		}
 	}
 }
@@ -13682,7 +13714,7 @@ exec function NextBeltItem()
         return;
 	}
             
-    ResetAutoHideBeltTime();
+    ResetBeltFadeTimer();
 
    if (iAlternateToolbelt == 0)
    {
@@ -13817,7 +13849,7 @@ exec function PrevBeltItem()
         return;
 	}
             
-    ResetAutoHideBeltTime();
+    ResetBeltFadeTimer();
 
    if (iAlternateToolbelt == 0)
    {
@@ -14580,9 +14612,6 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update Belt Transparenct
-        UpdateAutoHideBeltTime(deltaTime);
 	}
 
 	function LoopHeadConvoAnim()
@@ -21204,5 +21233,5 @@ defaultproperties
      HungryStr="(Hungry)"
      StarvingStr="(Starving)"
      iPresetSeed=-1
-     fAutoHideBeltTime=0
+     bMoreVisibleBeltFade=true
 }

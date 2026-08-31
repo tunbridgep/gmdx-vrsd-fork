@@ -22,6 +22,11 @@ var Color colBorder;
 var Color colHeaderText;
 var Color colText;
 
+//SARGE: HUD Object Fading
+var config float fAutoFadeTime;        //SARGE: How long before the HUD elements fade out. Set to zero to disable.
+var private travel float fAutoFadeTimeCountdown;    //SARGE: The countdown timer left before our HUD element disappears.
+var const bool bFadeEnabled;                 //SARGE: Global sanity check for enabling fading.
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -35,15 +40,23 @@ event InitWindow()
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
 
+    if (bFadeEnabled)
+        bTickEnabled = true;
+
 	StyleChanged();
 }
 
 // ----------------------------------------------------------------------
 // DrawWindow()
+// SARGE: Don't draw the belt at all if we've faded it out completely
+// This is a hack because the IsVisible() function is native
 // ----------------------------------------------------------------------
 
 event DrawWindow(GC gc)
 {
+    if (GetOpacity() == 0.0)
+        return;
+
 	// First draw the background then the border
 	DrawBackground(gc);
 	DrawBorder(gc);
@@ -83,7 +96,7 @@ event StyleChanged()
 
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
-	coLBackground = theme.GetColorFromName('HUDColor_Background');
+	colBackground = theme.GetColorFromName('HUDColor_Background');
 	colBorder     = theme.GetColorFromName('HUDColor_Borders');
 	colText       = theme.GetColorFromName('HUDColor_NormalText');
 	colHeaderText = theme.GetColorFromName('HUDColor_HeaderText');
@@ -99,6 +112,8 @@ event StyleChanged()
 		backgroundDrawStyle = DSTY_Translucent;
 	else
 		backgroundDrawStyle = DSTY_Masked;
+
+    ResetHUDFadeTime();
 }
 
 // ----------------------------------------------------------------------
@@ -109,6 +124,72 @@ function SetVisibility( bool bNewVisibility )                                   
 {
 	Show( bNewVisibility );
 }
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// Fade Time Stuff
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+function ResetHUDFadeTime()
+{
+    fAutoFadeTimeCountdown = default.fAutoFadeTime;
+}
+
+function Tick(float deltaTime)
+{
+    fAutoFadeTimeCountdown = FMAX(0.0,fAutoFadeTimeCountdown - deltaTime);
+}
+
+// ----------------------------------------------------------------------
+// GetOpacity()
+// SARGE: Allow fading HUD panels
+// ----------------------------------------------------------------------
+
+//Overwrite this to mess with fade times
+function float GetHUDFadeTime()
+{
+    return fAutoFadeTimeCountdown;
+}
+
+//Overwrite this to mess with fade enabling
+function bool AllowFade()
+{
+    return bFadeEnabled && default.fAutoFadeTime > 0;
+}
+
+function float GetOpacity()
+{
+    local float opacity;
+    local float timer;
+	
+    opacity = 1.0;
+
+    timer = GetHUDFadeTime();
+    if (AllowFade() && timer < 2.0)
+    {
+        opacity = timer * 0.5;
+        opacity = FMIN(1.0,opacity);
+        opacity = FMAX(0.0,opacity);
+    }
+
+    return opacity;
+}
+
+function Color GetColorWithOpacity(Color c)
+{
+    local float opacity;
+
+    opacity = GetOpacity();
+    c.r = c.r * opacity;
+    c.g = c.g * opacity;
+    c.b = c.b * opacity;
+    c.a = c.a * opacity;
+
+    return c;
+}
+
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
