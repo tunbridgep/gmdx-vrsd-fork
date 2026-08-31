@@ -266,7 +266,7 @@ function CreateChoices()
 
     if (lstItems == None)
     {
-        log("lstItems is none!");
+        //log("lstItems is none!");
 	    CreateOptionsList();
     }
 
