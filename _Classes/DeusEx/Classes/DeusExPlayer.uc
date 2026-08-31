@@ -14229,6 +14229,20 @@ exec function OpenSesame()
 }
 
 // ----------------------------------------------------------------------
+// OpenGMDXMenu()
+//
+// Displays the hidden GMDX Menu
+// ----------------------------------------------------------------------
+
+exec function OpenGMDXMenu()
+{
+	if (!bCheatsEnabled)
+		return;
+
+	InvokeUIScreen(Class'MenuScreenGMDXOptionsHidden');
+}
+
+// ----------------------------------------------------------------------
 // Legend()
 //
 // Displays the "Behind The Curtain" menu

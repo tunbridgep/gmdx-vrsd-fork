@@ -5,15 +5,6 @@ class PerkQuickHack extends Perk;
 
 var localized string strHacked;
 
-var globalconfig bool bQuickHackEnabled;
-
-//SARGE: All this work....for nothing...
-//...just kill me already
-function bool IsVisible()
-{
-    return !bHidden && bQuickHackEnabled;
-}
-
 //SARGE: Determines if an actor can be quick hacked.
 //This works by checking the individual types.
 static function bool CanBeQuickHacked(DeusExPlayer P,Actor target)
@@ -75,4 +66,5 @@ defaultproperties
     PerkValue=5
     PerkValueDisplay=Standard
     strHacked="Quick-Hack Initialized..."
+	bPerkEnabled=false
 }
