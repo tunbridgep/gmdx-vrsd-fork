@@ -108,7 +108,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 
     //General Perks
 	AddPerk(Class'DeusEx.PerkVigilantRecycler');
-  AddPerk(Class'DeusEx.PerkTacticalRigging');
+    AddPerk(Class'DeusEx.PerkTacticalRigging');
 	AddPerk(Class'DeusEx.PerkFirefighter');
 	AddPerk(Class'DeusEx.PerkLawfare');
 	AddPerk(Class'DeusEx.PerkGlutton');
@@ -138,12 +138,18 @@ function AddPerk(class<Perk> perk)
         if (obtainedPerks[i] == string(Perk.Name))
         {
             perkInstance.bPerkObtained = true;
-            perkInstance.OnMapLoad();
-            perkInstance.OnMapLoadAndPurchase();
+            InitPerkObtained(perkInstance);
         }
     }
 
     numPerks++;
+}
+
+//SARGE: If we actually have a perk, then we need to call it's init functions
+function InitPerkObtained(Perk perkInstance)
+{
+    perkInstance.OnMapLoad();
+    perkInstance.OnMapLoadAndPurchase();
 }
 
 // ----------------------------------------------------------------------
