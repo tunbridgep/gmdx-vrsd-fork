@@ -3650,10 +3650,16 @@ function DisplayWeaponBlood(bool overlay)
         if (multiskins[i] != Texture'PinkMaskTex' && (i != muzzleslot || bHasSilencer || !bHasMuzzleFlash))
         {
             if (multiskins[i] == handstex && !bBloodOnHands)
+            {
+                multiskins[i] = Texture'PinkMaskTex';
                 continue;
+            }
             
             if (multiskins[i] != handstex && !bBloodOnWeapon)
+            {
+                multiskins[i] = Texture'PinkMaskTex';
                 continue;
+            }
 
             multiskins[i] = class'HDTPLoader'.static.GetTexture2(BloodTextures[i].tex1,BloodTextures[i].tex2,IsHDTP());
         }
