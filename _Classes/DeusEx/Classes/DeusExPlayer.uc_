@@ -544,7 +544,7 @@ var travel bool bRandomizeModsBallistics;
 var travel bool bRandomizeModsAttachments;*/
 var travel bool bRandomizeCrates;
 var travel bool bRandomizeMods;
-var travel bool bRandomizeAugs;
+var travel int iAugShuffleMode;
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;

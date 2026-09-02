@@ -25,6 +25,7 @@
 <P>NG+ - Discord server organization and community management.
 <P>Kisskills - Fixed Combat Knife textures.
 <P>PancakeTaicho - Collectible Pickup and other sound effects.
+<P>Ivan Kenobi - semi-random aug shuffle modifier
 <P>
 <B>Testing and QA
 <P>Julian, Georg, the1truepickaxe, Xriborg, domitomi,
