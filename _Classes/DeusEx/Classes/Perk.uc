@@ -29,7 +29,8 @@ var const EPerkValueDisplay PerkValueDisplay;         // SARGE: How to display p
 var travel DeusExPlayer PerkOwner; // Trash: Who's the perk's owner?
 var travel bool bPerkObtained;     // Trash: Do you own this perk?
 
-var travel bool bHidden;           //SARGE: Allow hiding perks for whatever reason...
+var config bool bPerkEnabled;            //SARGE: Allow every perk in the game to be enabled/disabled in the config file.
+var travel bool bHidden;           //SARGE: Allow hiding perks for whatever reason... (independent of config)
 
 // ----------------------------------------------------------------------
 // GetPerkIcon()
@@ -62,7 +63,7 @@ function bool IsPurchasable() // Trash: Can you purchase this perk?
 
 function bool IsVisible() //SARGE: Allow overwriting conditions for displaying perks in the menu.
 {
-    return !bHidden;
+    return !bHidden && bPerkEnabled;
 }
 
 // ----------------------------------------------------------------------
@@ -103,4 +104,5 @@ defaultproperties
      PerkValue=1.0
      PerkValueDisplay=Percentage
      bPerkObtained=false
+     bPerkEnabled=true
 }

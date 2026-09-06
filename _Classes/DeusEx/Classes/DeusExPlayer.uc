@@ -836,6 +836,7 @@ var globalconfig bool bConversationShowCredits;                 //SARGE: Show cr
 
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
+var Actor QuickHackTarget;
 
 var bool bFakeDeath;                                            //SARGE: Fixes a rather nasty bug when dying and being transferred to the MJ12 Prison facility. Also disables quick loading.
 
@@ -5679,7 +5680,7 @@ function HighlightCenterObject()
 	local int skillz;
 	local float shakeTime, shakeRoll, shakeVert;
     local float rnd;
-    local PerkWirelessStrength perk;
+    local Perk perk;
     local HackableDevices hackable;
     local bool bCheckLOSType;
 
@@ -5765,33 +5766,34 @@ function HighlightCenterObject()
 		}
 		FrobTarget = smallestTarget;
         HackTarget = None;
+        QuickHackTarget = None;
 
+        if (PerkManager != None)
+            perk = PerkManager.GetPerkWithClass(class'PerkWirelessStrength');
+       
         //SARGE: If we have no frobtarget, do the special check for the wireless strength perk
-        if (FrobTarget == None)
+        if (FrobTarget == None && perk != None)
         {
-            perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
-            if (perk != None && perk.bPerkObtained && GetInventoryCount('Multitool') > 0)
+            EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
+            EndTrace.Z += BaseEyeHeight;
+
+            foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
             {
-                EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
-                EndTrace.Z += BaseEyeHeight;
+                //SARGE: Ensure we can actually see what we're trying to frob
+                if (!LineOfSightTo(target))
+                    continue;
 
-                foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
+                //Check QuickHack
+                if (class'PerkQuickHack'.static.CanBeQuickHacked(self,target))
+                    QuickHackTarget = target;
+
+                //Check Wireless Strength
+                if (class'PerkWirelessStrength'.static.WirelessStrengthCheck(self,target))
                 {
-                    if (target.IsA('HackableDevices'))
-                    {
-                        //SARGE: Ensure we can actually see what we're trying to frob
-                        if (!LineOfSightTo(target))
-                            continue;
-
-                        hackable = HackableDevices(target);
-                        if (hackable != None && hackable.bHackable && hackable.hackStrength > 0.0)
-                        {
-                            HackTarget = HackableDevices(target);
-                            if (inHand != None && inHand.IsA('Multitool'))
-                                FrobTarget = target;
-                            break; //Just keep it simple and only get the first one, they usually never overlap.
-                        }
-                    }
+                    HackTarget = HackableDevices(target);
+                    if (inHand != None && inHand.IsA('Multitool'))
+                        FrobTarget = target;
+                    break; //Just keep it simple and only get the first one, they usually never overlap.
                 }
             }
         }
@@ -11274,6 +11276,15 @@ exec function ReloadWeapon()
         }
 
     }
+    else
+    {
+        if (QuickHackTarget != None)
+        {
+            Energy -= PerkManager.GetPerkWithClass(class'PerkQuickHack').PerkValue;
+            Energy = FMAX(0.0,Energy);
+            class'PerkQuickHack'.static.PerformQuickHack(self,QuickHackTarget);
+        }
+    }
     UpdateCrosshair();
 }
 
@@ -14245,6 +14256,20 @@ exec function OpenSesame()
 			}
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// OpenGMDXMenu()
+//
+// Displays the hidden GMDX Menu
+// ----------------------------------------------------------------------
+
+exec function OpenGMDXMenu()
+{
+	if (!bCheatsEnabled)
+		return;
+
+	InvokeUIScreen(Class'MenuScreenGMDXOptionsHidden');
 }
 
 // ----------------------------------------------------------------------
