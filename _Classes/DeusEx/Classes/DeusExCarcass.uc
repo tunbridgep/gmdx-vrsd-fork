@@ -711,12 +711,8 @@ function Tick(float deltaSeconds)
         //If we shouldn't be created, abort
         if (!ShouldCreate(DeusExPlayer(GetPlayerPawn())))
             Destroy();
-
         else if (bEmitCarcass)
-		{
-			//AIStartEvent('Carcass', EAITYPE_Visual);
-			AIStartEvent('WeaponDrawn', EAITYPE_Visual);
-		}
+			AIStartEvent('Carcass', EAITYPE_Visual);
 
 	} else
 	  if (bDblClickStart)
@@ -2016,10 +2012,27 @@ auto state Dead
 	}
 
 Begin:
+	if (bNotFirstFall && !bHidden)
+	{
+		if(bNotDead) //Ygll: add a different sound for dead carcass
+			PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+		else
+			PlaySound(sound'FleshHit1', SLOT_None,,,1024);
+		//SARGE: Fix the broken sound propagation
+		class'PawnUtils'.static.WakeUpAI(self,512,false);
+		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+	}
+	else
+	{
+		//SARGE TODO: Don't bother fixing sound propagation here as it's so short???
+		//SARGE: Fix the broken sound propagation
+		class'PawnUtils'.static.WakeUpAI(self,96,false);
+		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+	}
+
 	while (Physics == PHYS_Falling)
 	{
-
-        Sleep(0.1);      //CyberP: was 1.0- took a while to handleLanding() at times, //which was problematic for a few reasons.
+        Sleep(0.05);      //CyberP: was 1.0- took a while to handleLanding() at times, //which was problematic for a few reasons. //Ygll: change the value of sleeping time as 0.05 is still good to get all correct data
 	}
 	HandleLanding();
 
@@ -2048,21 +2061,6 @@ function SetupCarcass(bool bAlert)
             // alert NPCs that I'm really disgusting
             if (bEmitCarcass)
                 AIStartEvent('Carcass', EAITYPE_Visual);
-
-            if (bNotFirstFall && !bHidden)
-            {
-                PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-                //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,512,false);
-                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
-            }
-            else
-            {
-                //SARGE TODO: Don't bother fixing sound propagation here as it's so short???
-                //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,96,false);
-                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
-            }
         }
 }
 
@@ -2175,6 +2173,8 @@ function KillUnconscious(optional DeusExPlayer playerKiller)                    
         killerAlliance = playerKiller.Alliance;
         playerKiller.killerCount++;
     }
+
+	PlaySound(sound'FleshHit2', SLOT_None,,,1024); //Ygll: Add a sound when killing an unconscious carcass
 
     bNotDead = false;
     UpdateName();
