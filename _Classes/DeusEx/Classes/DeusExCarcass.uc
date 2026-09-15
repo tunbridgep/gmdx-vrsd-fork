@@ -308,7 +308,7 @@ function InitFor(Actor Other)
             savedName = ScriptedPawn(Other).UnfamiliarName;
 
         //SARGE: All corpses can be reacted to
-        if (!Other.IsA('Animal'))
+        if (!Other.IsA('Animal') || Other.IsA('Doberman'))
             bEmitCarcass = true;
 
         //SARGE: Check if we have a linked weapon,
@@ -364,12 +364,12 @@ function InitFor(Actor Other)
 		if (bAnimalCarcass && !bNotDead)
 		{
 		    MaxDamage      = Mass; //CyberP: less carc health for animals
-			if (FRand() < 0.2 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
+			if (FRand() < 0.4 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
 				bGenerateFlies = true;
 		}
 		else if (!Other.IsA('Robot') && !bNotDead)
 		{
-			if (FRand() < 0.1 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
+			if (FRand() < 0.3 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
 				bGenerateFlies = true;
 		}
 
@@ -2012,28 +2012,11 @@ auto state Dead
 	}
 
 Begin:
-	if (bNotFirstFall && !bHidden)
-	{
-		if(bNotDead) //Ygll: add a different sound for dead carcass
-			PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-		else
-			PlaySound(sound'FleshHit1', SLOT_None,,,1024);
-		//SARGE: Fix the broken sound propagation
-		class'PawnUtils'.static.WakeUpAI(self,512,false);
-		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
-	}
-	else
-	{
-		//SARGE TODO: Don't bother fixing sound propagation here as it's so short???
-		//SARGE: Fix the broken sound propagation
-		class'PawnUtils'.static.WakeUpAI(self,96,false);
-		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
-	}
-
 	while (Physics == PHYS_Falling)
 	{
         Sleep(0.05);      //CyberP: was 1.0- took a while to handleLanding() at times, //which was problematic for a few reasons. //Ygll: change the value of sleeping time as 0.05 is still good to get all correct data
 	}
+
 	HandleLanding();
 
 }
@@ -2121,6 +2104,21 @@ function Landed(vector HitNormal)
     local DeusExPlayer player;
     super.Landed(HitNormal);
     player = DeusExPlayer(GetPlayerPawn());
+
+	if (bNotFirstFall && !bHidden)
+	{
+		PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+		//SARGE: Fix the broken sound propagation
+		class'PawnUtils'.static.WakeUpAI(self,512,false);
+		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+	}
+	else
+	{
+		//SARGE TODO: Don't bother fixing sound propagation here as it's so short???
+		//SARGE: Fix the broken sound propagation
+		class'PawnUtils'.static.WakeUpAI(self,96,false);
+		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+	}
 
     if (player == None)
         return;
