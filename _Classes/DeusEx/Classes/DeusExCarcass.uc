@@ -364,12 +364,12 @@ function InitFor(Actor Other)
 		if (bAnimalCarcass && !bNotDead)
 		{
 		    MaxDamage      = Mass; //CyberP: less carc health for animals
-			if (FRand() < 0.4 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
+			if (FRand() < 0.2 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
 				bGenerateFlies = true;
 		}
 		else if (!Other.IsA('Robot') && !bNotDead)
 		{
-			if (FRand() < 0.3 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
+			if (FRand() < 0.1 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
 				bGenerateFlies = true;
 		}
 
