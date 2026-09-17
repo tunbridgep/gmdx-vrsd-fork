@@ -1089,6 +1089,10 @@ var globalconfig int iPresetSeed;
 //Always show the belt when selecting any slot, if belt fading is enabled.
 var globalconfig bool bMoreVisibleBeltFade;
 
+//Ygll: New var to handle wet effect on player when he was being into water
+var() float wetRate;
+var() float waterDropCounter;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -4199,6 +4203,56 @@ function Bleed(float deltaTime)
 	{
 		dropCounter = 0;
 		bleedRate   = 0;
+	}
+}
+
+//Ygll: New function to handle the simulation of water drop on player after swimming (forked from bleed function)
+function IsWet(float deltaTime)
+{
+	local float  dropPeriod;
+	local float  adjustedRate;
+	local Vector waterVector;
+	local Vector vec;
+	local Rotator SpawnRotation;
+	local WaterDrop droplet;
+
+	// Copied from ScriptedPawn::Tick()
+	wetRate = FClamp(wetRate, 0.0, 15.0);
+	if (Human(Self).wetRate > 0)
+	{
+		adjustedRate = 1;
+		dropPeriod = adjustedRate / FClamp(VSize(Velocity)/512.0, 5, 10);
+		waterDropCounter += deltaTime;
+		while (waterDropCounter >= dropPeriod)
+		{
+			vec = 0.1*Velocity;
+			vec.Z = 0;
+
+			SpawnRotation = rot(0,0,0);
+			SpawnRotation.Pitch = 49152;
+
+			WaterVector.X = FClamp(FRand(), 0.15, 1.0) * ((Rand(2) * 2) - 1) * CollisionRadius;
+			WaterVector.Y = FClamp(FRand(), 0.15, 1.0) * ((Rand(2) * 2) - 1) * CollisionRadius;
+			WaterVector.Z = FClamp(FRand(), 0.15, 1.0) * ((Rand(2) * 2) - 1) * CollisionHeight * 0.5;
+
+			if (VSize(Velocity) > 2)
+				droplet = spawn(Class'WaterDrop',Self,,waterVector+Location,rotator(Velocity-vec));
+			else
+				droplet = spawn(Class'WaterDrop',Self,,waterVector+Location, SpawnRotation);
+
+			if (droplet != None)
+			{
+				droplet.Instigator = Self; //Ygll: Will be used to correctly calculate the velocity of a droplet when moving.
+				droplet.Velocity += Velocity / 2;
+			}
+			waterDropCounter -= dropPeriod;
+		}
+		wetRate -= deltaTime;
+	}
+	if (wetRate <= 0)
+	{
+		wetRate = 0;
+		waterDropCounter = 0;
 	}
 }
 
@@ -7342,8 +7396,8 @@ state PlayerWalking
 
 	function ZoneChange(ZoneInfo NewZone)
 	{
-	local vector loc;
-    local int i;
+		local vector loc;
+		local int i;
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 			{
@@ -7359,31 +7413,38 @@ state PlayerWalking
 
 			if (Velocity.Z < -440)  //CyberP: effects for jumping in water from height.
 			{
-			PlaySound(sound'SplashLarge', SLOT_Pain);
-            //SARGE: Disabled as we already have a water zone change in HeadZoneChange
-            //ClientFlash(12,vect(160,200,255));
-			for (i=0;i<38;i++)
-			{
-			    loc = Location + VRand() * 35;
-		     	loc.Z = Location.Z + FRand();
-			    loc += Vector(ViewRotation) * CollisionRadius * 1.02;
-			    loc.Z -= CollisionHeight + FRand();
-				Spawn(class'AirBubble', Self,, loc);
-
-			}
-	       if (inHand != none && (inHand.IsA('NanoKeyRing') || inHand.IsA('DeusExPickup')))
-          	{
-         	}
-	        else
-	        {
-	          RecoilTime=default.RecoilTime;
-		      RecoilShake.Z-=lerp(min(Abs(Velocity.Z),4.0*JumpZ)/(4.0*JumpZ),0,14.0); //CyberP: 7
-		      RecoilShake.Y-=lerp(min(Abs(Velocity.Z),4.0*JumpZ)/(4.0*JumpZ),0,6.0);
-		      RecoilShaker(vect(6,8,18));
-	          }
+				PlaySound(sound'SplashLarge', SLOT_Pain);
+				//SARGE: Disabled as we already have a water zone change in HeadZoneChange
+				//ClientFlash(12,vect(160,200,255));
+				for (i=0;i<38;i++)
+				{
+					loc = Location + VRand() * 35;
+					loc.Z = Location.Z + FRand();
+					loc += Vector(ViewRotation) * CollisionRadius * 1.02;
+					loc.Z -= CollisionHeight + FRand();
+					Spawn(class'AirBubble', Self,, loc);
+				}
+				if (inHand != none && (!inHand.IsA('NanoKeyRing') && !inHand.IsA('DeusExPickup')))
+				{
+				  RecoilTime=default.RecoilTime;
+				  RecoilShake.Z-=lerp(min(Abs(Velocity.Z),4.0*JumpZ)/(4.0*JumpZ),0,14.0); //CyberP: 7
+				  RecoilShake.Y-=lerp(min(Abs(Velocity.Z),4.0*JumpZ)/(4.0*JumpZ),0,6.0);
+				  RecoilShaker(vect(6,8,18));
+				}
 	        }
 	        else
-	           PlaySound(sound'SplashMedium', SLOT_Pain);
+			{
+				PlaySound(sound'SplashMedium', SLOT_Pain);
+				for (i=0;i<18;i++)
+				{
+					loc = Location + VRand() * 35;
+					loc.Z = Location.Z + FRand();
+					loc += Vector(ViewRotation) * CollisionRadius * 1.02;
+					loc.Z -= CollisionHeight + FRand();
+					Spawn(class'AirBubble', Self,, loc);
+				}
+			}
+
             Super.ZoneChange(NewZone);
          }
 	}
@@ -7513,6 +7574,7 @@ state PlayerWalking
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
+		IsWet(deltaTime);
 		HighlightCenterObject();
         ReactToGunsPointed();       //SARGE: Added.
 
@@ -7693,6 +7755,8 @@ state PlayerFlying
 
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
+		Bleed(deltaTime);
+		IsWet(deltaTime);
 		HighlightCenterObject();
         ReactToGunsPointed();       //SARGE: Added.
 	    // DEUS_EX AMSD For multiplayer...
@@ -7854,6 +7918,7 @@ state PlayerSwimming
 		RecoilEffectTick(deltaTime);
 
 		DrugEffects(deltaTime);
+		Bleed(deltaTime);
 		HighlightCenterObject();
         ReactToGunsPointed();       //SARGE: Added.
 	  // DEUS_EX AMSD For multiplayer...
@@ -7914,6 +7979,10 @@ state PlayerSwimming
 				Spawn(class'AirBubble', Self,, loc);
 			}
 		}
+
+		wetRate += deltaTime * 3.0;
+		if (wetRate >= 20.0)
+			wetRate = 20.0;
 
 		// handle poison
 	  //DEUS_EX AMSD Now handled in multiplayertick
@@ -8325,6 +8394,8 @@ state Interpolating
 	event PlayerTick(float deltaTime)
 	{
 		UpdateInHand();
+		Bleed(deltaTime);
+		IsWet(deltaTime);
 		ShowHud(False);
 	}
 
@@ -8393,6 +8464,8 @@ state Paralyzed
 		UpdateInHand();
 		ShowHud(False);
 		ViewFlash(deltaTime);
+		Bleed(deltaTime);
+		IsWet(deltaTime);
 	}
 
 Begin:
@@ -14515,6 +14588,7 @@ ignores SeePlayer, HearNoise, Bump;
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
+		IsWet(deltaTime);
 		MaintainEnergy(deltaTime);
         CheckAugHum();
 
@@ -17856,6 +17930,8 @@ function ClientDeath()
 
 	bleedrate = 0;
 	dropCounter = 0;
+	wetRate = 0.0;
+	waterDropCounter = 0.0;
 
 }
 
@@ -21234,4 +21310,6 @@ defaultproperties
      StarvingStr="(Starving)"
      iPresetSeed=-1
      bMoreVisibleBeltFade=true
+     wetRate=0.000000
+     waterDropCounter=0.000000
 }
