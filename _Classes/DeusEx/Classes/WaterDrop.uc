@@ -7,19 +7,21 @@ auto state Flying
 {
 	function HitWall(vector HitNormal, actor Wall)
 	{
+		Spawn(class'WaterPoolTiny',,, Location, Rotator(HitNormal));
 		Destroy();
 	}
 
 	function BeginState()
 	{
+		if ((Region.Zone != None) && (Region.Zone.bWaterZone))
+			Destroy();
+
 		Velocity = VRand() * 1.1;
 		if (Instigator != None)
 		{
 			Velocity += Instigator.Velocity / 2;
 		}
 		DrawScale = 0.8 + FRand();
-		if ((Region.Zone != None) && (Region.Zone.bWaterZone))
-			Destroy();
 	}
 
 	simulated singular function ZoneChange( ZoneInfo NewZone )
@@ -35,7 +37,10 @@ auto state Flying
 function Tick(float deltaTime)
 {
 	if (Velocity == Vect(0,0,0))
+	{
+		Spawn(class'WaterPoolTiny',,, Location, rot(16384,0,0));
 		Destroy();
+	}
 
 	if ((Region.Zone != None) && (Region.Zone.bWaterZone))
 		Destroy();

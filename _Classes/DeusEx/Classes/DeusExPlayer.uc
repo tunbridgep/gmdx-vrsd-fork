@@ -4215,12 +4215,29 @@ function IsWet(float deltaTime)
 	local Vector vec;
 	local Rotator SpawnRotation;
 	local WaterDrop droplet;
+	/*local PrecipitationInfoBase PI;
+
+	//Ygll: Add wet rate if player is on a precipitation zone
+	//Ygll: Put wet rate here because the function is called in all important tick player
+	if(iWeatherControl > 0)
+	{
+		PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
+		if(PI != None && PI.bSplashyFeet)
+		{
+			adjustedRate = 0.5;
+			wetRate += 0.4;
+			if (wetRate >= 20.0)
+				wetRate = 20.0;
+		}
+	}
+	else //Ygll adjusted rate for swimming wet rate
+		adjustedRate = 1.0;*/
 
 	// Copied from ScriptedPawn::Tick()
 	wetRate = FClamp(wetRate, 0.0, 15.0);
-	if (Human(Self).wetRate > 0)
+	if (wetRate > 0)
 	{
-		adjustedRate = 1;
+		adjustedRate = 1.0;
 		dropPeriod = adjustedRate / FClamp(VSize(Velocity)/512.0, 5, 10);
 		waterDropCounter += deltaTime;
 		while (waterDropCounter >= dropPeriod)
@@ -5420,7 +5437,7 @@ simulated function PlayFootStep()
     
     //SARGE: Precipitation Stuff
     local float RainstepVolMod;
-    local PrecipitationInfoBase PI;
+    //local PrecipitationInfoBase PI; //Ygll: not currently used
     local int bRainStep;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
