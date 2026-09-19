@@ -6927,6 +6927,22 @@ function bool IsCrippled()
     return (HealthLegLeft < 1 && HealthLegRight < 1);
 }
 
+//Ygll: New function to handle air bubble call when jumping into water
+function CreateAirBubbles(int number)
+{
+	local Vector loc;
+	local int i;
+
+	for (i = 0; i < number; i++)
+	{
+		loc = Location + VRand() * 35;
+		loc.Z = Location.Z + FRand();
+		loc += Vector(ViewRotation) * CollisionRadius * 1.02;
+		loc.Z -= CollisionHeight + FRand();
+		Spawn(class'AirBubble', Self,, loc);
+	}
+}
+
 // ----------------------------------------------------------------------
 // state PlayerWalking
 // ----------------------------------------------------------------------
@@ -7413,8 +7429,6 @@ state PlayerWalking
 
 	function ZoneChange(ZoneInfo NewZone)
 	{
-		local vector loc;
-		local int i;
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 			{
@@ -7433,14 +7447,7 @@ state PlayerWalking
 				PlaySound(sound'SplashLarge', SLOT_Pain);
 				//SARGE: Disabled as we already have a water zone change in HeadZoneChange
 				//ClientFlash(12,vect(160,200,255));
-				for (i=0;i<38;i++)
-				{
-					loc = Location + VRand() * 35;
-					loc.Z = Location.Z + FRand();
-					loc += Vector(ViewRotation) * CollisionRadius * 1.02;
-					loc.Z -= CollisionHeight + FRand();
-					Spawn(class'AirBubble', Self,, loc);
-				}
+				CreateAirBubbles(38);
 				if (inHand != none && (!inHand.IsA('NanoKeyRing') && !inHand.IsA('DeusExPickup')))
 				{
 				  RecoilTime=default.RecoilTime;
@@ -7452,14 +7459,7 @@ state PlayerWalking
 	        else
 			{
 				PlaySound(sound'SplashMedium', SLOT_Pain);
-				for (i=0;i<18;i++)
-				{
-					loc = Location + VRand() * 35;
-					loc.Z = Location.Z + FRand();
-					loc += Vector(ViewRotation) * CollisionRadius * 1.02;
-					loc.Z -= CollisionHeight + FRand();
-					Spawn(class'AirBubble', Self,, loc);
-				}
+				CreateAirBubbles(18);
 			}
 
             Super.ZoneChange(NewZone);
