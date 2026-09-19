@@ -4288,6 +4288,9 @@ simulated function PlaySelectiveFiring()
 	//local int animNum;
 	local float mod;
     local float hhspeed;
+	local DeusExPlayer player;
+
+	player = DeusExPlayer(Owner);
 
 /*	animNum = 0;
 
@@ -4332,10 +4335,10 @@ simulated function PlaySelectiveFiring()
 	if (Region.Zone.bWaterZone && ( (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW')) || IsA('WeaponMiniCrossbow') ) )
 		PlaySimSound(Sound'SplashSmall', SLOT_None, TransientSoundVolume, 2048);
 
-	if (( Level.NetMode == NM_Standalone ) || ( DeusExPlayer(Owner) == DeusExPlayer(GetPlayerPawn())) )
+	if (( Level.NetMode == NM_Standalone ) || ( player != None && player == DeusExPlayer(GetPlayerPawn())) )
 	{
-	    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AugmentationSystem != none)
-		   hhspeed = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
+	    if (player != None && player.AugmentationSystem != None)
+		   hhspeed = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
 			
         if (hhspeed < 1.0)
             hhspeed = 1.0;
@@ -4376,11 +4379,11 @@ simulated function PlaySelectiveFiring()
 		else if (bHandToHand && !bFakeHandToHand)
 		{
 
-            if (Owner.IsA('DeusExPlayer'))
+            if (player != None)
             {
-            	if (DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0)                 //RSD: Zyme gives its own +50% boost
+            	if (player.AddictionManager != None && player.AddictionManager.addictions[2].drugTimer > 0)                 //RSD: Zyme gives its own +50% boost
                 	hhspeed += 0.5;
-                if (DeusExPlayer(Owner).bStunted)                               //RSD: Halve melee speed if we're out of breath
+                if (player.bStunted)                               //RSD: Halve melee speed if we're out of breath
                 	hhspeed *= 0.5;
                	hhspeed *= attackSpeedMult;                                     //RSD: to differentiate melee weapon attack speeds, only used on crowbar (0.8 for 20% reduction)
            	}
@@ -4396,7 +4399,7 @@ simulated function PlaySelectiveFiring()
 	{
 		for ( aPawn = Level.PawnList; aPawn != None; aPawn = aPawn.nextPawn )
 		{
-			if ( aPawn.IsA('DeusExPlayer') && ( DeusExPlayer(Owner) != DeusExPlayer(aPawn) ) )
+			if ( DeusExPlayer(aPawn) != None && player != None && player != DeusExPlayer(aPawn) )
 			{
 				// If they can't see the weapon, don't bother
 				if ( DeusExPlayer(aPawn).FastTrace( DeusExPlayer(aPawn).Location, Location ))
