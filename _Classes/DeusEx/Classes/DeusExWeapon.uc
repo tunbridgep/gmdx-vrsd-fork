@@ -4328,6 +4328,10 @@ simulated function PlaySelectiveFiring()
 	//if(anim == '')
 	//	return;
 
+	//Ygll: Add new melee and crossbow underwater sound here as we can reach this code only if we are allowed to attack.
+	if (Region.Zone.bWaterZone && ( (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW')) || IsA('WeaponMiniCrossbow') ) )
+		PlaySimSound(Sound'SplashSmall', SLOT_None, TransientSoundVolume, 2048);
+
 	if (( Level.NetMode == NM_Standalone ) || ( DeusExPlayer(Owner) == DeusExPlayer(GetPlayerPawn())) )
 	{
 	    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AugmentationSystem != none)
