@@ -28,7 +28,16 @@ function BeginPlay()
     
     //better textures can cope with greater size variation -DDL
     //SARGE: Turns out the vanilla textures can cope too!
-    randomScale = FRand() * 0.12;
+    rnd = FRand();
+	if(rnd < 0.2) //Ygll minimum value we want to get some consistant range size
+		rnd = 0.2;
+
+	if (IsHDTP())
+		randomScale = rnd * 0.09;
+	else if (IsNewBlood())
+		randomScale = rnd * -0.30;
+	else //vanilla but bigger
+		randomScale = rnd * 0.05;
 
 	Super.BeginPlay();
 }
@@ -52,7 +61,7 @@ defaultproperties
 {
      MultiDecalLevel=2
      HDTPTexture="HDTPItems.Skins.HDTPFlatFXtex2"
-     HDTPDrawScale=0.025000
+     HDTPDrawScale=0.005000
      Texture=Texture'DeusExItems.Skins.FlatFXTex2'
-     DrawScale=0.450000
+     DrawScale=0.350000
 }

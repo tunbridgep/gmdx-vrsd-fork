@@ -19,7 +19,7 @@ function DoHDTP()
 	drawscale *= 1.0 + randomScale;
 
     if (class'DeusExPlayer'.default.bJohnWooSparks)
-        drawScale *= 1.5;
+        drawScale *= 1.55;
 
 	//if(!AttachDecal(32, vect(0.1,0.1,0)))
 	//	Destroy();
