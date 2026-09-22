@@ -433,7 +433,7 @@ var const float inertiaSpeed;                            //SARGE: How fast weapo
 var const Sound DeselectSound;
 
 //Ygll: new melee attack animation handler
-var int nextMeleeAttackAnim;
+var transient int nextMeleeAttackAnim;
 
 //END GMDX:
 
@@ -4242,23 +4242,26 @@ function PlayPostSelect()
 //	ClipCount = 0;
 }
 
-function Name SelectMeleeAttackAnim()
+function Name SelectMeleeAttackAnim(bool bRandom)
 {
 	local Name anim;
+	local float rnd;
+
+	rnd = FRand();
 
 	if(IsA('WeaponCombatKnife')) //Ygll: Only the Knife has 3 different animation, all other melee weapon got only 2
 	{
-		if(nextMeleeAttackAnim <= 1 || nextMeleeAttackAnim > 3) //Ygll: this test to handle error issue with nextMeleeAttackAnim values
+		if( (bRandom && rnd < 0.33) || (nextMeleeAttackAnim <= 1 || nextMeleeAttackAnim > 3) ) //Ygll: this test to handle error issue with nextMeleeAttackAnim values
 		{
 			anim = 'Attack';
 			nextMeleeAttackAnim = 2;
 		}
-		else if(nextMeleeAttackAnim == 2)
+		else if( (bRandom && rnd < 0.66) || nextMeleeAttackAnim == 2)
 		{
 			anim = 'Attack2';
 			nextMeleeAttackAnim = 3;
 		}
-		else if(nextMeleeAttackAnim == 3)
+		else if(bRandom || nextMeleeAttackAnim == 3)
 		{
 			anim = 'Attack3';
 			nextMeleeAttackAnim = 1;
@@ -4266,12 +4269,12 @@ function Name SelectMeleeAttackAnim()
 	}
 	else
 	{
-		if(nextMeleeAttackAnim <= 1 || nextMeleeAttackAnim > 2) //Ygll: this test to handle error issue with nextMeleeAttackAnim values
+		if( (bRandom && rnd < 0.5) || (nextMeleeAttackAnim <= 1 || nextMeleeAttackAnim > 2) ) //Ygll: this test to handle error issue with nextMeleeAttackAnim values
 		{
 			anim = 'Attack';  //Ygll: when there is only 2 animations, Attack and Attack2 are always the same
 			nextMeleeAttackAnim = 2;
 		}
-		else if(nextMeleeAttackAnim == 2)
+		else if(bRandom || nextMeleeAttackAnim == 2)
 		{
 			anim = 'Attack3';
 			nextMeleeAttackAnim = 1;
@@ -4317,7 +4320,7 @@ simulated function PlaySelectiveFiring()
 		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
             anim = 'Shoot';
 		else
-			anim = SelectMeleeAttackAnim();
+			anim = SelectMeleeAttackAnim(player != None && !player.bSequenceMeleeAttack);
 
 		if (IsA('WeaponNanoSword'))
 		{
@@ -4332,7 +4335,7 @@ simulated function PlaySelectiveFiring()
 	//	return;
 
 	//Ygll: Add new melee and crossbow underwater sound here as we can reach this code only if we are allowed to attack.
-	if (Region.Zone.bWaterZone && ( (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW')) || IsA('WeaponMiniCrossbow') ) )
+	if (Region.Zone.bWaterZone && ( (bHandToHand && !bFakeHandToHand ) || IsA('WeaponMiniCrossbow') ) )
 		PlaySimSound(Sound'SplashSmall', SLOT_None, TransientSoundVolume, 2048);
 
 	if (( Level.NetMode == NM_Standalone ) || ( player != None && player == DeusExPlayer(GetPlayerPawn())) )
