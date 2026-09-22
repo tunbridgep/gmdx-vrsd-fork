@@ -7,6 +7,7 @@ New Features:
     - Enemies deal more damage and the player deals less damage with each NG+ Cycle.
     - New enemies are placed in NG+ cycles, and some items or objects are removed.
     - A Datacube has been added to Liberty Island, allowing you to go to the next unlocked NG+ Cycle.
+- Added a Semi-Random option to Aug Canister Shuffle: all unique augs can be found by the end of Versalife Level 2 Labs, as in Vanilla
 - Added a new perk NERVES OF STEEL (Stealth Trained, 50 points): An agent learns to push through minor injuries while focusing on the mission at hand. Pain sounds are removed entirely (and will no longer alert nearby hostiles) for injuries causing 10 damage or less.
 - Added a new perk VIGILANT RECYCLER (General, 100 points): An agent learns how to restructure the nanite composites within nanokeys, allowing them to transform duplicated NanoKeys into 45 credits each.
 - Added a new perk TARGETING ROUTINES (Demolitions Advanced, 300 points): An agent is able to program the targeting routines of proximity grenades, ensuring placed EMP and Scrambler grenades only explode in the presence of robots, and placed gas grenades only explode in the presence of organics.

@@ -66,7 +66,7 @@ var localized string NameBlankPrompt;
 var bool bHardCoreMode; //GMDX: menu holder for player
 var bool bRandomizeCrates;                                                      //RSD: Same for these
 var bool bRandomizeMods;
-var bool bRandomizeAugs;
+var int iAugShuffleMode;                                                                 //Ivan Kenobi: 0 = no shuffle, 1 = fully random, 2 = semi-random
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
@@ -178,7 +178,7 @@ event InitWindow()
 	bHardCoreMode=false;
     bRandomizeCrates=default.bRandomizeCrates;                                                     //RSD
     bRandomizeMods=default.bRandomizeMods;                                                       //RSD
-    bRandomizeAugs=default.bRandomizeAugs;                                                       //RSD
+    iAugShuffleMode=default.iAugShuffleMode;                                                       //Ivan Kenobi
     bAddictionSystem=default.bAddictionSystem;                                                     //RSD
     bRestrictedSaving=default.bRestrictedSaving;                                                    //Sarge
     iNoKeypadCheese=default.iNoKeypadCheese;      	                                                //Sarge
@@ -868,7 +868,7 @@ function SaveSettings()
 	  player.bAutoReload=false;
     player.bRandomizeCrates=bRandomizeCrates;                                   //RSD
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
-    player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
+    player.iAugShuffleMode=iAugShuffleMode;                                       //Ivan Kenobi
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
     player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
@@ -888,8 +888,16 @@ function SaveSettings()
     player.bHarderSkillRebalance=bHarderSkillRebalance;
     player.bHarderChargedPickups=bHarderChargedPickups;
     player.bHardenedBreakables=bHardenedBreakables;
-    if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
-        ScrambleAugOrderList();
+    switch (player.iAugShuffleMode)                                                  // Ivan Kenobi: Fully/Semi-random aug canister shuffle
+	{
+		case 1:
+			ScrambleAugOrderList();
+			break;
+
+	    case 2:
+			ScrambleSemiAugOrderList();
+			break;
+	}
 
     //Fix players still having killswitch if they had it previously
     if (!player.bRealKillswitch)
@@ -954,21 +962,106 @@ function SaveSettings()
 	}
 }
 
-function ScrambleAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game
+// Ivan Kenobi: Aug debug helper
+function LogAugShuffleOrder()
 {
-    local int i,j,temp;
+	local int i;
+	local int sourceIndex;
 
-    for (i=0; i<ArrayCount(player.augOrderNums); i++)                           //RSD: Initialize ordered list
-	    player.augOrderNums[i] = i;
-    for (i=ArrayCount(player.augOrderNums)-1; i>0; i--)                         //RSD: Fisher–Yates shuffle algorithm
-    {
-        j = rand(i+1);                                                          //RSD: i+1 because Rand(i) produces a number between 0 and i-1, which is actually Sattolo's biased algorithm
-        temp = player.augOrderNums[i];
-        player.augOrderNums[i] = player.augOrderNums[j];
-        player.augOrderNums[j] = temp;
-    }
-    for (i=0; i<ArrayCount(player.augOrderNums); i++)
-log(player.augOrderNums[i]);
+	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
+	{
+		sourceIndex = player.augOrderNums[i];
+
+		player.DebugLog(
+			"Spawn slot " $ string(i + 1)
+			$ " now has original spawn " $ string(sourceIndex) $ " with: "
+			$ string(player.augOrderList[sourceIndex].aug1)
+			$ " / "
+			$ string(player.augOrderList[sourceIndex].aug2)
+		);
+	}
+}
+
+// Ivan Kenobi: Helper for partial aug shuffle
+// TODO: can be abstracted away to a more general array shuffle
+function ShuffleAugOrderRange(int firstIndex, int lastIndex)
+{
+	local int i, j, temp;
+
+	for (i = lastIndex; i > firstIndex; i--)
+	{
+		j = firstIndex + Player.Randomizer.GetRandomInt(i - firstIndex + 1);
+
+		temp = player.augOrderNums[i];
+		player.augOrderNums[i] = player.augOrderNums[j];
+		player.augOrderNums[j] = temp;
+	}
+}
+
+// Ivan Kenobi: Shuffle the order of aug canisters encountered throughout the game
+function ScrambleAugOrderList()
+{
+	local int i;
+
+	// init the aug order array
+	for (i = 0; i < ArrayCount(player.augOrderNums); i++)
+		player.augOrderNums[i] = i;
+	ShuffleAugOrderRange(0, ArrayCount(player.augOrderNums) - 1);
+
+	LogAugShuffleOrder();
+}
+
+// Ivan Kenobi: Controlled aug randomization to prevent RNG from screwing the player over
+// Makes it possible to find all of the aug canisters by the end of VersaLife level 2 labs if they check all the spawns
+// There are 13 aug slots before + at versalife lv2, with 10 total unique aug canisters 
+// 10 uniques + 3 random duplicates are shuffled between the first 13 spawn locations, and the rest of the duplicates spawn after in random order
+function ScrambleSemiAugOrderList()
+{
+	local int i;
+
+    // all unique aug canisters (aug pairs)
+	local int uniquePairs[10];
+
+    // the rest of the canisters
+	local int duplicatePairs[11];
+
+	// hardcoded unique pairs referencing the og aug order
+	uniquePairs[0] = 0;   // Muscle / Combat
+	uniquePairs[1] = 1;   // Aqualung / Enviro Prot
+	uniquePairs[2] = 2;   // Speed / Run Silent
+	uniquePairs[3] = 3;   // Vision / Targeting
+	uniquePairs[4] = 4;   // Ballistic / Ballistic Passive
+	uniquePairs[5] = 6;   // Combat Strength / Ammo Capacity
+	uniquePairs[6] = 7;   // Spy Drone / Agg Defense
+	uniquePairs[7] = 8;   // Regeneration / Energy Shield
+	uniquePairs[8] = 10;  // Cloak / Radar Transparency
+	uniquePairs[9] = 12;  // S Heart / Power Rec
+
+	duplicatePairs[0] = 5;   // Speed / Run Silent
+	duplicatePairs[1] = 9;   // Vision / Targeting
+	duplicatePairs[2] = 11;  // Spy Drone / Agg Defense
+	duplicatePairs[3] = 13;  // Combat Strength / Ammo Capacity
+	duplicatePairs[4] = 14;  // Aqualung / Enviro Prot
+	duplicatePairs[5] = 15;  // Ballistic / Ballistic Passive
+	duplicatePairs[6] = 16;  // Muscle / Combat
+	duplicatePairs[7] = 17;  // Speed / Run Silent
+	duplicatePairs[8] = 18;  // Regeneration / Energy Shield
+	duplicatePairs[9] = 19;  // Cloak / Radar Transparency
+	duplicatePairs[10] = 20;  // S Heart / Power Rec
+
+    // Filling the first 10 slots with unique pairs
+	for (i = 0; i < 10; i++)
+		player.augOrderNums[i] = uniquePairs[i];
+
+    // Adding the three duplicates + the rest
+	for (i = 0; i < ArrayCount(duplicatePairs); i++)
+		player.augOrderNums[10+i] = duplicatePairs[i];
+
+	// Shuffle all duplicates and then the first 13 spawns. Voila!
+	ShuffleAugOrderRange(10, 20);
+	ShuffleAugOrderRange(0, 12);
+
+	LogAugShuffleOrder();
 }
 
 //LDDP
