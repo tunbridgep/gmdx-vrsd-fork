@@ -775,7 +775,7 @@ function UpdateModifiersText()
         winInfo.SetText(GetNGPlusString());
     */
 
-    if (/*player.bRandomizeCrap || */player.bRandomizeMods || player.bRandomizeEnemies || player.bRandomizeAugs || player.bRandomizeCrates)
+    if (/*player.bRandomizeCrap || */player.bRandomizeMods || player.bRandomizeEnemies || player.iAugShuffleMode > 0 || player.bRandomizeCrates)
     {
         winInfo.SetText(GetSeedString());
     }
