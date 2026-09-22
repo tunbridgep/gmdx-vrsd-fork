@@ -610,6 +610,7 @@ function ZoneChange(ZoneInfo NewZone)
 		}
         if (Velocity.Z < -70)         //CyberP: water splash effect. Needs updating
 		{
+			PlaySound(sound'SplashLarge', SLOT_Pain);
 		Spawn(class'WaterRing',,,Location+ CollisionHeight * vect(0,0,1));
         spawn(class'WaterSplash2');
         spawn(class'WaterSplash2');
@@ -893,6 +894,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		{
             if (FRand() < 0.4 || Damage > 18) //CyberP: don't be lazy self, check for headshots...
             {
+				if(bNotDead)
+					PlaySound(sound'FleshHit2', SLOT_None,,,1024); //Ygll: Add a sound when killing an unconscious carcass with weapons
+
                 KillUnconscious(DeusExPlayer(instigatedBy));                                                  //RSD: Proper kill
                 bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
                 CreateBloodPool();
@@ -2171,8 +2175,6 @@ function KillUnconscious(optional DeusExPlayer playerKiller)                    
         killerAlliance = playerKiller.Alliance;
         playerKiller.killerCount++;
     }
-
-	PlaySound(sound'FleshHit2', SLOT_None,,,1024); //Ygll: Add a sound when killing an unconscious carcass
 
     bNotDead = false;
     UpdateName();
