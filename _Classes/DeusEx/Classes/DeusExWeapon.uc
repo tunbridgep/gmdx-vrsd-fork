@@ -432,6 +432,9 @@ var const float inertiaSpeed;                            //SARGE: How fast weapo
 //SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
 var const Sound DeselectSound;
 
+//Ygll: new melee attack animation handler
+var transient int nextMeleeAttackAnim;
+
 //END GMDX:
 
 //
@@ -2807,21 +2810,12 @@ simulated function Tick(float deltaTime)
 		{
 			if (bCachedNearWall)
 			{
-				if (( Level.NetMode != NM_Standalone ) && IsAnimating() && (AnimSequence == 'Select'))
+				if (!bNearWall && AnimSequence != 'Select')
 				{
-				}
-				else
-				{
-					if ((!bNearWall || (AnimSequence == 'Select')) && AnimSequence != 'Select')
+					if (AnimSequence != 'Attack' && AnimSequence != 'Attack2' && AnimSequence != 'Attack3')
 					{
-					    if (AnimSequence == 'Attack' || AnimSequence == 'Attack2' || AnimSequence == 'Attack3')
-					    {
-					    }
-					    else
-					    {
-						    PlayAnim('PlaceBegin',, 0.1);
-						    bNearWall = True;
-						}
+						PlayAnim('PlaceBegin',, 0.1);
+						bNearWall = True;
 					}
 				}
 			}
@@ -4248,14 +4242,58 @@ function PlayPostSelect()
 //	ClipCount = 0;
 }
 
+function Name SelectMeleeAttackAnim(bool bRandom)
+{
+	local Name anim;
+	local float rnd;
+
+	rnd = FRand();
+
+	if(IsA('WeaponCombatKnife')) //Ygll: Only the Knife has 3 different animation, all other melee weapon got only 2
+	{
+		if( (bRandom && rnd < 0.33) || (nextMeleeAttackAnim <= 1 || nextMeleeAttackAnim > 3) ) //Ygll: this test to handle error issue with nextMeleeAttackAnim values
+		{
+			anim = 'Attack';
+			nextMeleeAttackAnim = 2;
+		}
+		else if( (bRandom && rnd < 0.66) || nextMeleeAttackAnim == 2)
+		{
+			anim = 'Attack2';
+			nextMeleeAttackAnim = 3;
+		}
+		else if(bRandom || nextMeleeAttackAnim == 3)
+		{
+			anim = 'Attack3';
+			nextMeleeAttackAnim = 1;
+		}
+	}
+	else
+	{
+		if( (bRandom && rnd < 0.5) || (nextMeleeAttackAnim <= 1 || nextMeleeAttackAnim > 2) ) //Ygll: this test to handle error issue with nextMeleeAttackAnim values
+		{
+			anim = 'Attack';  //Ygll: when there is only 2 animations, Attack and Attack2 are always the same
+			nextMeleeAttackAnim = 2;
+		}
+		else if(bRandom || nextMeleeAttackAnim == 2)
+		{
+			anim = 'Attack3';
+			nextMeleeAttackAnim = 1;
+		}
+	}
+
+	return anim;
+}
+
 simulated function PlaySelectiveFiring()
 {
 	local Pawn aPawn;
-	local float rnd;
 	local Name anim;
 	//local int animNum;
 	local float mod;
     local float hhspeed;
+	local DeusExPlayer player;
+
+	player = DeusExPlayer(Owner);
 
 /*	animNum = 0;
 
@@ -4279,30 +4317,31 @@ simulated function PlaySelectiveFiring()
 
 	if (bHandToHand)
 	{
-		rnd = FRand();
 		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
             anim = 'Shoot';
-		else if (rnd < 0.33)
-			anim = 'Attack';
-		else if (rnd < 0.66)
-			anim = 'Attack2';
 		else
-			anim = 'Attack3';
+			anim = SelectMeleeAttackAnim(player != None && !player.bSequenceMeleeAttack);
+
 		if (IsA('WeaponNanoSword'))
+		{
            if (FRand() < 0.5)
                PlaySound(sound'GMDXSFX.Weapons.ebladeswipe1',SLOT_None,,,,1.3);
            else
                PlaySound(sound'GMDXSFX.Weapons.ebladeswipe2',SLOT_None,,,,1.3);
-		//AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 64);
+		}
 	}
 
 	//if(anim == '')
 	//	return;
 
-	if (( Level.NetMode == NM_Standalone ) || ( DeusExPlayer(Owner) == DeusExPlayer(GetPlayerPawn())) )
+	//Ygll: Add new melee and crossbow underwater sound here as we can reach this code only if we are allowed to attack.
+	if (Region.Zone.bWaterZone && ( (bHandToHand && !bFakeHandToHand ) || IsA('WeaponMiniCrossbow') ) )
+		PlaySimSound(Sound'SplashSmall', SLOT_None, TransientSoundVolume, 2048);
+
+	if (( Level.NetMode == NM_Standalone ) || ( player != None && player == DeusExPlayer(GetPlayerPawn())) )
 	{
-	    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AugmentationSystem != none)
-		   hhspeed = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
+	    if (player != None && player.AugmentationSystem != None)
+		   hhspeed = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
 			
         if (hhspeed < 1.0)
             hhspeed = 1.0;
@@ -4343,11 +4382,11 @@ simulated function PlaySelectiveFiring()
 		else if (bHandToHand && !bFakeHandToHand)
 		{
 
-            if (Owner.IsA('DeusExPlayer'))
+            if (player != None)
             {
-            	if (DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0)                 //RSD: Zyme gives its own +50% boost
+            	if (player.AddictionManager != None && player.AddictionManager.addictions[2].drugTimer > 0)                 //RSD: Zyme gives its own +50% boost
                 	hhspeed += 0.5;
-                if (DeusExPlayer(Owner).bStunted)                               //RSD: Halve melee speed if we're out of breath
+                if (player.bStunted)                               //RSD: Halve melee speed if we're out of breath
                 	hhspeed *= 0.5;
                	hhspeed *= attackSpeedMult;                                     //RSD: to differentiate melee weapon attack speeds, only used on crowbar (0.8 for 20% reduction)
            	}
@@ -4363,7 +4402,7 @@ simulated function PlaySelectiveFiring()
 	{
 		for ( aPawn = Level.PawnList; aPawn != None; aPawn = aPawn.nextPawn )
 		{
-			if ( aPawn.IsA('DeusExPlayer') && ( DeusExPlayer(Owner) != DeusExPlayer(aPawn) ) )
+			if ( DeusExPlayer(aPawn) != None && player != None && player != DeusExPlayer(aPawn) )
 			{
 				// If they can't see the weapon, don't bother
 				if ( DeusExPlayer(aPawn).FastTrace( DeusExPlayer(aPawn).Location, Location ))
@@ -8146,4 +8185,5 @@ defaultproperties
      AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
      minimumNewGamePlusCycle=0
      maximumNewGamePlusCycle=-1
+     nextMeleeAttackAnim=1
 }
