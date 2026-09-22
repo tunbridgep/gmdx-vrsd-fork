@@ -609,7 +609,7 @@ function FirstFrame()
 			InitializeRandomCrateContents(bRandomCrates);
 		if (bRandomItems)                                                       //RSD: Also randomize items (weapon mods) with user setting
 			InitializeRandomItems();
-		if (player.bRandomizeAugs)
+		if (player.iAugShuffleMode > 0)
 			SetScrambledAugs();
         
         if (player.bRandomizeEnemies)
