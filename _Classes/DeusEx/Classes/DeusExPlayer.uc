@@ -17708,7 +17708,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 		{
 			augLevel = AugmentationSystem.GetAugLevelValue(class'AugBallistic');
 
-			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
+			if (augLevel < 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive AND reserved energy still offers protection even with 0 BE
 			{
                 ballistic = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive'));
                 if (ballistic != None) //SARGE: Accessed none?
