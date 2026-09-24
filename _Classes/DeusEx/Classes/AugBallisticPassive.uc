@@ -34,8 +34,9 @@ simulated function PreBeginPlay()
 function float GetDamageMod(optional bool mustBeActive)
 {
     local float damageMod;
+	damageMod = 1.0;
     
-    if (CurrentLevel >= 0.0 && player.Energy > 0 && (bIsActive || !mustBeActive))
+    if (CurrentLevel >= 0.0 && (bIsActive || !mustBeActive))
     {
         //damageMod = 1.0-(player.Energy/player.GetMaxEnergy())*(1.0-LevelValues[CurrentLevel]);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
         //damageMod = 1.0 - 0.35*FClamp(player.Energy/(LevelValues[CurrentLevel]*player.GetMaxEnergy()),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
