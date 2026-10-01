@@ -1091,8 +1091,8 @@ var globalconfig int iPresetSeed;
 var globalconfig bool bMoreVisibleBeltFade;
 
 //Ygll: New var to handle wet effect on player when he was being into water
-var() float wetRate;
-var() float waterDropCounter;
+var float wetRate;
+var float waterDropCounter;
 
 //////////END GMDX
 
@@ -4208,7 +4208,7 @@ function Bleed(float deltaTime)
 }
 
 //Ygll: New function to handle the simulation of water drop on player after swimming (forked from bleed function)
-function IsWet(float deltaTime)
+function DoWetnessEffects(float deltaTime)
 {
 	local float  dropPeriod;
 	local float  adjustedRate;
@@ -4218,8 +4218,7 @@ function IsWet(float deltaTime)
 	local WaterDrop droplet;
 	/*local PrecipitationInfoBase PI;
 
-	//Ygll: Add wet rate if player is on a precipitation zone
-	//Ygll: Put wet rate here because the function is called in all important tick player
+	//Ygll: Add wet rate if the player is under a precipitation zone
 	if(iWeatherControl > 0)
 	{
 		PI = class'PrecipitationInfoBase'.static.GetBaseInfoFromZone(FootRegion.Zone);
@@ -4233,6 +4232,13 @@ function IsWet(float deltaTime)
 	}
 	else //Ygll adjusted rate for swimming wet rate
 		adjustedRate = 1.0;*/
+
+	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
+	{
+		wetRate = 0;
+		waterDropCounter = 0;
+		return;
+	}
 
 	// Copied from ScriptedPawn::Tick()
 	wetRate = FClamp(wetRate, 0.0, 15.0);
@@ -7592,7 +7598,7 @@ state PlayerWalking
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
-		IsWet(deltaTime);
+		DoWetnessEffects(deltaTime);
 		HighlightCenterObject();
         ReactToGunsPointed();       //SARGE: Added.
 
@@ -7735,6 +7741,8 @@ state PlayerWalking
 			InstantFlash = 0.01;
 			ViewFlash(1.0);
             ShowHUD(true);
+			wetRate = 0.0;
+			waterDropCounter = 0.0;
         }
     }
 }
@@ -7774,7 +7782,7 @@ state PlayerFlying
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
-		IsWet(deltaTime);
+		DoWetnessEffects(deltaTime);
 		HighlightCenterObject();
         ReactToGunsPointed();       //SARGE: Added.
 	    // DEUS_EX AMSD For multiplayer...
@@ -7999,8 +8007,7 @@ state PlayerSwimming
 		}
 
 		wetRate += deltaTime * 3.0;
-		if (wetRate >= 20.0)
-			wetRate = 20.0;
+		wetRate = FMin(20.0, wetRate);
 
 		// handle poison
 	  //DEUS_EX AMSD Now handled in multiplayertick
@@ -8413,7 +8420,7 @@ state Interpolating
 	{
 		UpdateInHand();
 		Bleed(deltaTime);
-		IsWet(deltaTime);
+		DoWetnessEffects(deltaTime);
 		ShowHud(False);
 	}
 
@@ -8483,7 +8490,7 @@ state Paralyzed
 		ShowHud(False);
 		ViewFlash(deltaTime);
 		Bleed(deltaTime);
-		IsWet(deltaTime);
+		DoWetnessEffects(deltaTime);
 	}
 
 Begin:
@@ -14606,7 +14613,7 @@ ignores SeePlayer, HearNoise, Bump;
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
-		IsWet(deltaTime);
+		DoWetnessEffects(deltaTime);
 		MaintainEnergy(deltaTime);
         CheckAugHum();
 
@@ -21327,11 +21334,6 @@ defaultproperties
      HungryStr="(Hungry)"
      StarvingStr="(Starving)"
      iPresetSeed=-1
-     bMoreVisibleBeltFade=true
-<<<<<<< HEAD
-     wetRate=0.000000
-     waterDropCounter=0.000000
-=======
+     bMoreVisibleBeltFade=True
      bSequenceMeleeAttack=False
->>>>>>> master
 }
