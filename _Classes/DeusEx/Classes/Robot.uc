@@ -22,6 +22,25 @@ var bool bPlayedCritical;
 //Sarge: Nanovirus disable time
 var float rebootTime;                    //Sarge: timer before we are enabled again after nanovirus.
 
+var bool bQuickHacked;                      //SARGE: Has this thing been quick hacked already?
+
+//SARGE: Can we quick-hack this?
+function bool CanBeQuickHacked()
+{
+    return !bQuickHacked && GetStateName() != 'Disabled' && EMPHitPoints > 0 && !IsA('MedicalBot') && !IsA('RepairBot');
+    
+}
+
+//SARGE: And actually do the quick hack...
+function PerformQuickHack(DeusExPlayer P)
+{
+    bQuickHacked = true;
+    rebootTime = P.saveTime + 10;
+    PlaySound(sound'EMPZap', SLOT_None,,, 1280);
+    if (GetStateName() != 'Disabled')
+        GotoState('Disabled');
+}
+
 function StartReboot()
 {
     local Perk sensorBurn;
@@ -113,7 +132,7 @@ function Tick(float deltaTime)
     }
 
 
-	if (CrazedTimer > 0 || rebootTime > 0)
+	if (CrazedTimer > 0)
 		bReverseAlliances = true;
 	else
 		bReverseAlliances = false;

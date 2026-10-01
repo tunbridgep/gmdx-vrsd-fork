@@ -6,7 +6,7 @@ class PerkEndurance extends Perk;
 /*
 function bool IsVisible()
 {
-    return !bHidden && PerkOwner != None && (PerkOwner.iStaminaSystem == 1 || PerkOwner.bHardcoreMode);
+    return !bHidden && bPerkEnabled && PerkOwner != None && (PerkOwner.iStaminaSystem == 1 || PerkOwner.bHardcoreMode);
 }
 */
 

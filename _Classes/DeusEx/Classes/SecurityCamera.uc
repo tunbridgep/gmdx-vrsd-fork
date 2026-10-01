@@ -55,6 +55,8 @@ var bool bRebooting;                      //This will be set when the camera is 
 
 var bool bAlarmedOnce;                    //SARGE: Don't re-activate movers after the first alarm
 
+var bool bQuickHacked;                      //SARGE: Has this thing been quick hacked already?
+
 var transient bool bFirstTickDone;            //SARGE: We need to update the camera sound on the first tick.
 
 // ------------------------------------------------------------------------------------
@@ -66,6 +68,25 @@ replication
 	 //server to client var
 	 reliable if (Role == ROLE_Authority)
 		  bActive, ReplicatedRotation, team, safeTarget;
+}
+
+//SARGE: Can we quick-hack this?
+function bool CanBeQuickHacked()
+{
+    return !bQuickHacked && !bConfused && !bRebooting && bActive;
+}
+
+//SARGE: And actually do the quick hack...
+function PerformQuickHack(DeusExPlayer P)
+{
+    bQuickHacked = true;
+    confusionTimer = 0;
+    confusionDuration = 8;
+    bConfused = true;
+    MultiSkins[2] = GetCameraLightTex(3);
+    SoundPitch = 128;
+    AmbientSound = None;
+    PlaySound(sound'EMPZap', SLOT_None,,, 1280);
 }
 
 //Set to 10% hack strength, increasing by 10% per NG Cycle
@@ -98,7 +119,6 @@ function SetupDifficultyMod(DeusExPlayer P)
     }
     super.SetupDifficultyMod(P);
 }
-
 
 //For cameras and turrets which can be turned off at a computer, we want to display them
 //as BYPASSED if they are disabled at a computer
@@ -647,8 +667,11 @@ function Tick(float deltaTime)
 			SoundPitch = default.SoundPitch;
 			DesiredRotation = origRot;
             //SARGE: Fix trigger timers not resetting
+            playerCheckTimer = 0;
             carcassTriggerTimer = 0;
             triggerTimer = 0;
+            bPlayerSeen = false;
+            bCarcassSeen = false;
 		}
 
 		return;
