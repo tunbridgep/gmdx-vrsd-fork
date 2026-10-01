@@ -308,7 +308,7 @@ function InitFor(Actor Other)
             savedName = ScriptedPawn(Other).UnfamiliarName;
 
         //SARGE: All corpses can be reacted to
-        if (!Other.IsA('Animal'))
+        if (!Other.IsA('Animal') || Other.IsA('Doberman'))
             bEmitCarcass = true;
 
         //SARGE: Check if we have a linked weapon,
@@ -610,6 +610,7 @@ function ZoneChange(ZoneInfo NewZone)
 		}
         if (Velocity.Z < -70)         //CyberP: water splash effect. Needs updating
 		{
+			PlaySound(sound'SplashLarge', SLOT_Pain);
 		Spawn(class'WaterRing',,,Location+ CollisionHeight * vect(0,0,1));
         spawn(class'WaterSplash2');
         spawn(class'WaterSplash2');
@@ -711,12 +712,8 @@ function Tick(float deltaSeconds)
         //If we shouldn't be created, abort
         if (!ShouldCreate(DeusExPlayer(GetPlayerPawn())))
             Destroy();
-
         else if (bEmitCarcass)
-		{
-			//AIStartEvent('Carcass', EAITYPE_Visual);
-			AIStartEvent('WeaponDrawn', EAITYPE_Visual);
-		}
+			AIStartEvent('Carcass', EAITYPE_Visual);
 
 	} else
 	  if (bDblClickStart)
@@ -897,6 +894,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		{
             if (FRand() < 0.4 || Damage > 18) //CyberP: don't be lazy self, check for headshots...
             {
+				if(bNotDead)
+					PlaySound(sound'FleshHit2', SLOT_None,,,1024); //Ygll: Add a sound when killing an unconscious carcass with weapons
+
                 KillUnconscious(DeusExPlayer(instigatedBy));                                                  //RSD: Proper kill
                 bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
                 CreateBloodPool();
@@ -2018,9 +2018,9 @@ auto state Dead
 Begin:
 	while (Physics == PHYS_Falling)
 	{
-
-        Sleep(0.1);      //CyberP: was 1.0- took a while to handleLanding() at times, //which was problematic for a few reasons.
+        Sleep(0.05);      //CyberP: was 1.0- took a while to handleLanding() at times, //which was problematic for a few reasons. //Ygll: change the value of sleeping time as 0.05 is still good to get all correct data
 	}
+
 	HandleLanding();
 
 }
@@ -2048,21 +2048,6 @@ function SetupCarcass(bool bAlert)
             // alert NPCs that I'm really disgusting
             if (bEmitCarcass)
                 AIStartEvent('Carcass', EAITYPE_Visual);
-
-            if (bNotFirstFall && !bHidden)
-            {
-                PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-                //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,512,false);
-                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
-            }
-            else
-            {
-                //SARGE TODO: Don't bother fixing sound propagation here as it's so short???
-                //SARGE: Fix the broken sound propagation
-                class'PawnUtils'.static.WakeUpAI(self,96,false);
-                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
-            }
         }
 }
 
@@ -2123,6 +2108,21 @@ function Landed(vector HitNormal)
     local DeusExPlayer player;
     super.Landed(HitNormal);
     player = DeusExPlayer(GetPlayerPawn());
+
+	if (bNotFirstFall && !bHidden)
+	{
+		PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+		//SARGE: Fix the broken sound propagation
+		class'PawnUtils'.static.WakeUpAI(self,512,false);
+		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+	}
+	else
+	{
+		//SARGE TODO: Don't bother fixing sound propagation here as it's so short???
+		//SARGE: Fix the broken sound propagation
+		class'PawnUtils'.static.WakeUpAI(self,96,false);
+		AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+	}
 
     if (player == None)
         return;

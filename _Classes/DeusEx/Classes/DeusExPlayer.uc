@@ -655,6 +655,7 @@ var bool bBlockNextFire;                                                        
 
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
+var globalconfig bool bSequenceMeleeAttack; 									//Ygll: Allow using sequential attack animation instead of random.
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -21327,6 +21328,10 @@ defaultproperties
      StarvingStr="(Starving)"
      iPresetSeed=-1
      bMoreVisibleBeltFade=true
+<<<<<<< HEAD
      wetRate=0.000000
      waterDropCounter=0.000000
+=======
+     bSequenceMeleeAttack=False
+>>>>>>> master
 }
