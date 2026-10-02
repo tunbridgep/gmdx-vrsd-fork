@@ -4235,14 +4235,14 @@ function DoWetnessEffects(float deltaTime)
 
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 	{
-		wetRate = 0;
-		waterDropCounter = 0;
+		wetRate = 0.0;
+		waterDropCounter = 0.0;
 		return;
 	}
 
 	// Copied from ScriptedPawn::Tick()
 	wetRate = FClamp(wetRate, 0.0, 15.0);
-	if (wetRate > 0)
+	if (wetRate > 0.0)
 	{
 		adjustedRate = 1.0;
 		dropPeriod = adjustedRate / FClamp(VSize(Velocity)/512.0, 5, 10);
@@ -4273,10 +4273,10 @@ function DoWetnessEffects(float deltaTime)
 		}
 		wetRate -= deltaTime;
 	}
-	if (wetRate <= 0)
+	if (wetRate <= 0.0)
 	{
-		wetRate = 0;
-		waterDropCounter = 0;
+		wetRate = 0.0;
+		waterDropCounter = 0.0;
 	}
 }
 
