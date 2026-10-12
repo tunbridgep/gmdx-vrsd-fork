@@ -1,61 +1,43 @@
 //=============================================================================
 // BloodDrop.
 //=============================================================================
-class BloodDrop extends DeusExFragment;
+class BloodDrop extends BaseDroplet;
 
-auto state Flying
+function SpawnHitWallDecal(Rotator rotator)
 {
-	function HitWall(vector HitNormal, actor Wall)
-	{
-		spawn(class'BloodSplat',,, Location, Rotator(HitNormal));
-		Destroy();
-	}
-	function BeginState()
-	{
-		Velocity = VRand() * 190; //CyberP: faster blood
-		DrawScale = 0.65 + FRand();
-		SetRotation(Rotator(Velocity));
-
-		// Gore check
-		if (Level.Game.bLowGore || Level.Game.bVeryLowGore)
-		{
-			Destroy();
-			return;
-		}
-	}
+	Spawn(class'BloodSplat',,, Location, rotator);
 }
 
-function Tick(float deltaTime)
+function SpawnHitWaterDecal()
 {
-	if (Velocity == vect(0,0,0))
-	{
-		spawn(class'BloodSplat',,, Location, rot(16384,0,0));
-		Destroy();
-	}
-	else
-		SetRotation(Rotator(Velocity));
+	Spawn(class'WaterRingBlood',,, Location + CollisionHeight * Vect(0,0,1));
 }
 
 simulated function PreBeginPlay()
 {
+	if (Level.Game.bLowGore || Level.Game.bVeryLowGore) 	// Gore check
+	{
+		Destroy();
+		return;
+	}
+
 	Super.PreBeginPlay();
 
-	if ( Level.NetMode != NM_Standalone )
-	{
-		ScaleGlow = 2.0;
-		DrawScale *= 1.5;
-		LifeSpan *= 3.0;
-		bUnlit=True;
-	}
+	Velocity = VRand() * 200; //CyberP: faster blood
+	if(Velocity == Vect(0.0,0.0,0.0))
+		Velocity = Vect(1.0,1.0,1.0) + (Location * 100.0);
+
+	if (Instigator != None)
+		Velocity += Instigator.Velocity / 2;
+
+	DrawScale = 0.75 + FRand();
+	SetRotation(Rotator(Velocity));
 }
 
 defaultproperties
 {
-     Style=STY_Modulated
+     Style=STY_Translucent
      Mesh=LodMesh'DeusExItems.BloodDrop'
-     CollisionRadius=0.000000
-     CollisionHeight=0.000000
-     bBounce=False
-     NetPriority=1.000000
-     NetUpdateFrequency=5.000000
+     DrawScale=0.750000
+     ScaleGlow=0.700000
 }
