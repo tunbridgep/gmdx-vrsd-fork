@@ -5,7 +5,7 @@ class PerkWetwork extends Perk;
 
 function bool IsVisible()
 {
-    return !bHidden && PerkOwner != None && (PerkOwner.bAddonDrawbacks || PerkOwner.bHardcoreMode);
+    return !bHidden && bPerkEnabled && PerkOwner != None && (PerkOwner.bAddonDrawbacks || PerkOwner.bHardcoreMode);
 }
 
 defaultproperties

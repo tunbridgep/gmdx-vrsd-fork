@@ -62,6 +62,7 @@ var localized String msgIRAmpActive;
 var localized String msgNoImage;
 var localized String msgDisabled;
 var localized String msgReboot;                                                 //Sarge: Added
+var localized String msgQuickHacked;                                                 //Sarge: Added
 var localized String msgCurrentAccuracy;                                        //Sarge: Added
 var localized String SpottedTeamString;
 var localized String YouArePoisonedString;
@@ -131,6 +132,7 @@ var ThrownProjectile lastGrenade;
 
 var localized String msgDisarmed;
 var localized String msgRemoteOnly;             //SARGE: Grenade is disabled and we have remote detonation perk
+var localized String msgQuickHack;
 
 const ITEM_SONAR_DISTANCE = 256;                //SARGE: Range for special item-only sonar
 
@@ -1492,6 +1494,8 @@ function DrawTargetAugmentation(GC gc)
             crossColor = colBlue;
         else if (player.HackTarget != None && player.inHand == None)
             crossColor = colBlue;
+        else if (player.QuickHackTarget != None && player.inHand == None)
+            crossColor = colBlue;
     }
 
     //SARGE: Non-highlighting decorations (like trash paper) aren't valid targets
@@ -1685,6 +1689,9 @@ function DrawTargetAugmentation(GC gc)
                 
                 // print disabled grenade info
                 str = str $ GetWallGrenadeDisabledText(target,true);
+					
+                // print quick hack info
+                str = str $ GetQuickHackText(target,true);
 
 				gc.SetTextColor(crossColor);
 
@@ -1832,15 +1839,20 @@ function DrawTargetAugmentation(GC gc)
 			}
 			else
 			{
+					
+                // print quick hack info
+                if (str == "")
+                    str = GetQuickHackText(target,false);
+
 				// display disabled robots
-				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0 || Robot(target).Orders == 'Idle'))
+				if (str == "" && (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0 || Robot(target).Orders == 'Idle')))
 					str = msgDisabled;
 				
                 // print disabled wall mine info
                 if (str == "")
                     str = GetWallGrenadeDisabledText(target,false);
 
-                // print disabled camera info
+                // print disabled camera/turret info
                 if (str == "")
                     str = GetHackDisabledText(target,false);
 
@@ -1899,6 +1911,20 @@ function string GetWallGrenadeDisabledText(Actor target, bool TargetingDisplay)
     return str;
 }
 
+//SARGE: Get the quick hack prompt
+function string GetQuickHackText(Actor target,bool TargetingDisplay)
+{
+    local string str;
+
+    if (player.QuickHackTarget != None)
+        str = msgQuickHack;
+
+    if (str != "" && TargetingDisplay)
+        str = " (" $ str $ ")";
+
+    return str;
+}
+
 //SARGE: Get the text for rebooting cameras/turrets
 function string GetHackDisabledText(Actor target,bool TargetingDisplay)
 {
@@ -1906,6 +1932,7 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     local AutoTurret turr;
     local string str, strT;
     local int amt, min, sec;
+    local bool bQH;
 
     if (target.IsA('AutoTurretGun'))
         turr = AutoTurret(target.Owner);
@@ -1915,12 +1942,21 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     cam = SecurityCamera(target);
 
     if (turr != None && turr.bRebooting)
+    {
         amt = int(turr.disableTime - player.saveTime);
+        bQH = turr.bQuickHacked;
+    }
     else if (cam != None && cam.bRebooting)
+    {
         amt = int(cam.disableTime - player.saveTime);
+        bQH = cam.bQuickHacked;
+    }
 
     if (target.IsA('Robot'))
+    {
         amt = int(Robot(target).rebootTime - player.saveTime);
+        bQH = Robot(Target).bQuickHacked;
+    }
 
     //SARGE: Weird hacky special case for "truly" disabled cameras and turrets.
     //This sucks on ice!
@@ -1965,7 +2001,10 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     else
         strT = strT $ "00";
         
-    str = Sprintf(msgReboot,strT);
+    if (bQH)
+        str = Sprintf(msgQuickHacked,strT);
+    else
+        str = Sprintf(msgReboot,strT);
 
     //If using the targeting aug, we need to format it
     if (TargetingDisplay && str != "")
@@ -2512,6 +2551,8 @@ defaultproperties
      msgDisarmed="Disarmed"
      msgRemoteOnly="Remote"
      msgReboot="Rebooting in %s"
+     msgQuickHacked="Quick Hacked: %s"
+     msgQuickHack="Quick-Hack Available"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"
      YouAreBurnedString="You are burning!"

@@ -3,7 +3,21 @@
 //=============================================================================
 class PerkWirelessStrength extends Perk;
 
-// Trash: TODO Check PerkValue
+//SARGE: Determines if an actor can be hacked at range.
+//NOTE: This doesn't check range.
+static function bool WirelessStrengthCheck(DeusExPlayer P,Actor target)
+{
+    if (P == None || P.PerkManager == None || !P.PerkManager.GetPerkWithClass(class'PerkWirelessStrength').bPerkObtained || target == None)
+        return false;
+
+    if (P.GetInventoryCount('Multitool') == 0)
+        return false;
+
+    if (!target.IsA('HackableDevices') || HackableDevices(target).hackStrength == 0.0)
+        return false;
+
+    return true;
+}
 
 defaultproperties
 {
