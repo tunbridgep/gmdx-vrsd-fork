@@ -146,7 +146,7 @@ simulated function DeusExProjectile FindNearestProjectile()
 			if (!((TeamDMGame(Player.DXGame) != None) && (TeamDMGame(Player.DXGame).ArePlayersAllied(DeusExPlayer(proj.Owner),Player))))
 			{
 				// make sure it's moving fast enough
-				if (VSize(proj.Velocity) > 100)
+				if (VSize(proj.Velocity) > 50)
 				{
 				   dist = abs(VSize(Player.Location - proj.Location));
 				   if (dist < mindist)
