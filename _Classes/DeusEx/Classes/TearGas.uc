@@ -11,6 +11,8 @@ super.PostBeginPlay();
 
 defaultproperties
 {
+     damageInterval=1.0
+     Damage=3.000000
      DamageType=TearGas
      maxDrawScale=1.000000
      speed=160.000000

@@ -53,6 +53,11 @@ function OnProjectileFired(Projectile firedProjectile)
             firedProjectile.Velocity *= pepperPerk.PerkValue;// *= speedAdd * Vector(firedProjectile.Rotation);
             firedProjectile.Acceleration *= pepperPerk.PerkValue;// += speedAdd * Vector(firedProjectile.Rotation);
             Cloud(firedProjectile).CloudRadius *= pepperPerk.PerkValue;
+
+            //reduce the damage interval (and the damage to match)
+            Cloud(firedProjectile).damageInterval *= 0.3333333;
+            firedProjectile.Damage *= 0.3333333;
+
         }
     }
 }
