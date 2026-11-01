@@ -87,5 +87,4 @@ defaultproperties
      CollisionRadius=12.650000
      CollisionHeight=0.800000
      DeSelectSound=sound'GMDXSFX.Weapons.knifeunequip'
-     inertiaSpeed=0 //Disappears if it can move, so get rid of it.
 }
