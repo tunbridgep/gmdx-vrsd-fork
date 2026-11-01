@@ -95,7 +95,7 @@ function TriggerUNATCOTakeover(optional bool bAlwaysRemoveSkillTriggers)
         }
 
         //Shut down bots
-        else if (P.IsA('Robot') && Robot(P).EMPHitPoints > 0 && P.GetPawnAllianceType(Player) == ALLIANCE_Hostile)
+        else if (P.IsA('Robot') && Robot(P).EMPHitPoints > 0 && /*(P.GetPawnAllianceType(Player) == ALLIANCE_Hostile)*/ P.Alliance != 'UNATCO')
             Robot(P).DoEMPEffect(100);
     }
     
@@ -127,7 +127,7 @@ function TriggerUNATCOTakeover(optional bool bAlwaysRemoveSkillTriggers)
         foreach AllActors(class'DeusExCarcass', CARC)
         {
             //if ((P.IsA('TerroristCarcass') || P.IsA('ThugMale2') || (P.IsA('SecurityBot3') && SecurityBot3(P).EMPHitPoints > 0) || P.IsA('Doberman')) && (P.BindName != "TerroristCommander")) //Bind name is unnecessary??
-            if (CARC.hdtpReference == class'DeusEx.Terrorist' || CARC.isA('ThugMale2Carcass') || carc.hdtpReference == class'DeusEx.UNATCOTroop')
+            if (CARC.hdtpReference == class'DeusEx.Terrorist' || carc.IsA('TerroristEliteCarcass') || CARC.isA('ThugMale2Carcass') || carc.hdtpReference == class'DeusEx.UNATCOTroop')
             {
                 // delete their inventories
                 if (CARC.Inventory != None)
@@ -211,16 +211,17 @@ function TriggerUNATCOTakeover(optional bool bAlwaysRemoveSkillTriggers)
 // SARGE: GetConversation()
 //
 // Returns a conversation based on a name
+// SARGE: Added a dirty hack bool
 // ----------------------------------------------------------------------
 
-function Conversation GetConversation(Name conName)
+function Conversation GetConversation(Name conName, optional bool bNoFemaleConversion)
 {
     local Conversation c, fallback;
     local Name fallbackConName;
 
     fallbackConName = '';
 
-    if (flags.GetBool('LDDPJCIsFemale'))
+    if (flags.GetBool('LDDPJCIsFemale') && !bNoFemaleConversion)
     {
         fallbackConName=conName;
         conName = flags.StringToName("FemJC"$string(conName));
@@ -637,6 +638,9 @@ function FirstFrame()
 
             //SARGE: Give Shurikens to Elites
             DistributeItem('MJ12Elite',class'WeaponShuriken',true,1,3);
+
+            //SARGE: Give assaultgunspider to elites
+            DistributeItem('MJ12Elite',class'WeaponAssaultGunSpider',false,0,1);
         }
 
         //On Hardcore mode, distribute extra heavy weapons
@@ -645,7 +649,7 @@ function FirstFrame()
             if (dxInfo.MissionNumber >= 4 && dxInfo.bDistributeFlamethrower) //After Lebedevs Airfield
                 DistributeItem('HumanMilitary',class'WeaponFlamethrower',false,0,1,class'AmmoNapalm');
             
-            //if (dxInfo.MissionNumber >= 9 && dxInfo.bDistributeLAW) //Shipyard and Later
+            //if (dxInfo.MissionNumber >= 10 && dxInfo.bDistributeLAW) //Paris and Later
             //    DistributeItem('HumanMilitary',class'WeaponLAW',false,0,1,class'AmmoLAW');
                 
             if (dxInfo.MissionNumber >= 9 && dxInfo.bDistributePlasma) //Shipyard and Later
