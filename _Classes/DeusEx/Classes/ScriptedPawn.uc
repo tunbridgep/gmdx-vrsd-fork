@@ -4723,6 +4723,11 @@ function bool FrobDoor(actor Target)
 			if ((dxMover.WaitingPawn == None) ||
 			    (dxMover.WaitingPawn == self))
 			{
+
+                //If the door is player locked, don't open it
+                if (dxMover.bPlayerLocked || (dxMover.bLocked && bNoDoorInteractions))
+                    return false;
+
 				dxMover.Frob(self, None);
 				bDone = true;
 			}
@@ -9018,7 +9023,7 @@ function Tick(float deltaTime)
     HandleBlink(deltaTime);
     
     //SARGE: Tick Cloaking
-    if (CloakManager != None)
+    if (CloakManager != None && bHasCloak)
     {
         CloakManager.TickCloaking(deltaTime);
         bCloakOn = CloakManager.IsInAnyState();
