@@ -735,13 +735,13 @@ function Tick(float deltaTime)
 			   
 				if ((bPlayerSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
 				{
-                    class'PawnUtils'.static.WakeUpAI(curplayer,1024,false);
-					curplayer.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
+                    class'PawnUtils'.static.WakeUpAI(curplayer,512,false);
+					curplayer.AISendEvent('LoudNoise', EAITYPE_Audio,,512);
 				}
 				else if ((bCarcassSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )
 				{
-                    class'PawnUtils'.static.WakeUpAI(carcass,1024,false);
-					carcass.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
+                    class'PawnUtils'.static.WakeUpAI(carcass,512,false);
+					carcass.AISendEvent('LoudNoise', EAITYPE_Audio,,512);
 				}
 			}
 			else
