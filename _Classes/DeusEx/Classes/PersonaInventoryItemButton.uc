@@ -210,7 +210,7 @@ event DrawWindow(GC gc)
                 str = Sprintf(CountLabel, DeusExPickup(anItem).NumCopies);
 
             //SARGE: Add charge for ChargedItems
-            if (anItem.isA('ChargedPickup') && ChargedPickup(anItem).GetCurrentCharge() > 0)
+            if (anItem.isA('ChargedPickup')/* && ChargedPickup(anItem).GetCurrentCharge() > 0*/)
                 str2 = Sprintf("%d%%", int(ChargedPickup(anItem).GetCurrentCharge()));
 		}
 		}
