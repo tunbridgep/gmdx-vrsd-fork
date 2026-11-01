@@ -27,7 +27,7 @@ var Window messagebox;
 
 var string consoleTarget;   //The entity we are changing variables on. This should normally be the player.
 var string variable;        //The default value for variables. Usually is nothing
-var string helpText;        //The default value for help text. Displayed if there's nothing defined for an entry.
+var localized string helpText;        //The default value for help text. Displayed if there's nothing defined for an entry.
 
 var const int colWidths[2];
 
