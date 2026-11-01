@@ -1253,7 +1253,7 @@ function bool IsPlayerDamaged()
 
 function bool IsPlayerWounded()
 {
-	return player.WoundManager != None && player.WoundManager.HasWounds();
+	return player.WoundManager != None && player.WoundManager.HasWounds(true);
 }
 
 function UpdateRegionsMaxHealth()                                               //RSD: Update max health from alcohol buff/zyme debuff
