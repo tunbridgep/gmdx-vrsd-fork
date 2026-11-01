@@ -114,6 +114,7 @@ function CreateButtons()
 	btnInstall.SetButtonText(InstallButtonLabel);
 
 	chkAutoswitch = PersonaCheckboxWindow(winClient.NewChild(Class'PersonaCheckboxWindow'));
+    chkAutoswitch.Hide();
 	chkAutoswitch.SetText(AutoswitchText);
 	chkAutoswitch.SetPos(346+96+4, 373);
 	chkAutoswitch.SetWidth(200);
@@ -213,7 +214,12 @@ function PopulateAugCanList()
 		txtNoCans.SetText(NoCansAvailableText);
 		txtNoCans.SetTextMargins(4, 4);
 		txtNoCans.SetTextAlignments(HALIGN_Left, VALIGN_Center);
+        chkAutoswitch.Hide();
 	}
+    else
+    {
+        chkAutoswitch.Show();
+    }
 }
 
 // ----------------------------------------------------------------------

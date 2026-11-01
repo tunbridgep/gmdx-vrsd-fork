@@ -47,13 +47,17 @@ function Wound GetWoundByType(class<Wound> woundType)
     return None;
 }
 
-function bool HasWounds()
+function bool HasWounds(optional bool bShowPartial)
 {
     local int i;
 
     for (i = 0;i < numWounds;i++)
+    {
         if (woundsList[i].HasWound())
             return true;
+        if (woundsList[i].GetDamage() > 0 && bShowPartial)
+            return true;
+    }
 
     return false;
 }
