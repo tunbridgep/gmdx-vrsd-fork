@@ -40,9 +40,9 @@ defaultproperties
      Description="Experience with using hazmat suits, ballistic armor, thermoptic camo, and rebreathers in a number of dangerous situations. Total Skill points to master: 3000 |n|nUNTRAINED: An agent can use hazmat suits, ballistic armor, thermoptic camo, and rebreathers.|n|nTRAINED: Armor, suits, camo, and rebreathers can be used slightly longer and more efficiently.|n|nADVANCED: Armor, suits, camo, and rebreathers can be used moderately longer and more efficiently.|n|nMASTER: An agent wears suits and armor like a second skin."
      SkillIcon=Texture'DeusExUI.UserInterface.SkillIconEnviro'
      bAutomatic=True
-     cost(0)=750
+     cost(0)=950
      cost(1)=1500
-     cost(2)=3000
+     cost(2)=2800
      LevelValues(0)=1.000000
      LevelValues(1)=0.750000
      LevelValues(2)=0.500000
