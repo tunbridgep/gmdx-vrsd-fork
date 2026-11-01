@@ -31,6 +31,7 @@ function bool WrapWithDecoration()
 	local float velscale, size, mult;
 	local Augmentation muscleAug;
     local bool bUsedEnergy;
+    local Sound snd;
 
 
    //log("GMDX PROJECTILE OWNER "@Owner);
@@ -83,7 +84,13 @@ function bool WrapWithDecoration()
 
    if (mult==4) AugDamMod=2; else AugDamMod=1.2;
    if (FRand()<0.33)
-	  PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.75*(1.0+10.0/FClamp(Mass,20.0,150.0-20.0*mult)));
+    {
+        if (DxPlayer.FlagBase.GetBool('LDDPJCIsFemale'))
+            snd = Sound(DynamicLoadObject("FemJC.FJCLand", class'Sound', false));
+        else
+            snd = sound'MaleLand';
+        DXPlayer.PlaySound(snd, SLOT_None, 0.9, false, 800, 0.75*(1.0+10.0/FClamp(Mass,20.0,150.0-20.0*mult)));
+    }
    DxPlayer.AISendEvent('Futz', EAITYPE_Visual);
 //log("CARRIED DECO, found valid");
 //set mass etc to deco
