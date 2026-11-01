@@ -1,7 +1,7 @@
 //=============================================================================
 // SavePoint.
 //=============================================================================
-class SavePoint extends BoxLarge;
+class SavePoint extends DeusExDecoration;
 
 var bool bUsedSavePoint; //stop double trigger if destroy takes its time
 var int Tcount;
@@ -110,4 +110,11 @@ defaultproperties
      //bSkipLOSFrobCheck=True //SARGE: Otherwise they get a little weird.
      ItemName="Save Point"
      ScaleGlow=0.85 //SARGE: Make them a bit more subtle
+     Mesh=LodMesh'DeusExDeco.BoxLarge'
+     CollisionRadius=42.000000
+     CollisionHeight=50.000000
+     Mass=60.000000
+     Buoyancy=90.000000
+     bSelectMeleeWeapon=false
+     bInvincible=true
 }

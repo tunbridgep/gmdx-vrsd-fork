@@ -6,7 +6,6 @@ class Containers extends DeusExDecoration
 
 var() int numThings;
 var() bool bGenerateTrash;
-var   bool bSelectMeleeWeapon; //Select a melee weapon when we left-frob this container
 
 var(GMDX) const bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this container on mission completion.
 

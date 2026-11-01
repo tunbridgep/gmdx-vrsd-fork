@@ -73,6 +73,8 @@ var(GMDX) const bool deleteIfFemale;                                            
 
 var const localized string msgCantUseWhileSwimming;                             //SARGE: Message when we can't grab this due to swimming.
 
+var bool bSelectMeleeWeapon; //Select a melee weapon when we left-frob this container
+
 //SARGE: Ignore LOS check for frobbing. Allows us to frob through walls! Disabled by default
 var(GMDX) bool bSkipLOSFrobCheck;
 
@@ -188,7 +190,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
         }
     }
 
-    else*/ if (!bInvincible && frobber.SelectMeleePriority(self))
+    else*/ if (!bInvincible && bSelectMeleeWeapon && frobber.SelectMeleePriority(self))
         return false;
 
     //SARGE: Do this here, since we would otherwise need GMDX Exclusive code inside the OutfitSpawner class,
@@ -1910,4 +1912,5 @@ defaultproperties
      msgCantUseWhileSwimming="You can't pick this up while swimming."
      minimumNewGamePlusCycle=0
      maximumNewGamePlusCycle=-1
+     bSelectMeleeWeapon=true
 }
