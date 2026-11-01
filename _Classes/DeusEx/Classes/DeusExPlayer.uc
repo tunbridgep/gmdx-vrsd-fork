@@ -8673,7 +8673,7 @@ exec function UseSecondary(optional bool bRelease)
         return;
 
     //Don't allow attacking with empty weapons
-    if (assigned.IsA('DeusExWeapon') && DeusExWeapon(assigned).ReloadCount > 0)
+    if (assigned.IsA('DeusExWeapon') && DeusExWeapon(assigned).ReloadCount > 0 && !DeusExWeapon(assigned).bDisposableWeapon)
     {
         if (DeusExWeapon(assigned).AmmoType.AmmoAmount == 0)
             return;
@@ -8764,6 +8764,7 @@ exec function UseSecondary(optional bool bRelease)
         PutInHand(assigned,true);
         if (inHandPending.IsA('DeusExWeapon'))
         {
+            //DebugMessage("Setting bBeginQuickMeleeAttack for " @ inHandPending @ ":" @ bSelectOnly);
             DeusExWeapon(inHandPending).bBeginQuickMelee=true;
             DeusExWeapon(inHandPending).bBeginQuickMeleeAttack=!bSelectOnly;
         }
@@ -9618,7 +9619,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         return false;
 
     //AUGMENTIQUE: Handle weapon skin changes.
-    if (DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
+    if (WeaponSkinManager != None && DeusExWeapon(FrobTarget) != None && DeusExWeapon(FrobTarget).currentWeaponSkin != "default")
     {
         //SARGE: GMDX Exclusive Dirty hack to show the WPN SKIN when picking a weapon up.
         //if (/*FromCorpse == None && */!WeaponSkillManager.IsUnlocked(DeusExWeapon(FrobTarget)))
@@ -10960,6 +10961,9 @@ function SetPlaceholder(int objectNum, Inventory item)
 
     //No placeholders in multiplayer
     if ( Level.NetMode != NM_Standalone )
+        return;
+
+    if (!item.bCanUseObjectBelt)
         return;
 
     if (item != None && item.Class != class'NanoKeyRing')

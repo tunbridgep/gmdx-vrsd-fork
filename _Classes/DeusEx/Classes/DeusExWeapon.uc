@@ -1067,6 +1067,10 @@ function DropFrom(vector StartLocation)
 
 	super.dropfrom(startlocation);
 	checkweaponskins();                                                         //RSD: Need to do this after so we know mesh for Clyzm model check
+
+    //SARGE: Fix laser sticking around when weapons are dropped.
+    LaserOff(true);
+    bLaserToggle = false;
 }
 
 function bool IsClyzmModel()
@@ -1983,9 +1987,6 @@ function bool BreaksDamageThreshold(Actor target)
         damageType = 'Shot';
 
     dmg = CalculateTrueDamage();
-
-    if (IsA('WeaponCrowbar') && (target.IsA('DeusExMover') || target.IsA('DeusExDecoration')))
-        dmg *= 2;
 
     if (target.IsA('DeusExMover'))
         return DeusExMover(target).GetDamageSimple(dmg,DeusExPlayer(Owner),damageType) >= DeusExMover(target).minDamageThreshold;
@@ -5983,21 +5984,8 @@ function Finish()
 
 	if (bHasMuzzleFlash)
 		EraseMuzzleFlashTexture();
-
-    if (bBeginQuickMeleeAttack && bFinishedQuickMeleeAttack && DeusExPlayer(Owner) != None)
-    {
-        DeusExPlayer(Owner).StopFiring();
-        DeusExPlayer(Owner).DebugMessage("Selecting old weapon");
-        bFinishedQuickMeleeAttack = false;
-        bBeginQuickMeleeAttack = false;
-        if (DeusExPlayer(Owner).CarriedDecoration == None)
-        {
-            DeusExPlayer(Owner).SetupQuickSwitch(DeusExPlayer(Owner).primaryWeapon,DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'PerkTacticalRigging').bPerkObtained && !DeusExPlayer(Owner).bLastWasEmpty,false);
-            DeusExPlayer(Owner).SelectLastWeapon(true);
-        }
-		GotoState('Idle');
-        return;
-    }
+    
+    FinishQuickMeleeAttack();
 
 	if ( bChangeWeapon )
 	{
@@ -6826,6 +6814,7 @@ simulated final function String BuildPercentString(Float value)
 
 // ----------------------------------------------------------------------
 // FormatFloatString()
+// SARGE: TODO: Move this to dedicated string utils
 // ----------------------------------------------------------------------
 
 simulated function String FormatFloatString(float value, float precision)
@@ -7752,6 +7741,23 @@ Begin:
 	GotoState('SimIdle');
 }
 
+function FinishQuickMeleeAttack()
+{
+    if (bBeginQuickMeleeAttack && bFinishedQuickMeleeAttack && DeusExPlayer(Owner) != None)
+    {
+        DeusExPlayer(Owner).StopFiring();
+        DeusExPlayer(Owner).DebugMessage("Selecting old weapon");
+        bFinishedQuickMeleeAttack = false;
+        bBeginQuickMeleeAttack = false;
+        if (DeusExPlayer(Owner).CarriedDecoration == None)
+        {
+            DeusExPlayer(Owner).SetupQuickSwitch(DeusExPlayer(Owner).primaryWeapon,DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'PerkTacticalRigging').bPerkObtained && !DeusExPlayer(Owner).bLastWasEmpty,false);
+            DeusExPlayer(Owner).SelectLastWeapon(true);
+        }
+		GotoState('Idle');
+        return;
+    }
+}
 
 state Idle
 {
@@ -7781,9 +7787,11 @@ Begin:
 	}
 	else
 	{
+        FinishQuickMeleeAttack();
 
         if (bBeginQuickMeleeAttack)
         {
+            DeusExPlayer(getplayerpawn()).DebugMessage("Begin quick melee attack");
             bFinishedQuickMeleeAttack=true;
             Fire(0);
         }
