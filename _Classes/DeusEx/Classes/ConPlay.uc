@@ -364,7 +364,7 @@ function ProcessAction( EEventAction nextAction, string nextLabel )
     // This is technically not necessary thanks to Confix, but if someone decides to play without confix for whatever reason, it'll all work properly.
     if (nextAction == 1 && nextLabel == "Done" && info != None && Caps(info.MapName) == "05_NYC_UNATCOMJ12LAB")
     {
-        if ((currentSpeaker != None && currentSpeaker.IsA('Mechanic')) || (currentSpeakingTo != None && currentSpeakingTo.IsA('Mechanic')))
+        if ((currentSpeaker != None && currentSpeaker.BindName == "Sven") || (currentSpeakingTo != None && currentSpeakingTo.BindName == "Sven"))
         {
             if (player.flagBase != None)
                 player.FlagBase.SetBool('SvenDone', True,, 6);
