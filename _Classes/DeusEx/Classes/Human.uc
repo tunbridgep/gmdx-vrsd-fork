@@ -319,6 +319,15 @@ function PlayRising()
 	PlayAnim('Stand',,0.1);
 }
 
+function PlayCrippledStandUp()
+{
+	if (HasAnim('Base'))
+		PlayAnim('Base');
+
+	PlayAnim('Pickup', 0.7, 0.1);
+	PlayCrippledStandUpSound();
+}
+
 function PlayCrawling()
 {
 //	ClientMessage("PlayCrawling()");
@@ -461,6 +470,26 @@ function PlayDyingSound()
 	}
 }
 
+function PlayCrippledStandUpSound()
+{
+	local Sound TSound;
+
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		TSound = Sound(DynamicLoadObject("FemJC.FJCPainMedium", class'Sound', false));
+		if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
+	}
+	else
+	{
+		PlaySound(sound'MalePainMedium', SLOT_Pain,,,, RandomPitch());
+	}
+}
+
+function PlayBoneBreakSound()
+{
+    PlaySound(sound'RSDCrap.Misc.BoneBreak', SLOT_Pain,,,, RandomPitch());
+}
+
 function PlayTakeHitSound(int Damage, name damageType, int Mult)
 {
 	local float rnd;
@@ -595,7 +624,7 @@ simulated function PreBeginPlay()
 
 function DoJump(optional float F)
 {
-	if ((Physics == PHYS_Falling || (HealthLegLeft < 1 && HealthLegRight < 1)) && Base==none && !isMantling && bMantleOption && CarriedDecoration == None && Level.NetMode == NM_StandAlone)
+	if (Physics == PHYS_Falling && Base==none && !isMantling && bMantleOption && CarriedDecoration == None && Level.NetMode == NM_StandAlone)
 	{      
 		startMantling();
 	}
@@ -1130,7 +1159,7 @@ exec function startMantling(optional float F)
 {
     if (F > 0)
        bOnKeyHold = True;
-    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None || IsCrippled()) //SARGE: No mantling while crippled
+    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None) //SARGE: No mantling while crippled // MADE IN CHINA: You mantle with your arms not your legs you silly goose
     {
     }
     else
