@@ -7054,10 +7054,14 @@ function TickCrippledStance(float deltaTime)
 }
 
 // Human.uc has the code/asset references
-function PlayCrippledStandUp(){};
+function PlayCrippledStandUp()
+{
+}
 
 // Play sound when crippled
-function PlayBoneBreakSound(){};
+function PlayBoneBreakSound()
+{
+}
 
 //Ygll: New function to handle air bubble call when jumping into water
 function CreateAirBubbles(int number)
