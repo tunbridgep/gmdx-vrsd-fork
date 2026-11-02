@@ -551,20 +551,13 @@ var bool bHardDrug;
 var bool bCrouchHack;
 var bool bToggledCrouch;		        // used by toggle crouch
 
-//Crippled states
-enum ECrippledStates
-{
-    CRIP_Crouched,
-    CRIP_StandingUp,
-    CRIP_Standing
-};
-var travel ECrippledStates crippledStance;
 var travel float crippledStandUpTimer;
-var travel float crippledStepDist;
-var travel vector crippledLastLoc;
-var globalconfig float crippledStandUpTime;
-var globalconfig float crippledStrideLength;
-var globalconfig int crippledMaxSteps;
+var travel float crippledStandUpCooldownTimer; //Slightly longer than the timer, we can't try to stand up again for a little while.
+var travel int crippledStepsTaken;
+var const float crippledStandUpTime; //How long we can stand up for
+var const float crippledStandUpTimeInitial; //How long after starting to stand up until we can move again
+var const float crippledStandUpCooldown; //How long after falling down can we try to stand up again
+var const int crippledMaxSteps; //Max steps we can take.
 
 //Mantling stance
 var bool bIsMantlingStance;
@@ -1427,7 +1420,7 @@ function HandleCrouchToggle()
 //Return if the character is crouching
 function bool IsCrouching()
 {
-    return bCrouchOn || IsCrippledCrouched() || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
+    return bCrouchOn || IsCrippled(true) || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
 }
 
 //set our crouch state to a certain value
@@ -5375,8 +5368,13 @@ function SetDamagePercent(float percent)
 }
 
 // ----------------------------------------------------------------------
-// default sound functions
+// sound functions
 // ----------------------------------------------------------------------
+
+function float RandomPitch()
+{
+    return (1.1 - 0.2*FRand());
+}
 
 // ----------------------------------------------------------------------
 // PlayBodyThud()
@@ -5461,6 +5459,14 @@ simulated function PlayFootStep()
     local float RainstepVolMod;
     //local PrecipitationInfoBase PI; //Ygll: not currently used
     local int bRainStep;
+
+    //Handle cripple steps
+    if (Physics == PHYS_Walking)
+    {
+        crippledStepsTaken++;
+        if (crippledStepsTaken > crippledMaxSteps && crippledStandUpTimer > 0)
+            EndCrippleStandUp(true);
+    }
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5914,8 +5920,10 @@ function Landed(vector HitNormal)
     local float shakeTime, shakeRoll, shakeVert;
 
 	// Do not stay standing after fall
-	if (IsCrippled() && crippledStance == CRIP_Standing)
-		EndCrippledStanding(true);
+	if (IsCrippled(false))
+    {
+        EndCrippleStandUp(true);
+    }
 
 	//Note - physics changes type to PHYS_Walking by default for landed pawns
 	PlayLanded(Velocity.Z);
@@ -6464,11 +6472,11 @@ function HandleWalking()
 		bIsWalking = !bIsWalking;
 
     // No run while crippled
-    if (IsCrippled())
+    if (IsCrippled(false))
         bIsWalking = True;
 
     //SARGE: If we started running with the run key, untoggle crouch
-    if (bAutoUncrouch && !bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun && !IsCrippledCrouched())
+    if (bAutoUncrouch && !bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun && !IsCrippled(false))
         SetCrouch(false);
 
     bLastRun = bool(bRun);
@@ -6498,21 +6506,15 @@ function DoJump( optional float F )
 		return;
 
     // Climb up when crippled
-    if (IsCrippled())
+    else if (IsCrippled(true))
     {
-        if (crippledStance == CRIP_Crouched) {
-            if (Physics == PHYS_Walking) {
-                BeginCrippledStandUp();
-            }
-            return;
-        }
-        else if (crippledStance == CRIP_StandingUp) {
-            return;
-        }
-        else {
-            PlayCrippledStandUp();
-        }
+        if (Physics == PHYS_Walking && crippledStandUpTimer == 0 && crippledStandUpCooldownTimer == 0)
+            StartCrippleStandUp();
+        return;
     }
+
+    else if (IsCrippledStandUp())
+        return;
 
 	if (AugmentationSystem == None)
 	{
@@ -6533,7 +6535,7 @@ function DoJump( optional float F )
 	if ((CarriedDecoration != None) && (CarriedDecoration.Mass > MusLevel)) //SARGE: Moved this to below the part where we actually set AugMuscle. Previously it did nothing...
 		return;
 
-    if (bOnLadder && WallMaterial != 'Ladder' && !IsCrippled())
+    if (bOnLadder && WallMaterial != 'Ladder' && !IsCrippled(false))
     {
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
@@ -6598,7 +6600,7 @@ function DoJump( optional float F )
 	}
 
     //CyberP: effect when jumping
-	if (Physics == PHYS_Walking && !IsCrippled())
+	if (Physics == PHYS_Walking && !IsCrippled(false))
 	{
 	   RecoilTime=default.RecoilTime + 0.9;
 
@@ -6967,100 +6969,81 @@ exec function SetTiptoesRight(bool B)
 // Are we crippled?
 // ----------------------------------------------------------------------
 
-function bool IsCrippled()
+function bool IsCrippled(bool bCheckStandup)
 {
-    return (HealthLegLeft < 1 && HealthLegRight < 1);
+    return (HealthLegLeft < 1 && HealthLegRight < 1) && (!bCheckStandUp || crippledStandUpTimer == 0);
 }
 
 // ----------------------------------------------------------------------
-// MADE IN CHINA: Crippled state machine
-//
-// Crouch is default state, jump to limited stand with escapes back to default state
+// SARGE: IsCrippledStandup[()
+// Are we crippled AND in the process of doing the standing up animation?
 // ----------------------------------------------------------------------
-
-function bool IsCrippledCrouched()
+function bool IsCrippledStandUp()
 {
-    return IsCrippled() && crippledStance == CRIP_Crouched;
+    return IsCrippled(false) && crippledStandUpTime - crippledStandUpTimer <= crippledStandUpTimeInitial;
 }
 
-function BeginCrippledStandUp()
+function StartCrippleStandUp()
 {
-    crippledStance = CRIP_StandingUp;
     crippledStandUpTimer = crippledStandUpTime;
+	if (HasAnim('Base'))
+		PlayAnim('Base');
+
+	PlayAnim('Pickup', 0.7, 0.1);
+	PlayCrippledPainSound();
+    crippledStepsTaken = 0;
     SetCrouch(false);
-    PlayCrippledStandUp();
 }
 
-function EndCrippledStanding(bool bBreakLegs)
+function EndCrippleStandUp(bool bBoneBreak)
 {
-    crippledStance = CRIP_Crouched;
-    crippledStepDist = 0;
+    if (IsCrippled(false) && !IsCrouching())
+    {
+        if (bBoneBreak)
+            PlayBoneBreakSound();
+        SetCrouch(true);
+        PlayDuck();
+    }
+
+    crippledStepsTaken = 0;
     crippledStandUpTimer = 0;
-    SetCrouch(true);
-    PlayDuck();
-
-    if (bBreakLegs)
-        PlayBoneBreakSound();
+    crippledStandUpCooldownTimer = 0;
+    crippledStandUpCooldownTimer = crippledStandUpCooldown;
 }
 
-function TickCrippledStance(float deltaTime)
+function TickCrippleStand(float deltaTime)
 {
-    local vector delta;
-
-    if (!IsCrippled())
+    if (crippledStandUpTimer > 0)
     {
-        crippledStance = CRIP_Crouched;
-        crippledStepDist = 0;
-        crippledStandUpTimer = 0;
-        return;
-    }
-
-    if (crippledStance == CRIP_StandingUp)
-    {
-        if (Physics != PHYS_Walking) // Escape to default
-        {
-            EndCrippledStanding(false);
-            return;
-        }
-
         crippledStandUpTimer -= deltaTime;
-        if (crippledStandUpTimer <= 0)
-        {
-            crippledStandUpTimer = 0;
-            crippledStance = CRIP_Standing;
-            crippledStepDist = 0;
-            crippledLastLoc = Location;
-        }
+        if (crippledStandUpTimer <= 0 && Physics == PHYS_Walking)
+            EndCrippleStandUp(true);
     }
-    else if (crippledStance == CRIP_Standing)
-    {
-        if (Physics == PHYS_Walking)
-        {
-            // Do not allow ducking while crippled standing
-            if (IsCrouching())
-            {
-                EndCrippledStanding(false);
-                return;
-            }
-
-            delta = Location - crippledLastLoc;
-            delta.Z = 0;
-            crippledStepDist += VSize(delta);
-            if (crippledStepDist >= crippledMaxSteps * crippledStrideLength)
-                EndCrippledStanding(true);
-        }
-        crippledLastLoc = Location;
-    }
+    crippledStandUpCooldownTimer = FMAX(0,crippledStandUpCooldownTimer - deltaTime);
 }
 
-// Human.uc has the code/asset references
-function PlayCrippledStandUp()
+function PlayCrippledPainSound()
 {
+	local Sound TSound;
+
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		TSound = Sound(DynamicLoadObject("FemJC.FJCPainMedium", class'Sound', false));
+		if (TSound != None)
+            PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
+	}
+	else
+	{
+		PlaySound(sound'MalePainMedium', SLOT_Pain,,,, RandomPitch());
+	}
+    AISendEvent('LoudNoise',EAITYPE_Audio,,320);
 }
 
-// Play sound when crippled
 function PlayBoneBreakSound()
 {
+    PlaySound(sound'RSDCrap.Misc.BoneBreak', SLOT_None,,,, RandomPitch());
+    PlayCrippledPainSound();
+    //AISendEvent('LoudNoise',EAITYPE_Audio,,320);
 }
 
 //Ygll: New function to handle air bubble call when jumping into water
@@ -7111,7 +7094,7 @@ state PlayerWalking
             newAccel = vect(0,0,0);
         }
 
-        if (IsCrippled() && crippledStance == CRIP_StandingUp)
+        if (IsCrippledStandUp())
         {
             newAccel = vect(0,0,0);
             Velocity.X = 0;
@@ -7196,7 +7179,7 @@ state PlayerWalking
 			traceSize.Y = CollisionRadius;
 			traceSize.Z = 1;
 			HitActor = Trace(HitLocation, HitNormal, checkpoint, Location, True, traceSize);
-			if (HitActor == None && !bForceDuck && !IsCrippled())
+			if (HitActor == None && !bForceDuck && !IsCrippled(false))
 				bCanTiptoes = True;
 			else
 				bCanTiptoes = False;
@@ -7247,17 +7230,11 @@ state PlayerWalking
 
 		// let the player pull themselves along with their hands even if both of
 		// their legs are blown off
-        if (IsCrippledCrouched())
+        if (IsCrippled(false))
 		{
-			newSpeed = defSpeed * 0.8;
+            newSpeed = defSpeed * 0.8;
 			bIsWalking = True;
 			//bForceDuck = True;
-			bCanTiptoes=false;
-		}
-		// No running when crippled
-		else if (IsCrippled())
-		{
-			bIsWalking = True;
 			bCanTiptoes=false;
 		}
 		// make crouch speed faster than normal
@@ -7366,7 +7343,7 @@ state PlayerWalking
         }
 
 		// if we are moving really slow, force us to walking
-		if ((newSpeed <= defSpeed / 3) && !bForceDuck && !IsCrippled())
+		if ((newSpeed <= defSpeed / 3) && !bForceDuck && !IsCrippled(false))
 		{
 			bIsWalking = True;
 			newSpeed = defSpeed;
@@ -7848,7 +7825,8 @@ state PlayerWalking
         else
             lastWalkTimer = 0.4;
 
-        TickCrippledStance(deltaTime);
+        //SARGE/MIC: Tick the Stand Up Timer
+        TickCrippleStand(deltaTime);
 
         //SARGE: Tick Cloaking
         if (CloakManager != None)
@@ -15033,7 +15011,7 @@ function bool CanStartConversation()
 {
 	if	(((conPlay != None) && (conPlay.CanInterrupt() == False)) ||
 		((conPlay != None) && (conPlay.con.bFirstPerson != True)) ||
-		 (( bForceDuck == True ) && (!IsCrippled())) ||
+		 (( bForceDuck == True ) && (!IsCrippled(false))) ||
 		 ( IsInState('Dying') ) ||
 		 ( IsInState('PlayerSwimming') ) ||
 		 ( IsInState('CheatFlying') ) ||
@@ -21261,9 +21239,10 @@ defaultproperties
      bRemoveVanillaDeath=False
      bHitmarkerOn=True
      bMantleOption=True
-     crippledStandUpTime=1
-     crippledStrideLength=55.000000
-     crippledMaxSteps=3
+     crippledStandUpTime=4
+     crippledStandUpTimeInitial=0.8
+     crippledStandUpCooldown=1
+     crippledMaxSteps=2
      bSkillMessage=True
      iModdedHeadBob=3
      fatty="You cannot consume any more at this time"

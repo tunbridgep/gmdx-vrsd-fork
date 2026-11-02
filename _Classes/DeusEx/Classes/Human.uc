@@ -319,15 +319,6 @@ function PlayRising()
 	PlayAnim('Stand',,0.1);
 }
 
-function PlayCrippledStandUp()
-{
-	if (HasAnim('Base'))
-		PlayAnim('Base');
-
-	PlayAnim('Pickup', 0.7, 0.1);
-	PlayCrippledStandUpSound();
-}
-
 function PlayCrawling()
 {
 //	ClientMessage("PlayCrawling()");
@@ -416,9 +407,10 @@ function PlayDying(name damageType, vector hitLoc)
 // sound functions
 //
 
+//SARGE: I honestly have no idea why this needs to exist...
 function float RandomPitch()
 {
-	return (1.1 - 0.2*FRand());
+    return super.RandomPitch();
 }
 
 //LDDP, 10/26/21: These next 3 functions are all modified for unique sound playing based on female stuff
@@ -468,26 +460,6 @@ function PlayDyingSound()
 			PlaySound(sound'MaleDeath', SLOT_Pain,,,, RandomPitch());
 		}
 	}
-}
-
-function PlayCrippledStandUpSound()
-{
-	local Sound TSound;
-
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-		TSound = Sound(DynamicLoadObject("FemJC.FJCPainMedium", class'Sound', false));
-		if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
-	}
-	else
-	{
-		PlaySound(sound'MalePainMedium', SLOT_Pain,,,, RandomPitch());
-	}
-}
-
-function PlayBoneBreakSound()
-{
-    PlaySound(sound'RSDCrap.Misc.BoneBreak', SLOT_Pain,,,, RandomPitch());
 }
 
 function PlayTakeHitSound(int Damage, name damageType, int Mult)
@@ -1159,7 +1131,7 @@ exec function startMantling(optional float F)
 {
     if (F > 0)
        bOnKeyHold = True;
-    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None) //SARGE: No mantling while crippled // MADE IN CHINA: You mantle with your arms not your legs you silly goose
+    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None || IsCrippled(false)) //SARGE: No mantling while crippled
     {
     }
     else
