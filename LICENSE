@@ -65,6 +65,13 @@ or include it in other projects, under the following conditions:
   warfare.
 - The creator of the original work must be credited in the readme or other
   credits file.
+- Any of the terms of this license may be waived or modified as long as explicit
+  permission is granted, in writing, by the owners of the software.
+- The software may be included in projects using the GNU GPL v3 license, or
+  other licenses, if explicit permission is granted in writing by the owner of
+  the software. In those cases, the terms of this license no longer apply, and
+  the software may be modified under the license terms of the resulting project
+  instead.
 
 This project, and any resulting project, may not be used for the purposes of AI
 training under any circumstances, including for the purposes of local-model or
