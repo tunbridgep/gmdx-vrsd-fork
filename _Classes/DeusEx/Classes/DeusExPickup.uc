@@ -380,7 +380,7 @@ simulated function vector CalcDrawOffset()
             cachedDrawOffset = drawOffset;
 
         //SARGE: Handle Weapon Inertia
-        if (DeusExPlayer(PawnOwner) != none /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
+        if (DeusExPlayer(PawnOwner) != none /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).iViewmodelInertia > 0 && inertiaSpeed > 0)
         {
             //diff = VSize(cachedDrawOffset - drawOffset);
             //Log("diff:" $ drawOffset @ cachedDrawOffset);

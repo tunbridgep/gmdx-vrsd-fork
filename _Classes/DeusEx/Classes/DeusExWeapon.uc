@@ -425,9 +425,12 @@ var const bool bIsPlaceableOnWall;
 var transient bool bDontActuallyRenderViewModel;
 
 //SARGE: Weapon inertia
+var transient Rotator cachedVR;
 var transient Vector cachedDrawOffset;
 var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
-var const float inertiaSpeed;                            //SARGE: How fast weapons move.
+var const float inertiaSpeedOld;                         //SARGE: How fast weapons move. Old system only
+var const float inertiaSpeed;                            //SARGE: How fast weapons move. New system only
+var const float inertiaMaxDist;                          //SARGE: How far weapons can go in any direction (angle unity). New System Only
 
 //SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
 var const Sound DeselectSound;
@@ -2785,7 +2788,7 @@ simulated function Tick(float deltaTime)
     }
     
     //SARGE: Weapon Inertia
-    inertiaDelta = deltaTime*inertiaSpeed;
+    inertiaDelta = deltaTime;
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -5004,6 +5007,7 @@ simulated function vector CalcDrawOffset()
 	local Pawn			PawnOwner;
 	local vector unX,unY,unZ;
     local Rotator vr;                       //SARGE: Added viewrotation variable
+    local Rotator newAngle;
     local Vector newOffset;
 
 	SPOwner = ScriptedPawn(Owner);
@@ -5030,28 +5034,83 @@ simulated function vector CalcDrawOffset()
 
         DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
 
-        newOffset = drawOffset;
-
-        if (VSize(cachedDrawOffset) == 0 || VSize(cachedDrawOffset - drawOffset) > 40)
-            cachedDrawOffset = drawOffset;
+        newOffset = DrawOffset;
+                
+        //First convert everything to the 1-32767 space
+        if (vr.Pitch > 32767)
+            vr.Pitch -= 65536;
+        if (vr.Yaw < 0)
+            vr.Yaw += 65536;
+                
+        //SARGE: Fix wrapping past 360 degrees...
+        vr.Yaw = vr.Yaw % 65535;
+        vr.Pitch = vr.Pitch % 65535;
+        
+        //Fix angles between 180* and 360*
+        //DeusExPlayer(PawnOwner).DebugMessage("VR:" @ vr.Yaw @ cachedVR.yaw);
+        if (abs(vr.Yaw - cachedVR.Yaw) > 32767)
+        {
+            if (cachedVR.Yaw > 32767)
+                cachedVR.Yaw -= 65536;
+            else
+                cachedVR.Yaw += 65536;
+        }
+        
+        newAngle = vr;
+        
 
         //SARGE: Handle Weapon Inertia
-        if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
+        if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/&& DeusExPlayer(PawnOwner).iViewmodelInertia > 0)
         {
-            //diff = VSize(cachedDrawOffset - drawOffset);
-            //Log("diff:" $ drawOffset @ cachedDrawOffset);
-            //diff = FMax(-8.0,FMin(8.0,diff));
-            //Log("diff:" $ diff);
+            if (DeusExPlayer(PawnOwner).iViewmodelInertia == 1 && inertiaSpeedOld > 0) //Classic Mode. Janky
+            {
+                if (VSize(cachedDrawOffset) == 0)
+                    cachedDrawOffset = drawOffset;
 
-            newOffset.X = lerp(inertiaDelta,cachedDrawOffset.X,drawOffset.X);
-            newOffset.Y = lerp(inertiaDelta,cachedDrawOffset.Y,drawOffset.Y);
-            newOffset.Z = lerp(inertiaDelta,cachedDrawOffset.Z,drawOffset.Z);
+                newOffset.X = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.X,drawOffset.X);
+                newOffset.Y = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.Y,drawOffset.Y);
+                newOffset.Z = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.Z,drawOffset.Z);
+            }
+            else if (DeusExPlayer(PawnOwner).iViewmodelInertia == 2 && inertiaSpeed > 0) //The new hotness
+            {
+        
+                if (vr.Pitch < cachedVR.Pitch)
+                {
+                    newAngle.Pitch = cachedVR.Pitch - inertiaSpeed * inertiaDelta;
+                    newAngle.Pitch = FMAX(vr.Pitch,newAngle.Pitch);
+                    newAngle.Pitch = FMIN(newAngle.Pitch,vr.Pitch + inertiaMaxDist/3.0 + inertiaDelta*2);
+                }
+                else if (vr.Pitch > cachedVR.Pitch)
+                {
+                    newAngle.Pitch = cachedVR.Pitch + inertiaSpeed * inertiaDelta;
+                    newAngle.Pitch = FMIN(vr.Pitch,newAngle.Pitch);
+                    newAngle.Pitch = FMAX(newAngle.Pitch,vr.Pitch - inertiaMaxDist/3.0 - inertiaDelta*2);
+                }
+
+                if (vr.Yaw < cachedVR.Yaw)
+                {
+                    newAngle.Yaw = cachedVR.Yaw - inertiaSpeed * inertiaDelta;
+                    newAngle.Yaw = FMAX(vr.Yaw,newAngle.Yaw);
+                    newAngle.Yaw = FMIN(newAngle.Yaw,vr.Yaw + inertiaMaxDist + inertiaDelta*2);
+                }
+                else if (vr.Yaw > cachedVR.Yaw)
+                {
+                    newAngle.Yaw = cachedVR.Yaw + inertiaSpeed * inertiaDelta;
+                    newAngle.Yaw = FMIN(vr.Yaw,newAngle.Yaw);
+                    newAngle.Yaw = FMAX(newAngle.Yaw,vr.Yaw - inertiaMaxDist - inertiaDelta*2);
+                }
+
+                newOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> newAngle);
+            }
         }
-    
-        cachedDrawOffset = newOffset;
+        
+        cachedDrawOffset = DrawOffset;
+        cachedVR = newAngle;
+        
+        DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
+        NewOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
         DrawOffset = newOffset;
-        DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
 		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
@@ -8225,7 +8284,9 @@ defaultproperties
      addonPenalties(2)=0.15 //Laser
      currentWeaponSkin="default"
      totalScopeTime=0.41
-     inertiaSpeed=30
+     inertiaSpeedOld=7
+     inertiaSpeed=20000
+     inertiaMaxDist=4200
      AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
      minimumNewGamePlusCycle=0
      maximumNewGamePlusCycle=-1

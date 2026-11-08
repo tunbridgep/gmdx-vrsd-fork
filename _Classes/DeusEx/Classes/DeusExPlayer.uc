@@ -982,7 +982,7 @@ var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscio
 
 var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our reserve energy on the bioenergy bar in the HUD
 
-var globalconfig bool bViewmodelInertia;                       //SARGE: Add inertia to weapon and item viewmodels.
+var globalconfig int iViewmodelInertia;                     //SARGE: Add inertia to weapon and item viewmodels. 0 = Off, 1 = "Classic" AE v1.22 inertia (janky), 2 = New Version
 
 var globalconfig bool bPickupsUseFOV;                       //SARGE: Pickups, Lockpicks, etc, will use the players FOV properly, rather than always being as big as possible.
 
@@ -21314,7 +21314,7 @@ defaultproperties
      bUnconsciousFallDamage=true
      bGEPUsesWPByDefault=true
      bEnergyBarShowsReserve=true
-     bViewmodelInertia=true
+     iViewmodelInertia=2
      bTurnHeads=true
      precipDensity=-1
      nextPrecipChange=-50
