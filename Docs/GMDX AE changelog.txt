@@ -53,6 +53,7 @@ New Features:
 - Added a new QoL option to activate new sequential melee attack animation. Disabled by default.
 - Created water droplet effect on player after have been in the water.
 - Blood droplet will now create blood pool effect when going in the water.
+- A Blue laser sight can now be selected for all weapons (only available on non-HDTP models for now)
 
 Bug Fixes:
 - Fixed Secondary icon sometimes being cleared when transitioning between maps.
