@@ -10,32 +10,13 @@ class MathUtils extends Object abstract;
 //crossed the point where we loop back around.
 //This is hacky and shit 
 //NOTE: Does not handle Roll at all!
-static function Rotator GetRotationBetween(Rotator r1, Rotator r2, float distance, float max)
+static function Rotator GetRotationBetween(Rotator r1, Rotator r2)
 {
     local Rotator result;
 
-    log("$1" @ r1.Pitch @ r1.Yaw);
-
-    //First convert everything to the 1-32767 space
-    if (r1.Pitch < 0)
-        r1.Pitch += 65536;
-    if (r2.Pitch < 0)
-        r2.Pitch += 65536;
-    
-    if (r1.Yaw < 0)
-        r1.Yaw += 65536;
-    if (r2.Yaw < 0)
-        r2.Yaw += 65536;
-    
-    log("$2" @ r1.Pitch @ r1.Yaw);
-
-    //SARGE: Fix wrapping past 360 degrees...
-    r1.Pitch = r1.Pitch % 65536;
-    r1.Yaw = r1.Yaw % 65536;
-    r2.Pitch = r2.Pitch % 65536;
-    r2.Yaw = r2.Yaw % 65536;
-    
-    log("$3" @ r1.Pitch @ r1.Yaw);
+    //Normalize first
+    r1 = NormalizeRotator(r1);
+    r2 = NormalizeRotator(r2);
     
     //If the difference between them is > 180 degrees,
     //then we need to make sure we actually find the shortest angle.
@@ -57,34 +38,24 @@ static function Rotator GetRotationBetween(Rotator r1, Rotator r2, float distanc
             r2.Yaw += 65536;
     }
 
-    result = r1;
+    return r2;
+}
 
-    //Now that it's all fixed up, get the actual new position
-    if (r1.Pitch < r2.Pitch)
-    {
-        result.Pitch = r2.Pitch - distance;
-        result.Pitch = FMAX(r1.Pitch,result.Pitch);
-        result.Pitch = FMIN(result.Pitch,r1.Pitch + max);
-    }
-    else if (r1.Pitch > r2.Pitch)
-    {
-        result.Pitch = r2.Pitch + distance;
-        result.Pitch = FMIN(r1.Pitch,result.Pitch);
-        result.Pitch = FMAX(result.Pitch,r1.Pitch - max);
-    }
-    
-    if (r1.Yaw < r2.Yaw)
-    {
-        result.Yaw = r2.Yaw - distance;
-        result.Yaw = FMAX(r1.Yaw,result.Yaw);
-        result.Yaw = FMIN(result.Yaw,r1.Yaw + max);
-    }
-    else if (r1.Yaw > r2.Yaw)
-    {
-        result.Yaw = r2.Yaw + distance;
-        result.Yaw = FMIN(r1.Yaw,result.Yaw);
-        result.Yaw = FMAX(result.Yaw,r1.Yaw - max);
-    }
+//Clamps a rotator to 0-65536
+static function Rotator NormalizeRotator(Rotator rot)
+{
+    //Turn negatives into positives
+    while (rot.Pitch < 0)
+        rot.Pitch += 65536;
+    while (rot.Yaw < 0)
+        rot.Yaw += 65536;
+    while (rot.Roll < 0)
+        rot.Roll += 65536;
 
-    return result;
+    //Fix wrapping past 360 degrees...
+    rot.Pitch = rot.Pitch % 65536;
+    rot.Yaw = rot.Yaw % 65536;
+    rot.Roll = rot.Roll % 65536;
+
+    return rot;
 }

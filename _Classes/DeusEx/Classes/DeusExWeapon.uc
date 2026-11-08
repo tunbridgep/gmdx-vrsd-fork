@@ -426,11 +426,8 @@ var transient bool bDontActuallyRenderViewModel;
 
 //SARGE: Weapon inertia
 var transient Rotator cachedVR;
-var transient Vector cachedDrawOffset;
 var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
-var const float inertiaSpeedOld;                         //SARGE: How fast weapons move. Old system only
 var const float inertiaSpeed;                            //SARGE: How fast weapons move. New system only
-var const float inertiaMaxDist;                          //SARGE: How far weapons can go in any direction (angle unity). New System Only
 
 //SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
 var const Sound DeselectSound;
@@ -895,9 +892,6 @@ function Draw(DeusExPlayer frobber)
     ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
-            
-    //Reset weapon inertia
-    cachedDrawOffset = Vect(0,0,0);
 
     DoWeaponOffset();
 }
@@ -5008,7 +5002,6 @@ simulated function vector CalcDrawOffset()
 	local vector unX,unY,unZ;
     local Rotator vr;                       //SARGE: Added viewrotation variable
     local Rotator newAngle;
-    local Vector newOffset;
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -5029,49 +5022,36 @@ simulated function vector CalcDrawOffset()
 		PawnOwner = Pawn(Owner);
 
         vr = PawnOwner.ViewRotation;
-        if (PawnOwner.isa('DeusExPlayer'))
-            vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
-
-        newAngle = vr;
-        DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
-        newOffset = DrawOffset;
-
-        //SARGE: Handle Weapon Inertia
-        if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/&& DeusExPlayer(PawnOwner).iViewmodelInertia > 0)
+        if (DeusExPlayer(PawnOwner) != None && DeusExPlayer(PawnOwner).bViewmodelInertia && !bZoomed && !IsInState('Reloading'))
         {
-            if (DeusExPlayer(PawnOwner).iViewmodelInertia == 1 && inertiaSpeedOld > 0) //Classic Mode. Janky
-            {
-        
-                if (VSize(cachedDrawOffset) == 0)
-                    cachedDrawOffset = drawOffset;
+            vr = class'MathUtils'.static.NormalizeRotator(DeusExPlayer(PawnOwner).GetCurrentViewRotation());
 
-                newOffset.X = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.X,drawOffset.X);
-                newOffset.Y = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.Y,drawOffset.Y);
-                newOffset.Z = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.Z,drawOffset.Z);
-            }
-            else if (DeusExPlayer(PawnOwner).iViewmodelInertia == 2 && inertiaSpeed > 0) //The new hotness
-            {
-        
-                newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedVR,inertiaSpeed * inertiaDelta,inertiaMaxDist);
+            //DeusExPlayer(PawnOwner).DebugMessage("ViewRotation.Yaw: " $ vr.Yaw);
+            
+            newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedVR);
 
-                newOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> newAngle);
-            }
+            vr.Yaw = lerp(inertiaDelta * inertiaSpeed,vr.Yaw,newAngle.Yaw);
+            vr.Pitch = lerp(inertiaDelta * inertiaSpeed,vr.Pitch,newAngle.Pitch);
         }
-        
-        cachedDrawOffset = DrawOffset;
+
+        //cache the view rotation for next frame.
         cachedVR = vr;
-        
+            
+        //Draw base offset
+        DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+
+        //Add eye height
         DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
-        NewOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
-        DrawOffset = newOffset;
-
+        //And weapon bob
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
 		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
 
 		DrawOffset += WeaponBob;
 	}
-	if (Owner.IsA('DeusExPlayer'))
+
+    //Recoil Shake
+	if (DeusExPlayer(Owner) != None)
 	{
 		if (VSize(DeusExPlayer(Owner).RecoilShake)>0.0)
 		{
@@ -8238,9 +8218,7 @@ defaultproperties
      addonPenalties(2)=0.15 //Laser
      currentWeaponSkin="default"
      totalScopeTime=0.41
-     inertiaSpeedOld=7
-     inertiaSpeed=20000
-     inertiaMaxDist=4200
+     inertiaSpeed=35
      AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
      minimumNewGamePlusCycle=0
      maximumNewGamePlusCycle=-1

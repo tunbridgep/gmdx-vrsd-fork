@@ -49,11 +49,8 @@ var bool bCachedNearWall; //CyberP: emulating the weapon movement if player near
 
 //SARGE: Weapon inertia
 var transient Rotator cachedVR;
-var transient Vector cachedDrawOffset;
 var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
-var float inertiaSpeedOld;                         //SARGE: How fast weapons move. Old system only
 var float inertiaSpeed;                            //SARGE: How fast weapons move. New system only
-var const float inertiaMaxDist;                          //SARGE: How far weapons can go in any direction (angle unity). New System Only
 
 //SARGE: Use proper FOV scaling
 var bool bUseFOV;
@@ -352,7 +349,6 @@ simulated function vector CalcDrawOffset()
 	local vector unX,unY,unZ;
     local Rotator vr;                       //SARGE: Added viewrotation variable
     local Rotator newAngle;
-    local Vector newOffset;
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -369,50 +365,31 @@ simulated function vector CalcDrawOffset()
 		PawnOwner = Pawn(Owner);
 
         vr = PawnOwner.ViewRotation;
-        if (PawnOwner.isa('DeusExPlayer'))
-            vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
+        if (DeusExPlayer(PawnOwner) != None && DeusExPlayer(PawnOwner).bViewmodelInertia)
+        {
+            vr = class'MathUtils'.static.NormalizeRotator(DeusExPlayer(PawnOwner).GetCurrentViewRotation());
 
+            //DeusExPlayer(PawnOwner).DebugMessage("ViewRotation.Yaw: " $ vr.Yaw);
+            
+            newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedVR);
+
+            vr.Yaw = lerp(inertiaDelta * inertiaSpeed,vr.Yaw,newAngle.Yaw);
+            vr.Pitch = lerp(inertiaDelta * inertiaSpeed,vr.Pitch,newAngle.Pitch);
+        }
+
+        //cache the view rotation for next frame.
+        cachedVR = vr;
+            
+        //Draw base offset
         if (class'DeusExPlayer'.default.bPickupsUseFOV && bUseFOV)
             DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
         else
             DrawOffset = ((0.9/PawnOwner.FOVAngle * PlayerViewOffset) >> vr);
 
-        newOffset = DrawOffset;
-                
-        newAngle = vr;
-
-    
-        //SARGE: Handle Weapon Inertia
-        if (DeusExPlayer(PawnOwner) != none /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/&& DeusExPlayer(PawnOwner).iViewmodelInertia > 0)
-        {
-            if (DeusExPlayer(PawnOwner).iViewmodelInertia == 1 && inertiaSpeedOld > 0) //Classic Mode. Janky
-            {
-                if (VSize(cachedDrawOffset) == 0)
-                    cachedDrawOffset = drawOffset;
-
-                newOffset.X = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.X,drawOffset.X);
-                newOffset.Y = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.Y,drawOffset.Y);
-                newOffset.Z = lerp(inertiaDelta*inertiaSpeedOld,cachedDrawOffset.Z,drawOffset.Z);
-            }
-            else if (DeusExPlayer(PawnOwner).iViewmodelInertia == 2 && inertiaSpeed > 0) //The new hotness
-            {
-                newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedVR,inertiaSpeed * inertiaDelta,inertiaMaxDist);
-
-                if (class'DeusExPlayer'.default.bPickupsUseFOV && bUseFOV)
-                    newOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> newAngle);
-                else
-                    newOffset = ((0.9/PawnOwner.FOVAngle * PlayerViewOffset) >> newAngle);
-            }
-        }
-        
-        cachedDrawOffset = DrawOffset;
-        cachedVR = vr;
-        
+        //Add eye height
         DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
-        NewOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
-        DrawOffset = newOffset;
-
+        //And weapon bob
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
 		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
 
@@ -1263,8 +1240,6 @@ function DestroyMe()
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-    //Reset weapon inertia
-    cachedDrawOffset = Vect(0,0,0);
     SetWeaponHandTex();
 }
 
@@ -1341,9 +1316,7 @@ defaultproperties
      bProjTarget=True
      iHDTPModelToggle=1
      bVisionImportant=true
-     inertiaSpeedOld=0
      inertiaSpeed=0
-     inertiaMaxDist=4200
      bUseFOV=false
      msgRecharged="Your %s was Recharged!"
 	 M_Activated=""
