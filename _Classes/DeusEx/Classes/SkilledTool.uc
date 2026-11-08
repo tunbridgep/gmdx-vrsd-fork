@@ -263,6 +263,7 @@ function Destroyed()
 defaultproperties
 {
      CountLabel="Uses:"
-     inertiaSpeed=30
      bUseFOV=true
+     inertiaSpeedOld=7
+     inertiaSpeed=20000
 }

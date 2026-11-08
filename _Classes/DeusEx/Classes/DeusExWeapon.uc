@@ -5032,38 +5032,16 @@ simulated function vector CalcDrawOffset()
         if (PawnOwner.isa('DeusExPlayer'))
             vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
 
-        DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
-
-        newOffset = DrawOffset;
-                
-        //First convert everything to the 1-32767 space
-        if (vr.Pitch > 32767)
-            vr.Pitch -= 65536;
-        if (vr.Yaw < 0)
-            vr.Yaw += 65536;
-                
-        //SARGE: Fix wrapping past 360 degrees...
-        vr.Yaw = vr.Yaw % 65535;
-        vr.Pitch = vr.Pitch % 65535;
-        
-        //Fix angles between 180* and 360*
-        //DeusExPlayer(PawnOwner).DebugMessage("VR:" @ vr.Yaw @ cachedVR.yaw);
-        if (abs(vr.Yaw - cachedVR.Yaw) > 32767)
-        {
-            if (cachedVR.Yaw > 32767)
-                cachedVR.Yaw -= 65536;
-            else
-                cachedVR.Yaw += 65536;
-        }
-        
         newAngle = vr;
-        
+        DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+        newOffset = DrawOffset;
 
         //SARGE: Handle Weapon Inertia
         if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/&& DeusExPlayer(PawnOwner).iViewmodelInertia > 0)
         {
             if (DeusExPlayer(PawnOwner).iViewmodelInertia == 1 && inertiaSpeedOld > 0) //Classic Mode. Janky
             {
+        
                 if (VSize(cachedDrawOffset) == 0)
                     cachedDrawOffset = drawOffset;
 
@@ -5074,38 +5052,14 @@ simulated function vector CalcDrawOffset()
             else if (DeusExPlayer(PawnOwner).iViewmodelInertia == 2 && inertiaSpeed > 0) //The new hotness
             {
         
-                if (vr.Pitch < cachedVR.Pitch)
-                {
-                    newAngle.Pitch = cachedVR.Pitch - inertiaSpeed * inertiaDelta;
-                    newAngle.Pitch = FMAX(vr.Pitch,newAngle.Pitch);
-                    newAngle.Pitch = FMIN(newAngle.Pitch,vr.Pitch + inertiaMaxDist/3.0 + inertiaDelta*2);
-                }
-                else if (vr.Pitch > cachedVR.Pitch)
-                {
-                    newAngle.Pitch = cachedVR.Pitch + inertiaSpeed * inertiaDelta;
-                    newAngle.Pitch = FMIN(vr.Pitch,newAngle.Pitch);
-                    newAngle.Pitch = FMAX(newAngle.Pitch,vr.Pitch - inertiaMaxDist/3.0 - inertiaDelta*2);
-                }
-
-                if (vr.Yaw < cachedVR.Yaw)
-                {
-                    newAngle.Yaw = cachedVR.Yaw - inertiaSpeed * inertiaDelta;
-                    newAngle.Yaw = FMAX(vr.Yaw,newAngle.Yaw);
-                    newAngle.Yaw = FMIN(newAngle.Yaw,vr.Yaw + inertiaMaxDist + inertiaDelta*2);
-                }
-                else if (vr.Yaw > cachedVR.Yaw)
-                {
-                    newAngle.Yaw = cachedVR.Yaw + inertiaSpeed * inertiaDelta;
-                    newAngle.Yaw = FMIN(vr.Yaw,newAngle.Yaw);
-                    newAngle.Yaw = FMAX(newAngle.Yaw,vr.Yaw - inertiaMaxDist - inertiaDelta*2);
-                }
+                newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedVR,inertiaSpeed * inertiaDelta,inertiaMaxDist);
 
                 newOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> newAngle);
             }
         }
         
         cachedDrawOffset = DrawOffset;
-        cachedVR = newAngle;
+        cachedVR = vr;
         
         DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
         NewOffset += (PawnOwner.EyeHeight * vect(0,0,1));
