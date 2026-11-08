@@ -60,7 +60,7 @@ function DisplayWeapon(bool overlay)
             ShowWeaponAddon(3,!bHasSilencer); //Muzzle Break, hidden when we have silencer
             ShowWeaponAddon(4,bHasSilencer);
             ShowWeaponAddon(5,bHasLaser);
-            ShowWeaponAddon(6,bHasLaser && bLasing);
+            ShowWeaponLaserAddon(6,bHasLaser && bLasing);
             ShowWeaponAddon(7,bHasScope);
         }
     }
@@ -69,7 +69,7 @@ function DisplayWeapon(bool overlay)
         ShowWeaponAddon(3,!bHasSilencer); //Muzzle Break, hidden when we have silencer
         ShowWeaponAddon(4,bHasSilencer);
         ShowWeaponAddon(5,bHasLaser);
-        ShowWeaponAddon(6,bHasLaser && bLasing);
+        ShowWeaponLaserAddon(6,bHasLaser && bLasing);
         ShowWeaponAddon(7,bHasScope);
     }
 

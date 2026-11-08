@@ -116,6 +116,7 @@ defaultproperties
      items(42)=(HelpText="If enabled, the toolbelt will fade out and disappear when not in use.",actionText="HUD: Fade Toolbelt",consoleTarget="HUDObjectBelt",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds",image1="Qol_FadeBelt1",image2="Qol_FadeBelt2")
      items(43)=(HelpText="If enabled, the secondary display will fade out and disappear when not in use.",actionText="HUD: Fade Secondary Display",consoleTarget="HUDAmmoDisplay2",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds",image1="Qol_FadeBelt1",image2="Qol_FadeBelt2")
      items(44)=(HelpText="If enabled, the ammo display will fade out and disappear when not in use.",actionText="HUD: Fade Ammo Display",consoleTarget="HUDAmmoDisplay",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds",image1="Qol_FadeBelt1",image2="Qol_FadeBelt2")
+     items(45)=(HelpText="Change Laser Sight colour and beam.",actionText="Game: Laser Sight Visibility",variable="iLaserSightMode",defaultValue=0,image1="Qol_AutoSkins1",image2="Qol_AutoSkins2",valueText0="Red",valueText1="Blue")
 
      Title="GMDX Quality of Life Options"
      actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Advanced Settings",Key="ADVANCED")

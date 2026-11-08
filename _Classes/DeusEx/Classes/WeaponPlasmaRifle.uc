@@ -120,13 +120,13 @@ function DisplayWeapon(bool overlay)
         if (overlay)
         {
             ShowWeaponAddon(3,bHasLaser);
-            ShowWeaponAddon(4,bHasLaser && bLasing);
+            ShowWeaponLaserAddon(4,bHasLaser && bLasing);
             ShowWeaponAddon(5,bHasScope);
         }
         else
         {
             ShowWeaponAddon(2,bHasLaser);
-            ShowWeaponAddon(3,bHasLaser && bLasing);
+            ShowWeaponLaserAddon(3,bHasLaser && bLasing);
             ShowWeaponAddon(4,bHasScope);
         }
     }
