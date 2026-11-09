@@ -1146,7 +1146,7 @@ function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowM
 {
     local bool bResult;
     local DeusExAmmo AmmoType;
-    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow,carcassID);
+    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg && !item.bDisposableWeapon,bShowOverflow && !item.bDisposableWeapon,carcassID);
 
     return bResult;
 }
