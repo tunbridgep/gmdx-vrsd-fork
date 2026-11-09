@@ -164,4 +164,5 @@ defaultproperties
      UnfamiliarName="Anna Navarre"
      bCanBlink=false                        //mechs blinking looks weird
      bRandomHeightAdjust=false
+     bWavyCloakTex=true
 }

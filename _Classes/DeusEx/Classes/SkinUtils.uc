@@ -16,7 +16,7 @@ static function Texture GetStyleTexture(ERenderStyle newStyle, optional texture 
 {
 	local texture defaultTex;
 
-	if      (newStyle == STY_Translucent)
+	if (newStyle == STY_Translucent)
 		defaultTex = Texture'BlackMaskTex';
 	else if (newStyle == STY_Modulated)
 		defaultTex = Texture'GrayMaskTex';

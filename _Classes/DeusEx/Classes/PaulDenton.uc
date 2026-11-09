@@ -154,4 +154,5 @@ defaultproperties
      FamiliarName="Paul Denton"
      UnfamiliarName="Paul Denton"
      bRandomHeightAdjust=false
+     bWavyCloakTex=true
 }
