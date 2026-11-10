@@ -23,39 +23,31 @@ static function Rotator GetRotationBetween(Rotator r1, Rotator r2)
     //This can happen because sometimes we cross a threshold.
     //For instance, going from 65535 (359*) to 5 (1*) is only a 1 degree change,
     //but the numbers look huge. So we need to adjust it...
-    if (abs(r1.Pitch - r2.Pitch) > 32768)
+    if (abs(r1.Pitch - r2.Pitch) > 32767)
     {
-        if (r2.Pitch > 32768)
-            r2.Pitch -= 65536;
+        if (r2.Pitch > 32767)
+            r2.Pitch -= 65535;
         else
-            r2.Pitch += 65536;
+            r2.Pitch += 65535;
     }
-    if (abs(r1.Yaw - r2.Yaw) > 32768)
+    if (abs(r1.Yaw - r2.Yaw) > 32767)
     {
-        if (r2.Yaw > 32768)
-            r2.Yaw -= 65536;
+        if (r2.Yaw > 32767)
+            r2.Yaw -= 65535;
         else
-            r2.Yaw += 65536;
+            r2.Yaw += 65535;
     }
 
     return r2;
 }
 
-//Clamps a rotator to 0-65536
+//Clamps a rotator to 0-65535
 static function Rotator NormalizeRotator(Rotator rot)
 {
-    //Turn negatives into positives
-    while (rot.Pitch < 0)
-        rot.Pitch += 65536;
-    while (rot.Yaw < 0)
-        rot.Yaw += 65536;
-    while (rot.Roll < 0)
-        rot.Roll += 65536;
-
-    //Fix wrapping past 360 degrees...
-    rot.Pitch = rot.Pitch % 65536;
-    rot.Yaw = rot.Yaw % 65536;
-    rot.Roll = rot.Roll % 65536;
+    //Fix wrapping past 360 degrees and remove negative values...
+    rot.Pitch = rot.Pitch & 65535;
+    rot.Yaw = rot.Yaw & 65535;
+    rot.Roll = rot.Roll & 65535;
 
     return rot;
 }

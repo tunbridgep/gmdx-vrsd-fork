@@ -425,9 +425,8 @@ var const bool bIsPlaceableOnWall;
 var transient bool bDontActuallyRenderViewModel;
 
 //SARGE: Weapon inertia
-var transient Rotator cachedVR;
-var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
 var const float inertiaSpeed;                            //SARGE: How fast weapons move. New system only
+var transient Rotator cachedViewRotation;               //SARGE: Now calculate once per tick
 
 //SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
 var const Sound DeselectSound;
@@ -2782,7 +2781,7 @@ simulated function Tick(float deltaTime)
     }
     
     //SARGE: Weapon Inertia
-    inertiaDelta = deltaTime;
+    CalcViewRotation(deltaTime);
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -4991,6 +4990,28 @@ static final operator(18) float mod ( float A, float B )
   return ( A % B ) + B;
 }*/
 
+function Rotator CalcViewRotation(float deltaTime)
+{
+    local Rotator vr, newAngle;
+    local DeusExPlayer P;
+    
+    P = DeusExPlayer(Owner);
+
+    if (Pawn(Owner) != None)
+        vr = Pawn(Owner).ViewRotation;
+    
+    if (P != None && P.bViewmodelInertia && !bZoomed && !IsInState('Reloading'))
+    {
+        vr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
+        newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedViewRotation);
+            
+        vr.Yaw = lerp(deltaTime * inertiaSpeed,vr.Yaw,newAngle.Yaw);
+        vr.Pitch = lerp(deltaTime * inertiaSpeed,vr.Pitch,newAngle.Pitch);
+    }
+
+    cachedViewRotation = vr;
+}
+
 //
 // Modified to work better with scripted pawns
 //
@@ -4998,76 +5019,53 @@ simulated function vector CalcDrawOffset()
 {
 	local vector		DrawOffset, WeaponBob;
 	local ScriptedPawn	SPOwner;
-	local Pawn			PawnOwner;
+	local DeusExPlayer	POwner;
 	local vector unX,unY,unZ;
-    local Rotator vr;                       //SARGE: Added viewrotation variable
-    local Rotator newAngle;
 
 	SPOwner = ScriptedPawn(Owner);
+    POwner = DeusExPlayer(Owner);
 	if (SPOwner != None)
 	{
 		DrawOffset = ((0.9/SPOwner.FOVAngle * PlayerViewOffset) >> SPOwner.ViewRotation);
 		DrawOffset += (SPOwner.BaseEyeHeight * vect(0,0,1));
 	}
-	else
+	else if (POwner != None)
 	{
         //Apply lerp-aid
 	    if (activateAn == False && !bGEPOut)
 	    {
             PlayerViewOffset.X = default.PlayerViewOffset.X*100;
             PlayerViewOffset.X += lerpAid;
-        }       
-
-// copied from Engine.Inventory to not be FOVAngle dependent
-		PawnOwner = Pawn(Owner);
-
-        vr = PawnOwner.ViewRotation;
-        if (DeusExPlayer(PawnOwner) != None && DeusExPlayer(PawnOwner).bViewmodelInertia && !bZoomed && !IsInState('Reloading'))
-        {
-            vr = class'MathUtils'.static.NormalizeRotator(DeusExPlayer(PawnOwner).GetCurrentViewRotation());
-
-            //DeusExPlayer(PawnOwner).DebugMessage("ViewRotation.Yaw: " $ vr.Yaw);
-            
-            newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedVR);
-
-            vr.Yaw = lerp(inertiaDelta * inertiaSpeed,vr.Yaw,newAngle.Yaw);
-            vr.Pitch = lerp(inertiaDelta * inertiaSpeed,vr.Pitch,newAngle.Pitch);
         }
 
-        //cache the view rotation for next frame.
-        cachedVR = vr;
-            
         //Draw base offset
-        DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+        DrawOffset = ((0.9/POwner.Default.FOVAngle * PlayerViewOffset) >> cachedViewRotation);
 
         //Add eye height
-        DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
+        DrawOffset += (POwner.EyeHeight * vect(0,0,1));
 
         //And weapon bob
-		WeaponBob = BobDamping * PawnOwner.WalkBob;
-		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
-
+		WeaponBob = BobDamping * POwner.WalkBob;
+		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * POwner.WalkBob.Z;
 		DrawOffset += WeaponBob;
-	}
-
-    //Recoil Shake
-	if (DeusExPlayer(Owner) != None)
-	{
-		if (VSize(DeusExPlayer(Owner).RecoilShake)>0.0)
+    
+        //Recoil Shake
+		if (VSize(POwner.RecoilShake)>0.0)
 		{
 			GetAxes(Rotation,unX,unY,unZ);
 			if (IsA('WeaponHideAGun') && bFiring)
-			unX*=DeusExPlayer(Owner).RecoilShake.X*-2;
+			unX*=POwner.RecoilShake.X*-2;
 			else if (IsA('WeaponRifle') && bFiring)
-			unX*=DeusExPlayer(Owner).RecoilShake.X*-1.0;
+			unX*=POwner.RecoilShake.X*-1.0;
 			else
-			unX*=DeusExPlayer(Owner).RecoilShake.X*0.5;
+			unX*=POwner.RecoilShake.X*0.5;
 
-			unY*=DeusExPlayer(Owner).RecoilShake.Y*0.75;
-			unZ*=DeusExPlayer(Owner).RecoilShake.Z*0.75;
+			unY*=POwner.RecoilShake.Y*0.75;
+			unZ*=POwner.RecoilShake.Z*0.75;
 			DrawOffset+=(unX+unY+unZ);
 		}
 	}
+
 	return DrawOffset;
 }
 
