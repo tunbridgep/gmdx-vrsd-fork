@@ -5,7 +5,7 @@ class PerkFilterUpgrade extends Perk;
 
 function bool IsVisible()
 {
-    return !bHidden && PerkOwner != None && (PerkOwner.iStaminaSystem > 0 || PerkOwner.bHardcoreMode);
+    return !bHidden && bPerkEnabled && PerkOwner != None && (PerkOwner.iStaminaSystem > 0 || PerkOwner.bHardcoreMode);
 }
 
 defaultproperties
