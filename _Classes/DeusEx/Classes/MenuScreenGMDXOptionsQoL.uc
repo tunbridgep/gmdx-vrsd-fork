@@ -216,6 +216,7 @@ defaultproperties
      items(156)=(HelpText="If enabled, the ammo display will fade out and disappear when not in use.",actionText="HUD: Fade Ammo Display",consoleTarget="HUDAmmoDisplay",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds")
      items(157)=(HelpText="If belt fading is enabled, this option will also show the belt whenever any belt item is selected.",actionText="HUD: Fade Toolbelt Shows On Unholster",variable="bMoreVisibleBeltFade",defaultValue=1)
      items(158)=(HelpText="If enabled, melee attack animations will be sequential instead of random.",actionText="Game: No Random Attack Animation",variable="bSequenceMeleeAttack",defaultValue=0)
+     items(160)=(HelpText="If enabled, the Augmentation display will fade out and disappear when not in use.",actionText="HUD: Fade Aug Display",consoleTarget="HUDActiveItemsDisplay",variable="fAutoFadeTime",realValue1=5,realValue2=10,realValue3=20,realValue4=30,valueText1="5 Seconds",valueText2="10 Seconds",valueText3="20 Seconds",valueText4="30 Seconds")
 
 
      Title="GMDX Advanced Options"

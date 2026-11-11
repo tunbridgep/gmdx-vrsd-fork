@@ -17,6 +17,7 @@ var bool bHasChargeBar;
 
 var transient ProgressBarWindow winEnergy; //SARGE: Moved to the base class, so augs can use it too.
 
+var travel transient HUDActiveItemsBorderBase owner; //SARGE: Added
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -35,21 +36,37 @@ event InitWindow()
 // DrawWindow()
 // ----------------------------------------------------------------------
 
+function Color GetColorWithOpacity(Color c)
+{
+    if (owner != None)
+        c = owner.GetColorWithOpacity(c);
+    else
+        c = super.GetColorWithOpacity(c);
+    return c;
+}
+
+function float GetOpacity()
+{
+    if (owner != None)
+        return owner.GetOpacity();
+    return super.GetOpacity();
+}
+
 event DrawWindow(GC gc)
 {
 	Super.DrawWindow(gc);
 
-	if (icon != None)
+	if (icon != None && GetOpacity() >= 0.15)
 	{
 		// Now draw the icon
 		gc.SetStyle(iconDrawStyle);
-		gc.SetTileColor(colItemIcon);
+        gc.SetTileColor(GetColorWithOpacity(colItemIcon));
         if (DrawDim())
             gc.SetTileColorRGB(64,64,64);
 		gc.DrawTexture(2, 2, 32, 32, 0, 0, icon);
 	}
 
-	DrawHotKey(gc);
+    DrawHotKey(gc);
 }
 
 // ----------------------------------------------------------------------
@@ -77,7 +94,7 @@ function DrawHotKey(GC gc)
 function DrawBackground(GC gc)
 {
 	gc.SetStyle(backgroundDrawStyle);
-	gc.SetTileColor(colBackground);
+    gc.SetTileColor(GetColorWithOpacity(colBackground));
 	gc.DrawTexture(0, 0, width, height, 0, 0, texBackground);
 }
 

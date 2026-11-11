@@ -1477,7 +1477,7 @@ function AssignSecondary(Inventory item, optional bool bMessage)
     }
     else
     {
-        Log("Assigned Icon: " $ item.Icon @ string(item.Icon) @ item.default.icon);
+        //Log("Assigned Icon: " $ item.Icon @ string(item.Icon) @ item.default.icon);
         assignedWeapon.itemClass = string(item.Class);
         assignedWeapon.icon = string(item.Icon);
         if (item.IsA('DeusExPickup'))
@@ -1494,6 +1494,10 @@ function AssignSecondary(Inventory item, optional bool bMessage)
             ClientMessage(Sprintf(msgSecondaryAdded,item.itemName));
         PlaySound(Sound'Menu_Focus', SLOT_Interface, 0.75);
     }
+
+    //When assigning goggles, refresh the HUD display
+    if (ChargedPickup(item) != None)
+        ResetAugFadeTimer();
 
     RefreshChargedPickups();
     UpdateSecondaryDisplay();
@@ -2545,11 +2549,20 @@ function ResetHealthFadeTimer()
         root.hud.hit.ResetHUDFadeTime();
 }
 
+function ResetAugFadeTimer()
+{
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None && root.hud.activeItems != None)
+        root.hud.activeItems.ResetHUDFadeTime();
+}
+
 function ResetHUDFadeTimes()
 {
     ResetBeltFadeTimer();
     ResetSecondaryFadeTimer();
     ResetAmmoFadeTimer();
+    ResetAugFadeTimer();
     //ResetHealthFadeTimer();
 }
 
