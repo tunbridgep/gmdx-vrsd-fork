@@ -96,6 +96,7 @@ Bug Fixes:
 - Fixed random attack animations when a melee weapon has only 2 animations.
 
 Misc Changes:
+- Changed the weapon inertia formula, to hopefully be less janky and jerky.
 - Addon Penalties for Scope, Laser and Silencer updated:
     - Scope now gives -recoil and +reload and equip time.
     - Laser now gives +reload and equip time.

@@ -1,6 +1,7 @@
 # We need to define where our u files are located,
 # because they are symlinks, and nsis doesn't like symlinks
-!define SARGE_U_FILES "F:\Games\Deus Ex GOTY\System"
+# SARGE: Now this uses drive Z, which is defined as / in wine
+!define SARGE_U_FILES "Z:\mnt\nvme-data\Games\Deus Ex GOTY\System"
 
 # Base Info
 Name "${INSTALLER_NAME}"

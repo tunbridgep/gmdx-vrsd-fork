@@ -8,6 +8,8 @@ class CloakManager extends Object;
 var private transient Pawn sourceObject;
 var private travel bool bStartedCloaking;
 var private travel bool bStartedUncloaking;
+var private travel bool bFinishedCloaking;
+var private travel bool bFinishedUncloaking;
 var private travel bool bIsCloaked;
 var private travel bool bIsRadar;
 var private travel float scaleGlow;
@@ -46,6 +48,8 @@ function private _UpdateHDTP(Pawn P)
         DeusExPlayer(P).UpdateHDTPSettings();
     else if (ScriptedPawn(P) != None)
         ScriptedPawn(P).UpdateHDTPSettings();
+    if (DeusExWeapon(P.Weapon) != None)
+            DeusExWeapon(P.Weapon).UpdateHDTPSettings();
 }
 
 function SetCloaked(bool bSet, bool bSound)
@@ -60,6 +64,7 @@ function SetCloaked(bool bSet, bool bSound)
             PlayCloakingSound(true);
 
         _UpdateHDTP(sourceObject);
+        UpdateSkin(sourceObject);
     }
     else if (!bSet && !bStartedUncloaking && bIsCloaked)
     {
@@ -76,6 +81,7 @@ function ForceOff(bool bSound)
     if (bSound)
         PlayCloakingSound(false);
     _UpdateHDTP(sourceObject);
+    UpdateSkin(sourceObject);
 }
 
 // ----------------------------------------------------------------------
@@ -96,7 +102,9 @@ function SetRadar(bool bSet)
 
 function Texture GetCurrentTexture()
 {
-    if (bIsCloaked)
+    if (bIsCloaked && skinStyle == SK_Animated)
+        return FireTexture'GameEffects.InvisibleTex';
+    else if (bIsCloaked)
         return Texture'RSDCrap.Skins.CloakingTex';
     else if (bIsRadar)
         return Texture'Effects.Electricity.Xplsn_EMPG';
@@ -131,6 +139,16 @@ function UpdateSkin(optional Actor a)
     if (a == None)
         a = sourceObject;
 
+    _UpdateSkin(a);
+    if (Pawn(a) != None && Pawn(a).Weapon != None)
+        _UpdateSkin(Pawn(a).Weapon);
+}
+
+function _UpdateSkin(optional Actor a)
+{
+    if (a == None)
+        a = sourceObject;
+
     if (bIsRadar)
         class'SkinUtils'.static.SetSkinStyle(a,STY_Translucent, Texture'Effects.Electricity.Xplsn_EMPG', 0.4);
     else if (bIsCloaked && !bStartedUncloaking)
@@ -141,6 +159,7 @@ function UpdateSkin(optional Actor a)
             //SARGE: Was previously using 'HDTPWeaponCrowbarTex2', vanilla used 'WhiteStatic'
             //Imported the high-quality one from HDTP, since WhiteStatic is WAY too visible!
             class'SkinUtils'.static.SetSkinStyle(a, STY_Translucent, Texture'RSDCrap.Skins.CloakingTex');
+
     }
     else if (bStartedCloaking || bStartedUncloaking)
         class'SkinUtils'.static.SetSkinStyle(a, STY_Translucent, glowTex);
@@ -260,7 +279,6 @@ function SetShadowState(bool bShown)
             DeusExPlayer(sourceObject).KillShadow();
         else if (ScriptedPawn(sourceObject) != None)
             ScriptedPawn(sourceObject).KillShadow();
-
     }
 }
 
@@ -290,6 +308,7 @@ function TickCloaking(float DeltaTime)
     {
         scaleGlow -= DeltaTime;
         sourceObject.ScaleGlow -= DeltaTime;
+        sourceObject.bNoSmooth=false;
         if (scaleGlow <= targetScaleGlow)
         {
             scaleGlow = targetScaleGlow;
@@ -297,7 +316,9 @@ function TickCloaking(float DeltaTime)
             bIsCloaked = true;
             DoSpecialLighting(false);
             SetShadowState(false);
+            sourceObject.bNoSmooth=false;
             _UpdateHDTP(sourceObject);
+            UpdateSkin();
         }
     }
     else if (bStartedUncloaking)
@@ -311,7 +332,11 @@ function TickCloaking(float DeltaTime)
             bIsCloaked = false;
             DoSpecialLighting(false);
             SetShadowState(true);
+            sourceObject.ScaleGlow = sourceObject.default.ScaleGlow;
+            sourceObject.Style = sourceObject.default.Style;
+            sourceObject.bNoSmooth = sourceObject.default.bNoSmooth;
             _UpdateHDTP(sourceObject);
+            UpdateSkin();
         }
     }
 }

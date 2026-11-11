@@ -7830,21 +7830,7 @@ state PlayerWalking
 
         //SARGE: Tick Cloaking
         if (CloakManager != None)
-        {
             CloakManager.TickCloaking(deltaTime);
-            if (CloakManager.IsInAnyState())
-            {
-                bNoSmooth=false;
-                CloakManager.UpdateSkin(self);
-                ScaleGlow = CloakManager.GetScaleGlow();
-            }
-            else
-            {
-                ScaleGlow = default.ScaleGlow;
-                Style = default.Style;
-                bNoSmooth=default.bNoSmooth;
-            }
-        }
 
         //SARGE: Reset the played transfer sound
         bPlaySoundCheck = false;
