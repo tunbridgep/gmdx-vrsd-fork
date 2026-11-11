@@ -264,5 +264,6 @@ defaultproperties
 {
      CountLabel="Uses:"
      bUseFOV=true
-     inertiaSpeed=35
+     inertiaSpeed=1000
+     inertiaMaxDist=3000
 }

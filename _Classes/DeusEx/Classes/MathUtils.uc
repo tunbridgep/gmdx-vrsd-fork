@@ -12,11 +12,9 @@ class MathUtils extends Object abstract;
 //NOTE: Does not handle Roll at all!
 static function Rotator GetRotationBetween(Rotator r1, Rotator r2)
 {
-    local Rotator result;
-
     //Normalize first
-    r1 = NormalizeRotator(r1);
-    r2 = NormalizeRotator(r2);
+    //r1 = NormalizeRotator(r1);
+    //r2 = NormalizeRotator(r2);
     
     //If the difference between them is > 180 degrees,
     //then we need to make sure we actually find the shortest angle.
@@ -38,7 +36,7 @@ static function Rotator GetRotationBetween(Rotator r1, Rotator r2)
             r2.Yaw += 65535;
     }
 
-    return r2;
+    return r1-r2;
 }
 
 //Clamps a rotator to 0-65535
@@ -51,3 +49,18 @@ static function Rotator NormalizeRotator(Rotator rot)
 
     return rot;
 }
+
+/*
+static function RotatorToFloats(Rotator rot, out float pitch, out float yaw)
+{
+    if (rot.Pitch > 32767)
+        pitch = rot.Pitch - 65535;
+    else
+        pitch = rot.Pitch;
+    
+    if (rot.Yaw > 32767)
+        yaw = rot.Yaw - 65535;
+    else
+        yaw = rot.Yaw;
+}
+*/

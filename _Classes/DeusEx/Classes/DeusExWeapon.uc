@@ -426,7 +426,9 @@ var transient bool bDontActuallyRenderViewModel;
 
 //SARGE: Weapon inertia
 var const float inertiaSpeed;                            //SARGE: How fast weapons move. New system only
-var transient Rotator cachedViewRotation;               //SARGE: Now calculate once per tick
+var const float inertiaMaxDistPitch;                          //SARGE: Max angle for Inertia, in unreal units.
+var const float inertiaMaxDistYaw;                          //SARGE: Max angle for Inertia, in unreal units.
+var transient Rotator cachedViewRotation;          //SARGE: Store previous view rotation
 
 //SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
 var const Sound DeselectSound;
@@ -893,6 +895,9 @@ function Draw(DeusExPlayer frobber)
     SetWeaponHandTex();
 
     DoWeaponOffset();
+
+    //Reset the inertia
+    cachedViewRotation = class'MathUtils'.static.NormalizeRotator(frobber.GetCurrentViewRotation());
 }
 
 // ---------------------------------------------------------------------
@@ -1147,7 +1152,7 @@ simulated event RenderOverlays( canvas Canvas )
 	else
 		bSetFlashTime = false;
         
-    PositionViewModel(canvas,PlayerOwner,CalcDrawOffset(),PlayerOwner.GetCurrentViewRotation());
+    PositionViewModel(canvas,PlayerOwner,CalcDrawOffset(),cachedViewRotation);
 
     if (!bDontActuallyRenderViewModel)
     {
@@ -1184,7 +1189,10 @@ simulated function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, ve
     local vector dx, dy, dz;                                                    //RSD: Added
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 
-    NewRot = Pawn(Owner).ViewRotation;
+    if (PlayerOwner != None)
+        NewRot = cachedViewRotation;
+    else
+        NewRot = Pawn(Owner).ViewRotation;
 	
     SetLocation( Owner.Location + drawOffset );
 
@@ -2748,7 +2756,9 @@ simulated function Tick(float deltaTime)
 	  LockTimer = 0;
 		return;
 	}
-        
+
+    //SARGE: Weapon Inertia
+    CalcViewRotation(deltaTime);
 
     if (!activateAn && bZoomed && bShowWeaponWhenZoomed && Gepinout >= 1.0)
         DrawZoomedState(1.0,totalScopeTime);
@@ -2779,9 +2789,6 @@ simulated function Tick(float deltaTime)
                 lerpAid = 0;
         }
     }
-    
-    //SARGE: Weapon Inertia
-    CalcViewRotation(deltaTime);
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -4992,24 +4999,81 @@ static final operator(18) float mod ( float A, float B )
 
 function Rotator CalcViewRotation(float deltaTime)
 {
-    local Rotator vr, newAngle;
+    local Rotator cvr, vr, newAngle;
     local DeusExPlayer P;
+    local int i;
+    local float speedp, speedy, np, ny;
     
     P = DeusExPlayer(Owner);
 
-    if (Pawn(Owner) != None)
-        vr = Pawn(Owner).ViewRotation;
+    if (P != None)
+        cvr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
+    else if (Pawn(Owner) != None)
+        cvr = Pawn(Owner).ViewRotation;
     
-    if (P != None && P.bViewmodelInertia && !bZoomed && !IsInState('Reloading'))
+    if (P != None && P.bViewmodelInertia && inertiaSpeed > 0 && !bZoomed/* && !IsInState('Reload')*/)
     {
+        cvr = class'MathUtils'.static.NormalizeRotator(cachedViewRotation);
         vr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
-        newAngle = class'MathUtils'.static.GetRotationBetween(vr,cachedViewRotation);
+
+        //Calcluate the delta of the angle we need to slowly move towards
+        newAngle = class'MathUtils'.static.GetRotationBetween(cvr,vr);
+
+        //Clamp the angle so we can't go further than a certain distance
+        //newAngle.Pitch = FClamp(newAngle.Pitch,-inertiaMaxDist,inertiaMaxDist);
+        //newAngle.Yaw = FClamp(newAngle.Yaw,-inertiaMaxDist,inertiaMaxDist);
+
+        if (newAngle.Pitch != 0 || newAngle.Yaw != 0)
+        {
+            //SARGE: TODO: Use a proper Smerp for this
+            speedp = deltaTime * inertiaSpeed + (abs(newAngle.Pitch) / 10);
+            speedy = deltaTime * inertiaSpeed + (abs(newAngle.Yaw) / 10);
+
+            //If we're past the max distance, speed up in order to reach it much quicker
+            //SARGE: TODO: Clamp it properly, don't just speed up, it looks janky.
+            /*
+            if (abs(newAngle.Pitch) > inertiaMaxDist)
+                speedp += abs(newAngle.Pitch) - inertiaMaxDist;
+            if (abs(newAngle.Yaw) > inertiaMaxDist)
+                speedy += abs(newAngle.Yaw) - inertiaMaxDist;
+            */
+
+            //speed = deltaTime * inertiaSpeed;
+            //speed = smerp(deltaTime * inertiaSpeed * 1000,0,abs(newAngle.Pitch + newAngle.Yaw));
+
+            //P.DebugMessage("NewAngle " $ Self $ ": " $ newAngle.Pitch @ newAngle.Yaw @ speed);
+
+            //Now clamp the values. Move as fast as we can, unless we would go further than needed.
+            if (newAngle.Pitch < 0)
+                np = FClamp(speedp,1,-1*newAngle.Pitch);
+            else if (newAngle.Pitch > 0)
+                np = FClamp(-speedp,-newAngle.Pitch,-1);
+
+            if (newAngle.Yaw < 0)
+                ny = FClamp(speedy,1,-1*newAngle.Yaw);
+            else if (newAngle.Yaw > 0)
+                ny = FClamp(-speedy,-newAngle.Yaw,-1);
+
+            //Now actually move in the specified direction.
+            cvr.Pitch += int(np + 0.5);
+            cvr.Yaw += int(ny + 0.5);
+
+            //If we're past the maximum distance, fast-track us to the right spot
+            if (abs(newAngle.Pitch) > inertiaMaxDistPitch && newAngle.Pitch > 0)
+                cvr.Pitch = vr.Pitch + inertiaMaxDistPitch;
+            if (abs(newAngle.Pitch) > inertiaMaxDistPitch && newAngle.Pitch < 0)
+                cvr.Pitch = vr.Pitch - inertiaMaxDistPitch;
             
-        vr.Yaw = lerp(deltaTime * inertiaSpeed,vr.Yaw,newAngle.Yaw);
-        vr.Pitch = lerp(deltaTime * inertiaSpeed,vr.Pitch,newAngle.Pitch);
+            if (abs(newAngle.Yaw) > inertiaMaxDistYaw && newAngle.Yaw > 0)
+                cvr.Yaw = vr.Yaw + inertiaMaxDistYaw;
+            if (abs(newAngle.Yaw) > inertiaMaxDistYaw && newAngle.Yaw < 0)
+                cvr.Yaw = vr.Yaw - inertiaMaxDistYaw;
+        }
+
+        //vr = class'MathUtils'.static.NormalizeRotator(vr);
     }
 
-    cachedViewRotation = vr;
+    cachedViewRotation = cvr;
 }
 
 //
@@ -8216,7 +8280,9 @@ defaultproperties
      addonPenalties(2)=0.15 //Laser
      currentWeaponSkin="default"
      totalScopeTime=0.41
-     inertiaSpeed=35
+     inertiaSpeed=1000
+     inertiaMaxDistYaw=3000
+     inertiaMaxDistPitch=1500
      AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
      minimumNewGamePlusCycle=0
      maximumNewGamePlusCycle=-1
