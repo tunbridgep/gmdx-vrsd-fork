@@ -14680,8 +14680,8 @@ ignores SeePlayer, HearNoise, Bump;
                 lookAngle = Rotator(lookTo-lookFrom);
                 lookAngle = class'MathUtils'.static.GetRotationBetween(vr,lookAngle);
 
-                ViewRotation.Yaw = smerp(deltaTime * 16,vr.Yaw,lookAngle.Yaw);
-                ViewRotation.Pitch = smerp(deltaTime * 16,vr.Pitch,lookAngle.Pitch);
+                ViewRotation.Yaw = smerp(deltaTime * 16,vr.Yaw,vr.Yaw - lookAngle.Yaw);
+                ViewRotation.Pitch = smerp(deltaTime * 16,vr.Pitch,vr.Pitch - lookAngle.Pitch);
             }
         }
 
