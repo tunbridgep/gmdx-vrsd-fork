@@ -250,4 +250,5 @@ defaultproperties
      FamiliarName="Walton Simons"
      UnfamiliarName="Walton Simons"
      bRandomHeightAdjust=false
+     bWavyCloakTex=true
 }

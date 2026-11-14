@@ -114,6 +114,10 @@ function Inventory GetWeapon()
 
     if (player.inHandPending != None && player.inHandPending.IsA('DeusExPickup') && !player.inHandPending.IsA('SkilledTool'))
         return None;
+    
+    //No keyring
+    if (player.inHandPending != None && player.inHandPending.IsA('NanoKeyRing'))
+        return None;
 
     //SARGE: Hack...
     if (player.inHandPending != None && string(player.inHandPending.Class) == player.assignedWeapon.itemClass && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.

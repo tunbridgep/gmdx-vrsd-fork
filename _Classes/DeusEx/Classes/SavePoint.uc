@@ -84,7 +84,6 @@ defaultproperties
      Tcount=100
      msgDeducted="100 credits deducted from your account"
      msgNotEnough="100 credits required"
-     numThings=0
      bFlammable=False
      bHighlight=False
      bCanBeBase=False

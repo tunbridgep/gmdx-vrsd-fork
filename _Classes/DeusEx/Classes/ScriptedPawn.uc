@@ -541,6 +541,7 @@ var bool bAlreadyDistributedWeapon;
 
 //SARGE: Cloak manager
 var travel CloakManager CloakManager;
+var const bool bWavyCloakTex;   //SARGE: Allow ScriptedPawns to use the same wayy cloak text that the player uses. Used for augmented enemies like AnnaNavarre, etc.
 
 var const localized string msgDance;            //SARGE: Shenanigans dance string
 
@@ -691,10 +692,12 @@ function bool IsActuallyValidEnemy(Pawn TestEnemy, optional EAllianceCheckType c
 function SetupCloakManager()
 {
 
-	// install the Perk Manager if not found
+	// install the Cloak Manager if not found
 	if (CloakManager == None)
 	    CloakManager = new(Self) class'CloakManager';
     CloakManager.Init(Self);
+    if (bWavyCloakTex)
+        CloakManager.SetSkinStyle(SK_Animated); //Wavy tex
 }
 
 // ----------------------------------------------------------------------
@@ -807,30 +810,6 @@ exec function UpdateHDTPsettings()
     SetupSkin();
 }
 
-/*
-function bool _GlassesFixTest(coerce string tex)
-{
-    Log("Glasses Fix: " $ tex @ Left(tex,9));
-    return Left(tex,9) == "FramesTex" || Left(tex,9) == "LensesTex";
-}
-*/
-
-//Based on if we're masked, swap out pink/black/gray mask textures
-//These otherwise look fine with filtering on, but horrible with it off.
-/*
-function FixAllTextureMasks()
-{
-    local Texture tex;
-    local int i;
-
-    for (i = 0; i < 8; i++)
-    {
-        if (multiskins[i] == Texture'GrayMaskTex' || multiskins[i] == Texture'PinkMaskTex' || multiskins[i] == Texture'BlackMaskTex')
-            multiskins[i] = GetMaskedTexture();
-    }
-}
-*/
-
 //SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
 function SmartWeaponDraw(DeusExPlayer player)
 {
@@ -853,8 +832,6 @@ function PostBeginPlay()
     //SARGE: Prevent going into stasis ever for predictable enemies
     LastRenderTime = Level.TimeSeconds;
     
-    SetupCloakManager();
-
 	//sort out HDTP settings
 	UpdateHDTPSettings();
 	// Set up pain timer
@@ -906,6 +883,9 @@ function PostPostBeginPlay()
     local DeusExPlayer P;
 
 	Super.PostPostBeginPlay();
+    
+    //Setup cloak manager
+    SetupCloakManager();
 
 	// Bind any conversation events to this ScriptedPawn
 	ConBindEvents();
@@ -4862,7 +4842,6 @@ function SetupSkin()
 
     //Also fix glasses on holograms
     class'SkinUtils'.static.GlassesFix(Self);
-    //FixAllTextureMasks();
     
     //SARGE: Determine if we have a helmet here (since some characters such as mechanics can randomise with or without them in Augmentique)
     bHasHelmet = default.mesh == LodMesh'RSDCrap.Fixed_Jumpsuit' && 
@@ -9023,27 +9002,8 @@ function Tick(float deltaTime)
     HandleBlink(deltaTime);
     
     //SARGE: Tick Cloaking
-    if (CloakManager != None && bHasCloak)
-    {
+    if (CloakManager != None)
         CloakManager.TickCloaking(deltaTime);
-        bCloakOn = CloakManager.IsInAnyState();
-        if (bCloakOn)
-        {
-            bNoSmooth=false;
-            CloakManager.UpdateSkin(self);
-            if (Weapon != None)
-                CloakManager.UpdateSkin(Weapon);
-            ScaleGlow = CloakManager.GetScaleGlow();
-        }
-        else
-        {
-            if (DeusExWeapon(Weapon) != None && Style != default.Style)
-                DeusExWeapon(Weapon).UpdateHDTPSettings();
-            ScaleGlow = default.ScaleGlow;
-            Style = default.Style;
-            bNoSmooth=default.bNoSmooth;
-        }
-    }
 
     bFirstTickDone = true;
 }

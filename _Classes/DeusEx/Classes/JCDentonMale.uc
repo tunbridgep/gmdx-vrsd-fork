@@ -30,6 +30,10 @@ function SetSkin()
 {
     local Texture tex1, tex2;
 
+    //Don't set skin at all if we're cloaked.
+    if (CloakManager != None && CloakManager.IsInAnyState())
+        return;
+
 	if(IsHDTP())
 	{
 		switch(PlayerSkin)

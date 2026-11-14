@@ -98,6 +98,7 @@ Bug Fixes:
 - Massively smoothed out weapon intertia, it should now feel a lot more natural.
 
 Misc Changes:
+- Changed the weapon inertia formula, to hopefully be less janky and jerky.
 - Addon Penalties for Scope, Laser and Silencer updated:
     - Scope now gives -recoil and +reload and equip time.
     - Laser now gives +reload and equip time.
