@@ -9,6 +9,8 @@ var int chargePerUse;                           //How much charge we use per hit
 var int totalCharge;                           //How much charge we use per hit
 var float drained;                              //Prevent draining within a short time, in case we hit multiple targets.
 
+var const localized string ShenanigansName;
+
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
@@ -24,6 +26,17 @@ simulated function PreBeginPlay()
 	}
 
     SetupChargeManager();
+}
+
+exec function UpdateHDTPsettings()
+{
+    local DeusExPlayer player;
+    super.UpdateHDTPsettings();
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None && player.bShenanigans)
+        ItemName = ShenanigansName;
 }
 
 function DrainPower()
@@ -277,6 +290,7 @@ defaultproperties
      Misc3Sound=Sound'DeusExSounds.Weapons.NanoSwordHitSoft'
      InventoryGroup=14
      ItemName="Dragon's Tooth Sword"
+     ShenanigansName="Moonlight Greatsword"
      ItemArticle="the"
      OldPlayerViewOffset=(X=21.000000,Y=-16.000000,Z=-27.000000)
      PlayerViewOffset=(X=21.000000,Y=-16.000000,Z=-27.000000)
