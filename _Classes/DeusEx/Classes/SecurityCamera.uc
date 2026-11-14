@@ -55,8 +55,6 @@ var bool bRebooting;                      //This will be set when the camera is 
 
 var bool bAlarmedOnce;                    //SARGE: Don't re-activate movers after the first alarm
 
-var transient bool bFirstTickDone;            //SARGE: We need to update the camera sound on the first tick.
-
 // ------------------------------------------------------------------------------------
 // Network replication
 // ------------------------------------------------------------------------------------
@@ -248,6 +246,12 @@ function BeginPlay()
 		bInvincible=true;
 		HackStrength = 0.6;
 	}
+}
+
+function PostPostBeginPlay()
+{
+    super.PostPostBeginPlay();
+    SetDefaultAmbientSound();
 }
 
 function HackAction(Actor Hacker, bool bHacked)
@@ -565,12 +569,6 @@ function Tick(float deltaTime)
     local DeusExPlayer P;
 
 	Super.Tick(deltaTime);
-
-    if (!bFirstTickDone)
-    {
-        SetDefaultAmbientSound();
-        bFirstTickDone = true;
-    }
 
 	curTarget = None;
 
