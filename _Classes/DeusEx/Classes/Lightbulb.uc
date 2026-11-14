@@ -6,16 +6,21 @@ class Lightbulb extends DeusExDecoration;
 var bool bOn;
 var() int toggledRadius;
 
-function PostBeginPlay()
+function ResetScaleGlow()
 {
-  super.PostBeginPlay();
-
-  if (LightRadius == 0)
-  {
-     bOn = False;
-     ScaleGlow = 0.5;
-     bUnlit = False;
-  }
+    super.ResetScaleGlow();
+    if (bOn)
+    {
+        bUnlit=True;
+        ScaleGlow=2;
+        LightRadius=toggledRadius;
+    }
+    else
+    {
+        bUnlit=False;
+        LightRadius=0;
+        ScaleGlow=0.5;
+    }
 }
 
 Function Destroyed()
@@ -42,21 +47,8 @@ Function Bump(actor Other)
 function Trigger(Actor Other, Pawn Instigator)
 {
 	Super.Trigger(Other, Instigator);
-
-    if (bOn)
-    {
-    bUnlit=False;
-    ScaleGlow=0.5;
-    LightRadius=0;
-    bOn = False;
-    }
-    else
-    {
-    bUnlit=True;
-    ScaleGlow=2;
-    LightRadius=toggledRadius;
-    bOn = True;
-    }
+    bOn = !bOn;
+    ResetScaleGlow();
 }
 
 defaultproperties

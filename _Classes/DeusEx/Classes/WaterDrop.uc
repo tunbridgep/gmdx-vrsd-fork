@@ -18,8 +18,9 @@ simulated function PreBeginPlay()
 	Super.PreBeginPlay();
 
 	Velocity = VRand() * 1.1;
-	if (Instigator != None)
-		Velocity += Instigator.Velocity / 2;
+    //SARGE: Get rid of this for now.
+	//if (Instigator != None)
+	//	Velocity += Instigator.Velocity / 2;
 
 	DrawScale = 0.8 + FRand();
 	SetRotation(Rotator(Velocity));

@@ -83,6 +83,8 @@ var(GMDX) bool bSmallFragments;                                                 
 //SARGE: Prevent entering into conversation with this decoration. Used for scripted conversations only.
 var(GMDX) bool bNoConversations;
 
+var globalconfig bool bDarkerDecorations;           //SARGE: GMDX v9 makes decorations darker. This respects that.
+
 //SARGE: Filters. Moved from Containers, now affects all DeusExDecorations
 var(Spawning) bool bLowDifficultyOnly; //Remove on realistic and hardcore
 var(Spawning) bool bHardcoreRemoveIt; //Remove on hardcore only //SARGE: This was called bHardcoreRemoveIt before, and I'm too lazy to change it in every map/t3d file, so it gets that same name here.
@@ -266,6 +268,8 @@ exec function UpdateHDTPsettings()
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
+    ResetScaleGlow();
 }
 
 // ----------------------------------------------------------------------
@@ -295,10 +299,7 @@ function PostPostBeginPlay()
 {
 	Super.PostPostBeginPlay();
 
-    if (!bUnlit && ScaleGlow > 0.5 && !IsA('Lamp') && !IsA('CageLight'))
-        ScaleGlow = 0.5;
-    else if (IsA('CageLight'))
-        ScaleGlow = 1.0;
+    ResetScaleGlow();
 
     if (IsA('Barrel1') || IsA('TrashCan3') || IsA('TrashCan4'))
         LODBias=3.000000;
@@ -601,15 +602,34 @@ singular function SupportActor(Actor standingActor)
 
 function ResetScaleGlow()
 {
-local float HP;
+    //Bail if we're being carried, since the player will likely be making it transparent
+    local DeusExPlayer p;
+    p = DeusExPlayer(base);
+    if (p != None && p.carriedDecoration == self)
+        return;
+
+    //Some objects need to stay what they are set to in the map
+    if (IsA('PlaceableDecal') || IsA('ComputerPersonal'))
+        return;
+
+    //Only pickupable items get reset.
+    if (bPushable)
+        ScaleGlow = default.ScaleGlow;
 
 	if (!bInvincible)
 	{
-	    if (ScaleGlow > 0.5)
+	    //if (ScaleGlow > 0.5)
 	        ScaleGlow = float(HitPoints) / float(Default.HitPoints) * 0.9 + 0.1;
-	    else if (ScaleGlow > 0.15)
-            ScaleGlow -= 0.1;
 	}
+
+    //SARGE: This was a GMDX v9 decision, I take no responsibility for it...
+    //Except it was being done in PostPostBeginPlay and not respected when carrying/dropping things.
+    //This will ensure it gets set at all times for all items, regardless of how many
+    //times you pick them up...
+    //I swear, GMDX v9 is horrendously coded...
+    //SARGE: Also added bDarkerDecorations check
+    if (bDarkerDecorations && !bUnlit && ScaleGlow > 0.5)
+        ScaleGlow = 0.5;
 }
 
 // ----------------------------------------------------------------------
@@ -1913,4 +1933,5 @@ defaultproperties
      minimumNewGamePlusCycle=0
      maximumNewGamePlusCycle=-1
      bSelectMeleeWeapon=true
+     bDarkerDecorations=true
 }

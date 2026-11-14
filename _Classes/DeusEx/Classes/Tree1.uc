@@ -18,9 +18,9 @@ exec function UpdateHDTPsettings()
 
 	switch (SkinColor)
 	{
-		case SC_Tree1:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex3","DeusExDeco.Tree2Tex1",IsHDTP()); break;
-		case SC_Tree2:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex3","DeusExDeco.Tree2Tex2",IsHDTP()); break;
-		case SC_Tree3:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex2","DeusExDeco.Tree2Tex3",IsHDTP()); break;
+		case SC_Tree1:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex3","DeusExDeco.Tree2Tex1",IsHDTP() && closeEnough); break;
+		case SC_Tree2:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex3","DeusExDeco.Tree2Tex2",IsHDTP() && closeEnough); break;
+		case SC_Tree3:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex2","DeusExDeco.Tree2Tex3",IsHDTP() && closeEnough); break;
 	}
 }
 

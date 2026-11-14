@@ -6,19 +6,6 @@ class BaseDroplet extends Actor;
 function SpawnHitWallDecal(Rotator rotator) {}
 function SpawnHitWaterDecal() {}
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-
-	if ( Level.NetMode != NM_Standalone )
-	{
-		ScaleGlow = 2.0;
-		DrawScale *= 1.5;
-		LifeSpan *= 2.0;
-		bUnlit=True;
-	}
-}
-
 simulated function Tick(float deltaTime)
 {
 	if (Velocity == Vect(0,0,0))
