@@ -92,6 +92,10 @@ function CalcTrace(float deltaTime)
 			if (bHiddenBeam)                                                    //RSD: scale spot size from 0.015-0.15 depending on distance
 				spot[i].DrawScale = 0.015000+FMin(0.0001*VSize(StartTrace - HitLocation - HitNormal),0.135000);
 		}
+
+        //SARGE: Blue dot is slightly bigger
+        if (spot[i] != None && bBlueBeam && bHiddenBeam)
+            spot[i].DrawScale += 0.015;
         
         if (bUpdateColor)
         {
