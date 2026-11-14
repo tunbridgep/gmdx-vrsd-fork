@@ -3334,20 +3334,15 @@ function SwitchModes()
 
 function LaserOn(optional bool IgnoreSound)
 {
-	if (bHasLaser && !bLasing)
-	{
+    if (bHasLaser && !bLasing)
+    {
 		// if we don't have an emitter, then spawn one
 		// otherwise, just turn it on
-		if (Emitter == None)
+        if (Emitter == None)
 		{
 			Emitter = Spawn(class'LaserEmitter', Self, , Location, Pawn(Owner).ViewRotation);
 			if (Emitter != None)
 			{
-			    if (default.ItemName == "UMP7.62c" || default.ItemName == "USP.10")
-			    Emitter.bBlueBeam = True;
-			    else
-                Emitter.bBlueBeam = False;
-
 				Emitter.SetHiddenBeam(True);
 				Emitter.AmbientSound = None;
 				Emitter.TurnOn();
@@ -3355,6 +3350,8 @@ function LaserOn(optional bool IgnoreSound)
 		}
 		else
 			Emitter.TurnOn();
+
+        UpdateLaserSightMode();
 
         if (!IgnoreSound)
             Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5); //CyberP: suitable laser on sfx //SARGE: Now has sound check
@@ -3496,6 +3493,27 @@ function ShowWeaponAddon(int slot, bool condition)
         multiskins[slot] = texture'pinkmasktex';
     else
         multiskins[slot] = none;
+}
+
+//SARGE: Special version for Laser colours...
+function ShowWeaponLaserAddon(int slot, bool condition)
+{
+    if (!condition) //No laser
+    {
+        multiskins[slot] = texture'pinkmasktex';
+        return;
+    }
+    if (DeusExPlayer(owner) != None)
+    {
+        if (DeusExPlayer(Owner).iLaserSightMode == 0) //Red with beam (default)
+            multiskins[slot] = none;
+        else if (DeusExPlayer(Owner).iLaserSightMode == 1) //Red with hidden beam
+            multiskins[slot] = class'HDTPLoader'.static.GetTexture("VisibleAttachments.Skins.LaserTex2");
+        else if (DeusExPlayer(Owner).iLaserSightMode == 2) //Blue with beam
+            multiskins[slot] = class'HDTPLoader'.static.GetTexture("VisibleAttachments.Skins.LaserTex1B");
+        else if (DeusExPlayer(Owner).iLaserSightMode == 3) //Blue with hidden beam
+            multiskins[slot] = class'HDTPLoader'.static.GetTexture("VisibleAttachments.Skins.LaserTex2B");
+    }
 }
 
 //SARGE: TODO: Cache most of this stuff.
@@ -7016,6 +7034,23 @@ simulated function ClientReload()
 	GotoState('SimReload');
 }
 
+//SARGE: Move laser stuff to here
+function UpdateLaserSightMode()
+{
+    local int laserMode;
+
+    if (IsHDTP())
+    {
+        emitter.SetBlueBeam(false);
+    }
+    else if (DeusExPlayer(Owner) != None && emitter != None)
+    {
+        laserMode = DeusExPlayer(Owner).iLaserSightMode;
+        emitter.SetBlueBeam(laserMode == 2 || laserMode == 3);
+    }
+
+}
+
 exec function UpdateHDTPsettings()
 {
     local int slot;
@@ -7049,6 +7084,7 @@ exec function UpdateHDTPsettings()
     else
         Mesh = PickupViewMesh;
     
+    UpdateLaserSightMode();
     SetWeaponHandTex();
     UpdateLargeIcon();
     CheckWeaponSkins();

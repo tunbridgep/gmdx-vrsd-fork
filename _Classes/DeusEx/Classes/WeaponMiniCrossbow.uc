@@ -120,7 +120,7 @@ function DisplayWeapon(bool overlay)
         if (bVanillaModelAttachments)
         {
             ShowWeaponAddon(4,bHasLaser);
-            ShowWeaponAddon(5,bHasLaser && bLasing);
+            ShowWeaponLaserAddon(5,bHasLaser && bLasing);
             ShowWeaponAddon(6,bHasScope);
         }
     }
@@ -128,7 +128,7 @@ function DisplayWeapon(bool overlay)
     {
         ShowWeaponAddon(2,bHasLaser);
         ShowWeaponAddon(3,bHasLaser);
-        ShowWeaponAddon(4,bHasLaser && bLasing);
+        ShowWeaponLaserAddon(4,bHasLaser && bLasing);
         ShowWeaponAddon(5,bHasScope);
     }
 }

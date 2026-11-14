@@ -211,7 +211,7 @@ function DisplayWeapon(bool overlay)
         if (bVanillaModelAttachments)
         {
             ShowWeaponAddon(2,bHasLaser);
-            ShowWeaponAddon(3,bHasLaser && bLasing);
+            ShowWeaponLaserAddon(3,bHasLaser && bLasing);
             ShowWeaponAddon(4,bHasScope);
             multiskins[1] = class'HDTPLoader'.static.GetTexture2("VisibleAttachments.HeavyWeaponModsPOVTex1","DeusExItems.GEPGunTex1",bHasScope);
             //ShowWeaponAddon(1,bHasScope);
@@ -220,7 +220,7 @@ function DisplayWeapon(bool overlay)
     else if (bVanillaModelAttachments)
     {
         ShowWeaponAddon(3,bHasLaser);
-        ShowWeaponAddon(4,bHasLaser && bLasing);
+        ShowWeaponLaserAddon(4,bHasLaser && bLasing);
         ShowWeaponAddon(5,bHasScope);
         multiskins[2] = class'HDTPLoader'.static.GetTexture2("VisibleAttachments.GEPGun3rdTex2","DeusExItems.GEPGun3rdTex1",bHasScope);
         //ShowWeaponAddon(2,bHasScope);

@@ -1102,6 +1102,9 @@ var globalconfig bool bMoreVisibleBeltFade;
 var float wetRate;
 var float waterDropCounter;
 
+//Allow blue laser sights
+var globalconfig int iLaserSightMode;           //SARGE: Laser sight visibiity. 0 = Red, 1 = Blue
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -21452,4 +21455,5 @@ defaultproperties
      iPresetSeed=-1
      bMoreVisibleBeltFade=True
      bSequenceMeleeAttack=False
+     iLaserSightMode=0
 }

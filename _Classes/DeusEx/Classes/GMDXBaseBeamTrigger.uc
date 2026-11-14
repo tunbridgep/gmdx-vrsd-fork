@@ -187,7 +187,7 @@ function BeginPlay()
 	{
 	    if (!bUseRedBeam)
         {
-            emitter.SetBlueBeam();
+            emitter.SetBlueBeam(true);
             MultiSkins[1] = Texture'LaserSpot2';
         }
 
@@ -307,14 +307,14 @@ function Trigger(Actor Other, Pawn Instigator)
 			LastHitActor = None;
 			if (bUseRedBeam)
             {
-			    emitter.bBlueBeam = false;
+			    emitter.SetBlueBeam(false);
                 MultiSkins[1] = Texture'LaserSpot1';
                 if (class'HDTPLoader'.static.HDTPInstalled())
                     Skin = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPlaserEmitterTex1");
             }
 			else
 			{
-			    emitter.bBlueBeam = true;
+			    emitter.SetBlueBeam(true);
                 MultiSkins[1] = Texture'LaserSpot2';
                 if (class'HDTPLoader'.static.HDTPInstalled())
                     Skin = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPlaserEmitterTex2");

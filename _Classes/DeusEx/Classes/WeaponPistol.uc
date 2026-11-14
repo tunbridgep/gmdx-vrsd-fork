@@ -55,7 +55,7 @@ function DisplayWeapon(bool overlay)
         {
             ShowWeaponAddon(4,bHasSilencer);
             ShowWeaponAddon(5,bHasLaser);
-            ShowWeaponAddon(6,bHasLaser && bLasing);
+            ShowWeaponLaserAddon(6,bHasLaser && bLasing);
             ShowWeaponAddon(7,bHasScope);
         }
     }
@@ -63,7 +63,7 @@ function DisplayWeapon(bool overlay)
     {
         ShowWeaponAddon(3,bHasSilencer);
         ShowWeaponAddon(4,bHasLaser);
-        ShowWeaponAddon(5,bHasLaser && bLasing);
+        ShowWeaponLaserAddon(5,bHasLaser && bLasing);
         ShowWeaponAddon(6,bHasScope);
     }
 }
