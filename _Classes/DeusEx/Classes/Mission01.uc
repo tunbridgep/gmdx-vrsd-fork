@@ -5,25 +5,20 @@ class Mission01 expands MissionScript;
 
 var bool bDoneConversationFix;
 
-// ----------------------------------------------------------------------
-// FirstFrame()
-//
-// Stuff to check at first frame
-// ----------------------------------------------------------------------
-
 //Reduce Paul's starting weapon choice dialog.
-//ENGLISH ONLY!
 //Based on the DX Rando code
-function ReducePaulDialog()
+function ReducePaulDialog(Name conName, int jcReq, int paulReq)
 {
     local Conversation C;
     local ConEvent E, before, after;
     local ConEventSpeech S;
+    local int paulCount, jcCount;
         
     if (!player.bNoStartingWeaponChoices) //SARGE: Check for the no starting weapons modifier
         return;
 
-    C = GetConversation('MeetPaul');
+    C = GetConversation(conName,true);
+
     E = C.eventList;
 
     while (E != None)
@@ -31,14 +26,28 @@ function ReducePaulDialog()
         if (E.eventType == ET_Speech)
         {
             S = ConEventSpeech(E);
-            if (InStr(S.conSpeech.speech,"NSF took one of our agents hostage") != -1)
+
+            //SARGE: This is bad. Count the number of times Paul and JC speak,
+            //and use the offset to change the choices.
+            //This sucks on ice, but at least now it's language agnostic...
+            if (S.SpeakerName == "PaulDenton")
+                paulCount++;
+            else if (S.speakerName == "JCDenton")
+                jcCount++;
+
+            //player.DebugLog("Speech Info:" @ paulCount @ jcCount @ S.conSpeech.speech @ S.SpeakerName);
+
+            if (paulCount == paulReq && before == None)
             {
+                //player.DebugMessage("Before: " $ S.conSpeech.Speech);
                 before = E;
             }
-            if (InStr(S.conSpeech.speech,"Great.  What's the first move?") != -1)
+            if (jcCount == jcReq && after == None)
             {
+                //player.DebugMessage("After: " $ S.conSpeech.Speech);
                 after = E;
             }
+
             if (before != None && after != None)
             {
                 break;
@@ -53,6 +62,12 @@ function ReducePaulDialog()
         before.nextEvent = after;
     }
 }
+
+// ----------------------------------------------------------------------
+// FirstFrame()
+//
+// Stuff to check at first frame
+// ----------------------------------------------------------------------
 
 function FirstFrame()
 {
@@ -153,7 +168,9 @@ function Timer()
         //This has to be done every time we restart the game.
         if (!bDoneConversationFix)
         {
-            ReducePaulDialog();
+            //Reduce Paul dialog.
+            ReducePaulDialog('MeetPaul',8,3);
+            ReducePaulDialog('FemJCMeetPaul',8,3);
 
             // "the NSF have set up patchwork security systems here"
             GetConversation('DL_FrontEntrance').AddFlagRef('GMDXNoTutorials', false);
@@ -168,11 +185,9 @@ function Timer()
             bDoneConversationFix = true;
         }
 
-
         //SARGE: Dodgy hack to fix Paul being repeatable
         if (player.bNoStartingWeaponChoices && flags.GetBool('MeetPaul_Played') && !flags.GetBool('PaulGaveWeapon'))
             flags.SetBool('PaulGaveWeapon', True,, 2);
-
 
 		// count the number of dead terrorists
 		if (!flags.GetBool('M01PlayerAggressive'))
