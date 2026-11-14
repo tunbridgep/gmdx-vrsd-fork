@@ -110,4 +110,5 @@ defaultproperties
      Mass=50.000000
      bDisposableWeapon=true
      bFakeHandToHand=true
+     inertiaSpeed=0
 }

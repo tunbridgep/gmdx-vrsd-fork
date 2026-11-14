@@ -990,7 +990,7 @@ var globalconfig bool bUnconsciousFallDamage;              //SARGE: Do Unconscio
 
 var globalconfig bool bEnergyBarShowsReserve;               //SARGE: Show our reserve energy on the bioenergy bar in the HUD
 
-var globalconfig bool bViewmodelInertia;                       //SARGE: Add inertia to weapon and item viewmodels.
+var globalconfig bool bViewmodelInertia;                    //SARGE: Add inertia to weapon and item viewmodels.
 
 var globalconfig bool bPickupsUseFOV;                       //SARGE: Pickups, Lockpicks, etc, will use the players FOV properly, rather than always being as big as possible.
 
@@ -1101,6 +1101,9 @@ var globalconfig bool bMoreVisibleBeltFade;
 //Ygll: New var to handle wet effect on player when he was being into water
 var float wetRate;
 var float waterDropCounter;
+
+//Allow blue laser sights
+var globalconfig int iLaserSightMode;           //SARGE: Laser sight visibiity. 0 = Red, 1 = Blue
 
 //////////END GMDX
 
@@ -14716,7 +14719,7 @@ ignores SeePlayer, HearNoise, Bump;
 		local rotator tempRot;
 		local float   yawDelta;
         local float diff;
-        local Rotator lookAngle;
+        local Rotator lookAngle, vr;
         local Vector lookTo, lookFrom;
         local Actor speak;
 
@@ -14770,54 +14773,23 @@ ignores SeePlayer, HearNoise, Bump;
             if (speak == None || speak.IsA('PlayerPawn'))
                 speak = ConversationActor;
 
-            if (speak != None && !speak.IsA('PlayerPawn'))
+            if (speak != None && speak != Self)
             {
-
                 // Determine our angle to the target
-                lookTo = speak.Location + (vect(0,0,1)*speak.CollisionHeight*0.9);
-                lookFrom  = Location + (vect(0,0,1)*CollisionHeight*0.9);
+                if (Pawn(speak) != None)
+                    lookTo = speak.Location + Pawn(speak).EyeHeight * vect(0,0,1);
+                else
+                    lookTo = speak.Location + speak.CollisionHeight * vect(0,1,1) * 0.5;
+                lookFrom  = Location + EyeHeight * vect(0,0,1);
+                
+                vr = class'MathUtils'.static.NormalizeRotator(ViewRotation);
+
+                //Calcluate the angle we need to look
                 lookAngle = Rotator(lookTo-lookFrom);
+                lookAngle = class'MathUtils'.static.GetRotationBetween(vr,lookAngle);
 
-                //SARGE: Fix wrapping past 360 degrees...
-                ViewRotation.Yaw = ViewRotation.Yaw % 65535;
-                ViewRotation.Pitch = ViewRotation.Pitch % 65535;
-               
-                //Fix pitch rolling over itself
-                if (ViewRotation.Pitch >= 32767)
-                    ViewRotation.Pitch -= 65536;
-                
-                //Move everything to the + only space.
-                if (ViewRotation.Yaw < 0)
-                    ViewRotation.Yaw += 65536;
-                
-                if (lookAngle.Yaw < 0)
-                    lookAngle.Yaw += 65536;
-                
-                //SARGE: This code fucking sucks, I should probably just replace it with a modulo
-                //Fix yawing in the wrong direction
-                //If angle is > 180 degrees, subtract 360 degreees
-                //Log("LookAngle Diff:" $ abs(lookAngle.Yaw - ViewRotation.Yaw));
-                if (abs(lookAngle.Yaw - ViewRotation.Yaw) > 32767)
-                {
-                    if (lookAngle.Yaw > 32767)
-                    {
-                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "->" $ lookAngle.Yaw - 65536);
-                        lookAngle.Yaw -= 65536;
-                    }
-                    else
-                    {
-                        //Log("Mod lookangle: " $ lookAngle.Yaw $ "+>" $ lookAngle.Yaw + 65536);
-                        lookAngle.Yaw += 65536;
-                    }
-                }
-                //Log("Speaker: " $ speak);
-                //Log("ViewRotation.Yaw: " $ viewRotation.Yaw);
-                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
-                //Log("Smerpy: " $ smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch));
-                //Log("lookAngle.Yaw: " $ lookAngle.Yaw);
-
-                ViewRotation.Yaw = smerp(deltaTime * 16,ViewRotation.Yaw,lookAngle.Yaw);
-                ViewRotation.Pitch = smerp(deltaTime * 16,ViewRotation.Pitch,lookAngle.Pitch);
+                ViewRotation.Yaw = smerp(deltaTime * 16,vr.Yaw,vr.Yaw - lookAngle.Yaw);
+                ViewRotation.Pitch = smerp(deltaTime * 16,vr.Pitch,vr.Pitch - lookAngle.Pitch);
             }
         }
 
@@ -21452,4 +21424,5 @@ defaultproperties
      iPresetSeed=-1
      bMoreVisibleBeltFade=True
      bSequenceMeleeAttack=False
+     iLaserSightMode=0
 }

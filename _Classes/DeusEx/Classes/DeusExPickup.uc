@@ -48,9 +48,9 @@ const lerpAidSpeed = 7500;                   //SARGE: How far to lerp per second
 var bool bCachedNearWall; //CyberP: emulating the weapon movement if player near wall //SARGE: Lets rename this because it's name is meaningless otherwise
 
 //SARGE: Weapon inertia
-var transient Vector cachedDrawOffset;
-var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
-var float inertiaSpeed;                            //SARGE: How fast weapons move.
+var float inertiaSpeed;                            //SARGE: How fast weapons move. New system only
+var const float inertiaMaxDist;                          //SARGE: Max angle for Inertia, in unreal units.
+var transient Rotator cachedViewRotation;          //SARGE: Store previous view rotation
 
 //SARGE: Use proper FOV scaling
 var bool bUseFOV;
@@ -277,7 +277,7 @@ simulated function Tick(float deltaTime)                                        
     }
     
     //SARGE: Weapon Inertia
-    inertiaDelta = deltaTime*inertiaSpeed;
+    CalcViewRotation(deltaTime);
 }
 
 //=============================================================================
@@ -337,6 +337,85 @@ function Display(bool overlay)
 {
 }
 
+function Rotator CalcViewRotation(float deltaTime)
+{
+    local Rotator cvr, vr, newAngle;
+    local DeusExPlayer P;
+    local int i;
+    local float speedp, speedy, np, ny;
+
+    P = DeusExPlayer(Owner);
+
+    if (P != None)
+        cvr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
+    else if (Pawn(Owner) != None)
+        cvr = Pawn(Owner).ViewRotation;
+
+    if (P != None && P.bViewmodelInertia && inertiaSpeed > 0)
+    {
+        cvr = class'MathUtils'.static.NormalizeRotator(cachedViewRotation);
+        vr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
+
+        //Calcluate the delta of the angle we need to slowly move towards
+        newAngle = class'MathUtils'.static.GetRotationBetween(cvr,vr);
+
+        //Clamp the angle so we can't go further than a certain distance
+        //newAngle.Pitch = FClamp(newAngle.Pitch,-inertiaMaxDist,inertiaMaxDist);
+        //newAngle.Yaw = FClamp(newAngle.Yaw,-inertiaMaxDist,inertiaMaxDist);
+
+        if (newAngle.Pitch != 0 || newAngle.Yaw != 0)
+        {
+            //SARGE: TODO: Use a proper Smerp for this
+            speedp = deltaTime * inertiaSpeed + (abs(newAngle.Pitch) / 10);
+            speedy = deltaTime * inertiaSpeed + (abs(newAngle.Yaw) / 10);
+
+            //If we're past the max distance, speed up in order to reach it much quicker
+            //SARGE: TODO: Clamp it properly, don't just speed up, it looks janky.
+            /*
+            if (abs(newAngle.Pitch) > inertiaMaxDist)
+                speedp += abs(newAngle.Pitch) - inertiaMaxDist;
+            if (abs(newAngle.Yaw) > inertiaMaxDist)
+                speedy += abs(newAngle.Yaw) - inertiaMaxDist;
+            */
+
+            //speed = deltaTime * inertiaSpeed;
+            //speed = smerp(deltaTime * inertiaSpeed * 1000,0,abs(newAngle.Pitch + newAngle.Yaw));
+
+            //P.DebugMessage("NewAngle " $ Self $ ": " $ newAngle.Pitch @ newAngle.Yaw @ speed);
+
+            //Now clamp the values. Move as fast as we can, unless we would go further than needed.
+            if (newAngle.Pitch < 0)
+                np = FClamp(speedp,1,-1*newAngle.Pitch);
+            else if (newAngle.Pitch > 0)
+                np = FClamp(-speedp,-newAngle.Pitch,-1);
+
+            if (newAngle.Yaw < 0)
+                ny = FClamp(speedy,1,-1*newAngle.Yaw);
+            else if (newAngle.Yaw > 0)
+                ny = FClamp(-speedy,-newAngle.Yaw,-1);
+
+            //Now actually move in the specified direction.
+            cvr.Pitch += int(np + 0.5);
+            cvr.Yaw += int(ny + 0.5);
+
+            //If we're past the maximum distance, fast-track us to the right spot
+            if (abs(newAngle.Pitch) > inertiaMaxDist && newAngle.Pitch > 0)
+                cvr.Pitch = vr.Pitch + inertiaMaxDist;
+            if (abs(newAngle.Pitch) > inertiaMaxDist && newAngle.Pitch < 0)
+                cvr.Pitch = vr.Pitch - inertiaMaxDist;
+
+            if (abs(newAngle.Yaw) > inertiaMaxDist && newAngle.Yaw > 0)
+                cvr.Yaw = vr.Yaw + inertiaMaxDist;
+            if (abs(newAngle.Yaw) > inertiaMaxDist && newAngle.Yaw < 0)
+                cvr.Yaw = vr.Yaw - inertiaMaxDist;
+        }
+
+        //vr = class'MathUtils'.static.NormalizeRotator(vr);
+    }
+
+    cachedViewRotation = cvr;
+}
+
 //
 // Modified to work better with scripted pawns
 // SARGE: Copied wholesale from DeusExWeapon
@@ -347,9 +426,6 @@ simulated function vector CalcDrawOffset()
 	local ScriptedPawn	SPOwner;
 	local Pawn			PawnOwner;
 	local vector unX,unY,unZ;
-    local Rotator vr;                       //SARGE: Added viewrotation variable
-    local Vector newOffset;
-    local float diff;
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -364,39 +440,17 @@ simulated function vector CalcDrawOffset()
         PlayerViewOffset.X += lerpAid;
 
 		PawnOwner = Pawn(Owner);
-
-        vr = PawnOwner.ViewRotation;
-        if (PawnOwner.isa('DeusExPlayer'))
-            vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
-
+            
+        //Draw base offset
         if (class'DeusExPlayer'.default.bPickupsUseFOV && bUseFOV)
-            DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
+            DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> cachedViewRotation);
         else
-            DrawOffset = ((0.9/PawnOwner.FOVAngle * PlayerViewOffset) >> vr);
+            DrawOffset = ((0.9/PawnOwner.FOVAngle * PlayerViewOffset) >> cachedViewRotation);
 
-        newOffset = drawOffset;
-
-        if (VSize(cachedDrawOffset) == 0)
-            cachedDrawOffset = drawOffset;
-
-        //SARGE: Handle Weapon Inertia
-        if (DeusExPlayer(PawnOwner) != none /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
-        {
-            //diff = VSize(cachedDrawOffset - drawOffset);
-            //Log("diff:" $ drawOffset @ cachedDrawOffset);
-            //diff = FMax(-8.0,FMin(8.0,diff));
-            //Log("diff:" $ diff);
-
-            newOffset.X = lerp(inertiaDelta,cachedDrawOffset.X,drawOffset.X);
-            newOffset.Y = lerp(inertiaDelta,cachedDrawOffset.Y,drawOffset.Y);
-            newOffset.Z = lerp(inertiaDelta,cachedDrawOffset.Z,drawOffset.Z);
-        }
-    
-        cachedDrawOffset = newOffset;
-
-        DrawOffset = newOffset;
+        //Add eye height
         DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 
+        //And weapon bob
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
 		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
 
@@ -1247,9 +1301,10 @@ function DestroyMe()
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-    //Reset weapon inertia
-    cachedDrawOffset = Vect(0,0,0);
     SetWeaponHandTex();
+
+    //Reset the inertia
+    cachedViewRotation = class'MathUtils'.static.NormalizeRotator(frobber.GetCurrentViewRotation());
 }
 
 //SARGE: Set up the Shenanigans gameplay modifier for this entity

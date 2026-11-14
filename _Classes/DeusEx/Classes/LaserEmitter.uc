@@ -13,6 +13,8 @@ var bool bRandomBeam;
 var bool bBlueBeam;				// is this beam blue?
 var bool bHiddenBeam;			// is this beam hidden?
 
+var bool bUpdateColor;          //SARGE: When set, update the colour (red or blue)
+
 var LaserProxy proxy;
 
 function CalcTrace(float deltaTime)
@@ -81,8 +83,6 @@ function CalcTrace(float deltaTime)
                 {
                     spot[i].DrawScale = 0.150000;                               //RSD: Making this a bit bigger, was 0.130000
                 }
-                if (bBlueBeam)
-				    spot[i].Skin = Texture'LaserSpot2';
 			}
 		}
 		else
@@ -92,6 +92,14 @@ function CalcTrace(float deltaTime)
 			if (bHiddenBeam)                                                    //RSD: scale spot size from 0.015-0.15 depending on distance
 				spot[i].DrawScale = 0.015000+FMin(0.0001*VSize(StartTrace - HitLocation - HitNormal),0.135000);
 		}
+        
+        if (bUpdateColor)
+        {
+            if (bBlueBeam)
+                spot[i].Skin = Texture'LaserSpot2';
+            else
+                spot[i].Skin = spot[i].default.Skin;
+        }
 
 		// don't reflect any more if we don't hit a mirror
 		// 0x08000000 is the PF_Mirrored flag from UnObj.h
@@ -120,6 +128,7 @@ function CalcTrace(float deltaTime)
 		StartTrace = HitLocation + HitNormal;
 		EndTrace = Reflection * 10000;
 	}
+    bUpdateColor = false;
 }
 
 function TurnOn()
@@ -219,9 +228,10 @@ function PostBeginPlay()
 
 }
 
-function SetBlueBeam()
+function SetBlueBeam(bool bBlue)
 {
-	bBlueBeam = True;
+    bUpdateColor=true;
+	bBlueBeam = bBlue;
 	if (proxy != None)
 		proxy.Skin = Texture'LaserBeam2';
 }

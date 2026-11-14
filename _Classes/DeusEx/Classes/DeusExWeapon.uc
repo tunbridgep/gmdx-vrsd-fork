@@ -425,9 +425,10 @@ var const bool bIsPlaceableOnWall;
 var transient bool bDontActuallyRenderViewModel;
 
 //SARGE: Weapon inertia
-var transient Vector cachedDrawOffset;
-var transient float inertiaDelta;                        //SARGE: deltaTime for weapon inertia
-var const float inertiaSpeed;                            //SARGE: How fast weapons move.
+var const float inertiaSpeed;                            //SARGE: How fast weapons move. New system only
+var const float inertiaMaxDistPitch;                          //SARGE: Max angle for Inertia, in unreal units.
+var const float inertiaMaxDistYaw;                          //SARGE: Max angle for Inertia, in unreal units.
+var transient Rotator cachedViewRotation;          //SARGE: Store previous view rotation
 
 //SARGE: Extra Sounds. Added in GMDX v9 but were hardcoded (eww!)
 var const Sound DeselectSound;
@@ -892,11 +893,11 @@ function Draw(DeusExPlayer frobber)
     ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
-            
-    //Reset weapon inertia
-    cachedDrawOffset = Vect(0,0,0);
 
     DoWeaponOffset();
+
+    //Reset the inertia
+    cachedViewRotation = class'MathUtils'.static.NormalizeRotator(frobber.GetCurrentViewRotation());
 }
 
 // ---------------------------------------------------------------------
@@ -1151,7 +1152,7 @@ simulated event RenderOverlays( canvas Canvas )
 	else
 		bSetFlashTime = false;
         
-    PositionViewModel(canvas,PlayerOwner,CalcDrawOffset(),PlayerOwner.GetCurrentViewRotation());
+    PositionViewModel(canvas,PlayerOwner,CalcDrawOffset(),cachedViewRotation);
 
     if (!bDontActuallyRenderViewModel)
     {
@@ -1188,7 +1189,10 @@ simulated function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, ve
     local vector dx, dy, dz;                                                    //RSD: Added
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 
-    NewRot = Pawn(Owner).ViewRotation;
+    if (PlayerOwner != None)
+        NewRot = cachedViewRotation;
+    else
+        NewRot = Pawn(Owner).ViewRotation;
 	
     SetLocation( Owner.Location + drawOffset );
 
@@ -2752,7 +2756,9 @@ simulated function Tick(float deltaTime)
 	  LockTimer = 0;
 		return;
 	}
-        
+
+    //SARGE: Weapon Inertia
+    CalcViewRotation(deltaTime);
 
     if (!activateAn && bZoomed && bShowWeaponWhenZoomed && Gepinout >= 1.0)
         DrawZoomedState(1.0,totalScopeTime);
@@ -2783,9 +2789,6 @@ simulated function Tick(float deltaTime)
                 lerpAid = 0;
         }
     }
-    
-    //SARGE: Weapon Inertia
-    inertiaDelta = deltaTime*inertiaSpeed;
 
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
@@ -3334,20 +3337,15 @@ function SwitchModes()
 
 function LaserOn(optional bool IgnoreSound)
 {
-	if (bHasLaser && !bLasing)
-	{
+    if (bHasLaser && !bLasing)
+    {
 		// if we don't have an emitter, then spawn one
 		// otherwise, just turn it on
-		if (Emitter == None)
+        if (Emitter == None)
 		{
 			Emitter = Spawn(class'LaserEmitter', Self, , Location, Pawn(Owner).ViewRotation);
 			if (Emitter != None)
 			{
-			    if (default.ItemName == "UMP7.62c" || default.ItemName == "USP.10")
-			    Emitter.bBlueBeam = True;
-			    else
-                Emitter.bBlueBeam = False;
-
 				Emitter.SetHiddenBeam(True);
 				Emitter.AmbientSound = None;
 				Emitter.TurnOn();
@@ -3355,6 +3353,8 @@ function LaserOn(optional bool IgnoreSound)
 		}
 		else
 			Emitter.TurnOn();
+
+        UpdateLaserSightMode();
 
         if (!IgnoreSound)
             Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5); //CyberP: suitable laser on sfx //SARGE: Now has sound check
@@ -3496,6 +3496,27 @@ function ShowWeaponAddon(int slot, bool condition)
         multiskins[slot] = texture'pinkmasktex';
     else
         multiskins[slot] = none;
+}
+
+//SARGE: Special version for Laser colours...
+function ShowWeaponLaserAddon(int slot, bool condition)
+{
+    if (!condition) //No laser
+    {
+        multiskins[slot] = texture'pinkmasktex';
+        return;
+    }
+    if (DeusExPlayer(owner) != None)
+    {
+        if (DeusExPlayer(Owner).iLaserSightMode == 0) //Red with beam (default)
+            multiskins[slot] = none;
+        else if (DeusExPlayer(Owner).iLaserSightMode == 1) //Red with hidden beam
+            multiskins[slot] = class'HDTPLoader'.static.GetTexture("VisibleAttachments.Skins.LaserTex2");
+        else if (DeusExPlayer(Owner).iLaserSightMode == 2) //Blue with beam
+            multiskins[slot] = class'HDTPLoader'.static.GetTexture("VisibleAttachments.Skins.LaserTex1B");
+        else if (DeusExPlayer(Owner).iLaserSightMode == 3) //Blue with hidden beam
+            multiskins[slot] = class'HDTPLoader'.static.GetTexture("VisibleAttachments.Skins.LaserTex2B");
+    }
 }
 
 //SARGE: TODO: Cache most of this stuff.
@@ -4976,6 +4997,85 @@ static final operator(18) float mod ( float A, float B )
   return ( A % B ) + B;
 }*/
 
+function Rotator CalcViewRotation(float deltaTime)
+{
+    local Rotator cvr, vr, newAngle;
+    local DeusExPlayer P;
+    local int i;
+    local float speedp, speedy, np, ny;
+    
+    P = DeusExPlayer(Owner);
+
+    if (P != None)
+        cvr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
+    else if (Pawn(Owner) != None)
+        cvr = Pawn(Owner).ViewRotation;
+    
+    if (P != None && P.bViewmodelInertia && inertiaSpeed > 0 && !bZoomed/* && !IsInState('Reload')*/)
+    {
+        cvr = class'MathUtils'.static.NormalizeRotator(cachedViewRotation);
+        vr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
+
+        //Calcluate the delta of the angle we need to slowly move towards
+        newAngle = class'MathUtils'.static.GetRotationBetween(cvr,vr);
+
+        //Clamp the angle so we can't go further than a certain distance
+        //newAngle.Pitch = FClamp(newAngle.Pitch,-inertiaMaxDist,inertiaMaxDist);
+        //newAngle.Yaw = FClamp(newAngle.Yaw,-inertiaMaxDist,inertiaMaxDist);
+
+        if (newAngle.Pitch != 0 || newAngle.Yaw != 0)
+        {
+            //SARGE: TODO: Use a proper Smerp for this
+            speedp = deltaTime * inertiaSpeed + (abs(newAngle.Pitch) / 10);
+            speedy = deltaTime * inertiaSpeed + (abs(newAngle.Yaw) / 10);
+
+            //If we're past the max distance, speed up in order to reach it much quicker
+            //SARGE: TODO: Clamp it properly, don't just speed up, it looks janky.
+            /*
+            if (abs(newAngle.Pitch) > inertiaMaxDist)
+                speedp += abs(newAngle.Pitch) - inertiaMaxDist;
+            if (abs(newAngle.Yaw) > inertiaMaxDist)
+                speedy += abs(newAngle.Yaw) - inertiaMaxDist;
+            */
+
+            //speed = deltaTime * inertiaSpeed;
+            //speed = smerp(deltaTime * inertiaSpeed * 1000,0,abs(newAngle.Pitch + newAngle.Yaw));
+
+            //P.DebugMessage("NewAngle " $ Self $ ": " $ newAngle.Pitch @ newAngle.Yaw @ speed);
+
+            //Now clamp the values. Move as fast as we can, unless we would go further than needed.
+            if (newAngle.Pitch < 0)
+                np = FClamp(speedp,1,-1*newAngle.Pitch);
+            else if (newAngle.Pitch > 0)
+                np = FClamp(-speedp,-newAngle.Pitch,-1);
+
+            if (newAngle.Yaw < 0)
+                ny = FClamp(speedy,1,-1*newAngle.Yaw);
+            else if (newAngle.Yaw > 0)
+                ny = FClamp(-speedy,-newAngle.Yaw,-1);
+
+            //Now actually move in the specified direction.
+            cvr.Pitch += int(np + 0.5);
+            cvr.Yaw += int(ny + 0.5);
+
+            //If we're past the maximum distance, fast-track us to the right spot
+            if (abs(newAngle.Pitch) > inertiaMaxDistPitch && newAngle.Pitch > 0)
+                cvr.Pitch = vr.Pitch + inertiaMaxDistPitch;
+            if (abs(newAngle.Pitch) > inertiaMaxDistPitch && newAngle.Pitch < 0)
+                cvr.Pitch = vr.Pitch - inertiaMaxDistPitch;
+            
+            if (abs(newAngle.Yaw) > inertiaMaxDistYaw && newAngle.Yaw > 0)
+                cvr.Yaw = vr.Yaw + inertiaMaxDistYaw;
+            if (abs(newAngle.Yaw) > inertiaMaxDistYaw && newAngle.Yaw < 0)
+                cvr.Yaw = vr.Yaw - inertiaMaxDistYaw;
+        }
+
+        //vr = class'MathUtils'.static.NormalizeRotator(vr);
+    }
+
+    cachedViewRotation = cvr;
+}
+
 //
 // Modified to work better with scripted pawns
 //
@@ -4983,80 +5083,53 @@ simulated function vector CalcDrawOffset()
 {
 	local vector		DrawOffset, WeaponBob;
 	local ScriptedPawn	SPOwner;
-	local Pawn			PawnOwner;
+	local DeusExPlayer	POwner;
 	local vector unX,unY,unZ;
-    local Rotator vr;                       //SARGE: Added viewrotation variable
-    local Vector newOffset;
 
 	SPOwner = ScriptedPawn(Owner);
+    POwner = DeusExPlayer(Owner);
 	if (SPOwner != None)
 	{
 		DrawOffset = ((0.9/SPOwner.FOVAngle * PlayerViewOffset) >> SPOwner.ViewRotation);
 		DrawOffset += (SPOwner.BaseEyeHeight * vect(0,0,1));
 	}
-	else
+	else if (POwner != None)
 	{
         //Apply lerp-aid
 	    if (activateAn == False && !bGEPOut)
 	    {
             PlayerViewOffset.X = default.PlayerViewOffset.X*100;
             PlayerViewOffset.X += lerpAid;
-        }       
-
-// copied from Engine.Inventory to not be FOVAngle dependent
-		PawnOwner = Pawn(Owner);
-
-        vr = PawnOwner.ViewRotation;
-        if (PawnOwner.isa('DeusExPlayer'))
-            vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
-
-        DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
-
-        newOffset = drawOffset;
-
-        if (VSize(cachedDrawOffset) == 0 || VSize(cachedDrawOffset - drawOffset) > 40)
-            cachedDrawOffset = drawOffset;
-
-        //SARGE: Handle Weapon Inertia
-        if (DeusExPlayer(PawnOwner) != none && !bZoomed && !IsInState('Reload') /*&& DeusExPlayer(PawnOwner).Physics != PHYS_Falling*/ && DeusExPlayer(PawnOwner).bViewmodelInertia && inertiaSpeed > 0)
-        {
-            //diff = VSize(cachedDrawOffset - drawOffset);
-            //Log("diff:" $ drawOffset @ cachedDrawOffset);
-            //diff = FMax(-8.0,FMin(8.0,diff));
-            //Log("diff:" $ diff);
-
-            newOffset.X = lerp(inertiaDelta,cachedDrawOffset.X,drawOffset.X);
-            newOffset.Y = lerp(inertiaDelta,cachedDrawOffset.Y,drawOffset.Y);
-            newOffset.Z = lerp(inertiaDelta,cachedDrawOffset.Z,drawOffset.Z);
         }
-    
-        cachedDrawOffset = newOffset;
 
-        DrawOffset = newOffset;
-        DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
+        //Draw base offset
+        DrawOffset = ((0.9/POwner.Default.FOVAngle * PlayerViewOffset) >> cachedViewRotation);
 
-		WeaponBob = BobDamping * PawnOwner.WalkBob;
-		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
+        //Add eye height
+        DrawOffset += (POwner.EyeHeight * vect(0,0,1));
 
+        //And weapon bob
+		WeaponBob = BobDamping * POwner.WalkBob;
+		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * POwner.WalkBob.Z;
 		DrawOffset += WeaponBob;
-	}
-	if (Owner.IsA('DeusExPlayer'))
-	{
-		if (VSize(DeusExPlayer(Owner).RecoilShake)>0.0)
+    
+        //Recoil Shake
+		if (VSize(POwner.RecoilShake)>0.0)
 		{
 			GetAxes(Rotation,unX,unY,unZ);
 			if (IsA('WeaponHideAGun') && bFiring)
-			unX*=DeusExPlayer(Owner).RecoilShake.X*-2;
+			unX*=POwner.RecoilShake.X*-2;
 			else if (IsA('WeaponRifle') && bFiring)
-			unX*=DeusExPlayer(Owner).RecoilShake.X*-1.0;
+			unX*=POwner.RecoilShake.X*-1.0;
 			else
-			unX*=DeusExPlayer(Owner).RecoilShake.X*0.5;
+			unX*=POwner.RecoilShake.X*0.5;
 
-			unY*=DeusExPlayer(Owner).RecoilShake.Y*0.75;
-			unZ*=DeusExPlayer(Owner).RecoilShake.Z*0.75;
+			unY*=POwner.RecoilShake.Y*0.75;
+			unZ*=POwner.RecoilShake.Z*0.75;
 			DrawOffset+=(unX+unY+unZ);
 		}
 	}
+
 	return DrawOffset;
 }
 
@@ -7016,6 +7089,23 @@ simulated function ClientReload()
 	GotoState('SimReload');
 }
 
+//SARGE: Move laser stuff to here
+function UpdateLaserSightMode()
+{
+    local int laserMode;
+
+    if (IsHDTP())
+    {
+        emitter.SetBlueBeam(false);
+    }
+    else if (DeusExPlayer(Owner) != None && emitter != None)
+    {
+        laserMode = DeusExPlayer(Owner).iLaserSightMode;
+        emitter.SetBlueBeam(laserMode == 2 || laserMode == 3);
+    }
+
+}
+
 exec function UpdateHDTPsettings()
 {
     local int slot;
@@ -7049,6 +7139,7 @@ exec function UpdateHDTPsettings()
     else
         Mesh = PickupViewMesh;
     
+    UpdateLaserSightMode();
     SetWeaponHandTex();
     UpdateLargeIcon();
     CheckWeaponSkins();
@@ -8189,7 +8280,9 @@ defaultproperties
      addonPenalties(2)=0.15 //Laser
      currentWeaponSkin="default"
      totalScopeTime=0.41
-     inertiaSpeed=30
+     inertiaSpeed=1000
+     inertiaMaxDistYaw=3000
+     inertiaMaxDistPitch=1500
      AttachmentSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
      minimumNewGamePlusCycle=0
      maximumNewGamePlusCycle=-1
