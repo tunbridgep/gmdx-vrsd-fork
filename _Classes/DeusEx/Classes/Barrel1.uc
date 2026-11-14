@@ -25,6 +25,11 @@ var() bool bPreDamage;
 var bool bLeaking;
 var float radTimer;
 
+//SARGE: Don't adjust this...
+function ResetScaleGlow()
+{
+}
+
 exec function UpdateHDTPsettings()
 {
     super.UpdateHDTPsettings();
@@ -63,6 +68,13 @@ function SetSkin()
 									break;
 		case SC_RadioActive:		oldSkin = "DeusExDeco.Skins.Barrel1Tex9";
                                     newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex9";
+									bUnlit = True;
+									ScaleGlow = 0.4;
+									LightType = LT_Steady;
+									LightRadius = 8;
+									LightBrightness = 128;
+									LightHue = 64;
+									LightSaturation = 96;
 									break;
 		case SC_Wood:				oldSkin = "DeusExDeco.Skins.Barrel1Tex10";
                                     newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex10";
@@ -122,16 +134,9 @@ function BeginPlay()
 									bInvincible = False;
 									HitPoints = 60;
 									minDamageThreshold=80;
-									LightType = LT_Steady;
-									LightRadius = 8;
-									LightBrightness = 128;
-									LightHue = 64;
-									LightSaturation = 96;
 									AmbientSound = sound'GeigerLoop';
 									SoundRadius = 8;
 									SoundVolume = 255;
-									bUnlit = True;
-									ScaleGlow = 0.4;
 									break;
 		case SC_Wood:				
                                     FragType = Class'DeusEx.WoodFragment'; //CyberP

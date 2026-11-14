@@ -39,7 +39,7 @@ replication
 // WOW! What a mess.  I wish you could convert strings to names!
 function SetSkin(EButtonType type, bool lit)
 {
-    ScaleGlow = default.ScaleGlow;
+    bUnlit=true;
 	switch (type)
 	{
 		case BT_Up:			if (lit)
@@ -287,5 +287,5 @@ defaultproperties
      Mass=5.000000
      Buoyancy=2.000000
 	 bHDTPFailsafe=False
-     ScaleGlow=1.6
+     ScaleGlow=0.5
 }

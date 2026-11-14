@@ -36,7 +36,7 @@ simulated function PreBeginPlay()
 
 defaultproperties
 {
-     Style=STY_Translucent
+     Style=STY_Normal
      Mesh=LodMesh'DeusExItems.BloodDrop'
      DrawScale=0.750000
      ScaleGlow=0.700000

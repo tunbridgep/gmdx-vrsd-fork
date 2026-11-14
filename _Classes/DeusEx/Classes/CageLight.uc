@@ -17,24 +17,28 @@ var() ESkinColor SkinColor;
 var() bool bOn;
 var bool bUsing;
 
-function Trigger(Actor Other, Pawn Instigator)
+function ResetScaleGlow()
 {
-	Super.Trigger(Other, Instigator);
-
-	if (!bOn)
+    super.ResetScaleGlow();
+	if (bOn)
 	{
-		bOn = True;
 		LightType = LT_Steady;
 		bUnlit = True;
 		ScaleGlow = 2.0;
 	}
 	else
 	{
-		bOn = False;
 		LightType = LT_None;
 		bUnlit = False;
 		ScaleGlow = 1.0;
 	}
+}
+
+function Trigger(Actor Other, Pawn Instigator)
+{
+	Super.Trigger(Other, Instigator);
+    bOn = !bOn;
+    ResetScaleGlow();
 }
 
 exec function UpdateHDTPsettings()
