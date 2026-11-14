@@ -4241,6 +4241,13 @@ function DoWetnessEffects(float deltaTime)
 	else //Ygll adjusted rate for swimming wet rate
 		adjustedRate = 1.0;*/
 
+    if (!bShowWaterDroplets)
+    {
+		wetRate = 0.0;
+		waterDropCounter = 0.0;
+        return;
+    }
+
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 	{
 		wetRate = 0.0;
@@ -21452,4 +21459,5 @@ defaultproperties
      iPresetSeed=-1
      bMoreVisibleBeltFade=True
      bSequenceMeleeAttack=False
+     bShowWaterDroplets=true
 }
