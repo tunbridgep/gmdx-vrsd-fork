@@ -1,0 +1,182 @@
+I recommend against playing v9 if you can avoid it, it has some very serious
+bugs and issues, some of which are fixed in vRSD and almost all of which are
+fixed in AE.
+
+Major Bugs (gamebreaking issues or severe exploits):
+
+- The piercing perk is completely useless because the damage is modified after
+  it's applied (Fixed in AE). Several other perks are assigned incorrectly and
+  give the wrong effects due to misnumbered perkNamesArray checks (Mostly fixed
+  in vRSD, fully fixed in AE because it overhauls the perk system entirely)
+- Lots of renderer related crashes, including black-screen CTDs because of
+  renderer overflows, the most egregious examples being near the big boat in HK
+  Canals and one of the stations near a crashed train in Brooklyn Bridge
+  Station (Fixed in AE and DXRando)
+- The EUAS hazard detection has a roughly 10% chance of causing a CTD every
+  time a thrown enemy grenade detonates because of accessed nones (partially
+  fixed in vRSD, fully fixed in AE)
+- The v9 "fix" for Paul dying before setting off the 'Ton raid means that if he
+  dies AT ALL during the raid, as long as you survive and make it out of the
+  hotel, he will be alive in the next mission. You can even take his corpse
+  with you into the prison level and he will still be alive, resulting in 2
+  instances of Paul Denton. (Fixed in AE)
+- The added "item physics" blocks spawning in some cases, resulting in some
+  messed-up bugs, such as picking up grenades with 0 ammo occasionally, or
+  blowing up enemies and having them drop no items because their gibs are
+  overlapping with their item spawns. This is especially noticeable in vRSD
+  because it added a gas grenade to a cupboard in the first UNATCO HQ mission,
+  which will always give you 0 ammo if it's the first gas grenade you pickup on
+  a given playthrough because it doesn't have room to spawn the ammo. (Fixed in
+  AE, all items now spawn ammo correctly always)
+- When being transferred from the 'Ton Hotel raid to the MJ12 Prison map by
+  dying, you will reasonably often randomly lose a handful of inventory items
+  (usually items towards the end of the inventory list) because GMDX clears
+  your inventory when you die (to fix the self-frob inventory duplication
+  exploit) before transferring you to the next map. This most often results in
+  losing the aug canister from the previous mission, because it's usually the
+  last item in your inventory. (Fixed in AE)
+- Left-Frobbing a stack of items (such as multiple biocells in the armoury
+  after being imprisoned by MJ12) will delete the entire stack rather than
+  using 1 from it (Fixed in AE)
+- Disabling a camera or turret with an EMP, then disabling it via hacking or
+  multitools, will cause it to wake-up and become active again after the EMP
+  effect ends (Fixed in AE)
+- Environmental Training items have the same durations/protections at Trained
+  and Advanced, due to rounding errors, so the only benefit is the extra
+  pickups (Fixed in AE)
+- Ammo can be duplicated by frobbing corpses with a full inventory, then
+  dropping items until you have space to pick up their weapon and re-frobbing,
+  which can even be used to duplicate LAMs and GEP ammo! (Fixed in AE)
+- Ammo can be duplicated by frobbing corpses, then gibbing them, which would
+  refill their weapon (especially problematic for GEP guns). (Fixed in AE)
+- The ADS augmentation can trigger invisible grenade traps, creating gas clouds
+  in Versalife and other places. (Fixed in AE)
+- Jumping off a ladder while partially submerged in water (such as the ladder
+  at the start of the Battery Park mission) will cause JC to enter a permanent
+  flying state. (Fixed in AE)
+- Cameras do not properly set off alarm events when spotting carcasses. This
+  means, for instance, that on the Dockyards mission, being caught by a camera
+  and setting off an alarm will release the bots from the armoury, but cameras
+  spotting carcasses will set off the alarm without releaseing the bots (Fixed
+  in AE, camera behaviour is now consistent)
+- Electronics Panels that are destroyed by hitting their DT exactly won't
+  trigger their associated event due to it checking for damage above the DT
+  only (fixed in AE) [I can't remember if this was a vRSD or v9 feature]
+- Using the GEP Scope while up against a wall will allow you to see through it,
+  providing free wallhacks. Worse, this can crash the game as it may cause the
+  renderer overflow mentioned above. (Fixed in AE)
+- You can use the inventory freely while paused by using the PAUSE key,
+  circumventing "real time UI" restrictions entirely (Fixed in AE)
+
+Minor Bugs (visual bugs or annoyances):
+
+- Alternate Toolbelt resetting on map transition, losing your primary selection
+  and making the feature somewhat useless (Fixed in AE)
+- Knocking scuba-divers unconscious will immediately kill them the moment they
+  float to the surface, ruining any non-lethal gameplay against them (Fixed in
+  AE)
+- The "Create Custom Theme" menu can affect the default themes, changing them
+  until the game is restarted and not saving the changes as a result. (Fixed in
+  AE by always forcing you into the Custom theme when using the custom theme
+  creation menu)
+- If Subtitles are disabled, an empty subtitles box will appear every time you
+  interact with an object during a first-person conversation. (Fixed in AE)
+- The "Crosshair Visibility" setting in the menu is constantly overwritten
+  whenever you use a laser, making the setting completely useless (Fixed in AE)
+- Subtitles don't show in the intro cutscene due to bad aspect-ratio checking
+  (Fixed in AE)
+- GMDX's Stamina "tiredness" (slow melee swings, etc) works on a timer, so you
+  could make it end prematurely by running out of stamina while the effect is
+  active, which would prematurely end the second effect (Fixed in AE)
+- The Aggressive Defense System aug will show all wall-mounted grendes at
+  infinite range, and will cause endless beeping and earrape. (Partially fixed
+  in vRSD, fully fixed in AE)
+- Framerate-dependent scoping-in animation timings (and they are disabled
+  entirely on DX9), making the "faster scope time" perks in vRSD mostly
+  worthless and causing other issues. This affects the "weapon pull back" when
+  near walls animation too, but that's purely visual (Fixed in AE, now it's
+  always timing-consistent and works on all renderers)
+- Due to a hacky fix for the "We have a deal" conversation bug, ALL mechanics
+  bail out of trade-related conversations early, resulting in missing out on
+  some dialog lines, most notably the mechanic in the Airfield Terminal. (Fixed
+  in AE)
+- Grenade Traps (when you're in vents) are half-broken and only ever work once,
+  often don't trigger at all, and are exclusively limited to gas grenades
+  (Fixed in AE)
+- When activating the spy drone aug, if you're looking at a wall, the drone
+  will not be created, but the aug will still be active and will drain energy
+  until switched off. (Fixed in AE, now it won't activate at all if it can't
+  create the drone)
+- Several items don't have fixed hand skins (notably POVCorpses), so they don't
+  change colour to reflect the players skin colour similarly to how other items
+  do (Fixed in AE)
+- Due to changes to the way carcasses are detected in v9, rat carcasses can set
+  off some enemies (most notably in the Paris Club entrance, killing rats will
+  turn the guards hostile) (Fixed in AE)
+- Double-Click Holstering uses a Timer, which will cause slowdowns and FPS loss
+  over time as more timers are created and destroyed due to an Unreal engine
+  issue (Replaced with a static game time check in AE)
+- Carcasses show the name of the entity or creature when killed (such as "Dead
+  Body (Terrorist)"), but carcasses placed in the map simply show as "Dead
+  Body" (Fixed in AE)
+- Opening the main menu while dead will re-enable the HUD (Fixed in AE)
+- MJ12 Elites can sometimes be permanently cloaked when revisiting them after
+  transitioning maps (partially fixed in vRSD, fully fixed in AE and made into
+  a modifier)
+- Combat Strength affects the damage of some non hand-to-hand weapons which are
+  marked as hand-to-hand in the engine (such as the PS20) (Fixed in AE, now
+  it's affected by Targeting)
+- Using Cloak and Radar Trans will completely fuck up rendering of some
+  weapons/items (such as the nanokey) until one or both of them is switched off
+  (Fixed in vRSD)
+- Searching carcasses for items where we would go above a full stack deletes
+  the extra items (fixed in AE, now it only takes what it can)
+- Extremely inconsistent enemy behaviour due to NPCs being modified directly in
+  the maps (Some elites have a lot less health than others because they are
+  actually renamed and reskinned MJ12 Troops, some MJ12Commandos have the wrong
+  footstep sounds due to them being set in the map files directly, dafoe's
+  quest for "killing 3 people in the metro" only actually has 2 targets because
+  some Commandos were set to bImportant, etc). MJ12 Elites are immune to tear
+  gas, MJ12 Troops aren't (including ones that have been reskinned as Elites),
+  resulting in inconsistent behaviour in the maps as well. This is fully fixed
+  in AE by splitting out the weird versions of the NPCs into subclasses and
+  making sure all code paths work for all of them at all times, and replacing
+  the highly-modified NPCs in the maps with the new subclassed versions.
+- Hacking window doesn't ever show at Untrained hacking, making it impossible
+  to use Nuke viruses without at least 1 level in hacking (Fixed in AE)
+- The "Confirm note deletion" checkbox does nothing on Hardcore mode or with
+  realtime UI turned on, notes are always deleted instantly (Fixed in AE)
+- Buying a weapon with attachments (such as Smugglers autoshotgun) won't add
+  those attachments to your existing copy if you already have the weapon (Fixed
+  in AE, not that anyone buys his autoshotty anyway)
+- Muscle aug doesn't prevent jumping while carrying heavy objects, due to the
+  check being in the wrong place (Fixed in AE)
+- Some items will have empty name strings (Partially fixed in vRSD, fully fixed
+  in AE)
+- GMDX v9 darkened all the decorative items in the maps for aesthetics. However
+  they are not reset properly when being picked up, so dropped items like
+  couches will be brighter after being dropped once. (Fixed in AE)
+
+There are also several major Vanilla issues that are left unfixed in v9 and
+vRSD, some of which are quite major:
+
+- Thermoptic camo isn't effective against activated turrets (but still works
+  against cameras and bots) due to a missing conditional check (Fixed in AE)
+- Items can be duplicated by picking them up multiple times within 1-2 frames
+  (such as by using the mousewheel), which is a favourite tactic of
+  speedrunners (Fixed in AE)
+- Glasses frequently appear on holograms, and usually look awful (solid white)
+  (Fixed in AE)
+- Patrolling enemies that get stuck (most often happens in the ShipBelow map)
+  will cause an infinite loop and crash the game (Fixed in AE)
+- The game would try to initiate conversations sometimes when one of the
+  participants was far away (such as talking to Renault in Paris while his
+  bodyguard is far away), which would momentarily throw the player into the
+  Conversation state (preventing movement) for a fraction of a second before
+  bailing. (Fixed in AE, now it bails correctly)
+
+vRSD also has it's fair share of major issues, the primary one being that
+Alcohol still gives fullness with the addiction system enabled, but doesn't
+check for fullness when consumed, so you can get past 100% fullness, and
+allowing you to use charged pickups (namely tech goggles) for a split second
+when they are empty if they are in the secondary slot.
