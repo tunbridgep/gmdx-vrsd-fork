@@ -830,7 +830,8 @@ function PostBeginPlay()
 	Super.PostBeginPlay();
     
     //SARGE: Prevent going into stasis ever for predictable enemies
-    LastRenderTime = Level.TimeSeconds;
+    if (IsInState('Patrolling') || IsInState('Seeking'))
+        LastRenderTime = Level.TimeSeconds;
     
 	//sort out HDTP settings
 	UpdateHDTPSettings();
@@ -6738,7 +6739,7 @@ function NoiseHandler(Actor source)
                 //attacking instantly, rather than searching.
                 player = DeusExPlayer(instigator);
 
-                if (!IsA('Robot') && player != None && (player.bHardcoreMode || player.bQuickReflexes) && ((Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
+                if (!IsA('Robot') && player != None && !player.UsingChargedPickup(class'AdaptiveArmor') && player.AugmentationSystem.GetAugLevelValue(class'AugCloak') == -1.0 && (player.bHardcoreMode || player.bQuickReflexes) && ((Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
                 {
                     //player.DebugMessage("High Alert!");
                     SetEnemy(player);

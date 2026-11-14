@@ -1,6 +1,8 @@
 1.3:
 
 New Features:
+- Added "anti-softlock" cripple system.
+    - With both legs cripped, players can stand up briefly for a short time using the Jump key.
 - Added New Game Plus mode:
     - After finishing the game, NG+ will be unlocked. Finishing additional loops will unlock additional NG+ cycles.
     - When starting NG+, the player will lose all inventory items, but will keep their perks, skills and augs.
@@ -55,6 +57,7 @@ New Features:
 - Blood droplet will now create blood pool effect when going in the water.
 
 Bug Fixes:
+- Fixed a GMDA:AE issue where enemies would go into the instant "high alert state" when you were cloaked or wearing Thermoptic Camo
 - Fixed Secondary icon sometimes being cleared when transitioning between maps.
 - Fixed Turrets and Cameras being able to see through Themoptic Camo in certain cases.
 - Fixed Turrets resetting their targeting priorities when set to "Enemies" or "Everything" while rebooting if an alarm is deactivated.
