@@ -1102,6 +1102,7 @@ var globalconfig bool bMoreVisibleBeltFade;
 var float wetRate;
 var float waterDropCounter;
 
+var globalconfig bool bRemoveComputerScreenBackground;      //SARGE: Remove the background when interacting with computer screens
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -21452,4 +21453,5 @@ defaultproperties
      iPresetSeed=-1
      bMoreVisibleBeltFade=True
      bSequenceMeleeAttack=False
+     bRemoveComputerScreenBackground=true
 }
