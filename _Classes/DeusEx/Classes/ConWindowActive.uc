@@ -56,7 +56,7 @@ function FOVFixer()
 {
     //Set the players FOV to 75 so that cutscenes appear mostly normal
     //TODO: Fix this to work properly on other aspect ratios
-	if (!player.bFirstPersonConversation || bForcePlay)
+	if (player.iFirstPersonConversation == 0 || player.iFirstPersonConversation == 2 || bForcePlay)
 	{
 		if (player.iCutsceneFOVAdjust == 1)
 			AdjustFOV(75);
