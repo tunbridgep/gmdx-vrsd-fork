@@ -203,6 +203,18 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     else if (player.bToolWindowShowRead && ID != None && ID.IsRead(player))
         return colWireless;
     
+    //Hacky special cases batman!
+    if (player.bToolWindowShowInvalidPickup)
+    {
+        //Water Fountain is used up
+        if (WaterFountain(frobTarget) != None && WaterFountain(frobTarget).numUses <= 0)
+            return colBadAug;
+
+        //Water Cooler is used up
+        if (WaterCooler(frobTarget) != None && WaterCooler(frobTarget).numUses <= 0)
+            return colBadAug;
+    }
+
     //Show red for invalid item pickups (not enough space, stack full, etc)
     //This has to go pretty late in the list because most other things are Inventory items as well
     if (player.bToolWindowShowInvalidPickup && Inv != None)

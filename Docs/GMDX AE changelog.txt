@@ -100,6 +100,7 @@ Bug Fixes:
 
 Misc Changes:
 - Changed the weapon inertia formula, to hopefully be less janky and jerky.
+- Red tooltip outlines now also show when Water Fountains are out of water.
 - Addon Penalties for Scope, Laser and Silencer updated:
     - Scope now gives -recoil and +reload and equip time.
     - Laser now gives +reload and equip time.
