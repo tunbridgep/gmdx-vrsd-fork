@@ -407,9 +407,10 @@ function PlayDying(name damageType, vector hitLoc)
 // sound functions
 //
 
+//SARGE: I honestly have no idea why this needs to exist...
 function float RandomPitch()
 {
-	return (1.1 - 0.2*FRand());
+    return super.RandomPitch();
 }
 
 //LDDP, 10/26/21: These next 3 functions are all modified for unique sound playing based on female stuff
@@ -595,7 +596,7 @@ simulated function PreBeginPlay()
 
 function DoJump(optional float F)
 {
-	if ((Physics == PHYS_Falling || (HealthLegLeft < 1 && HealthLegRight < 1)) && Base==none && !isMantling && bMantleOption && CarriedDecoration == None && Level.NetMode == NM_StandAlone)
+	if (Physics == PHYS_Falling && Base==none && !isMantling && bMantleOption && CarriedDecoration == None && Level.NetMode == NM_StandAlone)
 	{      
 		startMantling();
 	}
@@ -1130,7 +1131,7 @@ exec function startMantling(optional float F)
 {
     if (F > 0)
        bOnKeyHold = True;
-    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None || IsCrippled()) //SARGE: No mantling while crippled
+    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None || IsCrippled(false)) //SARGE: No mantling while crippled
     {
     }
     else

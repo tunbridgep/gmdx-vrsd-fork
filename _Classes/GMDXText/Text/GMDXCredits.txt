@@ -5,7 +5,7 @@
 <P>Paul "Sarge945" Tunbridge
 <P>
 <B>Developers
-<P>Ygll, Lord Trashcan
+<P>Ygll, Lord Trashcan, Made in China
 <P>
 <B>Art, Assets, and the Lay D Denton Project
 <P>Xriborg, LupusDraconis, Made in China
@@ -38,5 +38,7 @@
 <B>Special Thanks
 <P>Totalitarian for making the original Give Me Deus Ex mod,
 <P>RoSoDude for his amazing GMDXvRSD fork, which this mod is based on
+<P>Chris W. Dohnal, Marjin Kentie and Made in China for renderer work
+<P>Marjin Kentie and Made in China for Deus Exe
 <P>This version would not have been possible without either of them!
 <P>The amazing people on the Mods4Ever/DXRando discord.
