@@ -165,12 +165,17 @@ event InitWindow()
 	SetWindowAlignments(HALIGN_Full, VALIGN_Full);
 
 	// Draw a black background for now
-	//if (!player.bRealUI && !player.bHardcoreMode)                               //RSD: only if we don't have realtime UI (Hardcore)
-	//{
-	SetBackgroundStyle(DSTY_Normal);
-	SetBackground(Texture'Solid');
-	SetTileColorRGB(0, 0, 0);
-	//}
+	if (player.bRemoveComputerScreenBackground)
+    {
+		SetBackground(Texture'MaskTexture');
+		SetBackgroundStyle(DSTY_Modulated);
+    }
+    else
+	{
+        SetBackgroundStyle(DSTY_Normal);
+        SetBackground(Texture'Solid');
+        SetTileColorRGB(0, 0, 0);
+	}
 
 	SetMouseFocusMode(MFOCUS_Click);
 

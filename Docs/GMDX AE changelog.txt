@@ -1,6 +1,7 @@
 1.3:
 
 New Features:
+- Computer terminals will no longer show a black background and are usable on top of your existing HUD.
 - Added "anti-softlock" cripple system.
     - With both legs cripped, players can stand up briefly for a short time using the Jump key.
 - Added New Game Plus mode:
