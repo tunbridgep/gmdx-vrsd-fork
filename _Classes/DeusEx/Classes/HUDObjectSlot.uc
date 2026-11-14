@@ -294,6 +294,7 @@ event DrawWindow(GC gc)
 {
 	local DeusExWeapon weapon;
     local DeusExAmmo DXammo;
+    local bool bDrawBorder;
 	
     //SARGE: Don't draw if we should be faded out completely
     //This is a hack because the IsVisible() function is native
@@ -367,7 +368,17 @@ event DrawWindow(GC gc)
 			gc.DrawText(slotIconX+1, itemTextPosY, slotFillWidth, 8, itemText);
 
 		// Draw selection border
-		if (bButtonPressed)
+        if (player.bInventoryBeltShowsHighlights && bInventorySlot && item != None)
+        {
+            if (player.iAlternateToolbelt > 0)
+                bDrawBorder = bButtonPressed || player.advBelt == item.beltPos || (player.primaryWeapon == item && player.advBelt == -1);
+            else
+                bDrawBorder = bButtonPressed || player.primaryWeapon == item;
+        }
+        else
+            bDrawBorder = bButtonPressed;
+
+		if (bDrawBorder)
 		{
             gc.SetTileColor(GetColorWithOpacity(colSelectionBorder));
 			gc.SetStyle(DSTY_Masked);

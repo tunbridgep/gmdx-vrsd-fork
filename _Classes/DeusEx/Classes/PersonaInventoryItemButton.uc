@@ -100,6 +100,8 @@ event DrawWindow(GC gc)
 	local DeusExWeapon weapon;
 	local float strWidth, strHeight;
 
+    anItem = Inventory(GetClientObject());
+
 	if (( !bDragging ) || ( bDragging && bValidSlot ))
 	{
 		// Draw the background
@@ -109,8 +111,17 @@ event DrawWindow(GC gc)
 		gc.DrawPattern(1, 1, width - 2, height - 2, 0, 0, fillTexture);
 	}
 
+    //SARGE: If we're equipped but not selected (ie a chargedpickup), then highlight with a different color.
+    if (fillColor == colNone && ChargedPickup(anItem) != None && ChargedPickup(anItem).bActive && !ChargedPickup(anItem).bDrained)
+    {
+        gc.SetStyle(DSTY_Translucent);
+        gc.SetTileColor(colCharge);
+        gc.DrawPattern(1, 1, width - 2, height - 2, 0, 0, Texture'Solid' );
+    }
+
 	if ( !bDragging )
 	{
+
 		gc.SetStyle(DSTY_Masked);
 		if (bDimIcon)
 			gc.SetTileColor(colIconDimmed);                                     //RSD
@@ -123,8 +134,6 @@ event DrawWindow(GC gc)
 					   iconPosWidth, iconPosHeight,
 					   0, 0,
 					   icon);
-
-		anItem = Inventory(GetClientObject());
 
         if (anItem != none)                                                     //RSD: Hack fix since I use a fake PersonaInventoryItemButton with no associated item
         {
@@ -607,5 +616,5 @@ defaultproperties
      RoundsLabel2="%d/%d Rds"
      colDropSwap=(R=16,G=32,B=128)
      colIconDimmed=(R=64,G=64,B=64)
-     colCharge=(R=255,G=243,B=109)
+     colCharge=(R=32,G=32,B=32)
 }

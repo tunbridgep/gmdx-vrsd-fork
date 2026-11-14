@@ -1103,6 +1103,9 @@ var float wetRate;
 var float waterDropCounter;
 
 var globalconfig bool bRemoveComputerScreenBackground;      //SARGE: Remove the background when interacting with computer screens
+
+var globalconfig bool bInventoryBeltShowsHighlights;        //SARGE: The inventory belt will show the same highlights (selected items, etc) as the regular belt.
+
 //////////END GMDX
 
 // OUTFIT STUFF

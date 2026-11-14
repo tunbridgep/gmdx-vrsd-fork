@@ -278,7 +278,7 @@ function UpdateInHand()
 	local int slotIndex;
 
 	// highlight the slot and unhighlight the other slots
-	if ((player != None) && (!bInteractive))
+	if ((player != None) && !bInteractive)
 	{
 		if (player.iAlternateToolbelt > 0)
 		{
@@ -312,7 +312,7 @@ function RefreshAlternateToolbelt()
 	local int slotIndex;
     local bool placeholderSlot;
 
-	if ((player != None) && (!bInteractive))
+	if ((player != None) && !bInteractive)
 	{
 		for (slotIndex=0; slotIndex < numSlots; slotIndex++)
 		{

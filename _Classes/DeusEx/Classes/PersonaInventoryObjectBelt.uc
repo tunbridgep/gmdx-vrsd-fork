@@ -107,11 +107,15 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 {
 	local int objectNum;
     local DeusExPlayer player;
+    local bool moveAdvBelt;
 
 	if (((key < IK_0) || ( key > IK_9 )) && key != IK_Minus && key != IK_Equals)
 		return;
 
     player = DeusExPlayer(GetRootWindow().ParentPawn);
+
+    //If the current item is in our advBelt slot, then we need to move the advBelt slot to match
+    moveAdvBelt = invItem != None && invItem.beltPos == player.advBelt;
 
     //don't let us assign to slots that aren't usable
     if ((key == IK_Minus || key == IK_Equals) && (player != None && player.iBiggerBelt == 0))
@@ -164,6 +168,9 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 	}
 
 	AddObject(invItem, objectNum);
+
+    if (moveAdvBelt)
+        player.advBelt = objectNum;
 }
 
 // ----------------------------------------------------------------------
@@ -207,9 +214,19 @@ function SwapObjects(HUDObjectSlot firstSlot, HUDObjectSlot secondSlot)
 	local int secondSlotNum;
 	local Inventory firstItem;
 	local Inventory secondItem;
+    local DeusExPlayer player;
 
 	firstSlotNum  = firstSlot.ObjectNum;
 	secondSlotNum = secondSlot.ObjectNum;
+
+    //SARGE: If we're swapping our primary selection, we need to move it over
+    player = DeusExPlayer(GetRootWindow().ParentPawn);
+    //player.DebugMessage("advBelt: " $ player.advBelt @ firstSlotNum @ secondSlotNum);
+    if (player != None && firstSlotNum == player.advBelt)
+        player.advBelt = secondSlotNum;
+    else if (player != None && secondSlotNum == player.advBelt)
+        player.advBelt = firstSlotNum;
+    //player.DebugMessage("advBelt2: " $ player.advBelt);
 
 	firstItem  = firstSlot.Item;
 	secondItem = secondSlot.Item;
@@ -223,6 +240,11 @@ function SwapObjects(HUDObjectSlot firstSlot, HUDObjectSlot secondSlot)
 
 	if (secondItem != None)
 		AddObject(secondItem, firstSlotNum);
+
+    if (objBelt != None)
+        objBelt.UpdateInHand();
+    if (hudBelt != None)
+        hudBelt.UpdateInHand();
 }
 
 // ----------------------------------------------------------------------
