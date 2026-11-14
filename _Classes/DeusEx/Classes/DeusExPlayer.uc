@@ -1101,6 +1101,7 @@ var globalconfig bool bMoreVisibleBeltFade;
 //Ygll: New var to handle wet effect on player when he was being into water
 var float wetRate;
 var float waterDropCounter;
+var globalconfig bool bShowWaterDroplets;
 
 //////////END GMDX
 
@@ -12043,8 +12044,12 @@ function DropDecoration()
                 // turn off translucency
                 deco.Style = deco.Default.Style;
                 deco.bUnlit = deco.Default.bUnlit;
-                if (!bNoTranslucency && deco.IsA('DeusExDecoration'))
-                    DeusExDecoration(deco).ScaleGlow = CarriedDecoGlow;
+                deco.ScaleGlow = deco.Default.ScaleGlow;
+                //if (!bNoTranslucency && deco.IsA('DeusExDecoration'))
+                //    DeusExDecoration(deco).ScaleGlow = CarriedDecoGlow;
+
+                if (deco.IsA('DeusExDecoration'))
+                    DeusExDecoration(deco).ResetScaleGlow();  //SARGE: Added to replace the above block.
 
                 if (bThrowDecoration)
                     ThrowDecoration(deco);
