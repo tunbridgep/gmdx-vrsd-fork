@@ -1,6 +1,7 @@
 1.3:
 
 New Features:
+- The GMDX:AE Advanced Menu is now categorised for easier navigation.
 - Worn items will now be shown with a white border in the inventory screen.
 - The Inventory Belt now highlights your primary belt selection (IW Belt only) or your last selected weapon.
 - Computer terminals will no longer show a black background and are usable on top of your existing HUD.

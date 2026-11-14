@@ -45,6 +45,10 @@ var bool bAutoBuildModifierList;                    //SARGE: Automatically build
 
 var const bool bZeroRemovedItems;                         //SARGE: Items removed with "RemoveItem" are also set to zero.
 
+var const bool bCategorised;                        //SARGE: The menu will use categories instead of listing everything. Requires categories to be set for menu items.
+
+var transient bool bRefresh;                        //SARGE: We need to rebuild the list in tick, otherwise the game crashes.
+
 Struct ObjectPos
 {
     var int X;
@@ -117,9 +121,21 @@ struct S_ListItem
     var float realValue3;
     var float realValue4;
     var float realValue5;
+
+    //Which category number we're in
+    var int category;
 };
 
 var localized S_ListItem items[255];
+
+struct S_Category
+{
+    var string DescriptionText;
+    var bool bIsOpen;
+};
+
+var localized string categoryNames[50];
+var S_Category categories[50];
 
 ///This exists because UnrealScript sucks ass and doesn't let you access arrays of structs
 function static string GetActionTextAt(int index)
@@ -241,6 +257,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
         //Esc and Enter to leave the window
         if (key == IK_Escape)
         {
+            editSearch.SetText("");
             SetFocusWindow(lstItems);
             return true;
         }
@@ -268,6 +285,14 @@ function CreateChoices()
     {
         //log("lstItems is none!");
 	    CreateOptionsList();
+    }
+
+    //Create the category names
+    if (bCategorised)
+    {
+        for(i = 0; i < arrayCount(categories); i++)
+            categories[i].DescriptionText = categoryNames[i];
+        //categories[0].bOpen = true;
     }
 
     // Loop through the Menu Choices and create the appropriate menu items
@@ -320,21 +345,19 @@ function BuildModifierList()
 {
 }
 
-function RefreshChoices()
+function AddMenuChoices(optional int category, optional string prefix, optional string categorySort)
 {
 	local int i;
     local string s1, s2, s3;
-	
-    lstItems.Hide(); //Stop spamming messages during draw.
-    
-    //Remove all existing choices
-    lstItems.DeleteAllRows();
-    numItems = 0;
+    local string sortName;
+            
+    if (prefix != "")
+        prefix = prefix $ " ";
 
     // Loop through the Menu Choices and create the appropriate menu items
-	for(i = 0; i < arrayCount(items); i++)
+    for(i = 0; i < arrayCount(items); i++)
     {
-		if (items[i].actionText != "")
+        if (items[i].actionText != "" && (items[i].category == category || category == -1))
         {
             s1 = CAPS(items[i].actionText);
             s2 = CAPS(items[i].helpText);
@@ -344,10 +367,61 @@ function RefreshChoices()
                 continue;
                 
             //Log("searchFilter: " $ searchFilter @ " - " @ items[i].actionText @ items[i].helpText);
+            
+            //We need to add the category name, for sorting purposes, so that it sorts under it's category title
+            sortName = items[i].sortCategory $ items[i].actionText;
+            if (categorySort != "")
+                sortName = categorySort $ "----" $ sortName;
 
-            lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i) $ ";" $ i $ ";" $ items[i].sortCategory $ items[i].actionText);
+            lstItems.AddRow(prefix $ items[i].actionText $ ";" $ GetValueString(i) $ ";" $ i $ ";" $ sortName $ ";-1");
             numItems++;
         }
+    }
+}
+
+function RefreshChoices()
+{
+	local int c;
+	
+    lstItems.Hide(); //Stop spamming messages during draw.
+    
+    //Remove all existing choices
+    lstItems.DeleteAllRows();
+    numItems = 0;
+
+    if (bCategorised && (lastSearch == defaultSearchText || lastSearch == ""))
+    {
+        //Always allow category zero
+        if (categories[0].DescriptionText == "")
+            categories[0].DescriptionText = "Uncategorised";
+
+        //Create an entry for each category, and then assign everything to them
+        for(c = 0; c < arrayCount(categories); c++)
+        {
+            if (categories[c].DescriptionText != "")
+            {
+                if (categories[c].bIsOpen)
+                {
+                    lstItems.AddRow("-" @ categories[c].DescriptionText $ ";;;" $ categories[c].DescriptionText $ ";" $ c);
+                    //categories[c].rowNum = lstItems.GetNumRows();
+                    AddMenuChoices(c,"  ",categories[c].DescriptionText);
+                }
+                else
+                {
+                    lstItems.AddRow("+" @ categories[c].DescriptionText $ ";;;" $ categories[c].DescriptionText $ ";" $ c);
+                }
+            }
+        }
+        
+    }
+    else if (bCategorised) //SARGE: Hacky path for searching!
+    {
+        for(c = 0; c < arrayCount(categories); c++)
+            AddMenuChoices(c,categories[c].DescriptionText $ ":",categories[c].DescriptionText);
+    }
+    else
+    {
+        AddMenuChoices(-1);
     }
     
     searchFilter = "";
@@ -630,9 +704,31 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 event bool ListRowActivated(window list, int rowId)
 {
     local int id;
+    local int cat;
+    local int i;
+    local int selected;
     local S_ListItem choice;
     
     id = int(lstItems.GetFieldValue(rowId, 2));
+    cat = int(lstItems.GetFieldValue(rowId, 4));
+
+    if (cat >= 0)
+    {
+        //Close all other categories except for this one
+        for(i = 0; i < arrayCount(categories); i++)
+        {
+            if (i == cat)
+                categories[i].bIsOpen = !categories[i].bIsOpen;
+            else
+                categories[i].bIsOpen = false;
+        }
+
+        //selected = lstItems.GetSelectedRow();
+        RefreshChoices();
+        //selected = lstItems.IndexToRowId(selected);
+        //lstItems.SetRow(selected,true);
+        return True;
+    }
 
     items[id].value += 1;
 
@@ -735,7 +831,7 @@ function CreateOptionsList()
 	lstItems.EnableAutoExpandColumns(False);
 	lstItems.EnableHotKeys(False);
 
-	lstItems.SetNumColumns(4);
+	lstItems.SetNumColumns(5);
 
 	lstItems.SetColumnWidth(0, colWidths[0]);
 	lstItems.SetColumnType(0, COLTYPE_String);
@@ -754,6 +850,11 @@ function CreateOptionsList()
         lstItems.SetSortColumn(3, bSortOrder);
         lstItems.EnableAutoSort(True);
     }
+
+    //Fifth Column is for category number
+	lstItems.HideColumn(4);
+	lstItems.SetColumnType(4, COLTYPE_Float);
+
     bLastPressedHeaderWasSetting = true;
 }
 
@@ -761,9 +862,22 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 {
 	local bool bResult;
     local int rowIndex;
+    local int cat;
+    
+    //SARGE: Failsafe to stop crashing?!
+    //This fucking engine...
+    if (list == None)
+        return True;
 
     if (lstItems.GetNumSelectedRows() == 0 || numSelections == 0)
         return true;
+    
+    cat = int(lstItems.GetFieldValue(focusRowId, 4));
+    if (cat >= 0)
+    {
+        ShowHelpString(-1);
+        return True;
+    }
 
     bResult = Super.ListSelectionChanged(list, numSelections, focusRowId);
     rowIndex = int(lstItems.GetFieldValue(focusRowId, 2));
