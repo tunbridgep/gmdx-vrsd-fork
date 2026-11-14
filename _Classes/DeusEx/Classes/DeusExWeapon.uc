@@ -5011,7 +5011,7 @@ function Rotator CalcViewRotation(float deltaTime)
     else if (Pawn(Owner) != None)
         cvr = Pawn(Owner).ViewRotation;
     
-    if (P != None && P.bViewmodelInertia && inertiaSpeed > 0 && !bZoomed/* && !IsInState('Reload')*/)
+    if (P != None && P.bViewmodelInertia && inertiaSpeed > 0 && !bZoomed/* && (IsInState('Idle') || IsInState('Reload'))*/)
     {
         cvr = class'MathUtils'.static.NormalizeRotator(cachedViewRotation);
         vr = class'MathUtils'.static.NormalizeRotator(P.GetCurrentViewRotation());
@@ -5025,9 +5025,10 @@ function Rotator CalcViewRotation(float deltaTime)
 
         if (newAngle.Pitch != 0 || newAngle.Yaw != 0)
         {
-            //SARGE: TODO: Use a proper Smerp for this
-            speedp = deltaTime * inertiaSpeed + (abs(newAngle.Pitch) / 10);
-            speedy = deltaTime * inertiaSpeed + (abs(newAngle.Yaw) / 10);
+            //Use a weird easing formula that sucks?
+            //Do a basic exponent.
+            speedp = (deltaTime * inertiaSpeed) * (abs(newAngle.Pitch) / 200);
+            speedy = (deltaTime * inertiaSpeed) * (abs(newAngle.Yaw) / 200);
 
             //If we're past the max distance, speed up in order to reach it much quicker
             //SARGE: TODO: Clamp it properly, don't just speed up, it looks janky.

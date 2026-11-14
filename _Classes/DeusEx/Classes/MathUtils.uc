@@ -50,6 +50,19 @@ static function Rotator NormalizeRotator(Rotator rot)
     return rot;
 }
 
+//Converts a value to be between a range of 0 to 1
+static function float GetValueRange0to1(float value, float min, float max)
+{
+    return (value-min)/(max-min);
+}
+
+//Converts a value to be between a range of 0 to X
+//Untested
+static function float GetValueRange(float value, float min, float max, float range)
+{
+    return ((value-min)/(max-min)) * range;
+}
+
 /*
 static function RotatorToFloats(Rotator rot, out float pitch, out float yaw)
 {

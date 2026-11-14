@@ -359,6 +359,7 @@ defaultproperties
      minSkillRequirement=2
      bBigMuzzleFlash=true
      bFancyScopeAnimation=true
-     inertiaSpeed=100
+     inertiaSpeed=900
+     inertiaMaxDistPitch=900
      muzzleSlot=2 //doesn't have one normally, added by Visible Weapon Attachments
 }

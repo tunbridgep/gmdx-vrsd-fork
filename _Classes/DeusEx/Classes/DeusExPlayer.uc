@@ -990,7 +990,7 @@ var globalconfig bool bFadeOutSavePoints;                  //SARGE: Save Points 
 
 var globalconfig bool bClassicMJ12Skin;                    //SARGE: Add back the terrible looking MJ12 helmets from Vanilla.
 
-var globalconfig bool bFirstPersonConversation;           //SARGE: Allow the player to remain in first-person when in a conversation.
+var globalconfig int iFirstPersonConversation;             //SARGE: Allow the player to remain in first-person when in a conversation. 0 = Disabled, 1 = Standard, 2 = Zoom (using the cutscene FOV setting)
 
 var globalconfig bool bTurnHeads;                        //SARGE: NPCs will turn their heads to look at the player
 
@@ -1096,6 +1096,10 @@ var float waterDropCounter;
 
 //Allow blue laser sights
 var globalconfig int iLaserSightMode;           //SARGE: Laser sight visibiity. 0 = Red, 1 = Blue
+
+//A hack to "fix" first person combos having the wrong rotation.
+//Might be entirely placebo.
+var transient bool bFirstPersonConvoHack;
 
 //////////END GMDX
 
@@ -14533,7 +14537,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 
-	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) || bFirstPersonConversation )
+	if ( (!InConversation()) || ( conPlay.GetDisplayMode() == DM_FirstPerson ) || iFirstPersonConversation > 0)
 	{
 		// First-person view.
 		ViewActor = Self;
@@ -14600,6 +14604,7 @@ ignores SeePlayer, HearNoise, Bump;
         local Rotator lookAngle, vr;
         local Vector lookTo, lookFrom;
         local Actor speak;
+        local float speed, speedy, speedp;
 
 		UpdateInHand();
 
@@ -14624,7 +14629,7 @@ ignores SeePlayer, HearNoise, Bump;
 		LipSynch(deltaTime);
 
 		// Keep turning towards the person we're speaking to
-		if (ConversationActor != None)
+		if (ConversationActor != None && iFirstPersonConversation == 0)
 		{
             LookAtActor(ConversationActor, true, true, true, 0, 0.5);
 
@@ -14643,31 +14648,69 @@ ignores SeePlayer, HearNoise, Bump;
 
         //SARGE: This is an awful hack...
         //Look towards our target.
-        if (bFirstPersonConversation && conPlay != None)
+        if (iFirstPersonConversation > 0 && conPlay != None)
         {
-            speak = conPlay.currentSpeaker;
-
-            //Failsafe for when we start talking first.
-            if (speak == None || speak.IsA('PlayerPawn'))
-                speak = ConversationActor;
-
-            if (speak != None && speak != Self)
+            //SARGE: Skip the first frame...
+            //I have no fucking idea why this is necessary...
+            //If we don't do it, sometimes the camera "jerks" slightly before
+            //being slowly moved back. What the actual fuck?
+            if (!bFirstPersonConvoHack)
             {
-                // Determine our angle to the target
-                if (Pawn(speak) != None)
-                    lookTo = speak.Location + Pawn(speak).EyeHeight * vect(0,0,1);
-                else
-                    lookTo = speak.Location + speak.CollisionHeight * vect(0,1,1) * 0.5;
-                lookFrom  = Location + EyeHeight * vect(0,0,1);
-                
-                vr = class'MathUtils'.static.NormalizeRotator(ViewRotation);
+                bFirstPersonConvoHack = true;
+            }
+            else
+            {
 
-                //Calcluate the angle we need to look
-                lookAngle = Rotator(lookTo-lookFrom);
-                lookAngle = class'MathUtils'.static.GetRotationBetween(vr,lookAngle);
+                speak = conPlay.currentSpeaker;
 
-                ViewRotation.Yaw = smerp(deltaTime * 16,vr.Yaw,vr.Yaw - lookAngle.Yaw);
-                ViewRotation.Pitch = smerp(deltaTime * 16,vr.Pitch,vr.Pitch - lookAngle.Pitch);
+                //Failsafe for when we start talking first.
+                if (speak == None || speak.IsA('PlayerPawn'))
+                    speak = ConversationActor;
+
+                if (speak != None && speak != Self)
+                {
+                    // Determine our angle to the target
+                    if (Pawn(speak) != None)
+                        lookTo = speak.Location + Pawn(speak).EyeHeight * vect(0,0,1);
+                    else
+                        lookTo = speak.Location + speak.CollisionHeight * vect(0,1,1) * 0.5;
+
+                    lookFrom = Location + EyeHeight * vect(0,0,1);
+                    vr = class'MathUtils'.static.NormalizeRotator(ViewRotation);
+
+                    //Calcluate the angle we need to look
+                    lookAngle = Rotator(lookTo-lookFrom);
+                    lookAngle = class'MathUtils'.static.GetRotationBetween(vr,lookAngle);
+
+                    //ClientMessage("Testing: " $ lookFrom @ lookTo @ lookAngle);
+                    //Log("Testing: " $ lookFrom @ lookTo @ lookAngle);
+
+                    //Move towards the target
+                    speed = deltaTime * 4000;
+
+                    //Use a weird easing formula that sucks?
+                    //Do a basic exponent.
+                    speedy = speed * (abs(lookAngle.Yaw) / 1000);
+                    speedp = speed * (abs(lookAngle.Pitch) / 1000);
+
+                    //Don't excede the maximum bounds
+                    if (lookAngle.yaw > 0)
+                        speedy = FMIN(speedy,lookAngle.Yaw);
+                    else if (lookAngle.yaw < 0)
+                        speedy = FMAX(-speedy,lookAngle.Yaw);
+
+                    if (lookAngle.Pitch > 0)
+                        speedp = FMIN(speedp,lookAngle.Pitch);
+                    else if (lookAngle.Pitch < 0)
+                        speedp = FMAX(-speedp,lookAngle.Pitch);
+
+                    vr.Yaw = vr.Yaw - speedy;
+                    vr.Pitch = vr.Pitch - speedp;
+
+                    //DebugMessage("speed: " $ speed $ " lookAngle: " $ lookAngle.Pitch $ "," $ lookAngle.Yaw @ "-" @ speedy @ speedp);
+
+                    ViewRotation = class'MathUtils'.static.NormalizeRotator(vr);
+                }
             }
         }
 
@@ -14725,7 +14768,7 @@ ignores SeePlayer, HearNoise, Bump;
     //I'm really getting sick of having to clean this damn codebase...
     function bool KeepWeaponOut()
     {
-        if (bFirstPersonConversation)
+        if (iFirstPersonConversation > 0)
             return false;
         if (bConversationKeepWeaponDrawn)
             return true;
@@ -14747,6 +14790,8 @@ ignores SeePlayer, HearNoise, Bump;
 
 Begin:
 	
+    bFirstPersonConvoHack = false;
+
     //SARGE: Turn off laser
     DisableLaser();
 
@@ -14767,7 +14812,7 @@ Begin:
 	// Make sure the PC can't be attacked while in conversation
 	MakePlayerIgnored(true);
 
-    if (!bFirstPersonConversation)
+    if (iFirstPersonConversation == 0)
     {
         LookAtActor(conPlay.startActor, true, false, true, 0, 0.5);
         SetRotation(DesiredRotation);
@@ -14796,7 +14841,7 @@ Begin:
         if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
             BaseEyeHeight = default.BaseEyeHeight;
 
-		if ( conPlay.GetDisplayMode() == DM_ThirdPerson && !bFirstPersonConversation )
+		if ( conPlay.GetDisplayMode() == DM_ThirdPerson && iFirstPersonConversation == 0 )
 			bBehindView = true;
 	}
 }

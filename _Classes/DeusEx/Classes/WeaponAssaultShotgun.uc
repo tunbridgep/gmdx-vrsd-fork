@@ -175,4 +175,5 @@ defaultproperties
      Mass=30.000000
      bBigMuzzleFlash=true
      minSkillRequirement=2
+     inertiaSpeed=500
 }

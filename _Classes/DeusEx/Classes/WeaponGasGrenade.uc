@@ -185,4 +185,6 @@ defaultproperties
      minSkillRequirement=1
      bFakeHandToHand=true
      bIsPlaceableOnWall=true
+     inertiaMaxDistPitch=800
+     inertiaMaxDist=800
 }
