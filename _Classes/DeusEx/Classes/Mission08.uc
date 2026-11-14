@@ -241,7 +241,10 @@ function Timer()
 			{
 				foreach AllActors(class'ScriptedPawn', pawn, 'StantonDowd')
 					if (pawn.IsA('StantonDowd'))
+                    {
 						pawn.EnterWorld();
+                        pawn.bDetectable = false; //SARGE: Stop enemies targeting Dowd
+                    }
 
 				flags.SetBool('MS_StantonUnhidden', True,, 9);
 
@@ -271,7 +274,8 @@ function Timer()
 		}
 
 		// spawn MJ12 attack force when Shady Guy gets close (8 feet) to Dowd
-		if (!flags.GetBool('StantonAmbush'))
+		if (!flags.GetBool('StantonAmbush') &&
+            !player.IsInState('Conversation')) //SARGE: Added so that they don't attack us while we're talking to Dowd.
 		{
 			Stanton = None;
 			foreach AllActors(class'ScriptedPawn', pawn, 'StantonDowd')
@@ -295,7 +299,11 @@ function Timer()
 
 						foreach AllActors(class'MJ12Troop', mj12, 'MJ12AttackForce')
 						{
-							mj12.SetOrders('Attacking',,false);
+                            //SARGE: Make them no longer attack, now they go to the players location instead.
+                            mj12.SetSeekLocation(player, player.Location, SEEKTYPE_Sight);
+                            mj12.GotoState('Seeking','GoToLocation');
+
+							//mj12.SetOrders('Attacking',,false);
 							//if (player.bHardCoreMode)
 			                //   mj12.EnemyTimeout = 24.0;
        			            //else
@@ -308,6 +316,7 @@ function Timer()
 
 		// spawn MJ12 attack force when a flag is set
 		if (!flags.GetBool('StantonAmbush') &&
+            !player.IsInState('Conversation') && //SARGE: Added so that they don't attack us while we're talking to Dowd.
 			flags.GetBool('MJ12Converging'))
 		{
 			foreach AllActors(class'MJ12Troop', mj12, 'MJ12AttackForce')
@@ -322,7 +331,10 @@ function Timer()
 
 			foreach AllActors(class'MJ12Troop', mj12, 'MJ12AttackForce')
 			{
-			    mj12.SetOrders('Attacking',,false);
+                //SARGE: Make them no longer attack, now they go to the players location instead.
+                mj12.SetSeekLocation(player, player.Location, SEEKTYPE_Sight);
+                mj12.GotoState('Seeking','GoToLocation');
+			    //mj12.SetOrders('Attacking',,false);
 			    //if (player.bHardCoreMode)
 			    //    mj12.EnemyTimeout = 18.0;
 			    //else

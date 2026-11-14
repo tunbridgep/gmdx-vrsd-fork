@@ -28,14 +28,17 @@ function FirstFrame()
         {
             foreach AllActors(class'ComputerSecurity', SC, 'HallwayComputer')
                 SC.UserList[0]=SC.default.UserList[0];
+            foreach AllActors(class'ComputerSecurity', SC, 'doorcomputer') //Do the door computer too, there's one last camera
+                SC.UserList[0]=SC.default.UserList[0];
                 
             flags.SetBool('GMDX_RemoveComputer',True,, 15);
         }
         
         //prevent the "Antennapedia" password on hardcore,
         //since it trivialises the security setup.
-        if (player.bHardCoreMode)
-            flags.SetBool('OceanLabSkipPassword',True,, 1);
+        //SARGE: Turns out this is the wrong code...oops...the real solution is above.
+        //if (player.bHardCoreMode)
+        //    flags.SetBool('OceanLabSkipPassword',True,, 1);
     }
 
 CanQuickSave=true;

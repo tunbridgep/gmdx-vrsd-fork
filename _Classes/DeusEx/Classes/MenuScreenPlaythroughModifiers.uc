@@ -56,7 +56,7 @@ static function bool IsModifierActive(DeusExPlayer pl, int index)
 
     cmdVal = pl.GetPropertyText(variable);
 
-    pl.DebugLog("Modifier Index " $ index @ variable $ ": " $ cmdVal);
+    //pl.DebugLog("Modifier Index " $ index @ variable $ ": " $ cmdVal);
     
     //Sometimes it can return True and False, convert it to numeric
     if (cmdVal == "True")

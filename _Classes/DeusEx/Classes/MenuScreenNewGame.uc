@@ -364,6 +364,12 @@ function RepopulateRememberedValues()
 	
     portraitIndex = savedPlayerSkin;
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
+
+    //Set the Male Interactions Checkbox
+	if (PortraitIndex%2 == 0)
+		MaleInteractionsCheckbox.SetPos(5000+MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
+    else
+		MaleInteractionsCheckbox.SetPos(MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
 }
 
 // ----------------------------------------------------------------------

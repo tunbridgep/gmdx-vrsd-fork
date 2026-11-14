@@ -884,6 +884,10 @@ function Draw(DeusExPlayer frobber)
 {
     //frobber.clientMessage("Draw!");
 
+    //Fix up disposable weapons if they get messed up somehow
+    if (bDisposableWeapon)
+        ClipCount = ReloadCount;
+
     //Fix allowing more in the clip than we have
 	if(AmmoType != None)
 		ClipCount = min(ClipCount,AmmoType.AmmoAmount);

@@ -411,6 +411,10 @@ function Timer()
 				foreach AllActors(class'ScriptedPawn', pawn, 'JoJoUpstairs')
 					pawn.EnterWorld();
 
+                //SARGE: Prevent Gilbert Renton from cowering
+                foreach AllActors(class'ScriptedPawn', pawn, 'GilbertRenton')
+					pawn.bCower = false;
+
 				flags.SetBool('MS_JoJoUnhidden', True,, 5);
 			}
 		}

@@ -9834,8 +9834,8 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //if (/*FromCorpse == None && */!WeaponSkillManager.IsUnlocked(DeusExWeapon(FrobTarget)))
             //WeaponSkinManager.DisplayReceivedIcon(self);
             //DeusExRootWindow(rootWindow).hud.receivedItems.AddGenericIcon("", , count, bDeclined, bNoGroup, overrideTexture);
-        WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget));
-        bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
+        if (WeaponSkinManager.UnlockSkin(DeusExWeapon(FrobTarget)))
+            bTransfer = WeaponSkinManager.TransferSkin(DeusExWeapon(FrobTarget));
 
         //GMDX Exclusive Code
         if (bTransfer && DeusExWeapon(Weapon) != None)
@@ -21446,7 +21446,7 @@ defaultproperties
      bShowAugLevelsInHUD=true
      bSmartBloodPools=true
      bNanoKeyShowsTools=false
-     fGlobalAmmoMod=1.0;
+     fGlobalAmmoMod=1.0
      msgCreditsAdded="%d credits added"
      msgCreditsDeducted="%d credits deducted from your account"
      HungerStr="Current Hunger: "

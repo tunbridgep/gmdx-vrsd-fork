@@ -54,7 +54,7 @@ function FirstFrame()
 	else if (localURL == "06_HONGKONG_WANCHAI_CANAL")
 	{
 		if (!flags.GetBool('Supervisor01_Dead') &&
-			flags.GetBool('HaveROM'))
+			flags.GetBool('Have_ROM'))
 		{
 			foreach AllActors(class'DeusExCarcass', carc, 'John_Smith_Body')
 				carc.bHidden = False;
