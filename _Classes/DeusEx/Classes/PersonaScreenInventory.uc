@@ -105,6 +105,10 @@ function Tick(float deltaTime)
         destroyWindow.Destroy();
 		bTickEnabled = False;
 	}
+
+    //Real-time UI makes this necessary
+    if (player != None && (player.bRealUI || player.bHardcoreMode))
+        player.ResetHUDFadeTimes();
 }
 
 // ----------------------------------------------------------------------
