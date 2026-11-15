@@ -24,7 +24,7 @@ var Color colText;
 
 //SARGE: HUD Object Fading
 var config float fAutoFadeTime;        //SARGE: How long before the HUD elements fade out. Set to zero to disable.
-var private travel float fAutoFadeTimeCountdown;    //SARGE: The countdown timer left before our HUD element disappears.
+var private transient travel float fAutoFadeTimeCountdown;    //SARGE: The countdown timer left before our HUD element disappears.
 var const bool bFadeEnabled;                 //SARGE: Global sanity check for enabling fading.
 
 // ----------------------------------------------------------------------

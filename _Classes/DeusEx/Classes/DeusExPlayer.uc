@@ -1098,6 +1098,9 @@ var globalconfig int iPresetSeed;
 //Always show the belt when selecting any slot, if belt fading is enabled.
 var globalconfig bool bMoreVisibleBeltFade;
 
+//Always show the ammo counter when selecting any item, if ammo fading is enabled.
+var globalconfig bool bMoreVisibleAmmoFade;
+
 //Ygll: New var to handle wet effect on player when he was being into water
 var float wetRate;
 var float waterDropCounter;
@@ -1489,7 +1492,7 @@ function AssignSecondary(Inventory item, optional bool bMessage)
     }
     else
     {
-        Log("Assigned Icon: " $ item.Icon @ string(item.Icon) @ item.default.icon);
+        //Log("Assigned Icon: " $ item.Icon @ string(item.Icon) @ item.default.icon);
         assignedWeapon.itemClass = string(item.Class);
         assignedWeapon.icon = string(item.Icon);
         if (item.IsA('DeusExPickup'))
@@ -1506,6 +1509,10 @@ function AssignSecondary(Inventory item, optional bool bMessage)
             ClientMessage(Sprintf(msgSecondaryAdded,item.itemName));
         PlaySound(Sound'Menu_Focus', SLOT_Interface, 0.75);
     }
+
+    //When assigning goggles, refresh the HUD display
+    if (ChargedPickup(item) != None)
+        ResetAugFadeTimer();
 
     RefreshChargedPickups();
     UpdateSecondaryDisplay();
@@ -2541,9 +2548,13 @@ function ResetSecondaryFadeTimer()
         root.hud.ammo2.ResetHUDFadeTime();
 }
 
-function ResetAmmoFadeTimer()
+function ResetAmmoFadeTimer(optional bool bExtraVisible)
 {
     local DeusExRootWindow root;
+
+    if (bExtraVisible && !bMoreVisibleAmmoFade)
+        return;
+
     root = DeusExRootWindow(rootWindow);
     if (root != None && root.hud != None && root.hud.ammo != None)
         root.hud.ammo.ResetHUDFadeTime();
@@ -2557,11 +2568,20 @@ function ResetHealthFadeTimer()
         root.hud.hit.ResetHUDFadeTime();
 }
 
+function ResetAugFadeTimer()
+{
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None && root.hud.activeItems != None)
+        root.hud.activeItems.ResetHUDFadeTime();
+}
+
 function ResetHUDFadeTimes()
 {
     ResetBeltFadeTimer();
     ResetSecondaryFadeTimer();
     ResetAmmoFadeTimer();
+    ResetAugFadeTimer();
     //ResetHealthFadeTimer();
 }
 
@@ -9235,9 +9255,9 @@ exec function ParseLeftClick()
             inHand.Activate();
 
         //SARGE: Only refresh our HUD fading if we're attacking with the correct items.
-        if (inHand == primaryWeapon)
-            ResetAmmoFadeTimer();
-        else if (string(inHand.Class) == assignedWeapon.itemClass)
+        if (string(inHand.Class) != assignedWeapon.itemClass)
+            ResetAmmoFadeTimer(inHand != primaryWeapon);
+        else
             ResetSecondaryFadeTimer();
     }
 
@@ -10652,8 +10672,7 @@ function UpdateInHand()
                 
                 bSelectedOffBelt = !selectedItem.bInObjectBelt && bAllowOffBeltSelection;
                
-                if (primaryWeapon != inHandPending)
-                    ResetAmmoFadeTimer();
+                ResetAmmoFadeTimer(primaryWeapon == inHandPending);
 
                 //if (selectedItem.bInObjectBelt || selectedItem.IsA('DeusExWeapon'))
                 //clientMessage("Update Primary to: " $ selectedItem);
@@ -13629,6 +13648,7 @@ exec function ShowInventoryWindow()
 	}
 
     UpdateHUD();
+    ResetHUDFadeTimes();
 
 	InvokeUIScreen(Class'PersonaScreenInventory');
 }
@@ -13648,6 +13668,8 @@ exec function ShowSkillsWindow()
 	  return;
 	}
 
+    ResetHUDFadeTimes();
+
 	InvokeUIScreen(Class'PersonaScreenSkills');
 }
 
@@ -13665,6 +13687,8 @@ exec function ShowHealthWindow()
 	  ClientMessage("Health screen disabled in multiplayer");
 	  return;
 	}
+
+    ResetHUDFadeTimes();
 
 	InvokeUIScreen(Class'PersonaScreenHealth');
 }
@@ -13684,6 +13708,8 @@ exec function ShowImagesWindow()
 	  return;
 	}
 
+    ResetHUDFadeTimes();
+
 	InvokeUIScreen(Class'PersonaScreenImages');
 }
 
@@ -13701,6 +13727,8 @@ exec function ShowConversationsWindow()
 	  ClientMessage("Conversations screen disabled in multiplayer");
 	  return;
 	}
+
+    ResetHUDFadeTimes();
 
 	InvokeUIScreen(Class'PersonaScreenConversations');
 }
@@ -13720,6 +13748,8 @@ exec function ShowAugmentationsWindow()
 	  return;
 	}
 
+    ResetHUDFadeTimes();
+
 	InvokeUIScreen(Class'PersonaScreenAugmentations');
 }
 
@@ -13738,6 +13768,8 @@ exec function ShowGoalsWindow()
 	  return;
 	}
 
+    ResetHUDFadeTimes();
+
 	InvokeUIScreen(Class'PersonaScreenGoals');
 }
 
@@ -13755,6 +13787,8 @@ exec function ShowLogsWindow()
 	  ClientMessage("Logs screen disabled in multiplayer");
 	  return;
 	}
+
+    ResetHUDFadeTimes();
 
 	InvokeUIScreen(Class'PersonaScreenLogs');
 }
@@ -21455,6 +21489,7 @@ defaultproperties
      StarvingStr="(Starving)"
      iPresetSeed=-1
      bMoreVisibleBeltFade=True
+     bMoreVisibleAmmoFade=True
      bSequenceMeleeAttack=False
      bRemoveComputerScreenBackground=true
 }

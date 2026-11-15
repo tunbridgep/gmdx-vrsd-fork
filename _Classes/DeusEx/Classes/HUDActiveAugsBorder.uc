@@ -80,6 +80,7 @@ function AddIcon(Texture newIcon, Object saveObject)
 		augItem.SetClientObject(saveObject);
 		augItem.SetObject(saveObject);
 		augItem.Show();
+        augItem.owner = self;
 
 		// Hide if there are no icons visible
 		if (++iconCount == 1)

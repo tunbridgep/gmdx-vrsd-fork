@@ -932,6 +932,10 @@ simulated function Float CalcEnergyUse(float deltaTime)
 		anAug = anAug.next;
 	}
 
+    //Reset the Aug display if we're using energy at all
+    if (energyUse > 0)
+        Player.ResetAugFadeTimer();
+
 	return energyUse;
 }
 

@@ -173,6 +173,10 @@ simulated function bool IsActive()
 
 function ChargedPickupUpdate(DeusExPlayer Player)
 {
+    //Active items refresh the display
+    if (Player != None && IsActive() && bUnequipWhenDrained && GetCurrentCharge() > 0)
+        Player.ResetAugFadeTimer();
+
     UpdateBeltText(); //Sarge: Now we need to update the belt position because it shows charge amounts
 }
 
@@ -356,6 +360,11 @@ state DeActivated
 
 	function BeginState()
     {
+		local DeusExPlayer Player;
+		Player = DeusExPlayer(Owner);
+
+        if (player != None)
+            Player.ResetAugFadeTimer();
         UpdateBeltText();
         if (Charge > 0)
         {
@@ -425,6 +434,7 @@ state Activated
 		Player = DeusExPlayer(Owner);
 		if (Player != None)
 		{
+            Player.ResetAugFadeTimer();
 
 			//SetOwner(Player);  //CyberP: did I comment this out, and if so, why? :/
             if (bUnequipWhenDrained)

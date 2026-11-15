@@ -22,6 +22,8 @@ var int bottomOffset;
 var int tilePosX;
 var int tilePosY;
 
+var travel transient HUDActiveItemsDisplay owner; //SARGE: Added
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -52,12 +54,28 @@ function CreateTileWindow()
 // DrawBorder()
 // ----------------------------------------------------------------------
 
+function Color GetColorWithOpacity(Color c)
+{
+    if (owner != None)
+        c = owner.GetColorWithOpacity(c);
+    else
+        c = super.GetColorWithOpacity(c);
+    return c;
+}
+
+function float GetOpacity()
+{
+    if (owner != None)
+        return owner.GetOpacity();
+    return super.GetOpacity();
+}
+
 function DrawBorder(GC gc)
 {
 	if ((bDrawBorder) && (iconCount > 0))
 	{
 		gc.SetStyle(borderDrawStyle);
-		gc.SetTileColor(colBorder);
+        gc.SetTileColor(GetColorWithOpacity(colBorder));
 
 		// Border is drawn as three pieces
 		gc.DrawTexture(0, 0, width, topHeight, 0, 0, texBorderTop);
@@ -98,6 +116,7 @@ function AddIcon(Texture newIcon, Object saveObject)
 	activeItem.SetIcon(newIcon);
 	activeItem.SetClientObject(saveObject);
 	activeItem.SetObject(saveObject);
+    activeItem.owner = self;
 
 	AskParentForReconfigure();
 }

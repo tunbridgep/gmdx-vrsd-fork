@@ -34,6 +34,10 @@ event InitWindow()
 
 function DrawHotKey(GC gc)
 {
+    //SARGE: Don't draw if we should be faded out completely
+    if (owner == None || owner.GetOpacity() <= 0.15)
+        return;
+
 	gc.SetAlignments(HALIGN_Right, VALIGN_Top);
 	gc.SetFont(player.FontManager.GetFont(TT_AugHotKey));  //'FontTiny' //CyberP: for hud scaling
 
@@ -44,20 +48,6 @@ function DrawHotKey(GC gc)
 	// Draw Text
 	gc.SetTextColor(colText);
 	gc.DrawText(-15, 0, 47, 40, hotKeyString);
-
-    //SARGE: Draw Aug Levels
-    if (winLevels != None)
-    {
-        if (bShowDots)
-        {
-            winLevels.Show();
-            winLevels.SetLevel(augLevel);
-        }
-        else
-        {
-            winLevels.Hide();
-        }
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -119,27 +109,49 @@ function UpdateAugIconStatus()
 event Tick(float deltaSeconds)
 {
     local Augmentation aug;
+    local float opacity;
+
     aug = Augmentation(GetClientObject());
+    opacity = GetOpacity();
 
     if (aug == None)
         return;
 
 	if (bHasChargeBar && winEnergy != None)
     {
-        winEnergy.Show();
-        if (aug.IsCharging())
-            winEnergy.SetCurrentValue(((aug.chargeTime - aug.currentChargeTime) / aug.chargeTime) * 100);
+        if (opacity > 0.15)
+        {
+            winEnergy.Show();
+            if (aug.IsCharging())
+                winEnergy.SetCurrentValue(((aug.chargeTime - aug.currentChargeTime) / aug.chargeTime) * 100);
+            else
+                winEnergy.SetCurrentValue(0);
+        }
         else
-            winEnergy.SetCurrentValue(0);
+            winEnergy.Hide();
+    }
+
+    //SARGE: Draw Aug Levels
+    if (winLevels != None)
+    {
+        //Update info for the dots display
+        augLevel = aug.CurrentLevel;
+        bShowDots = class'DeusExPlayer'.default.bShowAugLevelsInHUD && !aug.IsCharging();
+
+        if (bShowDots && opacity > 0.15)
+        {
+            winLevels.Show();
+            winLevels.SetLevel(augLevel);
+        }
+        else
+        {
+            winLevels.Hide();
+        }
     }
 
     //SARGE: Update the aug icon colour when it's active.
     if (aug.displayAsActiveTime + deltaSeconds >= player.saveTime)
         colItemIcon = aug.GetAugColor(true);
-    
-    //Update info for the dots display
-    augLevel = aug.CurrentLevel;
-    bShowDots = class'DeusExPlayer'.default.bShowAugLevelsInHUD && !aug.IsCharging();
 }
 
 event DestroyWindow()

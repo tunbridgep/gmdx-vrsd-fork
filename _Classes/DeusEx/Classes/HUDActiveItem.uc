@@ -39,11 +39,19 @@ event Tick(float deltaSeconds)
 
 	if ((item != None) && (winEnergy != None))
 	{
-        winEnergy.Show();
-        if (item.bDrained && !item.bUnequipWhenDrained) //SARGE: If it's drained, don't show the power level for the next one.
-            winEnergy.SetCurrentValue(0);
+        
+        if (GetOpacity() <= 0.15)
+        {
+            winEnergy.Hide();
+        }
         else
-            winEnergy.SetCurrentValue(item.GetCurrentCharge());
+        {
+            winEnergy.Show();
+            if (item.bDrained && !item.bUnequipWhenDrained) //SARGE: If it's drained, don't show the power level for the next one.
+                winEnergy.SetCurrentValue(0);
+            else
+                winEnergy.SetCurrentValue(item.GetCurrentCharge());
+        }
 	}
 
 }

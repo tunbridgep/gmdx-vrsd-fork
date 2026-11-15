@@ -37,7 +37,9 @@ event InitWindow()
 function CreateContainerWindows()
 {
 	winAugsContainer  = HUDActiveAugsBorder(NewChild(Class'HUDActiveAugsBorder'));
+    winAugsContainer.owner = self;
 	winItemsContainer = HUDActiveItemsBorder(NewChild(Class'HUDActiveItemsBorder'));
+    winItemsContainer.owner = self;
 }
 
 // ----------------------------------------------------------------------
@@ -183,4 +185,5 @@ defaultproperties
 {
      itemAugsOffsetX=14
      itemAugsOffsetY=6
+     bFadeEnabled=true
 }
